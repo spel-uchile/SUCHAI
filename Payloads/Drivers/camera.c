@@ -1,0 +1,491 @@
+/*                                 SUCHAI
+ *                      NANOSATELLITE FLIGHT SOFTWARE
+ *      Copyright 2013, Alex Becerra
+ *      Copyright 2013, Tomas Opazo Toro, tomas.opazo.t@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*========================================================================================
+Description		:Function set for the camera
+File			:camera.c
+Created by 		:Alex Becerra
+Project			:SUCHAI
+Creation date	:16/01/2012
+
+Note(1)			:Based in the user manual of Electronics123's C329 SPI camera 
+Note(2)			:Made for the port SPI1
+Note(3)			:Made for PIC24FJ96GA010 (Mikroelektronika's development board)
+==========================================================================================*/
+
+#include "camera.h"
+
+// Avalaible commands for C329 camera (For more information see the C329's User Manual)
+unsigned char CAM_INITIAL[]     ={0xff, 0xff, 0xff, 0x01};
+// [5] FIXED. [6],[7] for resolution
+unsigned char CAM_GETPIC[]      ={0xff, 0xff, 0xff, 0x04};
+// [4] for picture type
+unsigned char CAM_SNAPSHOT[]    ={0xff, 0xff, 0xff, 0x05, 0x00, 0x00, 0x00, 0x00};
+unsigned char CAM_RESET[]       ={0xff, 0xff, 0xff, 0x08};
+// [7] for reset type
+unsigned char CAM_POWEROFF[]    ={0xff, 0xff, 0xff, 0x09};
+unsigned char CAM_SYNC[]        ={0xff, 0xff, 0xff, 0x0d, 0x00, 0x00, 0x00, 0x00};
+unsigned char CAM_ACK[]         ={0xff, 0xff, 0xff, 0x0e, 0x0d, 0x00, 0x00, 0x00};
+unsigned char CAM_QUALITY[]     ={0xff, 0xff, 0xff, 0x10};
+// [4] for quality
+unsigned char CAM_DUMMY[]       ={0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+// ============================================================================================================
+// Button and port configuration
+// Arguments	: None
+// Return		: None
+// Note			: Button definition in camera.h
+// ============================================================================================================
+void cam_delay_ms(int delay)
+{
+    unsigned int i,j,h=0;
+    unsigned int delay2=0xFFFF;//(unsigned int)delay<<4;
+    for(i=0;i<delay2;i++)
+    {
+        h=i*1;
+    }
+    j=h;
+}
+ 
+void cam_button_config(void){
+    SPI_nSS_1 = 1;
+    // SPI_nSS_1 High for deselect camera
+    cam_delay_ms(2000);
+}
+
+
+// ============================================================================================================
+// Puts the camera in power down mode (For more information see the C329 UM) 
+// Arguments	:None
+// Return		:int succes (0 for succes, 1 for fail)
+// NOTE			:[[NOT FUNCTIONAL]] (Camera doesn't enter power mode despite an ACK comm is received for this feature)
+// ============================================================================================================
+
+int poweroff(void){
+    int success = 1;					// Fail as default
+    int i;
+
+    for(i=0; i<5; i++){					// Maximum retry: 5
+        success = send_comm(CAM_POWEROFF, 0x00, 0x00, 0x00, 0x00);
+        if (!success) {break;}
+    }
+
+    return success;
+}
+
+// ============================================================================================================
+// Resets the camera (For more information see the C329 UM) 
+// Arguments	: int res_type (0x00 for reset all, 0x01 for state machine reset)
+// Return		: 0 for success, 1 for fail.
+// NOTE			: [[NOT TESTED]]
+// ============================================================================================================
+int reset(int res_type){
+
+    int success = 1;					// Fail as default
+    int i;
+
+    for(i=0; i<5; i++){					// Maximum retries: 5
+            success = send_comm(CAM_RESET, 0x00, 0x00, 0x00, res_type);
+            if (!success) {break;}
+    }
+
+    return success;
+}
+
+
+// ============================================================================================================
+// Synchronization of the camera with the master MCU (For more information see the C329's UM)
+// Arguments	: None
+// Return		: int rsync (0 for successfull sync, 1 for failed sync)
+// ============================================================================================================
+int sync(void){
+
+	unsigned int i,j,k;					// Variables for indexes
+	unsigned char recev[8];					// Received data temp buffer
+	unsigned int rsync = 1;				// Rsync status flag 1 (Fail by default)
+
+	for(j=0; j<=60; j++){					// Max 60 retries
+
+        SPI_nSS_1 = 0;        						// Select the camera
+        for(i=0; i<8; i++){
+                recev[i] = SPI_1_transfer(CAM_SYNC[i]); 	// Write SYNC command
+        }
+        SPI_nSS_1 = 1;						// Deselect the camera
+        cam_delay_ms(12);					// Delay of 12 us (Camera requirement)
+
+
+		while(PPC_CAM_HOLD_CHECK){};                    // Wait for the camera to be ready
+
+        if((recev[2]==0xff) && (recev[3]==0x0e) && (recev[4]==0x0d)){ break;}	// If data received is ACK, break if cycle (*)
+	}
+
+	while(PPC_CAM_HOLD_CHECK){;}				// Wait for HOLD low signal
+	if((recev[2]==0xff) && (recev[3]==0x0e) && (recev[4]==0x0d)){		// If data received is sync, continue. (Same procedure as *)
+																		// (We need to check if the exit was due to a correct ACK data)
+
+        SPI_nSS_1 = 0;						// Select the camera
+        for(i=0; i<8; i++){
+                recev[i] = SPI_1_transfer(CAM_DUMMY[i]); 	// Write DUMMY data, read data
+        }
+        SPI_nSS_1 = 1;						// Deselect camera
+
+        cam_delay_ms(12);					// Delay of 12 us (Camera requirement)
+
+		while(PPC_CAM_HOLD_CHECK){;}                 	// Wait for HOLD low signal
+
+        if ((recev[2]==0xff) && (recev[3]==0x0d) && (recev[4]==0x00)){		// If received comm is a SYNC, continue
+                SPI_nSS_1 = 0;														// Select the camera
+                for(k=0; k<8; k++){
+                        recev[i] = SPI_1_transfer(CAM_ACK[i]); 	// Write an ACK
+                }
+                SPI_nSS_1 = 1;														// Deselect the camera
+                cam_delay_ms(12);												// Delay of 12 us (Camera requirement)
+
+				rsync = 0;													// Rsync status flag 0 (Successful)
+
+				while(PPC_CAM_HOLD_CHECK){;}                                      		// Wait for HOLD low signal
+
+       } // If (ACK)
+	}// If SYNC
+
+	return rsync;															// Return the status flag
+}
+
+
+int cam_sync(void){
+    unsigned int i,j,k,max_hold_tries;		// Variables for indexes
+    unsigned char recev[8];	// Received data temp buffer
+    unsigned int rsync = 1;	// Rsync status flag 1 (Fail by default)
+
+    for(j=0; j<=60; j++){	// Max 60 retries
+
+        SPI_nSS_1=0;                    // Select the camera
+        for(i=0; i<8; i++){
+            recev[i] = SPI_1_transfer(CAM_SYNC[i]);     // Write SYNC command
+        }
+        SPI_nSS_1=1;
+        // Deselect the camera
+        cam_delay_ms(12);
+        // Delay of 12 us (Camera requirement)
+        con_printf("Hold ON\r\n");
+
+        max_hold_tries=0;
+        while(PPC_CAM_HOLD_CHECK){
+            max_hold_tries++;
+            if(max_hold_tries==0xFFFF){break;}
+        }
+        // Wait for PPC_CAM_HOLD_CHECK low signal
+        con_printf("Hold OFF\r\n");     // Wait for PPC_CAM_HOLD_CHECK low signal
+
+        if((recev[2]==0xff) && (recev[3]==0x0e) && (recev[4]==0x0d)){ break;}
+            // If data received is ACK, break if cycle (*)
+    }
+
+    max_hold_tries=0;
+    while(PPC_CAM_HOLD_CHECK){
+        max_hold_tries++;
+        if(max_hold_tries==0xFFFF){break;}
+    }
+    // Wait for PPC_CAM_HOLD_CHECK low signal
+
+    if((recev[2]==0xff) && (recev[3]==0x0e) && (recev[4]==0x0d)){
+        // If data received is sync, continue. (Same procedure as *)
+        SPI_nSS_1 = 0;
+        // Select the camera
+        for(i=0; i<8; i++){
+                recev[i] = SPI_1_transfer(CAM_DUMMY[i]);
+                // Write DUMMY data, read data
+        }
+        SPI_nSS_1 = 1;
+
+        cam_delay_ms(12);
+        // Delay of 12 us (Camera requirement)
+
+        max_hold_tries=0;
+        while(PPC_CAM_HOLD_CHECK){
+            max_hold_tries++;
+            if(max_hold_tries==0xFFFF){break;}
+        }
+        // Wait for PPC_CAM_HOLD_CHECK low signal
+
+        if ((recev[2]==0xff) && (recev[3]==0x0d) && (recev[4]==0x00)){
+            // If received comm is a SYNC, continue
+            SPI_nSS_1 = 0;
+            for(k=0; k<8; k++){
+                    recev[i] = SPI_1_transfer(CAM_ACK[i]);
+                    // Write an ACK
+            }
+            SPI_nSS_1 = 1;
+            cam_delay_ms(12);
+            // Delay of 12 us (Camera requirement)
+
+            rsync = 0;
+            // Rsync status flag 0 (Successful)
+
+            max_hold_tries=0;
+            while(PPC_CAM_HOLD_CHECK){
+                max_hold_tries++;
+                if(max_hold_tries==0xFFFF){break;}
+            }
+        // Wait for PPC_CAM_HOLD_CHECK low signal
+
+        } // If (ACK)
+    }// If SYNC
+
+    return rsync;															// Return the status flag
+}
+
+// ============================================================================================================
+// Function to send a generic command
+// Arguments	:char cmd (desired commands), int arg1, arg2, arg3, arg4 (arguments - max 4 - of each function)
+// Return		:int rsend (0 if successfull [ACK received], 1 if doesn't)
+// ============================================================================================================
+int send_comm(unsigned char* cmd, int arg1, int arg2, int arg3, int arg4){
+    unsigned char recev[8];
+    unsigned char comm_renew[8] = {cmd[0], cmd[1], cmd[2], cmd[3], arg1, arg2, arg3, arg4};
+    unsigned int i;
+    int rsend = 1;
+
+    SPI_nSS_1=0;
+    for(i=0; i<8; i++){
+            recev[i] = SPI_1_transfer(comm_renew[i]);
+            // Send the desired command
+    }
+    SPI_nSS_1=1;
+    cam_delay_ms(12);
+    // Delay of 12 us (Camera requirement)
+
+    while(PPC_CAM_HOLD_CHECK){;}
+
+    SPI_nSS_1=0;
+    for(i=0; i<8; i++){
+        recev[i] = SPI_1_transfer(CAM_DUMMY[i]);
+        // Write DUMMY data, read the response
+    }
+    SPI_nSS_1=1;
+    cam_delay_ms(12);
+
+    if((recev[2]==0xff) && (recev[3]==0x0e) && (recev[4]==cmd[3])){
+        // If received comm is ACK
+            rsend = 0;
+            // Rsend status flag set to 0 (Successful)
+    }
+
+    return rsend;							// Return the status flag rsend
+}	
+
+// ============================================================================================================
+// This function sends the necessary commands to take a photo in the C329 camera (For more information see C329's UM)
+// Arguments	:The following are DEFAULTS values that WORK well
+//				 int resolution (resolution of the photo (0x07 for 640x480 pixels))
+//				 int qual (quality of the photo (0x00 for best))
+//				 int pic_type (type of the photo (0x05 for compression))
+// Return		:int length  (0 is there's no photo or any ACK failed, value (nonzero) if not)
+// NOTE			:[[Length variable type MUST be confirmed - Can be overflown by a big photo]]
+// ============================================================================================================
+unsigned int cam_photo(int resolution, int qual, int pic_type){
+    unsigned int i;
+    unsigned char recev[8];
+
+    unsigned int length = 0;
+    int rinit = 1;
+    int rquality = 1;
+    int rphoto = 1;
+
+    #if (SCH_CAMERA_VERBOSE>=2)
+    con_printf("send_comm(INITIAL, 0x00, 0x87, resolution, resolution);\r\n");
+    #endif
+    rinit = send_comm(CAM_INITIAL, 0x00, 0x87, resolution, resolution);
+    // Send an INITIAL command and store the status flag received
+    if(!rinit){
+
+        #if (SCH_CAMERA_VERBOSE>=2)
+            con_printf("INITIAL was successful\r\n");
+        #endif
+
+        cam_delay_ms(12);
+        // Delay 12 us (Camera requirement)
+        while(PPC_CAM_HOLD_CHECK){;}
+        // Wait for low PPC_CAM_HOLD_CHECK signal
+
+        rquality = send_comm(CAM_QUALITY, qual, 0x00, 0x00, 0x00);
+        // Send a QUALITY command and store the status flag received
+        if(!rquality){
+
+            #if (SCH_CAMERA_VERBOSE>=2)
+                con_printf("QUALITY was successful\r\n");
+            #endif
+
+            cam_delay_ms(12);
+            // Delay 12 us (Camera requirement)
+            while(PPC_CAM_HOLD_CHECK){;}
+            // Wait for low PPC_CAM_HOLD_CHECK signal
+
+            //rphoto = send_comm(SNAPSHOT);
+            // This command is not necessary
+            //delay_ms(12);
+            //while(PPC_CAM_HOLD_CHECK){;}
+
+            rphoto = send_comm(CAM_GETPIC, pic_type, 0x00, 0x00, 0x00);
+            // Send a PHOTO command and store the received status flag
+            if(!rphoto){
+
+                #if (SCH_CAMERA_VERBOSE>=2)
+                    con_printf("GETPIC was successful\r\n");
+                #endif
+
+                cam_delay_ms(12);
+                // Delay 12 us (Camera requirement)
+                while(PPC_CAM_HOLD_CHECK){;}
+                // Wait for low PPC_CAM_HOLD_CHECK signal
+
+                SPI_nSS_1=0;
+                // Select the camera
+                for(i=0; i<8; i++){
+                    recev[i] = SPI_1_transfer(CAM_DUMMY[i]);
+                    // Write a DUMMY data to receive a DATA command
+                }
+                SPI_nSS_1=1;
+                // Deselect the camera
+
+                cam_delay_ms(12);
+                // Delay 12 us (Camera requierement)
+                //puthex8(recev, 8);
+
+                if( ( (recev[2]==0xff) && (recev[3]==0x0a) ) ){
+                    // If received comm is DATA
+                    length = recev[5] + recev[6]*0x100 + recev[7]*0x10000;
+                    // Compute the length of the photo
+                }
+            }
+        }
+    }
+
+    return length;
+}
+
+// ============================================================================================================
+// This function uses the length given by PHOTO functions to receive the corresponding data of the picture
+// Arguments	:int length (length of the photo)
+// Return		:None
+// ============================================================================================================
+void cam_recev_photo(unsigned int length){
+    unsigned int l,m;
+    unsigned int numb = length/8;		// Number of blocks of eight bytes each
+    if((length % 8) > 0) numb++;		// If lefts some bytes (lees than eigth), add one to variable numb
+
+    char picture; char ret[10];      	// Variable for the received data
+    con_printf("\r\n");
+    for(l=0; l<numb; l++){			// Variable l goes from 0 to block number (numb)
+        SPI_nSS_1=0;								// Select the camera (NOTE: COULD BE BEFORE THE FOR)
+        for(m=0; m<8; m++){			// Read eigth bytes each time
+            picture = SPI_1_transfer(0x00);	// Send a dummy byte to read one from the camera
+            //utoa(ret, (unsigned int)(0x00FF&picture), 16);
+            if( picture==0x00 ){
+                con_printf("00");
+            }
+            else{
+                if( (picture&0xF0)==0x00 ){
+                    con_printf("0");
+                    sprintf (ret, "%X", ((unsigned char)picture) );
+                    con_printf(ret);
+                }
+                else{
+                    sprintf (ret, "%X", ((unsigned char)picture) );
+                    con_printf(ret);
+                }
+            }
+        }
+        SPI_nSS_1=1;			// Deselect the camera
+        cam_delay_ms(12);               // Delay of 12 us (Camera requierement)
+    }
+    con_printf("\r\n");
+}
+
+unsigned int cam_take_photo(void)
+{
+    con_printf("photo(1,0,1);\r\n");
+    return cam_photo(1,0,1);//Init camera with 80x60 preview and compression resolution
+                       // with the " best " Quality
+                        // with mode get picture " snapshot picture"
+}
+unsigned int cam_receivePhoto(unsigned int length, int mode)
+{
+    con_printf("cam_receivePhoto()..\r\n");
+    static int cnt; BOOL stat;
+    int ml=length/2;    //se guardan 2byten en 1int
+    
+    //Inicializa la estructura de data payload
+    DAT_Payload pay_i=dat_pay_camera;
+    dat_resetPayloadBuffer(pay_i, ml-1, 0);
+
+    unsigned char respuesta; char ret[10];
+    unsigned int resp;
+    
+    int i; cnt=0;
+    for(i=0;i<ml;i++)
+    {
+        resp=0;
+        SPI_nSS_1=0;
+        respuesta=SPI_1_transfer(0x00);
+        SPI_nSS_1=1;
+        resp=(unsigned int)respuesta;
+
+        SPI_nSS_1=0;
+        respuesta=SPI_1_transfer(0x00);
+        SPI_nSS_1=1;
+        resp=( (resp<<8)|((unsigned int)respuesta) );
+
+
+        if( (mode==CAM_MODE_VERBOSE) || (mode==CAM_MODE_BOTH) ){
+
+            //imprime 0's que se comen sprintf y utoa
+            if( (resp&0xF000)==0x0000 ){ con_printf("0"); }
+            if( (resp&0xFF00)==0x0000 ){ con_printf("0"); }
+            if( (resp&0xFFF0)==0x0000 ){ con_printf("0"); }
+            sprintf (ret, "%X", ((unsigned int)resp) );
+            con_printf(ret);
+        }
+        if( (mode==CAM_MODE_SAVE_SD) || (mode==CAM_MODE_BOTH) ){
+            stat = dat_setPayloadVar( pay_i, (int)resp );
+            //cam_delay_ms(12);
+            #if (SCH_CAMERA_VERBOSE>=1)
+                cnt++;
+                if(cnt%200==0){
+                    con_printf("still writing memSD .. cnt=");
+                    sprintf (ret, "%X", ((unsigned int)cnt) );
+                    con_printf(ret); con_printf("\r\n");
+                }
+            #endif
+        }
+
+        ClrWdt();
+    }
+
+    //Si sale esta linea tengo un error
+    if( (mode==CAM_MODE_SAVE_SD) || (mode==CAM_MODE_BOTH) ){
+        while(stat==FALSE){
+            stat = dat_setPayloadVar( pay_i, (int)0xFF00 );
+            con_printf("rellenando\r\n");
+            //cam_delay_ms(12);
+        }
+    }
+
+    return 1;
+}

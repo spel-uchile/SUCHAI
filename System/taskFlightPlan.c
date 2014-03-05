@@ -1,0 +1,84 @@
+/*                                 SUCHAI
+ *                      NANOSATELLITE FLIGHT SOFTWARE
+ *
+ *      Copyright 2013, Carlos Gonzalez Cortes, carlgonz@ug.uchile.cl
+ *      Copyright 2013, Tomas Opazo Toro, tomas.opazo.t@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "taskFlightPlan.h"
+
+extern xQueueHandle dispatcherQueue;
+
+void taskFlightPlan(void *param)
+{
+#if SCH_TASKFLIGHTPLAN_VERBOSE
+    char buff[50];
+    con_printf(">>[FlightPlan] Started\r\n");
+#endif
+
+#if SCH_TASKFLIGHTPLAN_REALTIME
+    /* Resolution = 30[s] */
+    portTickType xDelayms = (30 * 1000 / portTICK_RATE_MS);
+#else
+    /* Resolution = 10[s] */
+    const unsigned int xDelayms = (10 * 1000) / portTICK_RATE_MS; 
+#endif
+
+    int index, current_hour, current_mins;
+    int last_index = -1;
+    
+    DispCmd NewCmd;
+    NewCmd.cmdId = CMD_CMDNULL;
+    NewCmd.idOrig = CMD_IDORIG_TFLIGHTPLAN;
+    NewCmd.param = 0;
+
+    portTickType xLastWakeTime = xTaskGetTickCount();
+
+    while(1)
+    {
+        vTaskDelayUntil(&xLastWakeTime, xDelayms);
+
+        /* Map hh:mm to MM minutues of the day to obtain the
+         * index of the next command to read from fligh plan */
+        current_hour = dat_getCubesatVar(dat_rtc_hours);
+        current_mins = dat_getCubesatVar(dat_rtc_minutes);
+        index = current_hour*60 + current_mins;
+        index = index / SCH_FLIGHTPLAN_RESOLUTION;
+
+        /* Task period is minor than flight plan resolution, so we need to
+         * prevent an index repetition */
+        if(last_index != index)
+        {
+            /* Get the next command from flight plan */
+            last_index = index;
+            NewCmd = dat_getFlightPlan(index);
+
+            /* Check if valid cmd */
+            if(NewCmd.cmdId == CMD_CMDNULL) continue;
+
+            #if SCH_TASKFLIGHTPLAN_VERBOSE
+                /* Print the command code */
+                sprintf(buff, "[FlightPlan] Se genera comando: 0x%X\r\n", (unsigned int)NewCmd.cmdId );
+                con_printf(buff);
+//                con_printf("[FlightPlan] Se genera comando: ");
+//                con_printf(ret); con_printf("\n\0");
+            #endif
+
+            /* Queue NewCmd - Blocking */
+            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+        }
+    }
+}

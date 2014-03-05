@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/mnt/Documentos/Ingeniería%20Civil%20Eléctrica/CubeSat/PIC24FJ256GA110_EXT/SUCHAI/trunk/main/Drivers/console.c</file>
+        <file>file:/mnt/Documentos/Ingeniería%20Civil%20Eléctrica/CubeSat/PIC24FJ256GA110_EXT/SUCHAI/trunk/main/System/cmdRTC.c</file>
+        <file>file:/mnt/Documentos/Ingeniería%20Civil%20Eléctrica/CubeSat/PIC24FJ256GA110_EXT/SUCHAI/trunk/main/System/cmdTCM.c</file>
+        <file>file:/mnt/Documentos/Ingeniería%20Civil%20Eléctrica/CubeSat/PIC24FJ256GA110_EXT/SUCHAI/trunk/main/System/include/cmdTCM.h</file>
+        <file>file:/mnt/Documentos/Ingeniería%20Civil%20Eléctrica/CubeSat/PIC24FJ256GA110_EXT/SUCHAI/trunk/main/Payloads/Cmd/include/cmdPayload.h</file>
+        <file>file:/mnt/Documentos/Ingeniería%20Civil%20Eléctrica/CubeSat/PIC24FJ256GA110_EXT/SUCHAI/trunk/main/Payloads/Cmd/cmdPayload.c</file>
+        <file>file:/mnt/Documentos/Ingeniería%20Civil%20Eléctrica/CubeSat/PIC24FJ256GA110_EXT/SUCHAI/trunk/main/SUCHAI_config.h</file>
+        <file>file:/mnt/Documentos/Ingeniería%20Civil%20Eléctrica/CubeSat/PIC24FJ256GA110_EXT/SUCHAI/trunk/main/System/taskDispatcher.c</file>
+        <file>file:/mnt/Documentos/Ingeniería%20Civil%20Eléctrica/CubeSat/PIC24FJ256GA110_EXT/SUCHAI/trunk/main/System/cmdRepository.c</file>
+        <file>file:/mnt/Documentos/Ingeniería%20Civil%20Eléctrica/CubeSat/PIC24FJ256GA110_EXT/SUCHAI/trunk/main/System/include/cmdIncludes.h</file>
+    </open-files>
+</project-private>

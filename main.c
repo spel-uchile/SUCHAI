@@ -33,7 +33,7 @@ PPC_DEFAULT_CW1();
 PPC_DEFAULT_CW2();
 PPC_DEFAULT_CW3();
 
-xQueueHandle dispatcherQueue, executerCmdQueue, executerStatQueue;
+xQueueHandle dispatcherQueue, executerCmdQueue, executerStatQueue, i2cRxQueue;
 xSemaphoreHandle dataRepositorySem, consolePrintfSem, rtcPrintSem;
 
 xTaskHandle taskDeploymentHandle, taskDispatcherHandle, taskExecuterHandle;
@@ -47,6 +47,7 @@ int main(void)
     dispatcherQueue = xQueueCreate(25,sizeof(DispCmd));
     executerCmdQueue = xQueueCreate(1,sizeof(ExeCmd));
     executerStatQueue = xQueueCreate(1,sizeof(int));
+    i2cRxQueue = xQueueCreate(100, sizeof(char));   //TRX_GOMSPACE
 
     /* Initializing shared Semaphore */
     dataRepositorySem = xSemaphoreCreateMutex();

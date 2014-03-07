@@ -17,6 +17,7 @@
         <itemPath>../Drivers/include/memFlash.h</itemPath>
         <itemPath>../Drivers/include/memEEPROM.h</itemPath>
         <itemPath>../Drivers/include/interfaz_ADC.h</itemPath>
+        <itemPath>../Drivers/include/i2c_comm.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="FreeRTOS" projectFiles="true">
         <itemPath>../FreeRTOS/Source/include/croutine.h</itemPath>
@@ -30,6 +31,38 @@
         <itemPath>../FreeRTOS/Source/include/StackMacros.h</itemPath>
         <itemPath>../FreeRTOS/Source/include/task.h</itemPath>
         <itemPath>../FreeRTOS/Source/include/timers.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f6" displayName="Libcsp" projectFiles="true">
+        <logicalFolder name="include" displayName="include" projectFiles="true">
+          <logicalFolder name="csp" displayName="csp" projectFiles="true">
+            <logicalFolder name="arch" displayName="arch" projectFiles="true">
+              <itemPath>../Libcsp/include/csp/arch/csp_queue.h</itemPath>
+              <itemPath>../Libcsp/include/csp/arch/csp_thread.h</itemPath>
+              <itemPath>../Libcsp/include/csp/arch/csp_malloc.h</itemPath>
+              <itemPath>../Libcsp/include/csp/arch/csp_time.h</itemPath>
+              <itemPath>../Libcsp/include/csp/arch/csp_semaphore.h</itemPath>
+              <itemPath>../Libcsp/include/csp/arch/csp_system.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="drivers" displayName="drivers" projectFiles="true">
+              <itemPath>../Libcsp/include/csp/drivers/csp_usart.h</itemPath>
+              <itemPath>../Libcsp/include/csp/drivers/csp_i2c.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="interfaces" displayName="interfaces" projectFiles="true">
+              <itemPath>../Libcsp/include/csp/interfaces/csp_if_i2c.h</itemPath>
+              <itemPath>../Libcsp/include/csp/interfaces/csp_if_lo.h</itemPath>
+            </logicalFolder>
+            <itemPath>../Libcsp/include/csp/csp_debug.h</itemPath>
+            <itemPath>../Libcsp/include/csp/csp_cmp.h</itemPath>
+            <itemPath>../Libcsp/include/csp/csp_interface.h</itemPath>
+            <itemPath>../Libcsp/include/csp/csp_autoconfig.h</itemPath>
+            <itemPath>../Libcsp/include/csp/csp_buffer.h</itemPath>
+            <itemPath>../Libcsp/include/csp/csp_platform.h</itemPath>
+            <itemPath>../Libcsp/include/csp/csp.h</itemPath>
+            <itemPath>../Libcsp/include/csp/csp_crc32.h</itemPath>
+            <itemPath>../Libcsp/include/csp/csp_endian.h</itemPath>
+            <itemPath>../Libcsp/include/csp/csp_error.h</itemPath>
+          </logicalFolder>
+        </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f5" displayName="Payloads" projectFiles="true">
         <logicalFolder name="f1" displayName="Cmd" projectFiles="true">
@@ -91,6 +124,7 @@
         <itemPath>../Drivers/memFlash.c</itemPath>
         <itemPath>../Drivers/memEEPROM.c</itemPath>
         <itemPath>../Drivers/interfaz_ADC.c</itemPath>
+        <itemPath>../Drivers/i2c_comm.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="FreeRTOS" projectFiles="true">
         <itemPath>../FreeRTOS/Source/croutine.c</itemPath>
@@ -98,6 +132,56 @@
         <itemPath>../FreeRTOS/Source/queue.c</itemPath>
         <itemPath>../FreeRTOS/Source/tasks.c</itemPath>
         <itemPath>../FreeRTOS/Source/timers.c</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f6" displayName="Libcsp" projectFiles="true">
+        <logicalFolder name="src" displayName="src" projectFiles="true">
+          <logicalFolder name="arch" displayName="arch" projectFiles="true">
+            <logicalFolder name="freertos" displayName="freertos" projectFiles="true">
+              <itemPath>../Libcsp/src/arch/freertos/csp_malloc.c</itemPath>
+              <itemPath>../Libcsp/src/arch/freertos/csp_system.c</itemPath>
+              <itemPath>../Libcsp/src/arch/freertos/csp_semaphore.c</itemPath>
+              <itemPath>../Libcsp/src/arch/freertos/csp_time.c</itemPath>
+              <itemPath>../Libcsp/src/arch/freertos/csp_thread.c</itemPath>
+              <itemPath>../Libcsp/src/arch/freertos/csp_queue.c</itemPath>
+            </logicalFolder>
+          </logicalFolder>
+          <logicalFolder name="crypto" displayName="crypto" projectFiles="true">
+            <itemPath>../Libcsp/src/crypto/csp_xtea.c</itemPath>
+            <itemPath>../Libcsp/src/crypto/csp_hmac.c</itemPath>
+            <itemPath>../Libcsp/src/crypto/csp_hmac.h</itemPath>
+            <itemPath>../Libcsp/src/crypto/csp_xtea.h</itemPath>
+            <itemPath>../Libcsp/src/crypto/csp_sha1.h</itemPath>
+            <itemPath>../Libcsp/src/crypto/csp_sha1.c</itemPath>
+          </logicalFolder>
+          <logicalFolder name="drivers" displayName="drivers" projectFiles="true">
+            <logicalFolder name="i2c" displayName="i2c" projectFiles="true">
+              <itemPath>../Libcsp/src/drivers/i2c/csp_i2c.c</itemPath>
+            </logicalFolder>
+          </logicalFolder>
+          <logicalFolder name="interfaces" displayName="interfaces" projectFiles="true">
+            <itemPath>../Libcsp/src/interfaces/csp_if_i2c.c</itemPath>
+            <itemPath>../Libcsp/src/interfaces/csp_if_lo.c</itemPath>
+          </logicalFolder>
+          <logicalFolder name="transport" displayName="transport" projectFiles="true">
+            <itemPath>../Libcsp/src/transport/csp_rdp.c</itemPath>
+            <itemPath>../Libcsp/src/transport/csp_transport.h</itemPath>
+            <itemPath>../Libcsp/src/transport/csp_udp.c</itemPath>
+          </logicalFolder>
+          <itemPath>../Libcsp/src/csp_service_handler.c</itemPath>
+          <itemPath>../Libcsp/src/csp_crc32.c</itemPath>
+          <itemPath>../Libcsp/src/csp_endian.c</itemPath>
+          <itemPath>../Libcsp/src/csp_buffer.c</itemPath>
+          <itemPath>../Libcsp/src/csp_port.h</itemPath>
+          <itemPath>../Libcsp/src/csp_services.c</itemPath>
+          <itemPath>../Libcsp/src/csp_io.h</itemPath>
+          <itemPath>../Libcsp/src/csp_io.c</itemPath>
+          <itemPath>../Libcsp/src/csp_route.h</itemPath>
+          <itemPath>../Libcsp/src/csp_conn.c</itemPath>
+          <itemPath>../Libcsp/src/csp_route.c</itemPath>
+          <itemPath>../Libcsp/src/csp_port.c</itemPath>
+          <itemPath>../Libcsp/src/csp_debug.c</itemPath>
+          <itemPath>../Libcsp/src/csp_conn.h</itemPath>
+        </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f5" displayName="Payloads" projectFiles="true">
         <logicalFolder name="f1" displayName="Cmd" projectFiles="true">
@@ -143,6 +227,11 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>../Libcsp/include</Elem>
+    <Elem>../Libcsp/src</Elem>
+    <Elem>../FreeRTOS/Source/portable</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="default" type="2">
@@ -190,7 +279,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value="..;../Drivers/include;../System/include;../FreeRTOS/Source/include;../Payloads/Cmd/include;../Payloads/Drivers/include"/>
+                  value="..;../Drivers/include;../System/include;../FreeRTOS/Source/include;../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/;../Payloads/Cmd/include;../Payloads/Drivers/include;../Libcsp;../Libcsp/include/csp;../Libcsp/src;../Libcsp/include/csp/arch;../Libcsp/include/csp/drivers;../Libcsp/include/csp/interfaces;../Libcsp/src/interfaces;../Libcsp/src/interfaces/csp"/>
         <property key="isolate-each-function" value="false"/>
         <property key="keep-inline" value="false"/>
         <property key="oXC16gcc-align-arr" value="false"/>

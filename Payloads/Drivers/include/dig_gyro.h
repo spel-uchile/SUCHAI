@@ -46,6 +46,7 @@ Creation date        		:01/06/2012
 // Read and write addresses for the gyro (depends on hardware configuration)
 #define GYR_ADD_READ	0xD3    //0b1101001-1
 #define GYR_ADD_WRITE   0xD2    //0b1101001-0
+#define GYR_ADD   0xD2    //0b1101001-0
 
 typedef struct{
     int a_x;
@@ -55,6 +56,8 @@ typedef struct{
 
 // Digital Gyro's functions
 void gyr_do_delay(unsigned long d);
+void gyr_write_reg(unsigned char reg, unsigned char val);
+unsigned char gyr_read_reg(unsigned char reg);
 void whoami(void);
 
 void gyr_config_CTRL_REG3(unsigned char reg);

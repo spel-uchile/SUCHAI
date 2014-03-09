@@ -19,33 +19,30 @@
 
 #include "memEEPROM.h"
 
-void writeEEPROM1(unsigned char address, unsigned char data){
-    int max;
-    for(max=0x0FFF;max>0;max--){
-        if( I2C1SlaveReady(MEP_EEPROM1_IDW)==1 ){break;}
-    }
+void writeEEPROM1(unsigned char address, char data){
+//    int max;
+    /* TODO: Implement slave ready */
+//    for(max=0x0FFF;max>0;max--){
+//        if( I2C1SlaveReady(MEP_EEPROM1_IDW)==1 ){break;}
+//    }
 
-    unsigned char DATA[1];
-    DATA[0]=data;
-    unsigned int N=1;
-    I2C1SendChar(MEP_EEPROM1_IDW, address, DATA, N);
+    char _address[] = {MEP_EEPROM_ID, (char)address};
+    i2c1_master_fputs(&data, 1, _address, 2);
 }
 
 unsigned char readEEPROM1(unsigned char address){
-    int max;
-    for(max=0x0FFF;max>0;max--){
-        if( I2C1SlaveReady(MEP_EEPROM1_IDW)==1 ){break;}
-    }
+        /* TODO: Implement slave ready */
+//    int max;
+//    for(max=0x0FFF;max>0;max--){
+//        if( I2C1SlaveReady(MEP_EEPROM1_IDW)==1 ){break;}
+//    }
 
-    unsigned int N=1;
-    unsigned char BUFF[1];
-    unsigned char MODE=0;
-
-    I2C1ReadChar(MEP_EEPROM1_IDW, address, MEP_EEPROM1_IDR, BUFF, N, MODE);
-    return BUFF[0];
+    char ret;
+    char _address[] = {MEP_EEPROM_ID, (char)address};
+    i2c1_master_fgets(&ret, 1, _address, 2);
+    return (unsigned char)ret;
 }
 
-//****************************************************************************
 void writeIntEEPROM1(unsigned char indx, int value){
     if(indx>0x7F){return;}    //memEEPROM es de 256 Byte => 127int
 

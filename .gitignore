@@ -19,4 +19,5 @@
 
 # MPLABX build
 *build
+*dist
 .directory

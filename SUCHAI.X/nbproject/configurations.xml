@@ -5,7 +5,6 @@
                    displayName="Header Files"
                    projectFiles="true">
       <logicalFolder name="f2" displayName="Drivers" projectFiles="true">
-        <itemPath>../Drivers/include/i2c_suchai.h</itemPath>
         <itemPath>../Drivers/include/interfaz_SPI.h</itemPath>
         <itemPath>../Drivers/include/pic_pc104_config.h</itemPath>
         <itemPath>../Drivers/include/rs232_suchai.h</itemPath>
@@ -17,6 +16,7 @@
         <itemPath>../Drivers/include/memFlash.h</itemPath>
         <itemPath>../Drivers/include/memEEPROM.h</itemPath>
         <itemPath>../Drivers/include/interfaz_ADC.h</itemPath>
+        <itemPath>../Drivers/include/i2c_comm.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="FreeRTOS" projectFiles="true">
         <itemPath>../FreeRTOS/Source/include/croutine.h</itemPath>
@@ -73,13 +73,12 @@
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
-      <itemPath>/opt/microchip/xc16/v1.11/support/PIC24F/gld/p24FJ256GA110.gld</itemPath>
+      <itemPath>../p24FJ256GA110.gld</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
       <logicalFolder name="f2" displayName="Drivers" projectFiles="true">
-        <itemPath>../Drivers/i2c_suchai.c</itemPath>
         <itemPath>../Drivers/interfaz_SPI.c</itemPath>
         <itemPath>../Drivers/pic_pc104_config.c</itemPath>
         <itemPath>../Drivers/rs232_suchai.c</itemPath>
@@ -91,6 +90,7 @@
         <itemPath>../Drivers/memFlash.c</itemPath>
         <itemPath>../Drivers/memEEPROM.c</itemPath>
         <itemPath>../Drivers/interfaz_ADC.c</itemPath>
+        <itemPath>../Drivers/i2c_comm.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="FreeRTOS" projectFiles="true">
         <itemPath>../FreeRTOS/Source/croutine.c</itemPath>
@@ -143,6 +143,9 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>..</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="default" type="2">
@@ -153,7 +156,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>ICD3PlatformTool</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>1.11</languageToolchainVersion>
+        <languageToolchainVersion>1.20</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <compileType>
@@ -355,7 +358,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>Simulator</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>1.11</languageToolchainVersion>
+        <languageToolchainVersion>1.20</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <compileType>

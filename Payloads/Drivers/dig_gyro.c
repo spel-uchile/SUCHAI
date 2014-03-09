@@ -38,6 +38,30 @@ void gyr_do_delay(unsigned long d){
 }
 
 // ============================================================================================================
+// Write a register
+// Arguments	: unsigned char reg Register to write
+//                unsigned char value Value to write
+// Return      	: None
+// ============================================================================================================
+void gyr_write_reg(unsigned char reg, unsigned char val){
+    char address[] = {GYR_ADD, (char)reg};
+    char _val = (char)val;
+    i2c3_master_fputs(&_val, 1, address, 2);
+}
+
+// ============================================================================================================
+// Write a register
+// Arguments	: unsigned char reg Register to read
+// Return      	: unsigned char Register value
+// ============================================================================================================
+unsigned char gyr_read_reg(unsigned char reg){
+    char ret;
+    char address[] = {GYR_ADD, (char)reg};
+    i2c3_master_fgets(&ret, 1, address, 2);
+    return (unsigned char)ret;
+}
+
+// ============================================================================================================
 // Returns the identification of the device 
 // Arguments	: None
 // Return      	: None
@@ -46,8 +70,7 @@ void gyr_do_delay(unsigned long d){
 void whoami(void){
 
 	unsigned char who = 0;
-        //I2C3ReadChar(RTC_IDW, reg, RTC_IDR, &ret, 1, I2C_MODE_STD);
-	I2C3ReadChar(GYR_ADD_WRITE, GYR_WHO_AM_I, GYR_ADD_READ, &who, 1, I2C_MODE_STD);
+        who = gyr_read_reg(GYR_WHO_AM_I);
 	con_printf("Who_am_I returned: ");
         char ret[10];
         //utoa(ret, (unsigned int)who, 16);
@@ -62,13 +85,12 @@ void whoami(void){
 // Note			: For argument values see the L3G4200D datasheet or application note.
 // ============================================================================================================
 void config_FIFO_GYR_CTRL_REG(unsigned char watermark){
-    unsigned char dummy = 0;
-    I2C3ReadChar(GYR_ADD_WRITE, GYR_FIFO_CTRL_REG, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
+    unsigned char dummy = gyr_read_reg(GYR_FIFO_CTRL_REG);
 
     unsigned char value = ( (dummy & 0b11100000) | (watermark) );
     // Read the actual register value and modify only the arguments given
-    I2C3SendChar(GYR_ADD_WRITE, GYR_FIFO_CTRL_REG, &value, 1);
-    while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
+    gyr_write_reg(GYR_FIFO_CTRL_REG, value);
+    //TODO: while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
 
     #if (SCH_GYRO_VERBOSE>=2)
         I2C3ReadChar(GYR_ADD_WRITE, GYR_FIFO_CTRL_REG, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
@@ -87,13 +109,12 @@ void config_FIFO_GYR_CTRL_REG(unsigned char watermark){
 // Note			: For argument values see the L3G4200D datasheet or application note.
 // ============================================================================================================
 void gyr_config_FIFO_mode(unsigned char mode){
-    unsigned char dummy = 0;
-    I2C3ReadChar(GYR_ADD_WRITE, GYR_FIFO_CTRL_REG, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
+    unsigned char dummy = gyr_read_reg(GYR_FIFO_CTRL_REG);
 
     unsigned char value = ( (dummy & 0b00011111) | (mode << 5) );
     // Read the actual register value and modify only the arguments given
-    I2C3SendChar(GYR_ADD_WRITE, GYR_FIFO_CTRL_REG, &value, 1);
-    while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
+    gyr_write_reg(GYR_FIFO_CTRL_REG, value);
+    //TODO: while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
 
     #if (SCH_GYRO_VERBOSE>=2)
 	I2C3ReadChar(GYR_ADD_WRITE, GYR_FIFO_CTRL_REG, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
@@ -110,13 +131,12 @@ void gyr_config_FIFO_mode(unsigned char mode){
 // Return      	: None
 // ============================================================================================================
 void gyr_powermode(unsigned char powerdown){
-    unsigned char dummy = 0;
-    I2C3ReadChar(GYR_ADD_WRITE, GYR_CTRL_REG1, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
+    unsigned char dummy = gyr_read_reg(GYR_CTRL_REG1);
 
     unsigned char value = ((dummy & 0b11110111) | (powerdown << 3));
     // Read the actual register value and modify only the arguments given
-    I2C3SendChar(GYR_ADD_WRITE, GYR_CTRL_REG1, &value, 1);
-    while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
+    gyr_write_reg(GYR_CTRL_REG1, value);
+    //TODO: while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
 
     #if (SCH_GYRO_VERBOSE>=2)
 	I2C3ReadChar(GYR_ADD_WRITE, GYR_CTRL_REG1, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
@@ -136,13 +156,12 @@ void gyr_powermode(unsigned char powerdown){
 // ============================================================================================================
 void gyr_enable_axis(unsigned char axis){
 	
-    unsigned char dummy = 0;
-    I2C3ReadChar(GYR_ADD_WRITE, GYR_CTRL_REG1, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
+    unsigned char dummy = gyr_read_reg(GYR_CTRL_REG1);;
 
     unsigned char value = ((dummy & 0b11111000) | (axis));
     // Read the actual register value and modify only the arguments given
-    I2C3SendChar(GYR_ADD_WRITE, GYR_CTRL_REG1, &value, 1);
-    while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
+    gyr_write_reg(GYR_CTRL_REG1, value);
+    //TODO: while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
 
     #if (SCH_GYRO_VERBOSE>=2)
 	I2C3ReadChar(GYR_ADD_WRITE, GYR_CTRL_REG1, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
@@ -160,8 +179,7 @@ void gyr_enable_axis(unsigned char axis){
 // Return      	: None
 // ============================================================================================================
 void gyr_print_remain_samp(void){
-    unsigned char dummy = 0;
-    I2C3ReadChar(GYR_ADD_WRITE, GYR_FIFO_SRC_REG, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
+    unsigned char dummy = gyr_read_reg(GYR_FIFO_SRC_REG);
 
     con_printf("FIFO remaining samples to be read :\t ");
     unsigned char numero = dummy&0x1F;
@@ -179,8 +197,7 @@ void gyr_print_remain_samp(void){
 // NOTE			: Void until customization is implemented.
 // ============================================================================================================
 void gyr_print_FIFO_int_source(void){
-    unsigned char fifo_stats;
-    I2C3ReadChar(GYR_ADD_WRITE, GYR_FIFO_SRC_REG, GYR_ADD_READ, &fifo_stats, 1, I2C_MODE_STD);
+    unsigned char fifo_stats = gyr_read_reg(GYR_FIFO_SRC_REG);
 
     if(fifo_stats&0x80){
         con_printf("WATERMARK interruption\r\n");
@@ -207,9 +224,8 @@ void gyr_print_FIFO_int_source(void){
 // Return      	: None
 // ============================================================================================================
 void gyr_print_temp(void){
-    unsigned char dummy = 0;
+    unsigned char dummy = gyr_read_reg(GYR_OUT_TEMP);
     con_printf("Sensor temperature: \t ");
-    I2C3ReadChar(GYR_ADD_WRITE, GYR_OUT_TEMP, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
     char ret[10];
     //itoa(ret, (unsigned int)dummy, 16);
     sprintf (ret, "0x%X", (unsigned int)dummy);
@@ -226,8 +242,7 @@ GYR_DATA gyr_get_FIFO_samples(void){
 	con_printf("Entered to read FIFO\r\n");
     #endif
 	
-    unsigned char dummy = 0;
-    I2C3ReadChar(GYR_ADD_WRITE, GYR_FIFO_CTRL_REG, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
+    unsigned char dummy = gyr_read_reg(GYR_FIFO_CTRL_REG);
     unsigned char muestras = (dummy & 0x1F)+1;
     // Plus one because the first sample is in the position zero of the array
 
@@ -237,9 +252,10 @@ GYR_DATA gyr_get_FIFO_samples(void){
         itoa(ret,  (unsigned int)muestras, 10); con_printf(ret); con_printf("\r\n");
     #endif
 
+    char address[] = {GYR_ADD, GYR_OUT_X_L_RB};
     unsigned char buffer[muestras*3*2]; // By 3 because there's 3 axes
                                         // By 2 because each sample is two bytes
-    I2C3ReadChar(GYR_ADD_WRITE, GYR_OUT_X_L_RB, GYR_ADD_READ, buffer, muestras*3*2, I2C_MODE_STD);
+    i2c3_master_fgets((char *)buffer, muestras*3*2, address, 2);
 
     #if (SCH_GYRO_VERBOSE>=2)
 	con_printf("Samples read ... \r\n");	// for debugging
@@ -317,13 +333,12 @@ void gyr_get_data(unsigned char *dir, unsigned char muestras, GYR_DATA *res_data
 // Note			: For argument values see the L3G4200D datasheet or application note.
 // ============================================================================================================
 void gyr_config_GYR_CTRL_REG1(unsigned char datarate, unsigned char bandwidth){
-    unsigned char dummy = 0;
-    I2C3ReadChar(GYR_ADD_WRITE, GYR_CTRL_REG1, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
+    unsigned char dummy = gyr_read_reg(GYR_CTRL_REG1);
 
     unsigned char value = ( (dummy & 0b00000000) | (datarate << 6) | (bandwidth << 4) );
     // Read the actual register value and modify only the arguments given
-    I2C3SendChar(GYR_ADD_WRITE, GYR_CTRL_REG1, &value, 1);
-    while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
+    gyr_write_reg(GYR_CTRL_REG1, value);
+    //TODO: while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
 
     #if (SCH_GYRO_VERBOSE>=2)
 	I2C3ReadChar(GYR_ADD_WRITE, GYR_CTRL_REG1, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
@@ -335,12 +350,11 @@ void gyr_config_GYR_CTRL_REG1(unsigned char datarate, unsigned char bandwidth){
 }
 
 void gyr_config_GYR_CTRL_REG2(unsigned char HPF_mode, unsigned char HPF_CO){
-    unsigned char dummy = 0;
-    I2C3ReadChar(GYR_ADD_WRITE, GYR_CTRL_REG2, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
+    unsigned char dummy = gyr_read_reg(GYR_CTRL_REG2);
 
     unsigned char value = ((dummy & 0b11000000) | (HPF_mode << 4) | (HPF_CO));		// Read the actual register value and modify only the arguments given
-    I2C3SendChar(GYR_ADD_WRITE, GYR_CTRL_REG2, &value, 1);
-    while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
+    gyr_write_reg(GYR_CTRL_REG2, value);
+    //TODO: while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
 
     #if (SCH_GYRO_VERBOSE>=2)
         I2C3ReadChar(GYR_ADD_WRITE, GYR_CTRL_REG2, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
@@ -359,12 +373,11 @@ void gyr_config_GYR_CTRL_REG2(unsigned char HPF_mode, unsigned char HPF_CO){
 // ============================================================================================================
 void gyr_config_GYR_CTRL_REG3(unsigned char INT2_config){
 
-    unsigned char dummy = 0;
-    I2C3ReadChar(GYR_ADD_WRITE, GYR_CTRL_REG3, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
+    unsigned char dummy = gyr_read_reg(GYR_CTRL_REG3);
 
     unsigned char value = ( (dummy & 0b11110000) | (INT2_config) );					// Read the actual register value and modify only the arguments given
-    I2C3SendChar(GYR_ADD_WRITE, GYR_CTRL_REG3, &value, 1);
-    while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
+    gyr_write_reg(GYR_CTRL_REG3, value);
+    //TODO: while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
 
     #if (SCH_GYRO_VERBOSE>=2)
 	I2C3ReadChar(GYR_ADD_WRITE, GYR_CTRL_REG3, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);						// Read the register to verify the configuration
@@ -384,13 +397,12 @@ void gyr_config_GYR_CTRL_REG3(unsigned char INT2_config){
 // ============================================================================================================
 void gyr_config_GYR_CTRL_REG4(unsigned char BDU, unsigned char scale, unsigned char self_test){
 
-    unsigned char dummy = 0;
-    I2C3ReadChar(GYR_ADD_WRITE, GYR_CTRL_REG4, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
+    unsigned char dummy = gyr_read_reg(GYR_CTRL_REG4);
 
     unsigned char value = ( (dummy & 0b00000000) | (BDU << 7) | (scale << 4) | (self_test << 1) );
     // Read the actual register value and modify only the arguments given
-    I2C3SendChar(GYR_ADD_WRITE, GYR_CTRL_REG4, &value, 1);
-    while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
+    gyr_write_reg(GYR_CTRL_REG4, value);
+    //TODO: while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
 
     #if (SCH_GYRO_VERBOSE>=2)
 	I2C3ReadChar(GYR_ADD_WRITE, GYR_CTRL_REG4, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);											// Read the register to verify the configuration
@@ -411,12 +423,11 @@ void gyr_config_GYR_CTRL_REG4(unsigned char BDU, unsigned char scale, unsigned c
 // Note			: For argument values see the L3G4200D datasheet or application note.
 // ============================================================================================================
 void gyr_config_GYR_CTRL_REG5(unsigned char boot, unsigned char FIFO_en, unsigned char HPF_en, unsigned char outsel){
-    unsigned char dummy = 0;
-    I2C3ReadChar(GYR_ADD_WRITE, GYR_CTRL_REG5, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);
+    unsigned char dummy = gyr_read_reg(GYR_CTRL_REG5);
 
     unsigned char value = ( (dummy & 0b00000000) | (boot << 7) | (FIFO_en << 6) | (HPF_en << 4) | (outsel) );		// Read the actual register value and modify only the arguments given
-    I2C3SendChar(GYR_ADD_WRITE, GYR_CTRL_REG5, &value, 1);
-    while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
+    gyr_write_reg(GYR_CTRL_REG5, value);
+    //TODO: while(!I2C3SlaveReady(GYR_ADD_WRITE)){;}
 
     #if (SCH_GYRO_VERBOSE>=2)
 	I2C3ReadChar(GYR_ADD_WRITE, GYR_CTRL_REG5, GYR_ADD_READ, &dummy, 1, I2C_MODE_STD);														// Read the register to verify the configuration

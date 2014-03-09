@@ -38,23 +38,24 @@
  *                              WRITE REGISTER
  *------------------------------------------------------------------------------
  * Function Prototype : void WriteRegister(unsigned int reg, unsigned char val)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Write some rtc's register by I2C interface
  * Arguments          : reg - register to be write
 			val - value to be write
  * Return Value       : None
  * Remarks            : Use defines in header to find the register value
  *----------------------------------------------------------------------------*/
-void RTC_WriteRegister(unsigned int reg, unsigned char val)
+void RTC_WriteRegister(unsigned int reg, char val)
 {
-	I2C1SendChar(RTC_IDW, reg, &val, 1);
+        char address[] = {RTC_ID, reg};
+        i2c1_master_fputs(&val, 1, address, 2);
 }
 
 /*------------------------------------------------------------------------------
  *		 		READ REGISTER
  *------------------------------------------------------------------------------
  * Function Prototype : void ReadRegister(unsigned int reg, unsigned char val)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Write some rtc's register by I2C interface
  * Arguments          : reg -register to be read
  * Return Value       : None
@@ -62,9 +63,10 @@ void RTC_WriteRegister(unsigned int reg, unsigned char val)
  *----------------------------------------------------------------------------*/
 unsigned char RTC_ReadRegister(unsigned int reg)
 {
-	unsigned char ret;
-	I2C1ReadChar(RTC_IDW, reg, RTC_IDR, &ret, 1, I2C_MODE_STD);
-	return ret;
+	char ret;
+        char address[] = {RTC_ID, (char)reg};
+        i2c1_master_fgets(&ret, 1, address, 2);
+	return (unsigned char)ret;
 }
 
 /*------------------------------------------------------------------------------

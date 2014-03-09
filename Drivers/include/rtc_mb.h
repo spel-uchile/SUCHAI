@@ -1,7 +1,7 @@
 #ifndef _RTC_MB_H
 #define _RTC_MB_H
 
-#include "i2c_suchai.h"
+#include "i2c_comm.h"
 #include "DebugIncludes.h"  //para con_printf
 
 #define RTC_ID      (0b11010000)
@@ -36,7 +36,7 @@
 20. Square Wave Register
  */
 
-void RTC_WriteRegister(unsigned int reg, unsigned char val);
+void RTC_WriteRegister(unsigned int reg, char val);
 unsigned char RTC_ReadRegister(unsigned int reg);
 
 

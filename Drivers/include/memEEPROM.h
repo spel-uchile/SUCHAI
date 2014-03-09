@@ -1,7 +1,7 @@
 #ifndef MEM_EEPROM_H
 #define MEM_EEPROM_H
 
-#include "i2c_suchai.h"
+#include "i2c_comm.h"
 
 #define MEP_EEPROM_ID 0b1010000 /* I2C node address (7bit hex) */
 #define MEP_EEPROM1_IDW 0b10100000 /* I2C node address Write */
@@ -10,7 +10,7 @@
 #define MEP_FIRST_ADDR 0x00
 #define MEP_LAST_ADDR 0x7F  //127
 
-void writeEEPROM1(unsigned char address, unsigned char data);
+void writeEEPROM1(unsigned char address, char data);
 unsigned char readEEPROM1(unsigned char address);
 
 void writeIntEEPROM1(unsigned char indx, int value);

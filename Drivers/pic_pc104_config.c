@@ -19,8 +19,6 @@
 
 #include "pic_pc104_config.h"
 
-#define PPC_DEBUG_PORT  SCH_UART_DEBUG_PORT
-#define PPC_LANGMUIR_ONBOARD SCH_PAY_LAGMUIR_ONBOARD
 
 /**
  * DEFAULT PIC CONFIG
@@ -455,7 +453,7 @@ void GPIO_MB_init(void)
     PPC_MB_nON_SD = 1;  // Conversor de voltaje SD apagado
     PPC_MB_nON_MHX = 0; // Conversor de voltaje TRX encendido
 
-    #if (PPC_DEBUG_PORT == 0)
+    #if (SCH_UART_DEBUG_PORT == 0)
         //Consola por puerto DB9
         PPC_MB_nOE_MHX      = 1; // Aislador TRX Apagado, lo activa el driver TRX
         PPC_MB_nOE_USB_nINT = 1; //Aislador USB Apagado, uso puerto DB9
@@ -664,7 +662,7 @@ void GPIO_PC104_init(void)
     SetPriorityIntU1RX(5);
 
 //------------------------------------------------------------------------------
-    #if (PPC_LANGMUIR_ONBOARD == 1)
+    #if (SCH_PAY_LAGMUIR_ONBOARD == 1)
         // UART3 para la Langmiur
         // H1.19	RP30/CN70/RF2 (Pin 52) => (URX3) para el PAY_LANGMUIR
         iPPSInput(IN_FN_PPS_U3RX,IN_PIN_PPS_RP30);

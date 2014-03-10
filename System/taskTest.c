@@ -1,37 +1,118 @@
 #include "taskTest.h"
+#include "i2c.h"
+#include "i2c_comm.h"
+#include "csp_if_lo.h"
+#include "csp_thread.h"
+#include "csp_if_i2c.h"
+
+extern xQueueHandle i2cRxQueue;
 
 
-void taskTest(void *param)
+void taskClientCSP(void *param)
 {
-    xQueueHandle cmdQueue = (xQueueHandle)param;
+    const unsigned long Delayms = 10000 / portTICK_RATE_MS;
+//    int csp_node = *(int *)param;
 
-    const unsigned long Delayms = 9000 / portTICK_RATE_MS;
+    int pingResult = 0;
+    int len = 6;
 
-    DispCmd NewCmd;
-    char cmdid[6];
-
-    NewCmd.cmdId = 0x1002;
-    NewCmd.idOrig = 0x1104;
-    NewCmd.sysReq = 0;
-    NewCmd.execCmd.fnct =  cmdNULL;
-    NewCmd.execCmd.param = 0;
+    vTaskDelay(3000 / portTICK_RATE_MS);
 
     while(1)
     {
+        printf("[CLI] Sending ping\n");
+        pingResult = csp_ping(1, 3000, len, CSP_O_NONE);
 
-#if _VERBOSE_
-        /* Print the command code */
-        Hex16ToAscii(NewCmd.cmdId,cmdid);
-        con_printf(">>[FlightPlan] Se genera comando: ");
-        con_printf(cmdid); con_printf("\n\0");
-#endif
-        if(NewCmd.cmdId!=DAT_DUMMYCMD)
+        #if SCH_GRL_VERBOSE
+            printf("Ping with payload of %d bytes, took %d ms\n", len, pingResult);
+        #endif
+
+        vTaskDelay(Delayms);
+    }
+}
+
+void taskServerCSP(void *param)
+{
+    printf("[ServerCSP Started]\n");
+    /* Create socket without any socket options */
+    csp_socket_t *sock = csp_socket(CSP_SO_NONE);
+    /* Pointer to current connection and packet */
+    csp_conn_t *conn;
+    csp_packet_t *packet;
+
+    /* Bind all ports to socket */
+    csp_bind(sock, CSP_ANY);
+
+    /* Create connections backlog queue */
+    csp_listen(sock, 5);
+
+    /* Process incoming connections */
+    while (1)
+    {
+//        printf("[SRV] Waiting connection\n");
+        /* Wait for connection, 10000 ms timeout */
+        if ((conn = csp_accept(sock, 10000)) == NULL)
+            continue;
+
+//        printf("[SRV] New connection\n");
+        /* Read packets. Timout is 1000 ms */
+        while ((packet = csp_read(conn, 1000)) != NULL)
         {
-            /* Queue NewCmd - Blocking */
-            xQueueSend(cmdQueue, (const void *) &NewCmd, portMAX_DELAY);
+            int i;
+
+            switch (csp_conn_dport(conn))
+            {
+                case 10:
+                    /* Print data in this port */
+                    printf("[New packet] ");
+                    for(i=0; i<packet->length; i++)
+                        printf("%c", packet->data[i]);
+                    printf("\n");
+                    break;
+
+                default:
+                    /* Let the service handler reply pings, buffer use, etc. */
+                    csp_service_handler(conn, packet);
+                    break;
+            }
         }
 
-        con_printf("[Test] running... \r\n");
-        vTaskDelay(Delayms);
+        /* Close current connection, and handle next */
+        csp_close(conn);
+//        printf("[SRV] Connection closed\n");
+    }
+}
+
+void taskRxI2C(void *param)
+{
+    printf("[RxI2C Started]\n");
+    int n_recv = 0;
+    uint8_t new_data = 0;
+    portBASE_TYPE result = pdFALSE;
+    i2c_frame_t *frame = (i2c_frame_t *) csp_buffer_get(100);
+
+    while(1)
+    {
+        result = xQueueReceive(i2cRxQueue, &new_data, 50/ portTICK_RATE_MS);
+
+        //No more data received
+        if(result != pdPASS)
+        {
+            if(n_recv > 0)
+            {
+                frame->len = n_recv;
+                csp_i2c_rx(frame, NULL);
+
+                frame = (i2c_frame_t *) csp_buffer_get(100);
+                frame->len = 0;
+                n_recv = 0;
+            }
+        }
+        //New data received
+        else
+        {
+            frame->data[n_recv] = new_data;
+            n_recv++;
+        }
     }
 }

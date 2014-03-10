@@ -21,3 +21,5 @@
 *build
 *dist
 .directory
+*private
+

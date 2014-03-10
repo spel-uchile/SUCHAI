@@ -35,7 +35,7 @@
 #define SCH_SYSBUS_ONBOARD                  (1)  //< Onboard => I2C1 en uso
 #define SCH_PAYBUS_ONBOARD                  (1)  ///< Onboard => I2C3 en uso
 #define SCH_MGN_ONBOARD                     (0)  ///< Onboard => 1 pin(es) en modo Switch
-#define SCH_ANTENNA_ONBOARD                 (1)  ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
+#define SCH_ANTENNA_ONBOARD                 (0)  ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
 #define SCH_TRX_TYPE_ONBOARD                (0)  ///< 0=Ninguno, 2=HACLM12 y TRX Allspace, 1= TRX Allspace => I2C1 en uso, UART2 en uso (H1.17), 2 pin(es) en modo Check
 #define SCH_EPS_ONBOARD                     (0)  ///< Onboard => I2C1 en uso
 #define SCH_EXTMEM_SD_ONBOARD               (0)  //< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
@@ -68,11 +68,11 @@
  * TRX_MODE_NOMINAL        (0x20)
  */
 #define SCH_CMDTRX_INIT_MODE                    (0x10)  ///< Modo no beacon, si TM
-#define SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE  (1) ///< 1=Activo ( EPS montada ) 0= Inactivo ( EPS no montada SOC se lleva a MAX_SOC )
-#define SCH_FLIGHTPLAN_TYPE                     (1) ///< 0=ninguno, 1=taskFligthPlan 2=taskFlightPlan2 3=ambos
-#define SCH_FLIGHTPLAN_RESOLUTION               (10) ///< [MINUTES] Resolucion de tiempo del flight plan
+#define SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE  (0)     ///< 1=Activo ( EPS montada ) 0= Inactivo ( EPS no montada SOC se lleva a MAX_SOC )
+#define SCH_FLIGHTPLAN_TYPE                     (0)    ///< 0=ninguno, 1=taskFligthPlan 2=taskFlightPlan2 3=ambos
+#define SCH_FLIGHTPLAN_RESOLUTION               (10)    ///< [MINUTES] Resolucion de tiempo del flight plan
 #define SCH_FLIGHTPLAN_N_CMD                    ((24 * 60) / SCH_FLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]
-#define SCH_FLIGHTPLAN_MEMORY                   (0) ///< (0) buffer en  RAM, (1) en memoria SD
+#define SCH_FLIGHTPLAN_MEMORY                   (0)     ///< (0) buffer en  RAM, (1) en memoria SD
 
 /**
  * @def SCH_DATAREPOSITORY_MAX_BUFF_TELECMD
@@ -118,7 +118,7 @@
 #define SCH_TASKCONSOLE_VERBOSE             (1)  ///< 1=verboso 0=austero
 #define SCH_TASKDEPLOYMENT_VERBOSE          (2)  ///< 1=verboso 0=austero
 #define SCH_TASKDISPATCHER_VERBOSE          (1)  ///< 1=verboso 0=austero
-#define SCH_TASKEXECUTER_VERBOSE            (1)  ///< 1=verboso 0=austero
+#define SCH_TASKEXECUTER_VERBOSE            (2)  ///< 1=verboso 0=austero
 #define SCH_TASKFLIGHTPLAN_VERBOSE          (1)  ///< 1=verboso 0=austero
 #define SCH_FLIGHTPLAN2_VERBOSE             (1)  ///< 1=verboso 0=austero
 #define SCH_TASKHOUSEKEEPING_VERBOSE        (1)  ///< 1=verboso 0=austero

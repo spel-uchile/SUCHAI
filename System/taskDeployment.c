@@ -45,7 +45,7 @@ void taskDeployment(void *param)
 
     /* Silent time */
     int realTime1 = SCH_TASKDEPLOYMENT_SILENT_REALTIME; /* 1=Real Time, 0=Debug Time */
-    dep_silent_time( (void *)&realTime1 );
+    //dep_silent_time( (void *)&realTime1 );
 
     /* Antena */
     #if (SCH_ANTENNA_ONBOARD==1)
@@ -57,7 +57,7 @@ void taskDeployment(void *param)
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         con_printf("    * Setting TRX\r\n");
     #endif
-    trx_initialize(NULL);
+    //trx_initialize(NULL);
 
     /* Tareas */
     dep_launch_tasks(NULL);
@@ -251,7 +251,7 @@ int dep_launch_tasks(void *param)
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         con_printf("    * Creating taskHousekeeping\r\n");
     #endif
-    xTaskCreate(taskHouskeeping, (signed char *)"housekeeping", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskHouskeepingHandle);
+    //xTaskCreate(taskHouskeeping, (signed char *)"housekeeping", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskHouskeepingHandle);
     
     #if (SCH_TRX_TYPE_ONBOARD==1 || SCH_TRX_TYPE_ONBOARD==2)
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)

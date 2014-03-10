@@ -62,10 +62,10 @@ int main(void)
     default_PIC_config();
 
     /* Crating base tasks (others are created inside taskDeployment) */
-    xTaskCreate(taskExecuter, (signed char *)"executer", 5*configMINIMAL_STACK_SIZE, NULL, 4, &taskExecuterHandle);
-    xTaskCreate(taskDispatcher, (signed char *)"dispatcher", 3*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
-    //xTaskCreate(taskDeployment, (signed char *)"deployment", 2*configMINIMAL_STACK_SIZE, NULL, 3, &taskDeploymentHandle);
-    xTaskCreate(taskConsole, (signed char *)"console", 4*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
+    xTaskCreate(taskExecuter, (signed char *)"executer", 2*configMINIMAL_STACK_SIZE, NULL, 4, &taskExecuterHandle);
+    xTaskCreate(taskDispatcher, (signed char *)"dispatcher", 2*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
+    xTaskCreate(taskDeployment, (signed char *)"deployment", 2*configMINIMAL_STACK_SIZE, NULL, 3, &taskDeploymentHandle);
+    //xTaskCreate(taskConsole, (signed char *)"console", 4*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
 
     /* Libcsp init */
     //csp_initialization();

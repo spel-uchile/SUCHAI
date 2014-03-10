@@ -34,11 +34,13 @@ void sensTemp_init(unsigned char sens_x){
     #endif
 }
 int sensTemp_take(unsigned char sens_x){
-    unsigned char val[2];
+    char val[2];
     unsigned char reg=STx_REG_TEMP_READ;
-    I2C3ReadChar( (sens_x&0b11111110), reg, (sens_x|0b00000001), val, 2, I2C_MODE_STD);
+    char address[] = {sens_x, (char)reg};
 
-    unsigned int val2=val[0];
+    i2c3_master_fgets(val, 2, address, 2);
+
+    unsigned int val2 = val[0];
     val2=(val2<<8);
     val2=(val2)|((unsigned int)val[1]);
     val2=(val2>>4);
@@ -60,25 +62,27 @@ void sensTemp_stop(unsigned char sens_x){
 void writeSensTemp(unsigned char sens_x, unsigned char address, unsigned char data){
     int max;
     for(max=0x0FFF;max>0;max--){
-        if( I2C3SlaveReady( (sens_x&0b11111110) )==1 ){break;}
+//TODO:        if( I2C3SlaveReady( (sens_x&0b11111110) )==1 ){break;}
     }
 
-    unsigned char DATA[1];
-    DATA[0]=data;
-    unsigned int N=1;
-    I2C3SendChar( (sens_x&0b11111110), address, DATA, N);
+    char DATA[1];
+    DATA[0] = (char)data;
+    unsigned int N = 1;
+    char _address[] = {sens_x, (char)address};
+    i2c3_master_fputs(DATA, N, _address, 2);
 }
 
 unsigned char readSensTemp(unsigned char sens_x, unsigned char address){
     int max;
     for(max=0x0FFF;max>0;max--){
-        if( I2C3SlaveReady( (sens_x&0b11111110) )==1 ){break;}
+//TODO        if( I2C3SlaveReady( (sens_x&0b11111110) )==1 ){break;}
     }
 
     unsigned int N=1;
-    unsigned char BUFF[1];
-    unsigned char MODE=0;
+    char BUFF[1];
+    char _address[] = {sens_x, (char)address};
 
-    I2C3ReadChar( (sens_x&(0b11111110)), address, (sens_x|0b00000001), BUFF, N, MODE);
-    return BUFF[0];
+    i2c3_master_fgets(BUFF, N, _address, 2);
+
+    return (unsigned char)(BUFF[0]);
 }

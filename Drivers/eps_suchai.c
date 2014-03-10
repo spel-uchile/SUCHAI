@@ -177,7 +177,7 @@ void setStateFlagEPS(unsigned char value){
  *				Send Command EPS
  *------------------------------------------------------------------------------------------
  * Function Prototype : void SendCommandEPS(unsigned char CMDName, unsigned char CMDVal)
- * Include            : i2c.h - i2c_suchai.h
+ * Include            : i2c.h - i2c_comm.h
  * Description        : Send a Command and the value for the EPS CS-1UEPS2-NB-10
  * Arguments          : CMDName - This is the command name according User Manual
 				#define adc_EPS 0
@@ -191,19 +191,18 @@ void setStateFlagEPS(unsigned char value){
  * Remarks           :  Designed for EPS CS-1UEPS2-NB-10
  *----------------------------------------------------------------------------------------*/
 
-void SendCommandEPS(unsigned char CMDName, unsigned char CMDVal){
+void SendCommandEPS(unsigned char CMDName, char CMDVal){
 
-        //0x5A es (0x2D<<1)&0xFE (adress con flag de escritura, 0 el octabo bit)
-    
-	I2C1SendChar(0x5A, CMDName, &CMDVal, 1);
-//        I2C1SendChar(CMDVal, CMDName, &CMDVal, 1);
+	//I2C1SendChar(0x5A, CMDName, &CMDVal, 1);
+        char address[] = {EPS_ADDR, CMDName};
+        i2c1_master_fputs(&CMDVal, 1, address, 2);
 }
 
 /*------------------------------------------------------------------------------------------
  *				Read ADC EPS
  *------------------------------------------------------------------------------------------
  * Function Prototype : unsigned int ADCReadEPS(unsigned char chann)
- * Include            : i2c.h - i2c_suchai.h
+ * Include            : i2c.h - i2c_comm.h
  * Description        : Read the out value of a ADC channel
  * Arguments          : chann - Channel to read (0-31)					
  * Return Value      :  Digital value of the channel (0-1023)
@@ -213,20 +212,18 @@ void SendCommandEPS(unsigned char CMDName, unsigned char CMDVal){
 unsigned int ADCReadEPS(unsigned char chann){
 
 	unsigned int ADCVal;
-	unsigned char buff[2];
+	char buff[2];
+        char address[] = {EPS_ADDR, 0x00};
 
 	SendCommandEPS(EPS_adc, chann);
 	
-	//reemplazar luego por delay de salvo, incluyendo este dentro del siguiente while
         unsigned int i;
-
 	do{
-            for(i=0x6000;i>0;i--);
+            for(i=0x6000;i>0;i--); //dealay
 
-		//se ree el I2C en modo 1 que indica que solo se envia el ID del dispositivo
-                //0x5B es (0x2D << 1)|0x01 (direccion con flag de lectura)
-
-            I2C1ReadChar(0x00, 0x00, 0x5B, buff, 2,I2C_MODE_EPS);
+            //Solo se envia el ID del dispositivo
+            //I2C1ReadChar(0x00, 0x00, 0x5B, buff, 2,I2C_MODE_EPS);
+            i2c1_master_fgets(buff, 2, address, 1);
             ADCVal = (0x0000 | buff[0])<<8 | buff[1];
 	}
 	while(ADCVal==0xF000);//mientras se devuelva F000 chann no esta listo
@@ -240,7 +237,7 @@ unsigned int ADCReadEPS(unsigned char chann){
  *				Read STATUS EPS
  *------------------------------------------------------------------------------------------
  * Function Prototype : unsigned int StatusReadEPS()
- * Include            : i2c.h - i2c_suchai.h
+ * Include            : i2c.h - i2c_comm.h
  * Description        : Read the out value of the status bytes
  * Arguments          : None					
  * Return Value      :  Digital value of status bytes
@@ -250,20 +247,20 @@ unsigned int ADCReadEPS(unsigned char chann){
 unsigned int StatusReadEPS(void){
 
 	unsigned int StatusVal;
-	unsigned char buff[2];
+	char buff[2];
         unsigned int i;
+        char address[] = {EPS_ADDR, 0x00};
 
 	SendCommandEPS(EPS_status, 0x00);
 
         for(i=0x6000;i>0;i--);//delay
         
-	//se ree el I2C en modo 1 que indica que solo se envia el ID del dispositivo
-        //0x5B es (0x2D << 1)|0x01 (direccion con flag de lectura)
-	I2C1ReadChar(0x00, 0x00, 0x5B, buff, 2,I2C_MODE_EPS);//Status responde inmediatamente
+	//Solo se envia el ID del dispositivo
+        //Status responde inmediatamente
+	//I2C1ReadChar(0x00, 0x00, 0x5B, buff, 2,I2C_MODE_EPS);
+        i2c1_master_fgets(buff, 2, address, 1);
 
-	
 	StatusVal = (0x0000 | buff[0])<<8 | buff[1];
-	
 	return StatusVal;
 }
 
@@ -271,7 +268,7 @@ unsigned int StatusReadEPS(void){
  *				Read STATUS EPS
  *------------------------------------------------------------------------------------------
  * Function Prototype : unsigned int StatusReadEPS()
- * Include            : i2c.h - i2c_suchai.h
+ * Include            : i2c.h - i2c_comm.h
  * Description        : Read the out value of the status bytes
  * Arguments          : None
  * Return Value      :  Digital value of status bytes
@@ -281,29 +278,28 @@ unsigned int StatusReadEPS(void){
 unsigned int VersionReadEPS(void){
 
 	unsigned int VerVal;
-	unsigned char buff[2];
-        unsigned int i;
+	char buff[2];
+        char address[] = {EPS_ADDR, 0x00};
 
 	SendCommandEPS(EPS_version, 0x00);
 
+        unsigned int i;
         for(i=0x6000;i>0;i--);//delay
 
-	//se ree el I2C en modo 1 que indica que solo se envia el ID del dispositivo
-        //0x5B es (0x2D << 1)|0x01 (direccion con flag de lectura)
-	I2C1ReadChar(0x00, 0x00, 0x5B, buff, 2,1);//Status responde inmediatamente
-
+	//Solo se envia el ID del dispositivo
+        //Status responde inmediatamente
+	//I2C1ReadChar(0x00, 0x00, 0x5B, buff, 2,1);
+        i2c1_master_fgets(buff, 2, address, 1);
 
 	VerVal = (0x0000 | buff[0])<<8 | buff[1];
-
 	return VerVal;
-
 }
 
 /*------------------------------------------------------------------------------------------
  *				Turn off PDM EPS
  *------------------------------------------------------------------------------------------
  * Function Prototype : void PdmOffEPS(char bus)
- * Include            : i2c.h - i2c_suchai.h
+ * Include            : i2c.h - i2c_comm.h
  * Description        : Turn of a EPS bus for a short period of time
  * Arguments          : bus - value range 0-7. 0 correspond to the battery bus
  *                            1 to the 5V bus and 2 to the 3.3V bus. Any combination
@@ -321,7 +317,7 @@ void PdmOffEPS(char bus){
  *				Turn off Heater EPS
  *------------------------------------------------------------------------------------------
  * Function Prototype : void HeaterOffEPS(void)
- * Include            : i2c.h - i2c_suchai.h
+ * Include            : i2c.h - i2c_comm.h
  * Description        : Turn off the battery heater
  * Arguments          : none
  * Return Value      :  none
@@ -337,7 +333,7 @@ void HeaterOffEPS(void){
  *                              "Turn on" Heater EPS
  *------------------------------------------------------------------------------------------
  * Function Prototype : void HeaterOnEPS(void)
- * Include            : i2c.h - i2c_suchai.h
+ * Include            : i2c.h - i2c_comm.h
  * Description        : Release the battery heater allowing the controller to
  *                      take control of the heater's state
  * Arguments          : none
@@ -354,7 +350,7 @@ void HeaterOnEPS(void){
  *                              Soft reset of the EPS PIC
  *------------------------------------------------------------------------------------------
  * Function Prototype : void WatchdogEPS(void)
- * Include            : i2c.h - i2c_suchai.h
+ * Include            : i2c.h - i2c_comm.h
  * Description        : Forces the reset of the I2C module returting it to the
  *                      initial state. Useful when user detects an I2C error.
  * Arguments          : none
@@ -371,7 +367,7 @@ void WatchdogEPS(void){
 // *				Read Battery Load
 // *------------------------------------------------------------------------------------------
 // * Function Prototype : unsigned char ReadBattLoad()
-// * Include            : i2c.h - i2c_suchai.h
+// * Include            : i2c.h - i2c_comm.h
 // * Description        : Calculates the load of the Battery as percentage
 // * Arguments          : None
 // * Return Value      :  Digital integer value 0-100 (means 0-100 %)

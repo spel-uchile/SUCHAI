@@ -30,8 +30,8 @@
 void default_PIC_config(void)
 {
     GPIO_PPM_init();
-	GPIO_MB_init();
-	GPIO_PC104_init();
+    GPIO_MB_init();
+    GPIO_PC104_init();
 
     //solo despues de llamar estas funciones se pueden usar los servicios
     //de con_printf()
@@ -484,7 +484,7 @@ void GPIO_PC104_init(void)
         // H1.02	SCL3/CN64/PMD6/RE6 (Pin 4) => pin es RE6
     
         // I2C-3 habilita el mismo sus pines cuando se configura
-        ConfigI2C3(157);
+        i2c3_open(157, SCH_I2C3_ADDR);
     #else
         // H1.01	SDA3/CN65/PMD7/RE7 (Pin 5) => pin es RE7
         _TRISE7=0; 			//pin 0-output 1-input.
@@ -800,7 +800,7 @@ void GPIO_PC104_init(void)
 
         // H1.43 	SCL1/CN83/RG2 (Pin 57) => pin es SCL1
         // I2C-1 habilita el mismo sus pines cuando se configura
-        ConfigI2C1(157);
+        i2c1_open(37, SCH_I2C1_ADDR);
     #else
         // H1.41	SDA1/CN84/RG3 (Pin 56) => pin es RG3
         _TRISG3=0; 			//pin 0-output 1-input.

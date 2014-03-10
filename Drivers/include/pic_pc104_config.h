@@ -36,7 +36,7 @@
 //includes para estados default y configuraciones on-board off-board
 #include "SUCHAI_config.h"
 //Modulos del PIC24
-#include "i2c_suchai.h"
+#include "i2c_comm.h"
 #include "rs232_suchai.h"
 #include "interfaz_SPI.h"
 //#include "rtcc_suchai.h"

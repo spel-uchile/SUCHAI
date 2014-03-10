@@ -5,7 +5,6 @@
                    displayName="Header Files"
                    projectFiles="true">
       <logicalFolder name="f2" displayName="Drivers" projectFiles="true">
-        <itemPath>../Drivers/include/i2c_suchai.h</itemPath>
         <itemPath>../Drivers/include/interfaz_SPI.h</itemPath>
         <itemPath>../Drivers/include/pic_pc104_config.h</itemPath>
         <itemPath>../Drivers/include/rs232_suchai.h</itemPath>
@@ -106,13 +105,12 @@
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
-      <itemPath>/opt/microchip/xc16/v1.11/support/PIC24F/gld/p24FJ256GA110.gld</itemPath>
+      <itemPath>../p24FJ256GA110.gld</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
       <logicalFolder name="f2" displayName="Drivers" projectFiles="true">
-        <itemPath>../Drivers/i2c_suchai.c</itemPath>
         <itemPath>../Drivers/interfaz_SPI.c</itemPath>
         <itemPath>../Drivers/pic_pc104_config.c</itemPath>
         <itemPath>../Drivers/rs232_suchai.c</itemPath>

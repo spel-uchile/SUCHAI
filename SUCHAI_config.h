@@ -19,6 +19,9 @@
 
 /* Peripheral's config */
 #define SCH_UART_DEBUG_PORT     (1) ///< 0-Habilita DB9, 1-Habilita USB
+#define SCH_I2C1_ADDR           (0x02) ///< I2C 1 Slave address
+#define SCH_I2C2_ADDR           (0xF3) ///< I2C 2 Slave address
+#define SCH_I2C3_ADDR           (0xF4) ///< I2C 3 Slave address
 
 /* Realtime config */
 #define SCH_TASKDEPLOYMENT_SILENT_REALTIME  (0)  ///< 1=Realtime 0=Debugtime

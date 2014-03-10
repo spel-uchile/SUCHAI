@@ -1,8 +1,10 @@
 #ifndef EPS_SUCHAI
 #define EPS_SUCHAI
 
-#include "i2c_suchai.h"
+#include "i2c_comm.h"
 #include "DebugIncludes.h"
+
+#define EPS_ADDR 0x2D
 
 /*DOD values translated to "SOC". But in current implementation DOD 50% ~ MAX_DOD
  5, DOD 80% ~ SAFE_DOD 8*/
@@ -370,7 +372,7 @@ typedef struct
 
 void setStateFlagEPS(unsigned char value);
 
-void SendCommandEPS(unsigned char CMDName, unsigned char CMDVal);
+void SendCommandEPS(unsigned char CMDName, char CMDVal);
 
 unsigned int ADCReadEPS(unsigned char chann);
 

@@ -1,4 +1,4 @@
-/**                          AS-COM-01 DRIVER
+/**                          NANOCOM U482C DRIVER
  *                              For PIC24F
  *
  *      Copyright 2013, Carlos Gonzalez Cortes, carlgonz@ug.uchile.cl
@@ -17,8 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// WARNING DEPRECATED!  // WARNING DEPRECATED!  // WARNING DEPRECATED!
+// WARNING DEPRECATED!  // WARNING DEPRECATED!  // WARNING DEPRECATED!
+
 #include "transceiver.h"
-#include "include/transceiver.h"
 
 #define TRX_STD_DELAY   (0x0002FFFF)
 #define TRX_LONG_DELAY  (0x000FFFFF)
@@ -39,7 +41,7 @@ INT16 TRX_ERROR = 0; //Estado de error en el modulo
  *                          CONFIG COMM PORT
  *------------------------------------------------------------------------------
  * Function Prototype : void TRX_ConfigComPort()
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Confiugures I2C comunication at 100kHz
  * Arguments          : None
  * Return Value       : None
@@ -47,14 +49,14 @@ INT16 TRX_ERROR = 0; //Estado de error en el modulo
  *----------------------------------------------------------------------------*/
 void TRX_ConfigComPort()
 {
-    ConfigI2C1(157); /* Config I2C @100kHz */
+    i2c1_open(37, SCH_I2C1_ADDR);; /* Config I2C @400kHz */
 }
 
 /*------------------------------------------------------------------------------
  *		 		WRITE REGISTER
  *------------------------------------------------------------------------------
  * Function Prototype : void WriteRegister(unsigned int reg, unsigned char val)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Write some transceiver's register by I2C interface
  * Arguments          : reg - register to be write
 			val - value to be write
@@ -63,20 +65,14 @@ void TRX_ConfigComPort()
  *----------------------------------------------------------------------------*/
 void TRX_WriteRegister(unsigned int reg, unsigned char val)
 {
-    /* Wait if TRX is busy (TX or RX flag are 0) */
-    while(!(PPC_nTX_FLAG && PPC_nRX_FLAG))
-    {
-        trx_std_delay();
-    }
-
-    I2C1SendChar(TRX_TRANSCEIVER_IDW, reg, &val, 1);
+    //DEPPRECATED!
 }
 
 /*------------------------------------------------------------------------------
  *                                  READ REGISTER
  *------------------------------------------------------------------------------
  * Function Prototype : void ReadRegister(unsigned int reg, unsigned char val)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Write some transceiver's register by I2C interface
  * Arguments          : reg -register to be read
  * Return Value       : None
@@ -84,17 +80,15 @@ void TRX_WriteRegister(unsigned int reg, unsigned char val)
  *----------------------------------------------------------------------------*/
 unsigned char TRX_ReadRegister(unsigned int reg)
 {
-    unsigned char ret;
-
-    I2C1ReadChar(TRX_TRANSCEIVER_IDW, reg, TRX_TRANSCEIVER_IDR, &ret, 1, I2C_MODE_STD);
-    return ret;
+    //DEPPRECATED!
+    return 0;
 }
 
 /*------------------------------------------------------------------------------
  *		 			SET MODE
  *------------------------------------------------------------------------------
  * Function Prototype : void SetMode(FlagMode ModeCode)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Confiugures Transceiver operation mode as
  *                      RESET(0), SYSRESET(1), SILENT(2), ONLYBEACON(3)
  *                      NOBEACON(4), NOMINAL(5)
@@ -120,7 +114,7 @@ void TRX_SetMode(int ModeCode)
  *                            BEACON ACTION
  *------------------------------------------------------------------------------
  * Function Prototype : void TRX_BeaconAction(int on_off)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Start or stop beacon transmition
  * Arguments          : int on_off: (0) OFF - (1) ON
  * Return Value       : None
@@ -141,7 +135,7 @@ void TRX_BeaconAction(int on_off)
  *                                      SET MESURE
  *------------------------------------------------------------------------------
  * Function Prototype : void SetMesurements(Mesure MesCode)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Confiugures Transceiver Mesurements. TEMP-> Only temp,
  *                      RSSI-> Only rssi or BOTH -> Both temp and rssi
  * Arguments          : MesCode - enum defined in header.
@@ -160,7 +154,7 @@ void TRX_SetMesurements(int MesCode)
  *                                  SET HK PERIOD
  *------------------------------------------------------------------------------
  * Function Prototype : void TRX_SetHKPeriod(int period_s)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Confiugures houskeeping measurements period, in seconds
  * Arguments          : int period_s - Seconds
  * Return Value       :  None
@@ -174,7 +168,7 @@ void TRX_SetHKPeriod(int period_s)
  *                              TRANSCEIVER SETTINGS
  *------------------------------------------------------------------------------
  * Function Prototype : TransceiverSettings(TxRxSetting *Setting)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Confiugures Transceiver Frecuency Settings.
  * Arguments          : *Setting - Struct defined in header.
  * Return Value       : None
@@ -213,7 +207,7 @@ void TRX_SetTransceiverSettings(TxRxSettings *Setting)
  *                                      BEACON SETTINGS
  *------------------------------------------------------------------------------
  * Function Prototype : BeaconSettings(BeaconSett *Setting)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Confiugures Transceiver Beacon Settings.
  * Arguments          : *Setting - Struct defined in header.
  * Return Value       :  None
@@ -233,7 +227,7 @@ void TRX_BeaconSettings(BeaconSett *Setting)
  *                                  GET STATUS
  *------------------------------------------------------------------------------
  * Function Prototype : void GetStatus(unsigned char *buffer)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Read and save all transceiver's registers
  * Arguments          : buffer - Addres of the buffer with 0x36+1 char of size
  * Return Value       :  None
@@ -242,19 +236,14 @@ void TRX_BeaconSettings(BeaconSett *Setting)
  *----------------------------------------------------------------------------*/
 void TRX_GetStatus(unsigned char *buffer)
 {
-    unsigned char dir;
-    for(dir = 0x00; dir <= TRX_FSEP_L; dir++)
-    {
-        I2C1ReadChar(TRX_TRANSCEIVER_IDW,dir,TRX_TRANSCEIVER_IDR,
-                    buffer++,1,I2C_MODE_STD);
-    }
+    //DEPRECATED
 }
 
 /*------------------------------------------------------------------------------
  *                              SET BEACON CONTENT
  *------------------------------------------------------------------------------
  * Function Prototype : void SetBeaconContent(unsigned char *content, unsigned int len)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Set the beacon content in the TxRx memory
  * Arguments          : content - Desired string to save as beacon
  *					  : lenght - Lenght of the beacon content
@@ -304,7 +293,7 @@ void TRX_GetStatus(unsigned char *buffer)
  *                                  SEND IDLE FRAME
  *------------------------------------------------------------------------------
  * Function Prototype : void TRX_SendIdleFrame(void)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Send an idle frame as telemetry (128 0x55). This action
  *                      is useful for a quick test of space link
  * Arguments          : None
@@ -323,7 +312,7 @@ void TRX_SendIdleFrame(void)
  *                              LOAD TELEMETRY
  *------------------------------------------------------------------------------
  * Function Prototype : TRX_LoadTelemetry(unsigned char *telemetry, unsigned int len)
- * Include            : i2c_suchai.h, rs232_suchai.h
+ * Include            : i2c_comm.h, rs232_suchai.h
  * Description        : Stores new telemetry data in the TRX buffer.
  * Arguments          : telemetry - pointer to the buffer with the data.
  *                      len - number of bytes to be sent.
@@ -479,7 +468,7 @@ int TRX_LoadTelemetry(unsigned char *telemetry, unsigned int len)
  *                                  SEND TELEMETRY
  *------------------------------------------------------------------------------
  * Function Prototype : void TRX_SendTelemetry(void)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Sends the telemetry stored
  * Arguments          : None
  * Return Value       : 1 - start sending telemetry successfully
@@ -555,7 +544,7 @@ int TRX_SendTelemetry(void)
  *                          TRX CHECK NEW TC
  *------------------------------------------------------------------------------
  * Function Prototype : int TRX_ReadTelecomadFrame(char *buffer)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Check how many tc are availible
  * Arguments          : None
  * Return Value       : Number of unreaded TC. 0 if no new TC exist
@@ -595,7 +584,7 @@ int TRX_CheckNewTC(void)
  *                          READ TELECOMAD FRAME
  *------------------------------------------------------------------------------
  * Function Prototype : int TRX_ReadTelecomadFrame(char *buffer)
- * Include            : i2c_suchai.h
+ * Include            : i2c_comm.h
  * Description        : Orders a telecomand reading from TRX buffer and save
  *                      the received frame in a buffer
  * Arguments          : char* buffer - Pointer to an initialized buffer of len

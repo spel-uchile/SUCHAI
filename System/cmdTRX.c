@@ -18,9 +18,12 @@
  */
 
 #include "cmdTRX.h"
+#include "csp.h"
 
 /* Auxiliary variables */
-INT16 TRX_REG_VAL = -1; /*Current value to write in trx_write_reg*/
+int16_t TRX_REG_VAL = -1; /*Current value to write in trx_write_reg*/
+nanocom_conf_t TRX_CONFIG; /*Stores TRX configuration*/
+static uint16_t com_timeout = 2000;
 
 cmdFunction trxFunction[TRX_NCMD];
 int trx_sysReq[TRX_NCMD];
@@ -29,9 +32,9 @@ void trx_onResetCmdTRX(void){
     /*TRX*/
     trxFunction[(unsigned char)trx_id_send_beacon] = trx_send_beacon;
     trx_sysReq[(unsigned char)trx_id_send_beacon]  = CMD_SYSREQ_MIN;
-    trxFunction[(unsigned char)trx_id_readreg] = trx_readreg;
+    trxFunction[(unsigned char)trx_id_readreg] = trx_read_conf;
     trx_sysReq[(unsigned char)trx_id_readreg]  = CMD_SYSREQ_MIN;
-    trxFunction[(unsigned char)trx_id_idleframe] = trx_idleframe;
+    trxFunction[(unsigned char)trx_id_idleframe] = trx_test_frame;
     trx_sysReq[(unsigned char)trx_id_idleframe]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_getstatus] = trx_getstatus;
     trx_sysReq[(unsigned char)trx_id_getstatus]  = CMD_SYSREQ_MIN;
@@ -63,9 +66,41 @@ void trx_onResetCmdTRX(void){
     trx_sysReq[(unsigned char)trx_id_reset_tm_pointer]  = CMD_SYSREQ_MIN;
 }
 
+/**
+ * Upload current configuration into TRX
+ * @param param Not used
+ * @return 0 Fail, 1 OK
+ */
+int trx_set_conf(void *param)
+{
+    #if SCH_CMDTRX_VERBOSE
+        printf("Uploading TRX configuration\n");
+        com_print_conf(&TRX_CONFIG);
+    #endif
+    return com_set_conf(&TRX_CONFIG, NODE_COM, com_timeout);
+}
 
 /**
- * Set the standart beacon: SUCHAI@ING.UCHILEDOTCL
+ * Get TRX current configuration and save to local variable
+ *
+ * @param param Not used
+ * @return 1 - OK, 0 - Fail
+ */
+int trx_read_conf(void *param)
+{
+    int result;
+    result = com_get_conf(&TRX_CONFIG, NODE_COM, com_timeout);
+
+    #if (SCH_CMDTRX_VERBOSE>=1)
+        printf("Current TRX configuration\n");
+        com_print_conf(&TRX_CONFIG);
+    #endif
+
+    return result;
+}
+
+/**
+ * Set the standart beacon: 00SUCHAI00
  * @sa tcm_send_beacon()
  * 
  * @param param (0)SUCHAI beacon. (1)Test beacon 1. (2)Test beacon 2.
@@ -73,28 +108,31 @@ void trx_onResetCmdTRX(void){
  */
 int trx_set_beacon(void *param)
 {
-    char stdbeacon[] = "SUCHAIATINGDOTUCHILEDOTCL-";
+    char stdbeacon[] = "00SUCHAI00";
 
     switch (*(int *)param)
     {
         case 1:
-            strcpy(stdbeacon, "12345\0");
+            strcpy(stdbeacon, "123456789\0");
             break;
 
         case 2:
-            strcpy(stdbeacon, "00000\0");
+            strcpy(stdbeacon, "000000000\0");
+            break;
+
+        default:
+            strcpy(stdbeacon, "\0\0\0\0\0\0\0\0\0\0");
             break;
     }
 
     #if SCH_CMDTRX_VERBOSE
-        con_printf("Setting beacon: ");
-        con_printf(stdbeacon);
-        con_printf("\n");
+        printf("Setting beacon: %s\n", stdbeacon);
     #endif
 
-    TRX_SetBeaconContent((unsigned char*)stdbeacon, strlen(stdbeacon));
+    memcpy(TRX_CONFIG.morse_text, stdbeacon, COM_MORSE_LEN);
+    int result = trx_set_conf(NULL);
 
-    return 1;
+    return result;
 }
 
 /**
@@ -102,82 +140,59 @@ int trx_set_beacon(void *param)
  *
  * @param param (1)Verbose. (0)No Verbose
  * @return 1 - OK
+ * @deprecated
  */
 int trx_send_beacon(void *param)
 {
 #if SCH_CMDTRX_VERBOSE
-    if(*(int *)param) con_printf("Sending beacon...\n");
+    printf("[DEPRECATED] (NOT) Sending beacon...\n");
 #endif
     
-    TRX_BeaconAction(1);
-    return 1;
+    return 0;
 }
 
 /**
- * Get the given register's value
+ * Send a frame for testing (ping) to desired node
  *
- * @param param register's address
+ * @param param int Node to transmit
  * @return 1 - OK
  */
-int trx_readreg(void *param)
+int trx_test_frame(void *param)
 {
-    unsigned char reg = *(char *)param;
-    unsigned char val = TRX_ReadRegister(reg);
+    int result;
+    int node = *((int *)param);
 
-    #if (SCH_CMDTRX_VERBOSE>=1)
-        char ascii_val[10];
-        //utoa(ascii_val, val, 16);
-        sprintf (ascii_val, "0x%X", val);
-        con_printf("Read Value: ["); con_printf(ascii_val); con_printf("]\n");
-    #endif
-
-    return val;
-}
-
-/**
- * Send an idle frame for testing
- *
- * @param param (1)Verbose. (0)No Verbose
- * @return 1 - OK
- */
-int trx_idleframe(void *param)
-{
 #if SCH_CMDTRX_VERBOSE
-    if(*(int *)param)
-    {
-        con_printf("Sending idle frame...\n");
-    }
+    printf("Sending test frame to node %d...\n", node);
 #endif
 
-    TRX_SendIdleFrame();
+    result = csp_ping(node, com_timeout, 10, CSP_O_NONE);
 
-    return 1;
+#if SCH_CMDTRX_VERBOSE
+    printf("Ping to %d of size %d, took %d ms\n", node, 10, result);
+#endif
+    
+    result = result > 0 ? 1:0;
+
+    return result;
 }
 
 /**
- * Read and show TRX status registers, uses serial console.
- * Debug only
+ * Read and show TRX status. Debug only
  *
  * @param param Not used
  * @return 1 - OK
  */
 int trx_getstatus(void *param)
 {
-    unsigned char status[0x37];
-    TRX_GetStatus(status);
+    nanocom_data_t status;
+    int result;
 
-    char tmp[10]; char tmp2[10];
+    result = com_get_status(&status, NODE_COM, com_timeout);
 
-    con_printf(   "|============= TRANSCEIVER STATUS ================\n");
-    con_printf("REGISTER,VALUE\n");
-    int i;
-    for(i=0; i< 0x37; i++)
-    {
-        //itoa(tmp, i, 16); itoa(tmp2, status[i], 16);
-        sprintf (tmp, "0x%X", i); sprintf (tmp2, "0x%X", status[i]);
-        con_printf(tmp); con_printf(", "); con_printf(tmp2); con_printf("\n");
-    }
-    con_printf(   "|=================================================\n");
+#if SCH_CMDTRX_VERBOSE
+    //TODO: Print status
+#endif
 
     return 1;
 }
@@ -189,36 +204,14 @@ int trx_getstatus(void *param)
  *
  * @param param (1)Verbose, (0)No Verbose
  * @return 1 - OK; 0 - Fail
+ * @deprecated
  */
 int trx_resend(void *param)
 {
     int result = 0;
-
-    /* Get position of last sent data */
-    unsigned char outl = TRX_ReadRegister(TRX_TMTF_OUT_L);
-    unsigned char outh = TRX_ReadRegister(TRX_TMTF_OUT_H);
-
-    /* Get position of last buffered data*/
-    unsigned char inl = TRX_ReadRegister(TRX_TMTF_IN_L);
-    unsigned char inh = TRX_ReadRegister(TRX_TMTF_IN_H);
-
-    /* Resend only if all buffered data was sent */
-    if((outl == inl) && (outh == inh))
-    {
-        /* Reset position of last telemtry */
-        #if SCH_CMDTRX_VERBOSE
-            if(*(int *)param) con_printf("Reseting buffer pointer...\n\r");
-        #endif
-        TRX_WriteRegister(TRX_TMTF_OUT_H, 0);
-        TRX_WriteRegister(TRX_TMTF_OUT_L, 0);
-
-        /* Now resend the telemetry buffer */
-        #if SCH_CMDTRX_VERBOSE
-            if(*(int *)param) con_printf("Resending telemetry buffer...\n\r");
-        #endif
-        result = TRX_SendTelemetry();
-    }
-
+#if SCH_CMDTRX_VERBOSE
+    printf("[DEPRECATED]\n");
+#endif
     return result;
 }
 
@@ -227,20 +220,15 @@ int trx_resend(void *param)
  *
  * @param param 1-verboso, 0-no verbose
  * @return 1-success, 0-fail
+ * @deprecated
  */
 int trx_reset_tm_pointer(void *param)
 {
+    int result = 0;
 #if SCH_CMDTRX_VERBOSE
-    if(*(int *)param) con_printf("Reseting buffer pointer...\n\r");
+    printf("[DEPRECATED]\n");
 #endif
-    
-    /* Reset position of last telemtry */
-    TRX_WriteRegister(TRX_TMTF_OUT_H, 0);
-    TRX_WriteRegister(TRX_TMTF_OUT_L, 0);
-    TRX_WriteRegister(TRX_TMTF_IN_H, 0);
-    TRX_WriteRegister(TRX_TMTF_IN_L, 0);
-
-    return 1;
+    return result;
 }
 
 /**
@@ -251,42 +239,7 @@ int trx_reset_tm_pointer(void *param)
  */
 int trx_initialize(void *param)
 {
-    TxRxSettings Settings;
-    unsigned int result = 0;
-
-    /* CONFIGURAR VALORES DESEADOS ACA */
-    Settings._BCN_PWR   = SCH_CMDTRX_INIT_BEACON_PWR; //TRX_DEF_BCNPWR; /* 0 - 19 */
-    Settings._BCN_TMR   = 3; /*x4 seconds*/
-    Settings._BCN_WPM   = SCH_CMDTRX_INIT_BEACON_WPM; //TRX_DEF_BCNWPM;
-
-    Settings._HKP_PER   = TRX_DEF_HKPER;
-
-    Settings._TM_CMX    = TRX_DEF_TMCMX;
-    Settings._TM_PRE    = TRX_DEF_TMPRE;
-    Settings._TM_PWR    = SCH_CMDTRX_INIT_TELEMETRY_PWR; //TRX_DEF_TMPWR; /* 0 - 19 */
-
-//    Settings._BSTUF     = TRX_DEF_BSTUF;
-
-    Settings._FRX_H     = TRX_DEF_FRXH;
-    Settings._FRX_M     = TRX_DEF_FRXM;
-    Settings._FRX_L     = TRX_DEF_FRXL;
-
-    Settings._FTX_H     = TRX_DEF_FTXH;
-    Settings._FTX_M     = TRX_DEF_FTXM;
-    Settings._FTX_L     = TRX_DEF_FTXL;
-
-    Settings._FSEP_H    = TRX_DEF_FSEPH;
-    Settings._FSEP_L    = TRX_DEF_FSEPL;
-
-    Settings._MODE_TRX  = SCH_CMDTRX_INIT_MODE; //TRX_MODE_NOBEACON; //TRX_MODE_NOMINAL;
-
-    /* Actualizando valores configurados */
-    TRX_SetTransceiverSettings(&Settings);
-    
-    // Settings beacon contents
-    for(result = 0x0EFF;result>0;result--); //Delay
-    result = trx_set_beacon(param);
-
+    //TODO: implement
     return 1;
 }
 
@@ -301,13 +254,7 @@ int trx_setmode(void *param)
     unsigned int value = 1;
     int mode = *(int *)param;
 
-    if(mode) /* Was param a valid pointer? */
-        value = value << mode;
-
-    mode = (mode <= 5) ? 1 : 0;
-    
-    if(mode) /* Was param (and then mode) a valid argument */
-        TRX_WriteRegister(TRX_MODE, value);
+    //TODO: Implement
 
     return mode;
 }
@@ -321,35 +268,7 @@ int trx_setmode(void *param)
  */
 int trx_asknewtc(void *param)
 {
-
-    unsigned int value = 0;
-
-    /* Check for new TC frame */
-    value = TRX_CheckNewTC() > 0 ? 1:0;
-
-    /* Setting status in data repository */
-    dat_setCubesatVar(dat_trx_newTcFrame, value);
-
-    if(value)
-    {
-        /* Get the day when new TC arrived */
-        unsigned int today =    dat_getCubesatVar(dat_rtc_day_number)*
-                                dat_getCubesatVar(dat_rtc_month)*
-                                dat_getCubesatVar(dat_rtc_year);
-
-        /* Set de lastcmd_day status variable */
-        dat_setCubesatVar(dat_trx_lastcmd_day, today);
-    }
-
-    #if (SCH_CMDTRX_VERBOSE>=2)
-        int mode = *(int *)param;
-        if(mode){
-            con_printf("Unprocesed TC: ");
-            if(value)   {con_printf("[TRUE]\n");}
-            else        {con_printf("[FALSE]\n");}
-        }
-    #endif
-    
+    // TODO: Implement
     return 1;
 }
 
@@ -366,70 +285,70 @@ int trx_asknewtc(void *param)
  */
 int trx_parsetcframe(void *param)
 {
-    char tcframe[TRX_TCFRAMELEN];
-    int count = 0;
-    int step = 4;
-    int result = 0;
-    int mode = *(int *)param;
-
-    /* Read ONE TC Frame from TRX */
-    /* Return 0 if no TC was readed*/
-    result = TRX_ReadTelecomadFrame(tcframe);
-
-    if(result)
-    {
-        int parserindex = 0;
-        result = 0;
-        /* Parsing the TCTF in SUCHAI's commands */
-        for(count=0; count < TRX_TCFRAMELEN; count+=step)
-        {
-            /* BIG ENDIAN [MSB]<<8 | [LSB] */
-            int cmdid = tcframe[count]; cmdid = (cmdid <<8)|tcframe[count+1];
-            int cmdarg = tcframe[count+2]; cmdarg = (cmdarg<<8)|tcframe[count+3];
-
-            /* Check for stop bytes, then add new cmd */
-            if((cmdid != CMD_STOP) && (cmdarg != CMD_STOP))
-            {
-                /* Save TC and ARG into repo_telecmd */
-                dat_setTelecmdBuff(parserindex++,cmdid);
-                dat_setTelecmdBuff(parserindex++,cmdarg);
-                result++;
-            }
-            /* Stop bytes detected, end parsing */
-            else
-            {
-                break;
-            }
-        }
-        
-        /* Fill remaining buffer space */
-        while(parserindex < SCH_DATAREPOSITORY_MAX_BUFF_TELECMD)
-        {
-            dat_setTelecmdBuff(parserindex++, CMD_CMDNULL);
-        }
-    }
-
-#if SCH_CMDTRX_VERBOSE
-    if(mode)
-    {
-        char ascii_val[10];
-        itoa(ascii_val, result, 10);
-        con_printf("Number of read TC: [");
-        con_printf(ascii_val); con_printf("]\n");
-    }
-#endif
-
-    if(result)
-    {
-        /* Aumentar el contador de TC recividos */
-        result += dat_getCubesatVar(dat_trx_count_tc);
-        dat_setCubesatVar(dat_trx_count_tc, result);
-
-        /* Indicar que hay comandos que procesar en el buffer de Cmd */
-        dat_setCubesatVar(dat_trx_newCmdBuff, 1);
-    }
-
-    return result;
+//    char tcframe[TRX_TCFRAMELEN];
+//    int count = 0;
+//    int step = 4;
+//    int result = 0;
+//    int mode = *(int *)param;
+//
+//    /* Read ONE TC Frame from TRX */
+//    /* Return 0 if no TC was readed*/
+//    result = TRX_ReadTelecomadFrame(tcframe);
+//
+//    if(result)
+//    {
+//        int parserindex = 0;
+//        result = 0;
+//        /* Parsing the TCTF in SUCHAI's commands */
+//        for(count=0; count < TRX_TCFRAMELEN; count+=step)
+//        {
+//            /* BIG ENDIAN [MSB]<<8 | [LSB] */
+//            int cmdid = tcframe[count]; cmdid = (cmdid <<8)|tcframe[count+1];
+//            int cmdarg = tcframe[count+2]; cmdarg = (cmdarg<<8)|tcframe[count+3];
+//
+//            /* Check for stop bytes, then add new cmd */
+//            if((cmdid != CMD_STOP) && (cmdarg != CMD_STOP))
+//            {
+//                /* Save TC and ARG into repo_telecmd */
+//                dat_setTelecmdBuff(parserindex++,cmdid);
+//                dat_setTelecmdBuff(parserindex++,cmdarg);
+//                result++;
+//            }
+//            /* Stop bytes detected, end parsing */
+//            else
+//            {
+//                break;
+//            }
+//        }
+//
+//        /* Fill remaining buffer space */
+//        while(parserindex < SCH_DATAREPOSITORY_MAX_BUFF_TELECMD)
+//        {
+//            dat_setTelecmdBuff(parserindex++, CMD_CMDNULL);
+//        }
+//    }
+//
+//#if SCH_CMDTRX_VERBOSE
+//    if(mode)
+//    {
+//        char ascii_val[10];
+//        itoa(ascii_val, result, 10);
+//        con_printf("Number of read TC: [");
+//        con_printf(ascii_val); con_printf("]\n");
+//    }
+//#endif
+//
+//    if(result)
+//    {
+//        /* Aumentar el contador de TC recividos */
+//        result += dat_getCubesatVar(dat_trx_count_tc);
+//        dat_setCubesatVar(dat_trx_count_tc, result);
+//
+//        /* Indicar que hay comandos que procesar en el buffer de Cmd */
+//        dat_setCubesatVar(dat_trx_newCmdBuff, 1);
+//    }
+//
+//    return result;
 }
 
 /**
@@ -438,18 +357,19 @@ int trx_parsetcframe(void *param)
  *
  * @param param (0) No verbose, (1) Verbose
  * @return 1 - OK; 0 - Fail
+ * @deprecated
  */
 int trx_read_tcframe(void *param)
 {
-    /* Se lee un frame de telecomandos */
-    char tc_frame[TRX_TCFRAMELEN];
-    int result = TRX_ReadTelecomadFrame(tc_frame);
+//    /* Se lee un frame de telecomandos */
+//    char tc_frame[TRX_TCFRAMELEN];
+//    int result = TRX_ReadTelecomadFrame(tc_frame);
+//
+//    /* Se muestra en consola si corresponde */
+//    if(*(int *)param)
+//        SendRS232((unsigned char*)tc_frame, TRX_TCFRAMELEN, RS2_M_UART1);
 
-    /* Se muestra en consola si corresponde */
-    if(*(int *)param)
-        SendRS232((unsigned char*)tc_frame, TRX_TCFRAMELEN, RS2_M_UART1);
-
-    return result;
+    return 0;
 }
 
 /**
@@ -475,7 +395,7 @@ int trx_tm_trxstatus(void *param)
         trx_tm_addtoframe(&data, 1, CMD_ADDFRAME_START); /* New empty start frame */
 
         /* Read info and append to the frame */
-        TRX_GetStatus(status);
+//        TRX_GetStatus(status);
         /*To int*/
         int data_int[data_len]; int i;
         for(i=0; i<data_len;i++) {data_int[i] = (int)status[i];}
@@ -497,7 +417,7 @@ int trx_tm_trxstatus(void *param)
         }
 
         /* Transmmit info */
-        data = TRX_SendTelemetry();
+//        data = TRX_SendTelemetry();
     }
 
     return data;
@@ -508,16 +428,10 @@ int trx_tm_trxstatus(void *param)
  *
  * @param param (0-24) Disired power level
  * @return 1 - OK; 0 - Fail
+ * @deprecated
  */
 int trx_set_tm_pwr(void *param)
 {
-    int level = *(int *)param;
-    if(level < 25)
-    {
-        TRX_WriteRegister(TRX_TMPOWER, (unsigned char)level);
-        return 1;
-    }
-
     return 0;
 }
 
@@ -526,16 +440,10 @@ int trx_set_tm_pwr(void *param)
  *
  * @param param (0-24) Disired power level
  * @return 1 - OK; 0 - Fail
+ * @deprecated
  */
 int trx_set_bc_pwr(void *param)
 {
-    int level = *(int *)param;
-    if(level < 25)
-    {
-        TRX_WriteRegister(TRX_BEACONPOWER, (unsigned char)level);
-        return 1;
-    }
-
     return 0;
 }
 
@@ -555,7 +463,7 @@ int trx_write_reg(void *param)
     if((reg > 0x00FF) || (val > 0x00FF))
         return 0;
 
-    TRX_WriteRegister((unsigned char)reg, (unsigned char)val);
+//    TODO: TRX_WriteRegister((unsigned char)reg, (unsigned char)val);
 
     return 1;
 }
@@ -637,8 +545,8 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                     tmframe[byte_counter] = (char)CMD_STOP;
                 }
                 
-                TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
-                send_stat = TRX_SendTelemetry(); // toopazo - TNC falla al enviar varios frames seguidos
+//                TODO: TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
+//                TODO: send_stat = TRX_SendTelemetry(); // toopazo - TNC falla al enviar varios frames seguidos
 
                 #if SCH_CMDTRX_VERBOSE > 1
                     con_printf("Loading TM frame(Single Frame)\n");
@@ -660,8 +568,8 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                         tmframe[byte_counter++] = (char)((int)CMD_STOP>>8);
                         tmframe[byte_counter] = (char)CMD_STOP;
                     }
-                    TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
-                    send_stat = TRX_SendTelemetry(); // toopazo - TNC falla al enviar varios frames seguidos
+//                    TODO: TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
+//                    TODO: send_stat = TRX_SendTelemetry(); // toopazo - TNC falla al enviar varios frames seguidos
 
                     #if SCH_CMDTRX_VERBOSE > 1
                         con_printf("Loading TM frame(From START)\n");
@@ -722,7 +630,7 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                         tmframe[byte_counter++] = (char)((int)CMD_STOP>>8);
                         tmframe[byte_counter] = (char)CMD_STOP;
                     }
-                    TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
+//                    TODO: TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
                     #if SCH_CMDTRX_VERBOSE > 1
                         con_printf("Loading TM frame (From STOP)\n");
                         //SendRS232((unsigned char*)tmframe,TRX_TMFRAMELEN,RS2_M_UART1);
@@ -753,8 +661,8 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                         tmframe[byte_counter++] = (char)((int)CMD_STOP>>8);
                         tmframe[byte_counter] = (char)CMD_STOP;
                     }
-                    TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
-                    send_stat = TRX_SendTelemetry(); // toopazo - TNC falla al enviar varios frames seguidos
+//                    TODO: TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
+//                    TODO: send_stat = TRX_SendTelemetry(); // toopazo - TNC falla al enviar varios frames seguidos
                     #if SCH_CMDTRX_VERBOSE  > 1
                         con_printf("Loading TM Frame (From FIN)");
                         //SendRS232((unsigned char*)tmframe,TRX_TMFRAMELEN,RS2_M_UART1);
@@ -798,8 +706,8 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                             tmframe[byte_counter] = (char)CMD_STOP;
                         }
 
-                        TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
-                        send_stat = TRX_SendTelemetry(); // toopazo - TNC falla al enviar varios frames seguidos
+//TODO:                        TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
+//       TODO:                 send_stat = TRX_SendTelemetry(); // toopazo - TNC falla al enviar varios frames seguidos
                         #if SCH_CMDTRX_VERBOSE > 1
                             con_printf("Loading  TMFrame (From ADD)\n");
                             //SendRS232((unsigned char*)tmframe,TRX_TMFRAMELEN,RS2_M_UART1);

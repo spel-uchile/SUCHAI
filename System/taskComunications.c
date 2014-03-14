@@ -78,7 +78,7 @@ void taskComunications(void *param)
         if(seconds_cnt % 30 == 0)
         {
             TcNewCmd.cmdId = trx_id_setmode;
-            TcNewCmd.param = TRX_MODE_NOBEACON;
+//            TODO: TcNewCmd.param = TRX_MODE_NOBEACON;
             xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
         }
 

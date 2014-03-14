@@ -46,7 +46,7 @@ int tcm_testframe(void *param)
         con_printf((char *)testframe);
     }
 
-    result = TRX_LoadTelemetry(testframe, 40) ? TRX_SendTelemetry() : 0;
+//    result = TRX_LoadTelemetry(testframe, 40) ? TRX_SendTelemetry() : 0;
     //result = trx_LoadTelemetry(testframe, 80) ? trx_SendTelemetry() : 0;
     return result;
 }
@@ -61,26 +61,26 @@ int tcm_resend(void *param)
 {
     int result = 0;
 
-    /* Get position of last sent data */
-    unsigned char outl = TRX_ReadRegister(TRX_TMTF_OUT_L);
-    unsigned char outh = TRX_ReadRegister(TRX_TMTF_OUT_H);
-
-    /* Get position of last buffered data*/
-    unsigned char inl = TRX_ReadRegister(TRX_TMTF_IN_L);
-    unsigned char inh = TRX_ReadRegister(TRX_TMTF_IN_H);
-
-    /* Resend only if all buffered data was sent */
-    if((outl == inl) && (outh == inh))
-    {
-        /* Reset position of last telemtry */
-        if(*(int *)param) con_printf("Reseting buffer pointer...");
-        TRX_WriteRegister(TRX_TMTF_OUT_H, 0);
-        TRX_WriteRegister(TRX_TMTF_OUT_L, 0);
-
-        /* Now resend the telemetry buffer */
-        if(*(int *)param) con_printf("Resending telemetry buffer...");
-        result = TRX_SendTelemetry();
-    }
+//    /* Get position of last sent data */
+//    unsigned char outl = TRX_ReadRegister(TRX_TMTF_OUT_L);
+//    unsigned char outh = TRX_ReadRegister(TRX_TMTF_OUT_H);
+//
+//    /* Get position of last buffered data*/
+//    unsigned char inl = TRX_ReadRegister(TRX_TMTF_IN_L);
+//    unsigned char inh = TRX_ReadRegister(TRX_TMTF_IN_H);
+//
+//    /* Resend only if all buffered data was sent */
+//    if((outl == inl) && (outh == inh))
+//    {
+//        /* Reset position of last telemtry */
+//        if(*(int *)param) con_printf("Reseting buffer pointer...");
+//        TRX_WriteRegister(TRX_TMTF_OUT_H, 0);
+//        TRX_WriteRegister(TRX_TMTF_OUT_L, 0);
+//
+//        /* Now resend the telemetry buffer */
+//        if(*(int *)param) con_printf("Resending telemetry buffer...");
+//        result = TRX_SendTelemetry();
+//    }
 
     return result;
 }
@@ -318,10 +318,10 @@ int tcm_send_beacon(void *param)
 #endif
 
     unsigned int len = strlen(beacon_buff);
-    TRX_SetBeaconContent((unsigned char*)beacon_buff, len);
+//    TRX_SetBeaconContent((unsigned char*)beacon_buff, len);
 //    TRX_BeaconAction(1);
 
-    TRX_SetMode(TRX_MODE_ONLYBCN); //Triggers beacon tx
+//    TRX_SetMode(TRX_MODE_ONLYBCN); //Triggers beacon tx
 
     return ok;
 }

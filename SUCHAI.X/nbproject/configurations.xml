@@ -8,7 +8,6 @@
         <itemPath>../Drivers/include/interfaz_SPI.h</itemPath>
         <itemPath>../Drivers/include/pic_pc104_config.h</itemPath>
         <itemPath>../Drivers/include/rs232_suchai.h</itemPath>
-        <itemPath>../Drivers/include/transceiver.h</itemPath>
         <itemPath>../Drivers/include/console.h</itemPath>
         <itemPath>../Drivers/include/eps_suchai.h</itemPath>
         <itemPath>../Drivers/include/rtc_mb.h</itemPath>
@@ -17,6 +16,7 @@
         <itemPath>../Drivers/include/memEEPROM.h</itemPath>
         <itemPath>../Drivers/include/interfaz_ADC.h</itemPath>
         <itemPath>../Drivers/include/i2c_comm.h</itemPath>
+        <itemPath>../Drivers/include/nanocom.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="FreeRTOS" projectFiles="true">
         <itemPath>../FreeRTOS/Source/include/croutine.h</itemPath>
@@ -117,7 +117,6 @@
         <itemPath>../Drivers/interfaz_SPI.c</itemPath>
         <itemPath>../Drivers/pic_pc104_config.c</itemPath>
         <itemPath>../Drivers/rs232_suchai.c</itemPath>
-        <itemPath>../Drivers/transceiver.c</itemPath>
         <itemPath>../Drivers/console.c</itemPath>
         <itemPath>../Drivers/eps_suchai.c</itemPath>
         <itemPath>../Drivers/rtc_mb.c</itemPath>
@@ -126,6 +125,7 @@
         <itemPath>../Drivers/memEEPROM.c</itemPath>
         <itemPath>../Drivers/interfaz_ADC.c</itemPath>
         <itemPath>../Drivers/i2c_comm.c</itemPath>
+        <itemPath>../Drivers/nanocom.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="FreeRTOS" projectFiles="true">
         <itemPath>../FreeRTOS/Source/croutine.c</itemPath>

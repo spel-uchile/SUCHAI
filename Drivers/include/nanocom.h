@@ -23,6 +23,10 @@
 #define COM_PORT_RESTORE		14
 #define COM_PORT_TX_INHIBIT		15
 
+/** Fixed values*/
+#define COM_MORSE_LEN                   20 /* DO NOT CHANGE FROM 20 */
+#define TRX_TMFRAMELEN                  64 /** Max frame lenght */
+
 /** Shared data-structures */
 typedef struct __attribute__((packed)) {
 	uint8_t do_rs;					// 1 = turn on reed-solomon FEC, 0 = off
@@ -44,8 +48,8 @@ typedef struct __attribute__((packed)) {
 	uint8_t morse_en_rf_err;		// Enable last RF error output
 	uint16_t morse_inter_delay;		// Delay between beacons, in seconds.
 	uint16_t morse_pospone;			// Delay before first beacon after activity
-	uint8_t morse_wpm;				// WPM after paris standard, dfl = 20
-	uint8_t morse_text[20];			// Text to morse, terminate with '\0'
+	uint8_t morse_wpm;			// WPM after paris standard, dfl = 20
+	uint8_t morse_text[COM_MORSE_LEN];	// Text to morse, terminate with '\0'
 	uint16_t morse_bat_level;		// Minimum battery level, int 500 = 5.00V
 	uint16_t hk_interval;			// Interval between HK sampling in seconds
 } nanocom_conf_t;

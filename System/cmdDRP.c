@@ -22,6 +22,8 @@
 cmdFunction drpFunction[DRP_NCMD];
 int drp_sysReq[DRP_NCMD];
 
+nanocom_rssi_t rssi_data[10];
+
 void drp_onResetCmdDRP(){
     //De display
     drpFunction[(unsigned char)drp_id_print_dat_CubesatVar] = drp_print_dat_CubesatVar;
@@ -1423,20 +1425,18 @@ static int drp_update_rssi_mean(int new_value){
  *----------------------------------------------------------------------------*/
 void drp_trx_rssi(void)
 {
-    /* TODO: Reading RSSI */
-    int int_value = -1;
-//    int_value = (int)TRX_ReadRegister(TRX_RSSI_H)<<8;
-//    int_value = int_value | (int)TRX_ReadRegister(TRX_RSSI_L);
+    uint8_t count;
+    int result;
+    int rssi_value;
 
-#ifdef TRX_RSSI_DBM
-    /* Convert to dBm */
-    double dob_value =  (double)TRX_RSSI_GAIN * (double)int_value +
-                        (double)TRX_RSSI_OFFSET;
-    int_value = (int)dob_value;
-#endif
+    result = com_get_log_rssi(&rssi_data, &count, NODE_COM, 1000);
+    if(result)
+    {
+        rssi_value = rssi_data[count].rssi; //Get last RSSI measure
+    }
 
     /* Writing RSSI to repo */
-    dat_setCubesatVar(dat_trx_rssi, int_value);
+    dat_setCubesatVar(dat_trx_rssi, rssi_value);
 }
 
 /*------------------------------------------------------------------------------

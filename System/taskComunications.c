@@ -66,20 +66,12 @@ void taskComunications(void *param)
             /* Ajustar el contador a los tipos de beacon que hay*/
             type_cnt = type_cnt % 2;
 
-            /* Preguntar por nuevos telecomandos disponibles */
-            TcNewCmd.cmdId = tcm_id_send_beacon;
-            TcNewCmd.param = type_cnt; /* Tipo 1 - Variables de estado */
+            TcNewCmd.cmdId = tcm_id_update_beacon;
+            TcNewCmd.param = type_cnt;
+
             /* Queue NewCmd - Non-Blocking (Wait 0.5 task period) */
             xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
             type_cnt++;
-        }
-
-        /* Volver TRX Op mode to nobeacon */
-        if(seconds_cnt % 30 == 0)
-        {
-            TcNewCmd.cmdId = trx_id_setmode;
-//            TODO: TcNewCmd.param = TRX_MODE_NOBEACON;
-            xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
         }
 
         /* Preguntar por nuevos telecomandos disponibles */
@@ -188,13 +180,14 @@ void taskComunications(void *param)
             }
 
             /* Si hay nuevos frames parsear telecomandos */
-            if(NEW_TC && !NEW_CMD_BUF) /* Ask new TC state */
-            {
-                TcNewCmd.cmdId = trx_id_parsetcframe; /* Parse tc frame */
-                TcNewCmd.param = 0; /* No verboso */
-                /* Queue NewCmd - Non-Blocking (Wait 0.5 task period) */
-                xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
-            }
+            //DEPRECATED: Los TC se parsean en cuanto llegan
+//            if(NEW_TC && !NEW_CMD_BUF) /* Ask new TC state */
+//            {
+//                TcNewCmd.cmdId = trx_id_parsetcframe; /* Parse tc frame */
+//                TcNewCmd.param = 0; /* No verboso */
+//                /* Queue NewCmd - Non-Blocking (Wait 0.5 task period) */
+//                xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
+//            }
 
             if(NEW_CMD_BUF)
             {
@@ -240,13 +233,46 @@ void com_doOnRSSI(xQueueHandle dispatcherQueue)
     #endif
 
     //CubesatVar
-    TcNewCmd.cmdId = tcm_id_sendTM_cubesatVar;
-    TcNewCmd.param = 2;
-    xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
+//        TODO:
+//    TcNewCmd.cmdId = tcm_id_sendTM_cubesatVar;
+//    TcNewCmd.param = 2;
+//    xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
     
     // Payload
+//        TODO:
     //envio TM de payload
-    TcNewCmd.cmdId = tcm_id_sendTM_all_pay_i;
-    TcNewCmd.param = 0;
-    xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
+//    TcNewCmd.cmdId = tcm_id_sendTM_all_pay_i;
+//    TcNewCmd.param = 0;
+//    xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
+}
+
+void com_RxI2C()
+{
+    printf("[RxI2C Started]\n");
+    int n_recv = 0;
+    uint8_t new_data = 0;
+    portBASE_TYPE result = pdFALSE;
+    i2c_frame_t *frame = (i2c_frame_t *) csp_buffer_get(100);
+
+    result = xQueueReceive(i2cRxQueue, &new_data, 50/ portTICK_RATE_MS);
+
+    //No more data received
+    if(result != pdPASS)
+    {
+        if(n_recv > 0)
+        {
+            frame->len = n_recv;
+            csp_i2c_rx(frame, NULL);
+
+            frame = (i2c_frame_t *) csp_buffer_get(100);
+            frame->len = 0;
+            n_recv = 0;
+        }
+    }
+    //New data received
+    else
+    {
+        frame->data[n_recv] = new_data;
+        n_recv++;
+    }
 }

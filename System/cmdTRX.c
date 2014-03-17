@@ -19,6 +19,7 @@
 
 #include "cmdTRX.h"
 #include "csp.h"
+#include "csp_port.h"
 
 static int trx_tm_send(unsigned char *data, int len);
 
@@ -298,10 +299,70 @@ int trx_setmode(void *param)
  */
 int trx_asknewtc(void *param)
 {
-#if SCH_CMDTRX_VERBOSE
-    printf("[DEPRECATED]\n");
-#endif
-    return 0;
+    int new_cmd_buff;
+    printf("[ServerCSP Started]\n");
+
+    /* Get the socket used for port CSP_ANY */
+    csp_socket_t *sock = csp_port_get_socket(CSP_ANY);
+
+    /* Pointer to current connection and packet */
+    csp_conn_t *conn;
+    csp_packet_t *packet;
+
+    /* Process ONE incoming connection (if any) */
+//        printf("[SRV] Waiting connection\n");
+
+    /* Wait for connection, 250 ms timeout */
+    if ((conn = csp_accept(sock, 250)) == NULL)
+    {
+        /* Setting status in data repository */
+        dat_setCubesatVar(dat_trx_newTcFrame, 0); //No new TC
+        return 1;
+    }
+
+//        printf("[SRV] New connection\n");
+    /* Read packets. Timout is 1000 ms */
+    //TODO: Update status variables and process frame
+    while ((packet = csp_read(conn, 1000)) != NULL)
+    {
+        int i;
+
+        switch (csp_conn_dport(conn))
+        {
+            case SCH_TRX_PORT_TC:
+                /* Print data in this port */
+                printf("[New packet] ");
+                for(i=0; i<packet->length; i++)
+                    printf("%c", packet->data[i]);
+                printf("\n");
+
+                 /* Setting status in data repository */
+                dat_setCubesatVar(dat_trx_newTcFrame, 1);
+                new_cmd_buff = dat_getCubesatVar(dat_trx_newCmdBuff);
+
+                if(new_cmd_buff == 0)
+                    trx_parsetcframe((void *)packet->data16); //TODO: Check frame lenght
+                else
+                    return 0;
+
+                break;
+
+            default:
+                /* Let the service handler reply pings, buffer use, etc. */
+                csp_service_handler(conn, packet);
+
+                /* Setting status in data repository */
+                dat_setCubesatVar(dat_trx_newTcFrame, 0);
+                break;
+        }
+    }
+
+    /* Close current connection, and handle next */
+    csp_close(conn);
+//        printf("[SRV] Connection closed\n");
+
+
+    return 1;
 }
 
 /**
@@ -317,71 +378,61 @@ int trx_asknewtc(void *param)
  */
 int trx_parsetcframe(void *param)
 {
-//TODO: Implement
-//    char tcframe[TRX_TCFRAMELEN];
-//    int count = 0;
-//    int step = 4;
-//    int result = 0;
-//    int mode = *(int *)param;
-//
-//    /* Read ONE TC Frame from TRX */
-//    /* Return 0 if no TC was readed*/
-//    result = TRX_ReadTelecomadFrame(tcframe);
-//
-//    if(result)
-//    {
-//        int parserindex = 0;
-//        result = 0;
-//        /* Parsing the TCTF in SUCHAI's commands */
-//        for(count=0; count < TRX_TCFRAMELEN; count+=step)
-//        {
-//            /* BIG ENDIAN [MSB]<<8 | [LSB] */
-//            int cmdid = tcframe[count]; cmdid = (cmdid <<8)|tcframe[count+1];
-//            int cmdarg = tcframe[count+2]; cmdarg = (cmdarg<<8)|tcframe[count+3];
-//
-//            /* Check for stop bytes, then add new cmd */
-//            if((cmdid != CMD_STOP) && (cmdarg != CMD_STOP))
-//            {
-//                /* Save TC and ARG into repo_telecmd */
-//                dat_setTelecmdBuff(parserindex++,cmdid);
-//                dat_setTelecmdBuff(parserindex++,cmdarg);
-//                result++;
-//            }
-//            /* Stop bytes detected, end parsing */
-//            else
-//            {
-//                break;
-//            }
-//        }
-//
-//        /* Fill remaining buffer space */
-//        while(parserindex < SCH_DATAREPOSITORY_MAX_BUFF_TELECMD)
-//        {
-//            dat_setTelecmdBuff(parserindex++, CMD_CMDNULL);
-//        }
-//    }
-//
-//#if SCH_CMDTRX_VERBOSE
-//    if(mode)
-//    {
-//        char ascii_val[10];
-//        itoa(ascii_val, result, 10);
-//        con_printf("Number of read TC: [");
-//        con_printf(ascii_val); con_printf("]\n");
-//    }
-//#endif
-//
-//    if(result)
-//    {
-//        /* Aumentar el contador de TC recividos */
-//        result += dat_getCubesatVar(dat_trx_count_tc);
-//        dat_setCubesatVar(dat_trx_count_tc, result);
-//
-//        /* Indicar que hay comandos que procesar en el buffer de Cmd */
-//        dat_setCubesatVar(dat_trx_newCmdBuff, 1);
-//    }
-//
-//    return result;
+    uint16_t *tcframe = (uint16_t *)param;
+    int count = 0;
+    int step = 2;
+    int result = 0;
+
+    if(tcframe != NULL)
+    {
+        int parserindex = 0;
+        result = 0;
+
+        /* Parsing the TCTF in SUCHAI's commands */
+        //TODO: Check the frame lenght
+        for(count=0; count < TRX_TMFRAMELEN/2; count+=step)
+        {
+            /* BIG ENDIAN [MSB]<<8 | [LSB] */
+            int cmdid = tcframe[count];
+            int cmdarg = tcframe[count+1];
+
+            /* Check for stop bytes, then add new cmd */
+            if((cmdid != CMD_STOP) && (cmdarg != CMD_STOP))
+            {
+                /* Save TC and ARG into repo_telecmd */
+                dat_setTelecmdBuff(parserindex++,cmdid);
+                dat_setTelecmdBuff(parserindex++,cmdarg);
+                result++;
+            }
+            /* Stop bytes detected, end parsing */
+            else
+            {
+                break;
+            }
+        }
+
+        /* Fill remaining buffer space */
+        while(parserindex < SCH_DATAREPOSITORY_MAX_BUFF_TELECMD)
+        {
+            dat_setTelecmdBuff(parserindex++, CMD_CMDNULL);
+        }
+    }
+
+#if SCH_CMDTRX_VERBOSE
+    printf("Number of read TC: %d\n", result);
+#endif
+
+    if(result)
+    {
+        /* Aumentar el contador de TC recibidos */
+        result += dat_getCubesatVar(dat_trx_count_tc);
+        dat_setCubesatVar(dat_trx_count_tc, result);
+
+        /* Indicar que hay comandos que procesar en el buffer de Cmd */
+        dat_setCubesatVar(dat_trx_newCmdBuff, 1);
+    }
+
+    return result;
 }
 
 /**

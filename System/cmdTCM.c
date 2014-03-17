@@ -25,8 +25,8 @@ void tcm_onResetCmdTCM(void){
     tcmFunction[(unsigned char)tcm_id_sendTM_cubesatVar] = tcm_sendTM_cubesatVar;
 
     //Beacon
-    tcmFunction[(unsigned char)tcm_id_send_beacon] = tcm_update_beacon;
-    tcm_sysReq[(unsigned char)tcm_id_send_beacon]  = CMD_SYSREQ_MIN+SCH_BCN_SYS_REQ;
+    tcmFunction[(unsigned char)tcm_id_update_beacon] = tcm_update_beacon;
+    tcm_sysReq[(unsigned char)tcm_id_update_beacon]  = CMD_SYSREQ_MIN+SCH_BCN_SYS_REQ;
 
     tcmFunction[(unsigned char)tcm_id_set_sysreq] = tcm_set_sysreq;
     tcm_sysReq[(unsigned char)tcm_id_set_sysreq] = CMD_SYSREQ_MIN;
@@ -345,7 +345,7 @@ int tcm_set_sysreq(void *param)
         for(i=0; i<TCM_NCMD; i++) tcm_sysReq[i] = CMD_SYSREQ_MIN+SCH_TCM_SYS_REQ;
 
         //Special cases
-        tcm_sysReq[(unsigned char)tcm_id_send_beacon]  = CMD_SYSREQ_MIN+SCH_BCN_SYS_REQ;
+        tcm_sysReq[(unsigned char)tcm_id_update_beacon]  = CMD_SYSREQ_MIN+SCH_BCN_SYS_REQ;
         tcm_sysReq[(unsigned char)tcm_id_set_sysreq] = CMD_SYSREQ_MIN;
     }
     //Set new value

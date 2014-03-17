@@ -28,7 +28,7 @@ typedef enum{
     tcm_id_testframe=((unsigned int)(CMD_TCM)*0x100), ///< @cmd_first
     tcm_id_resend, ///< @cmd
     //Beacon
-    tcm_id_send_beacon, ///< @cmd
+    tcm_id_update_beacon, ///< @cmd
     //CubesatVar
     tcm_id_sendTM_cubesatVar, ///< @cmd
     //Payload

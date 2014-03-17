@@ -63,7 +63,8 @@
 #define SCH_TRX_RX_BAUD                    (48)     /// RX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
 #define SCH_TRX_TX_BAUD                    (48)     /// TX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
 #define SCH_TRX_NODE_GND                   (10)     /// Nodo de la estacion terrena
-#define SCH_TRX_PORT_TM                    (10)     /// Puerto correspondiente a telemetria
+#define SCH_TRX_PORT_TM                    (10)     /// Puerto correspondiente a telemetria (en la estacion terrena)
+#define SCH_TRX_PORT_TC                    (10)     /// Puerto correspondiente a telemetria (en el software de vuelo)
 
 #define SCH_TRX_BEACON_PWR                 (4)      ///< @deprecated Potencia beacon 0 - 24
 #define SCH_TRX_TELEMETRY_PWR              (8)      ///< @deprecated Potencia telemetria 0 - 24 q

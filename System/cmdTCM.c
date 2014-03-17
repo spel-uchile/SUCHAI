@@ -1,10 +1,14 @@
 #include "cmdTCM.h"
+#include "csp.h"
+
 
 cmdFunction tcmFunction[TCM_NCMD];
 int tcm_sysReq[TCM_NCMD];
 
-char beacon_buff[50] = "SUCHAIATINGDOTUCHILEDOTCL-";
-char *p_beacon_buff = beacon_buff+26;//+strlen(beacon_buff);
+char beacon_buff[COM_MORSE_LEN] = "00SUCHAI00";
+char *p_beacon_buff = beacon_buff+10;//+strlen(beacon_buff);
+
+extern nanocom_conf_t TRX_CONFIG; /** Global configuration var from cmdTRX.c*/
 
 void tcm_onResetCmdTCM(void){
     int i;
@@ -21,7 +25,7 @@ void tcm_onResetCmdTCM(void){
     tcmFunction[(unsigned char)tcm_id_sendTM_cubesatVar] = tcm_sendTM_cubesatVar;
 
     //Beacon
-    tcmFunction[(unsigned char)tcm_id_send_beacon] = tcm_send_beacon;
+    tcmFunction[(unsigned char)tcm_id_send_beacon] = tcm_update_beacon;
     tcm_sysReq[(unsigned char)tcm_id_send_beacon]  = CMD_SYSREQ_MIN+SCH_BCN_SYS_REQ;
 
     tcmFunction[(unsigned char)tcm_id_set_sysreq] = tcm_set_sysreq;
@@ -37,17 +41,16 @@ void tcm_onResetCmdTCM(void){
 int tcm_testframe(void *param)
 {
     int result;
-    unsigned char testframe[40] = "Proyecto SUCHAI - suchai@ing.uchile.cl\n\0";
+    char *testframe = "Proyecto SUCHAI - suchai@ing.uchile.cl";
     //unsigned char testframe[80] = "Proyecto SUCHAI - suchai@ing.uchile.cl\n\0Proyecto SUCHAI - suchai@ing.uchile.cl\n\0";
 
     if(*(int *)param)
     {
-        con_printf("Sending test frame: ");
-        con_printf((char *)testframe);
+        printf("Sending test frame: %s\n", testframe);
     }
 
-//    result = TRX_LoadTelemetry(testframe, 40) ? TRX_SendTelemetry() : 0;
-    //result = trx_LoadTelemetry(testframe, 80) ? trx_SendTelemetry() : 0;
+    result = csp_transaction(CSP_PRIO_NORM, SCH_TRX_NODE_GND, SCH_TRX_PORT_TM,
+                             2000, (void *)testframe, strlen(testframe), NULL, 0);
     return result;
 }
 
@@ -56,6 +59,7 @@ int tcm_testframe(void *param)
  *
  * @param param (1)Verbose, (0)No Verbose
  * @return 1 - OK; 0 - Fail
+ * @deprecated
  */
 int tcm_resend(void *param)
 {
@@ -173,7 +177,7 @@ int tcm_sendTM_cubesatVar(void *param)
 }
 
 /**
- * Este comando construye el beacon del satelite y lo envia. Dependiendo del
+ * Este comando actualiza la info del el beacon del satelite. Dependiendo del
  * parametro, construye diferentes beacons que contienen el identificador del
  * proyecto e informacion base del sistema.
  *
@@ -186,8 +190,9 @@ int tcm_sendTM_cubesatVar(void *param)
  *          1 - Identificador + Variables de estado
  *
  * @return 0-Fallo, 1-Exito
+ * TODO: Actualizar campos para calzar con nuevo tamano de beacon
  */
-int tcm_send_beacon(void *param)
+int tcm_update_beacon(void *param)
 {
     int mode = *((int *)param);
     int ok = 0;
@@ -312,16 +317,11 @@ int tcm_send_beacon(void *param)
     }
 
 #if SCH_CMDTCM_VERBOSE
-    con_printf(">>Beacon:");
-    con_printf(beacon_buff);
-    con_printf("\n\r");
+    printf(">>Beacon: %s\n\r", beacon_buff);
 #endif
 
-    unsigned int len = strlen(beacon_buff);
-//    TRX_SetBeaconContent((unsigned char*)beacon_buff, len);
-//    TRX_BeaconAction(1);
-
-//    TRX_SetMode(TRX_MODE_ONLYBCN); //Triggers beacon tx
+    memcpy(TRX_CONFIG.morse_text, beacon_buff, COM_MORSE_LEN);
+    ok = trx_set_conf(NULL);
 
     return ok;
 }

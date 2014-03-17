@@ -57,7 +57,7 @@ int tcm_sendTM_camera(void *param);
 int tcm_sendTM_gps(void *param);
 int tcm_sendTM_lagmuirProbe(void *param);
 int tcm_sendTM_temp(void *param);
-int tcm_send_beacon(void *param);
+int tcm_update_beacon(void *param);
 
 int tcm_set_sysreq(void *param);
 

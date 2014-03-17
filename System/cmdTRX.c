@@ -20,6 +20,8 @@
 #include "cmdTRX.h"
 #include "csp.h"
 
+static int trx_tm_send(unsigned char *data, int len);
+
 /* Auxiliary variables */
 int16_t TRX_REG_VAL = -1; /*Current value to write in trx_write_reg*/
 nanocom_conf_t TRX_CONFIG; /*Stores TRX configuration*/
@@ -191,7 +193,7 @@ int trx_getstatus(void *param)
     result = com_get_status(&status, NODE_COM, com_timeout);
 
 #if SCH_CMDTRX_VERBOSE
-    //TODO: Print status
+    com_printf_status(&status);
 #endif
 
     return 1;
@@ -234,13 +236,40 @@ int trx_reset_tm_pointer(void *param)
 /**
  * Initializes TRX main parameters
  * 
- * @param param (1)Verbose, (0)No Verbose
+ * @param param Not used
  * @return 1 - OK; 0 - Fail
  */
 int trx_initialize(void *param)
 {
-    //TODO: implement
-    return 1;
+    TRX_CONFIG.do_random = 1;
+    TRX_CONFIG.do_rs = 1;
+    TRX_CONFIG.do_viterbi = 1;
+    TRX_CONFIG.hk_interval = 5;
+    TRX_CONFIG.morse_bat_level = SCH_TRX_BEACON_BAT_LVL;
+    TRX_CONFIG.morse_cycle = 1;
+    TRX_CONFIG.morse_en_rf_err = 1;
+    TRX_CONFIG.morse_en_rssi = 1;
+    TRX_CONFIG.morse_en_rx_count = 1;
+    TRX_CONFIG.morse_en_temp_a = 1;
+    TRX_CONFIG.morse_en_temp_b = 1;
+    TRX_CONFIG.morse_en_tx_count = 1;
+    TRX_CONFIG.morse_en_voltage = 1;
+    TRX_CONFIG.morse_enable = 1;
+    TRX_CONFIG.morse_inter_delay = SCH_TRX_BEACON_PERIOD;
+    TRX_CONFIG.morse_mode = SCH_TRX_BEACON_MODE;
+    TRX_CONFIG.morse_pospone = SCH_TRX_BEACON_POSPONE;
+//    TRX_CONFIG.morse_text = "00SUCHAI00"; //Use command
+    TRX_CONFIG.morse_wpm = SCH_TRX_BEACON_WPM;
+    TRX_CONFIG.preamble_length = 75;
+    TRX_CONFIG.rx_baud = SCH_TRX_RX_BAUD;
+    TRX_CONFIG.tx_baud = SCH_TRX_TX_BAUD;
+    TRX_CONFIG.tx_max_temp = 60;
+
+    /* Save configuration to TRX */
+    int beacon = 0; // Set suchai beacon
+    int result = trx_set_beacon((void *)(&beacon)); //Also call trx_set_conf
+
+    return result;
 }
 
 /**
@@ -256,7 +285,7 @@ int trx_setmode(void *param)
 
     //TODO: Implement
 
-    return mode;
+    return 0;
 }
 
 /**
@@ -265,11 +294,14 @@ int trx_setmode(void *param)
  *
  * @param param (0) No verbose, (1) Verbose
  * @return 1 - OK; 0 - Fail
+ * @deprecated
  */
 int trx_asknewtc(void *param)
 {
-    // TODO: Implement
-    return 1;
+#if SCH_CMDTRX_VERBOSE
+    printf("[DEPRECATED]\n");
+#endif
+    return 0;
 }
 
 /**
@@ -285,6 +317,7 @@ int trx_asknewtc(void *param)
  */
 int trx_parsetcframe(void *param)
 {
+//TODO: Implement
 //    char tcframe[TRX_TCFRAMELEN];
 //    int count = 0;
 //    int step = 4;
@@ -361,6 +394,7 @@ int trx_parsetcframe(void *param)
  */
 int trx_read_tcframe(void *param)
 {
+//    TODO: Implement
 //    /* Se lee un frame de telecomandos */
 //    char tc_frame[TRX_TCFRAMELEN];
 //    int result = TRX_ReadTelecomadFrame(tc_frame);
@@ -432,6 +466,9 @@ int trx_tm_trxstatus(void *param)
  */
 int trx_set_tm_pwr(void *param)
 {
+#if SCH_CMDTRX_VERBOSE
+    printf("[DEPRECATED]\n");
+#endif
     return 0;
 }
 
@@ -444,6 +481,9 @@ int trx_set_tm_pwr(void *param)
  */
 int trx_set_bc_pwr(void *param)
 {
+#if SCH_CMDTRX_VERBOSE
+    printf("[DEPRECATED]\n");
+#endif
     return 0;
 }
 
@@ -544,16 +584,13 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                     tmframe[byte_counter++] = (char)((int)CMD_STOP>>8);
                     tmframe[byte_counter] = (char)CMD_STOP;
                 }
-                
-//                TODO: TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
-//                TODO: send_stat = TRX_SendTelemetry(); // toopazo - TNC falla al enviar varios frames seguidos
 
-                #if SCH_CMDTRX_VERBOSE > 1
-                    con_printf("Loading TM frame(Single Frame)\n");
-                #endif
+                /* Load and transmit TM */
+                trx_tm_send(tmframe, TRX_TMFRAMELEN);
+                
                 frame_counter++;
                 byte_counter = 0;
-                        mode = CMD_ADDFRAME_EXIT;
+                mode = CMD_ADDFRAME_EXIT;
                 break;
 
             /* A new start frame for more than TRX_TMFRAMELEN bytes, so we need
@@ -568,12 +605,9 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                         tmframe[byte_counter++] = (char)((int)CMD_STOP>>8);
                         tmframe[byte_counter] = (char)CMD_STOP;
                     }
-//                    TODO: TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
-//                    TODO: send_stat = TRX_SendTelemetry(); // toopazo - TNC falla al enviar varios frames seguidos
-
-                    #if SCH_CMDTRX_VERBOSE > 1
-                        con_printf("Loading TM frame(From START)\n");
-                    #endif
+                    
+                    /* Load and transmit TM */
+                    trx_tm_send(tmframe, TRX_TMFRAMELEN);
                 }
 
                 byte_counter = 0;
@@ -630,13 +664,11 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                         tmframe[byte_counter++] = (char)((int)CMD_STOP>>8);
                         tmframe[byte_counter] = (char)CMD_STOP;
                     }
-//                    TODO: TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
-                    #if SCH_CMDTRX_VERBOSE > 1
-                        con_printf("Loading TM frame (From STOP)\n");
-                        //SendRS232((unsigned char*)tmframe,TRX_TMFRAMELEN,RS2_M_UART1);
-                        //con_printf("\n\n");
-                    #endif
+
+                    /* Load and transmit TM */
+                    trx_tm_send(tmframe, TRX_TMFRAMELEN);
                 }
+
                 /* A new frame stop being configured */
                 byte_counter = 0;
                 /* Append control field */
@@ -661,14 +693,11 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                         tmframe[byte_counter++] = (char)((int)CMD_STOP>>8);
                         tmframe[byte_counter] = (char)CMD_STOP;
                     }
-//                    TODO: TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
-//                    TODO: send_stat = TRX_SendTelemetry(); // toopazo - TNC falla al enviar varios frames seguidos
-                    #if SCH_CMDTRX_VERBOSE  > 1
-                        con_printf("Loading TM Frame (From FIN)");
-                        //SendRS232((unsigned char*)tmframe,TRX_TMFRAMELEN,RS2_M_UART1);
-                        //con_printf("\n\n");
-                    #endif
+
+                    /* Load and transmit TM */
+                    trx_tm_send(tmframe, TRX_TMFRAMELEN);
                 }
+
                 byte_counter = 0;
                 frame_counter = 0;
                 tm_type = CMD_STOP;
@@ -706,13 +735,8 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                             tmframe[byte_counter] = (char)CMD_STOP;
                         }
 
-//TODO:                        TRX_LoadTelemetry(tmframe, TRX_TMFRAMELEN);
-//       TODO:                 send_stat = TRX_SendTelemetry(); // toopazo - TNC falla al enviar varios frames seguidos
-                        #if SCH_CMDTRX_VERBOSE > 1
-                            con_printf("Loading  TMFrame (From ADD)\n");
-                            //SendRS232((unsigned char*)tmframe,TRX_TMFRAMELEN,RS2_M_UART1);
-                            //con_printf("\n\n");
-                        #endif
+                        /* Load and transmit TM */
+                        trx_tm_send(tmframe, TRX_TMFRAMELEN);
 
                         /* Keep adding data in a new frame */
                         byte_counter = 0;
@@ -735,4 +759,24 @@ int trx_tm_addtoframe(int *data, int len, int mode)
     //return frame_counter;
 
     return send_stat;
+}
+
+/**
+ * Auxiliary function. Send a frame by TRX
+ * 
+ * @param data Pointer to data buffer
+ * @param len Number o bytes to transmit
+ * @return 1 Ok, 0 fail.
+ */
+static int trx_tm_send(unsigned char *data, int len)
+{
+#if SCH_CMDTRX_VERBOSE > 1
+    printf("Sending TM frame...\n");
+#endif
+
+    int result;
+    result = csp_transaction(CSP_PRIO_NORM, SCH_TRX_NODE_GND, SCH_TRX_PORT_TM,
+                             com_timeout, (void *)data, len, NULL, 0);
+
+    return result;
 }

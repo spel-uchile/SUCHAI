@@ -117,3 +117,18 @@ void com_print_conf(nanocom_conf_t * com_conf) {
 	printf("MORSE: cycle: %u, volt:%u rxc:%u txc:%u tempa:%u tempb:%u rssi:%u rferr:%u\r\n", com_conf->morse_cycle, com_conf->morse_en_voltage, com_conf->morse_en_rx_count, com_conf->morse_en_tx_count, com_conf->morse_en_temp_a, com_conf->morse_en_temp_b, com_conf->morse_en_rssi, com_conf->morse_en_rf_err);
 	printf("HK: interval %u\r\n", com_conf->hk_interval);
 }
+
+void com_printf_status(nanocom_data_t * com_stat) {
+        printf("Bits corrected total: %u\r\n", com_stat->bit_corr_tot);
+        printf("Bytes corrected total:  %u\r\n", com_stat->byte_corr_tot);
+        printf("RX packets:  %u\r\n", com_stat->rx);
+        printf("RX checksum errors:  %u\r\n", com_stat->rx_err);
+        printf("TX packets:  %u\r\n", com_stat->tx);
+        printf("Freq. Error:  %d\r\n", com_stat->last_rferr);
+        printf("Last RSSI:  %d\r\n", com_stat->last_rssi);
+        printf("Last A temp:  %d\r\n", com_stat->last_temp_a);
+        printf("Last B temp:  %d\r\n", com_stat->last_temp_b);
+        printf("Last TX current:  %d\r\n", com_stat->last_txcurrent);
+        printf("Last Battery Voltage:  %d\r\n", com_stat->last_batt_volt);
+        printf("Bootcount:  %u\r\n", com_stat->bootcount);
+}

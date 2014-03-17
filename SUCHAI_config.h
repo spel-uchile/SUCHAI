@@ -53,21 +53,22 @@
 #define SCH_COMM_RSSI_MIN_TIME             (10)     ///< [s] Segundos minimos que debe haber senal para considerar RSSI
 #define SCH_COMM_RSSI_MAX_TIME             (20)     ///< [s] Segundos maximos que debe haber senal para considerar RSSI
 #define SCH_COMM_RSSI_CNT_MAX              (60)     ///< Segundos que RSSI_CNT puede pasar sin que se actualice RSSI_MEAN
-#define SCH_COMM_BEACON_PERIOD_S           (4*60)   ///< [s] Periodo del beacon en segundos
 #define SCH_COMM_RESEND_ON_RSSI            (0)      ///< Si 1 y el modo es RSSI, el satelite transmitira 2 veces del conjunto de telemetria generada cuando se detecta la senal, con un intervalo de 1min entre transmisiones.
-#define SCH_CMDTRX_INIT_BEACON_PWR         (4)      ///< Potencia beacon 0 - 24
-#define SCH_CMDTRX_INIT_TELEMETRY_PWR      (8)      ///< Potencia telemetria 0 - 24
-#define SCH_CMDTRX_INIT_BEACON_WPM         (30)     ///< Velocidad del beacon en palabras por minuto 1-255
-/**
- * @def SCH_CMDTRX_INIT_MODE Modo inicial de operacion del TRX
- * TRX_MODE_RESET          (0x01)
- * TRX_MODE_SYSRST         (0x02)
- * TRX_MODE_SILENT         (0x04)
- * TRX_MODE_ONLYBCN        (0x08)
- * TRX_MODE_NOBEACON       (0x10)
- * TRX_MODE_NOMINAL        (0x20)
- */
-#define SCH_CMDTRX_INIT_MODE                    (0x10)  ///< Modo no beacon, si TM
+
+#define SCH_TRX_BEACON_PERIOD              (4*60)   ///< [s] Periodo del beacon en segundos (UINT16)
+#define SCH_TRX_BEACON_WPM                 (20)     ///< Velocidad del beacon en palabras por minuto 1-255
+#define SCH_TRX_BEACON_BAT_LVL             (550)    ///< Nivel de bateria minimo para transmitir beacon
+#define SCH_TRX_BEACON_MODE                (2)      ///< Tipo de beacon 0=CW, 1=Cw+FM, 2=FM
+#define SCH_TRX_BEACON_POSPONE             (30*60)  ///< [s] Periodo de inactividad del beacon luego de cada encendido (UINT16)
+#define SCH_TRX_RX_BAUD                    (48)     /// RX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
+#define SCH_TRX_TX_BAUD                    (48)     /// TX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
+#define SCH_TRX_NODE_GND                   (10)     /// Nodo de la estacion terrena
+#define SCH_TRX_PORT_TM                    (10)     /// Puerto correspondiente a telemetria
+
+#define SCH_TRX_BEACON_PWR                 (4)      ///< @deprecated Potencia beacon 0 - 24
+#define SCH_TRX_TELEMETRY_PWR              (8)      ///< @deprecated Potencia telemetria 0 - 24 q
+#define SCH_CMDTRX_INIT_MODE               (0x10)   ///< @deprecated Modo no beacon, si TM
+
 #define SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE  (1) ///< 1=Activo ( EPS montada ) 0= Inactivo ( EPS no montada SOC se lleva a MAX_SOC )
 #define SCH_FLIGHTPLAN_TYPE                     (1) ///< 0=ninguno, 1=taskFligthPlan 2=taskFlightPlan2 3=ambos
 #define SCH_FLIGHTPLAN_RESOLUTION               (10) ///< [MINUTES] Resolucion de tiempo del flight plan

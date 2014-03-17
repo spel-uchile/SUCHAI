@@ -62,13 +62,13 @@ int main(void)
     default_PIC_config();
 
     /* Crating base tasks (others are created inside taskDeployment) */
-    xTaskCreate(taskExecuter, (signed char *)"executer", 2*configMINIMAL_STACK_SIZE, NULL, 4, &taskExecuterHandle);
+    xTaskCreate(taskExecuter, (signed char *)"executer", 3*configMINIMAL_STACK_SIZE, NULL, 4, &taskExecuterHandle);
     xTaskCreate(taskDispatcher, (signed char *)"dispatcher", 2*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
-    xTaskCreate(taskDeployment, (signed char *)"deployment", 2*configMINIMAL_STACK_SIZE, NULL, 3, &taskDeploymentHandle);
+    xTaskCreate(taskDeployment, (signed char *)"deployment", 3*configMINIMAL_STACK_SIZE, NULL, 3, &taskDeploymentHandle);
     //xTaskCreate(taskConsole, (signed char *)"console", 4*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
 
     /* Libcsp init */
-    //csp_initialization();
+    csp_initialization();
     //Libcsp tasks
     //xTaskCreate(taskServerCSP, (signed char *)"SRV", 3*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
     //xTaskCreate(taskRxI2C, (signed char *)"I2C", 2*configMINIMAL_STACK_SIZE, NULL, 2, NULL);
@@ -117,11 +117,11 @@ void vApplicationStackOverflowHook(xTaskHandle* pxTask, signed char* pcTaskName)
 static void csp_initialization(void)
 {
     /* Init buffer system with 3 packets of maximum 256 bytes each */
-    csp_buffer_init(1, 64);
+    csp_buffer_init(5, 128);
 
     /* Init CSP with address MY_ADDRESS */
     csp_init(MY_ADDRESS);
-    csp_i2c_init(0xAA, 0, 400);
+    csp_i2c_init(MY_ADDRESS, 0, 400);
 
     csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
     csp_route_start_task(2*configMINIMAL_STACK_SIZE, 2);

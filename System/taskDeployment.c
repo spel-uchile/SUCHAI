@@ -35,7 +35,7 @@ void taskDeployment(void *param)
     #endif
 
     /* Perifericos*/
-    dep_init_Peripherals(NULL);
+    //dep_init_Peripherals(NULL);
 
     /* Repositorios */
     dep_init_Repos(NULL);

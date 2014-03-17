@@ -1261,14 +1261,15 @@ void drp_eps_charging(void)
  * Arguments          : void
  * Return Value       : 1 - OK, 0 - FAIL
  * ID                 : 0x5011
+ * NOTE               : DEPRECATED
  *----------------------------------------------------------------------------*/
 void drp_trx_frec_tx(void)
 {
     /* Reading FTX */
-    long long_value;
-    long_value = (long)TRX_ReadRegister(TRX_FTX_H)<<16 ;
-    long_value = long_value | (long) TRX_ReadRegister(TRX_FTX_M)<<8;
-    long_value = long_value | (long) TRX_ReadRegister(TRX_FTX_L);
+    long long_value = -1;
+//    long_value = (long)TRX_ReadRegister(TRX_FTX_H)<<16 ;
+//    long_value = long_value | (long) TRX_ReadRegister(TRX_FTX_M)<<8;
+//    long_value = long_value | (long) TRX_ReadRegister(TRX_FTX_L);
     /* Writing TRX_FTX to repo */
     dat_setCubesatVar(dat_trx_frec_tx, (int)long_value);
 }
@@ -1284,14 +1285,12 @@ void drp_trx_frec_tx(void)
 void drp_trx_frec_rx(void)
 {
     /* Reading FRX */
-    long long_value;
-    long_value = (long)TRX_ReadRegister(TRX_FRX_H)<<16 ;
-    long_value = long_value | (long) TRX_ReadRegister(TRX_FRX_M)<<8;
-    long_value = long_value | (long) TRX_ReadRegister(TRX_FRX_L);
+    long long_value = -1;
+//    long_value = (long)TRX_ReadRegister(TRX_FRX_H)<<16 ;
+//    long_value = long_value | (long) TRX_ReadRegister(TRX_FRX_M)<<8;
+//    long_value = long_value | (long) TRX_ReadRegister(TRX_FRX_L);
     /* Writing TRX_FRX to repo */
     dat_setCubesatVar(dat_trx_frec_rx, (int)long_value);
-
-    
 }
 
 /*------------------------------------------------------------------------------
@@ -1304,9 +1303,9 @@ void drp_trx_frec_rx(void)
  *----------------------------------------------------------------------------*/
 void drp_trx_opmode(void)
 {
-    /* Reading OP_MODE */
-    char char_value;
-    char_value = TRX_ReadRegister(TRX_MODE);
+    /* TODO: Reading OP_MODE */
+    char char_value = 0;
+//    char_value = TRX_ReadRegister(TRX_MODE);
     /* Writing TRX_FTX to repo */
     dat_setCubesatVar(dat_trx_opmode, (int)char_value);
 
@@ -1324,11 +1323,11 @@ void drp_trx_opmode(void)
  *----------------------------------------------------------------------------*/
 void drp_trx_temp_hpa(void)
 {
-    int int_value;
+    int int_value = -1;
 
-    /* Reading TEMP_HPA */
-    int_value = (int)TRX_ReadRegister(TRX_TEMPHPA_H)<<8;
-    int_value = int_value | (int)TRX_ReadRegister(TRX_TEMPHPA_L);
+    /*TODO: Reading TEMP_HPA */
+//    int_value = (int)TRX_ReadRegister(TRX_TEMPHPA_H)<<8;
+//    int_value = int_value | (int)TRX_ReadRegister(TRX_TEMPHPA_L);
     /* Writing TEMP_HPA to repo */
     dat_setCubesatVar(dat_trx_temp_hpa, int_value);
 
@@ -1337,11 +1336,11 @@ void drp_trx_temp_hpa(void)
 
 void drp_trx_temp_mcu(void)
 {
-    int int_value;
+    int int_value = -1;
 
-    /* Reading TEMP_MCU */
-    int_value = (int)TRX_ReadRegister(TRX_TEMPMCU_H)<<8;
-    int_value = int_value | (int)TRX_ReadRegister(TRX_TEMPMCU_L);
+    /* TODO: Reading TEMP_MCU */
+//    int_value = (int)TRX_ReadRegister(TRX_TEMPMCU_H)<<8;
+//    int_value = int_value | (int)TRX_ReadRegister(TRX_TEMPMCU_L);
     /* Writing TEMP_MCU to repo */
     dat_setCubesatVar(dat_trx_temp_mcu, int_value);
 
@@ -1424,10 +1423,10 @@ static int drp_update_rssi_mean(int new_value){
  *----------------------------------------------------------------------------*/
 void drp_trx_rssi(void)
 {
-    /* Reading RSSI */
-    int int_value;
-    int_value = (int)TRX_ReadRegister(TRX_RSSI_H)<<8;
-    int_value = int_value | (int)TRX_ReadRegister(TRX_RSSI_L);
+    /* TODO: Reading RSSI */
+    int int_value = -1;
+//    int_value = (int)TRX_ReadRegister(TRX_RSSI_H)<<8;
+//    int_value = int_value | (int)TRX_ReadRegister(TRX_RSSI_L);
 
 #ifdef TRX_RSSI_DBM
     /* Convert to dBm */
@@ -1447,12 +1446,13 @@ void drp_trx_rssi(void)
  * Arguments          : void
  * Return Value       : 1 - OK, 0 - FAIL
  * ID                 : 0x5016
+ * NOTE               : DEPRECATED
  *----------------------------------------------------------------------------*/
 void drp_trx_beacon_pwr(void)
 {
     /* Reading BEACON_PWR */
-    char char_value;
-    char_value = TRX_ReadRegister(TRX_BEACONPOWER);
+    char char_value = 0;
+//    char_value = TRX_ReadRegister(TRX_BEACONPOWER);
     /* Writing BEACON_PWR to repo */
     dat_setCubesatVar(dat_trx_beacon_pwr, (int)char_value);
 }
@@ -1464,12 +1464,13 @@ void drp_trx_beacon_pwr(void)
  * Arguments          : void
  * Return Value       : 1 - OK, 0 - FAIL
  * ID                 : 0x5017
+ * NOTE               : DEPRECATED
  *----------------------------------------------------------------------------*/
 void drp_trx_telemetry_pwr(void)
 {
-    char char_value;
+    char char_value = 0;
     /* Reading TELEMETRY_PWR */
-    char_value = TRX_ReadRegister(TRX_TMPOWER);
+//    char_value = TRX_ReadRegister(TRX_TMPOWER);
     /* Writing BEACON_PWR to repo */
     dat_setCubesatVar(dat_trx_telemetry_pwr, (int)char_value);
 }
@@ -1484,9 +1485,9 @@ void drp_trx_telemetry_pwr(void)
  *----------------------------------------------------------------------------*/
 void drp_trx_status_tc(void)
 {
-    int value;
-    /* Reading STATUS_TC */
-    value = TRX_CheckNewTC();
+    int value = 0;
+    /* TODO: Reading STATUS_TC */
+//    value = TRX_CheckNewTC();
     /* Writing BEACON_PWR to repo */
     dat_setCubesatVar(dat_trx_status_tc, value);
 }

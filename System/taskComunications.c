@@ -61,7 +61,7 @@ void taskComunications(void *param)
         seconds_cnt += xsec;
 
         /* Actualizar y enviar beacon */
-        if(seconds_cnt % SCH_COMM_BEACON_PERIOD_S == 0)
+        if(seconds_cnt % SCH_TRX_BEACON_PERIOD == 0)
         {
             /* Ajustar el contador a los tipos de beacon que hay*/
             type_cnt = type_cnt % 2;
@@ -78,7 +78,7 @@ void taskComunications(void *param)
         if(seconds_cnt % 30 == 0)
         {
             TcNewCmd.cmdId = trx_id_setmode;
-            TcNewCmd.param = TRX_MODE_NOBEACON;
+//            TODO: TcNewCmd.param = TRX_MODE_NOBEACON;
             xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
         }
 

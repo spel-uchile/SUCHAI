@@ -15,7 +15,7 @@
 
 #include <string.h>
 
-#include "transceiver.h"
+#include "nanocom.h"
 
 #include "cmdIncludes.h"    //para CMD_XXX
 #include "dataRepository.h"
@@ -67,9 +67,10 @@ typedef enum{
 #define TRX_NCMD ((unsigned char)trx_id_last_one)
 
 void trx_onResetCmdTRX(void);
+int trx_set_conf(void *param);
 int trx_send_beacon(void *param);
-int trx_readreg(void *param);
-int trx_idleframe(void *param);
+int trx_read_conf(void *param);
+int trx_test_frame(void *param);
 int trx_testframe(void *param);
 int trx_getstatus(void *param);
 int trx_set_beacon(void *param);

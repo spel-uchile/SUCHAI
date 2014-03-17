@@ -87,12 +87,7 @@
 #define SCH_TCM_SYS_REQ                     (3)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de telemetria
 #define SCH_BCN_SYS_REQ                     (2)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de beacon
 
-#define SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE  (1) ///< 1=Activo ( EPS montada ) 0= Inactivo ( EPS no montada SOC se lleva a MAX_SOC )
-#define SCH_FLIGHTPLAN_TYPE                     (1) ///< 0=ninguno, 1=taskFligthPlan 2=taskFlightPlan2 3=ambos
-#define SCH_FLIGHTPLAN_RESOLUTION               (10) ///< [MINUTES] Resolucion de tiempo del flight plan
->>>>>>> 7fa0b8d093968f979382f85f423ad6ac36b488f3
-#define SCH_FLIGHTPLAN_N_CMD                    ((24 * 60) / SCH_FLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]
-#define SCH_FLIGHTPLAN_MEMORY                   (0)     ///< (0) buffer en  RAM, (1) en memoria SD
+
 
 /**
  * @def SCH_DATAREPOSITORY_MAX_BUFF_TELECMD

@@ -22,5 +22,6 @@
 
 void taskComunications(void *param);
 void com_doOnRSSI(xQueueHandle cmdQueue);
+void com_doOnRSSI(xQueueHandle dispatcherQueue);
 
 #endif //T_COMUNICATIONS_H

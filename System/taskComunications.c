@@ -19,8 +19,11 @@
  */
 
 #include "taskComunications.h"
+#include "csp_i2c.h"
+#include "csp.h"
 
 extern xQueueHandle dispatcherQueue; /* Commands queue */
+extern xQueueHandle i2cRxQueue;
 
 void taskComunications(void *param)
 {
@@ -28,9 +31,11 @@ void taskComunications(void *param)
     con_printf(">>[Comunications] Started\r\n");
 #endif
 
-    portTickType delay_ms    = 2000;    //Task period in [ms]
+    portTickType delay_ms    = 1000;    //Task period in [ms]
     int xsec = (delay_ms/1000);  //se ejecuta cada Xseg ahora
     portTickType delay_ticks = delay_ms / portTICK_RATE_MS; //Task period in ticks (==dalay_ms/10)
+
+    i2c_frame_t *csp_frame_p = (i2c_frame_t *) csp_buffer_get(TRX_TMFRAMELEN);
     
     DispCmd TcNewCmd;
 
@@ -56,9 +61,12 @@ void taskComunications(void *param)
     /* Comienza el ciclo de la tarea */
     while(1)
     {
-        /* Tarea periodica cada 2 Segundos*/
+        /* Tarea periodica cada 1 Segundos*/
         vTaskDelayUntil(&xLastWakeTime, delay_ticks);
         seconds_cnt += xsec;
+
+        /* Recibir datos a traves de I2C */
+        com_RxI2C(csp_frame_p, i2cRxQueue);
 
         /* Actualizar y enviar beacon */
         if(seconds_cnt % SCH_TRX_BEACON_PERIOD == 0)
@@ -246,33 +254,39 @@ void com_doOnRSSI(xQueueHandle dispatcherQueue)
 //    xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
 }
 
-void com_RxI2C()
+/**
+ * Receive incoming data from I2C and queue to libcsp
+ *
+ * @param frame_p i2c_frame_t pointer to a valid frame
+ * @param i2c_rx_queue Valid queue to read data from
+ */
+void com_RxI2C(i2c_frame_t * frame_p, xQueueHandle i2c_rx_queue)
 {
-    printf("[RxI2C Started]\n");
-    int n_recv = 0;
-    uint8_t new_data = 0;
+    static int nrcv = 0;
+    static uint8_t new_data = 0;
     portBASE_TYPE result = pdFALSE;
-    i2c_frame_t *frame = (i2c_frame_t *) csp_buffer_get(100);
 
-    result = xQueueReceive(i2cRxQueue, &new_data, 50/ portTICK_RATE_MS);
+    result = xQueueReceive(i2c_rx_queue, &new_data, 50/ portTICK_RATE_MS);
 
     //No more data received
     if(result != pdPASS)
     {
-        if(n_recv > 0)
+        if(nrcv > 0)
         {
-            frame->len = n_recv;
-            csp_i2c_rx(frame, NULL);
+            frame_p->len = nrcv;
+            csp_i2c_rx(frame_p, NULL);
 
-            frame = (i2c_frame_t *) csp_buffer_get(100);
-            frame->len = 0;
-            n_recv = 0;
+            csp_buffer_free(frame_p);
+
+            frame_p = (i2c_frame_t *) csp_buffer_get(TRX_TMFRAMELEN);
+            frame_p->len = 0;
+            nrcv = 0;
         }
     }
     //New data received
     else
     {
-        frame->data[n_recv] = new_data;
-        n_recv++;
+        frame_p->data[nrcv] = new_data;
+        nrcv++;
     }
 }

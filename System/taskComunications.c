@@ -35,7 +35,7 @@ void taskComunications(void *param)
     int xsec = (delay_ms/1000);  //se ejecuta cada Xseg ahora
     portTickType delay_ticks = delay_ms / portTICK_RATE_MS; //Task period in ticks (==dalay_ms/10)
 
-    i2c_frame_t *csp_frame_p = (i2c_frame_t *) csp_buffer_get(TRX_TMFRAMELEN);
+//    i2c_frame_t *csp_frame_p = (i2c_frame_t *) csp_buffer_get(TRX_TMFRAMELEN);
     
     DispCmd TcNewCmd;
 
@@ -66,7 +66,8 @@ void taskComunications(void *param)
         seconds_cnt += xsec;
 
         /* Recibir datos a traves de I2C */
-        com_RxI2C(csp_frame_p, i2cRxQueue);
+//        com_RxI2C(csp_frame_p, i2cRxQueue);
+        com_RxI2C(i2cRxQueue);
 
         /* Actualizar y enviar beacon */
         if(seconds_cnt % SCH_TRX_BEACON_PERIOD == 0)
@@ -260,11 +261,20 @@ void com_doOnRSSI(xQueueHandle dispatcherQueue)
  * @param frame_p i2c_frame_t pointer to a valid frame
  * @param i2c_rx_queue Valid queue to read data from
  */
-void com_RxI2C(i2c_frame_t * frame_p, xQueueHandle i2c_rx_queue)
+void com_RxI2C(xQueueHandle i2c_rx_queue)
 {
     static int nrcv = 0;
     static uint8_t new_data = 0;
+    static i2c_frame_t *frame_p = NULL;
     portBASE_TYPE result = pdFALSE;
+
+    if(frame_p == NULL)
+    {
+        frame_p = (i2c_frame_t *) csp_buffer_get(TRX_TMFRAMELEN/2);
+        frame_p->len = 0;
+        nrcv = 0;
+        return;
+    }
 
     result = xQueueReceive(i2c_rx_queue, &new_data, 50/ portTICK_RATE_MS);
 
@@ -278,9 +288,9 @@ void com_RxI2C(i2c_frame_t * frame_p, xQueueHandle i2c_rx_queue)
 
             csp_buffer_free(frame_p);
 
-            frame_p = (i2c_frame_t *) csp_buffer_get(TRX_TMFRAMELEN);
-            frame_p->len = 0;
-            nrcv = 0;
+            frame_p = NULL;
+//            frame_p->len = 0;
+//            nrcv = 0;
         }
     }
     //New data received

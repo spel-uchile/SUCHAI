@@ -18,6 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "taskDeployment.h"
+#include "csp.h"
+#include "csp_if_i2c.h"
+#include "taskTest.h"
 
 extern xTaskHandle taskComunicationsHandle;
 extern xTaskHandle taskConsoleHandle;
@@ -26,6 +29,9 @@ extern xTaskHandle taskFlightPlan2Handle;
 extern xTaskHandle taskHouskeepingHandle;
 
 extern xQueueHandle dispatcherQueue;
+
+//Libcsp function
+static void csp_initialization(void);
 
 void taskDeployment(void *param)
 {
@@ -61,6 +67,9 @@ void taskDeployment(void *param)
 
     /* Tareas */
     dep_launch_tasks(NULL);
+
+    /* Start libcsp services */
+    csp_initialization();
 
     /* Fin */
     dep_suicide(NULL);
@@ -109,6 +118,7 @@ int dep_init_Repos(void *param)
 
     return 1;
 }
+
 /**
  * Initializes all data repositories
  *
@@ -129,6 +139,7 @@ int dep_init_GnrlStrct(void *param)
 
     return 1;
 }
+
 /**
  * Implements mandatory radial silence
  * @param param 1-Realtime, 0-Debug time
@@ -246,7 +257,7 @@ int dep_launch_tasks(void *param)
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         con_printf("    * Creating taskConsole\r\n");
     #endif
-    xTaskCreate(taskConsole, (signed char *)"console", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
+    xTaskCreate(taskConsole, (signed char *)"console", 1*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         con_printf("    * Creating taskHousekeeping\r\n");
@@ -259,6 +270,8 @@ int dep_launch_tasks(void *param)
         #endif
         xTaskCreate(taskComunications, (signed char *)"comunications", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskComunicationsHandle);
     #endif
+    xTaskCreate(taskComunications, (signed char *)"comunications", 3*configMINIMAL_STACK_SIZE, NULL, 1, &taskComunicationsHandle);
+
 
     if( dat_getCubesatVar(dat_msd_status) == 1 )
     {
@@ -477,4 +490,38 @@ int dep_init_Peripherals(void *param)
     #endif
 
     return 1;
+}
+
+//Libcsp defines and functions
+#define MY_ADDRESS 2
+static void csp_initialization(void)
+{
+    /* Init buffer system with 3 packets of maximum 256 bytes each */
+    csp_buffer_init(3, TRX_TMFRAMELEN+5);
+
+    /* Init CSP with address MY_ADDRESS */
+    csp_init(MY_ADDRESS);
+    csp_i2c_init(MY_ADDRESS, 0, 400);
+
+    csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
+    csp_route_start_task(configMINIMAL_STACK_SIZE, 1);
+
+    /* Create socket without any socket options */
+    csp_socket_t *sock = csp_socket(CSP_SO_NONE);
+
+    /* Bind all ports to socket */
+    csp_bind(sock, CSP_ANY);
+
+    /* Create connections backlog queue */
+    csp_listen(sock, 2);
+
+    //DEBUG
+    printf("\n---- Conn table ----\n");
+    csp_conn_print_table();
+    printf("---- Route table ----\n");
+    csp_route_print_table();
+    printf("---- Interfaces ----\n");
+    csp_route_print_interfaces();
+
+//    xTaskCreate(taskServerCSP, (signed char *)"SRV", 2*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
 }

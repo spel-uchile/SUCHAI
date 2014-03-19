@@ -320,10 +320,11 @@ DispCmd con_cmd_handler(void)
         if(strcmp(con_cmd, "trx_tm") == 0)
        {
            int param = 1;
-           if(con_arg_count == 1)
+           if(con_arg_count >= 1)
            {
                if(strcmp(con_args[0], "idle") == 0)
                {
+                   param = atoi(con_args[1]); /* To node 2 */
                    newCmd.cmdId=trx_id_idleframe;//0x3002; /*trx_idleframe*/
                }
                else if(strcmp(con_args[0], "test") == 0)

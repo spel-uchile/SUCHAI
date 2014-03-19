@@ -41,16 +41,13 @@ xTaskHandle taskDeploymentHandle, taskDispatcherHandle, taskExecuterHandle;
 xTaskHandle taskComunicationsHandle, taskConsoleHandle, taskFlightPlanHandle,
             taskFlightPlan2Handle, taskHouskeepingHandle;
 
-//Libcsp function
-static void csp_initialization(void);
-
 int main(void)
 {
     /* Initializing shared Queues */
     dispatcherQueue = xQueueCreate(25,sizeof(DispCmd));
     executerCmdQueue = xQueueCreate(1,sizeof(ExeCmd));
     executerStatQueue = xQueueCreate(1,sizeof(int));
-    i2cRxQueue = xQueueCreate(25, sizeof(char));   //TRX_GOMSPACE
+    i2cRxQueue = xQueueCreate(TRX_TMFRAMELEN, sizeof(char));   //TRX_GOMSPACE
 
     /* Initializing shared Semaphore */
     dataRepositorySem = xSemaphoreCreateMutex();
@@ -63,15 +60,12 @@ int main(void)
 
     /* Crating base tasks (others are created inside taskDeployment) */
     xTaskCreate(taskExecuter, (signed char *)"executer", 3*configMINIMAL_STACK_SIZE, NULL, 4, &taskExecuterHandle);
-    xTaskCreate(taskDispatcher, (signed char *)"dispatcher", 2*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
-    xTaskCreate(taskDeployment, (signed char *)"deployment", 3*configMINIMAL_STACK_SIZE, NULL, 3, &taskDeploymentHandle);
+    xTaskCreate(taskDispatcher, (signed char *)"dispatcher", 1*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
+    xTaskCreate(taskDeployment, (signed char *)"deployment", 2*configMINIMAL_STACK_SIZE, NULL, 3, &taskDeploymentHandle);
     //xTaskCreate(taskConsole, (signed char *)"console", 4*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
 
-    /* Libcsp init */
-    csp_initialization();
-    //Libcsp tasks
-    //xTaskCreate(taskServerCSP, (signed char *)"SRV", 3*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
-    //xTaskCreate(taskRxI2C, (signed char *)"I2C", 2*configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+//    /* Libcsp init */
+//    csp_initialization();
 
     /* Start the scheduler. Should never return */
     con_printf("\nStarting FreeRTOS [->]\r\n");
@@ -112,28 +106,28 @@ void vApplicationStackOverflowHook(xTaskHandle* pxTask, signed char* pcTaskName)
 }
 
 
-//Libcsp defines and functions
-#define MY_ADDRESS 2
-static void csp_initialization(void)
-{
-    /* Init buffer system with 3 packets of maximum 256 bytes each */
-    csp_buffer_init(5, 128);
-
-    /* Init CSP with address MY_ADDRESS */
-    csp_init(MY_ADDRESS);
-    csp_i2c_init(MY_ADDRESS, 0, 400);
-
-    csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
-    csp_route_start_task(2*configMINIMAL_STACK_SIZE, 2);
-
-    //DEBUG
-    printf("\n---- Conn table ----\n");
-    csp_conn_print_table();
-    printf("---- Route table ----\n");
-    csp_route_print_table();
-    printf("---- Interfaces ----\n");
-    csp_route_print_interfaces();
-}
+////Libcsp defines and functions
+//#define MY_ADDRESS 2
+//static void csp_initialization(void)
+//{
+//    /* Init buffer system with 3 packets of maximum 256 bytes each */
+//    csp_buffer_init(5, TRX_TMFRAMELEN+5);
+//
+//    /* Init CSP with address MY_ADDRESS */
+//    csp_init(MY_ADDRESS);
+//    csp_i2c_init(MY_ADDRESS, 0, 400);
+//
+//    csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
+//    csp_route_start_task(2*configMINIMAL_STACK_SIZE, 2);
+//
+//    //DEBUG
+//    printf("\n---- Conn table ----\n");
+//    csp_conn_print_table();
+//    printf("---- Route table ----\n");
+//    csp_route_print_table();
+//    printf("---- Interfaces ----\n");
+//    csp_route_print_interfaces();
+//}
 
 #define STDIN   0
 #define STDOUT  1

@@ -32,7 +32,7 @@
 
 
 /* PPS configuration (0=offboard 1=Onboard) */
-#define SCH_SYSBUS_ONBOARD                  (1)  //< Onboard => I2C1 en uso
+#define SCH_SYSBUS_ONBOARD                  (0)  //< Onboard => I2C1 en uso
 #define SCH_PAYBUS_ONBOARD                  (1)  ///< Onboard => I2C3 en uso
 #define SCH_MGN_ONBOARD                     (0)  ///< Onboard => 1 pin(es) en modo Switch
 #define SCH_ANTENNA_ONBOARD                 (0)  ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
@@ -83,21 +83,7 @@
  * format [0xTCID|0xARGM|.....|0xSTOP] in frames of 63 bytes each one. 
  * So 15 commands plus 15 args, that means 62 bytes (15 cmd + 15 param + 1 stop)
  */
-#define SCH_DATAREPOSITORY_MAX_BUFF_TELECMD (2*2)
-#define SCH_DAT_TC_BUFF_MEMSD               (0)   ///< 1=buffer en la memSD 0=buff en mem RAM
-#define SCH_TCM_SYS_REQ                     (3)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de telemetria
-#define SCH_BCN_SYS_REQ                     (2)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de beacon
-
-
-
-/**
- * @def SCH_DATAREPOSITORY_MAX_BUFF_TELECMD
- * Cantidad de telecomandos en cola para ser procesados por el SUCHAI
- * Max internal (not Transceiver mem) TeleCMD buffer length considering TC in
- * format [0xTCID|0xARGM|.....|0xSTOP] in frames of 63 bytes each one. 
- * So 15 commands plus 15 args, that means 62 bytes (15 cmd + 15 param + 1 stop)
- */
-#define SCH_DATAREPOSITORY_MAX_BUFF_TELECMD (2*2)
+#define SCH_DATAREPOSITORY_MAX_BUFF_TELECMD (10*2)
 #define SCH_DAT_TC_BUFF_MEMSD               (0)   ///< 1=buffer en la memSD 0=buff en mem RAM
 #define SCH_TCM_SYS_REQ                     (3)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de telemetria
 #define SCH_BCN_SYS_REQ                     (2)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de beacon

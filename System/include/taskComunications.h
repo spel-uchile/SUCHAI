@@ -22,6 +22,6 @@
 
 void taskComunications(void *param);
 void com_doOnRSSI(xQueueHandle cmdQueue);
-void com_doOnRSSI(xQueueHandle dispatcherQueue);
+//void com_RxI2C(i2c_frame_t *frame_p, xQueueHandle i2c_rx_queue);
 
 #endif //T_COMUNICATIONS_H

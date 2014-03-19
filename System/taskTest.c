@@ -44,7 +44,7 @@ void taskServerCSP(void *param)
     csp_bind(sock, CSP_ANY);
 
     /* Create connections backlog queue */
-    csp_listen(sock, 5);
+    csp_listen(sock, 2);
 
     /* Process incoming connections */
     while (1)

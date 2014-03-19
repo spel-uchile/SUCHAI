@@ -4,7 +4,7 @@
 #include "i2c_comm.h"
 #include "DebugIncludes.h"  //para con_printf
 
-#define RTC_ID      (0b11010000)
+#define RTC_ID      (0b01101000) //0x68 (7 bit address)
 #define RTC_IDW     (0b11010000)
 #define RTC_IDR     (0b11010001)
 

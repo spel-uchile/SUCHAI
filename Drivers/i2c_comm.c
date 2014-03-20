@@ -141,7 +141,7 @@ void i2c3_open(unsigned int BRG, char address)
 int i2c1_slave_ready(char address, long timeout)
 {
     register int ok = 0;
-    char w_address = address[0]<<1;                //Address+W
+    char w_address = address<<1;                //Address+W
 
     while((ok == 0) && (timeout > 0))
     {
@@ -166,7 +166,7 @@ int i2c1_slave_ready(char address, long timeout)
 int i2c2_slave_ready(char address, long timeout)
 {
     register int ok = 0;
-    char w_address = address[0]<<1;                //Address+W
+    char w_address = address<<1;                //Address+W
 
     while((ok == 0) && (timeout > 0))
     {
@@ -191,7 +191,7 @@ int i2c2_slave_ready(char address, long timeout)
 int i2c3_slave_ready(char address, long timeout)
 {
     register int ok = 0;
-    char w_address = address[0]<<1;                //Address+W
+    char w_address = address<<1;                //Address+W
 
     while((ok == 0) && (timeout > 0))
     {

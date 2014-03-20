@@ -1,7 +1,7 @@
 /**
  * @file  i2c_comm.h
  * @author Carlos Gonzalez C
- * @date 2013
+ * @date 2014
  * @copyright GNU LGPL v3
  */
 
@@ -10,8 +10,6 @@
 
 #include <i2c.h>
 
-//#define I2C_EEPROM_IDW	0xA0
-//#define I2C_EEPROM_IDR	0xA1
 #define I2C_EEPROM_ID 0b01010000
 
 /*---------------------------------
@@ -54,4 +52,5 @@ void i2c3_open(unsigned int BRG, char address);
 int i2c3_slave_ready(char address, long timeout);
 int i2c3_master_fputs(const char *data, int len, char *address, int addlen);
 int i2c3_master_fgets(char *data, int len, char *address, int addlen);
+
 #endif

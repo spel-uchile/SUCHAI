@@ -141,7 +141,7 @@ void    mon_putc(char ch);
 int __attribute__((__weak__, __section__(".libc")))
 write(int handle, void * buffer, unsigned int len)
 {
-//    xSemaphoreTake(consolePrintfSem, portMAX_DELAY);
+    xSemaphoreTake(consolePrintfSem, portMAX_DELAY);
     int i = 0;
     switch (handle)
     {
@@ -151,7 +151,7 @@ write(int handle, void * buffer, unsigned int len)
                 mon_putc(((char*)buffer)[i++]);
             break;
     }
-//    xSemaphoreGive(consolePrintfSem);
+    xSemaphoreGive(consolePrintfSem);
     return (len);  // number of characters written
 }
 

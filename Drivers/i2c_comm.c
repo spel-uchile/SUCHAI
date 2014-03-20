@@ -106,6 +106,88 @@ void i2c2_open(unsigned int BRG, char address)
 }
 
 /**
+ * Check if slave is ready by polling ACK
+ *
+ * @param address 7bit slave address
+ * @param timeout number of polling sequences to whait
+ * @return 1=Salve ready, 0=Slave busy
+ */
+int i2c1_slave_ready(char address, long timeout)
+{
+    register int ok = 0;
+    char w_address = address[0]<<1;                //Address+W
+
+    while((ok == 0) && (timeout > 0))
+    {
+        timeout--;
+        //Waits while bus is busy
+        IdleI2C1();
+
+        //Init session sending Start condition
+        StartI2C1();
+        ok = i2c_master_wait_and_check(I2C_MOD1, 0);   //Wait op. ends and check errors
+        if(!ok) continue;                              //Return in error
+
+        //Send device address
+        MasterWriteI2C1(w_address);
+        ok = i2c_master_wait_and_check(I2C_MOD1, 1);
+        if(!ok) continue;
+    }
+
+    return ok;
+}
+
+int i2c2_slave_ready(char address, long timeout)
+{
+    register int ok = 0;
+    char w_address = address[0]<<1;                //Address+W
+
+    while((ok == 0) && (timeout > 0))
+    {
+        timeout--;
+        //Waits while bus is busy
+        IdleI2C2();
+
+        //Init session sending Start condition
+        StartI2C2();
+        ok = i2c_master_wait_and_check(I2C_MOD2, 0);   //Wait op. ends and check errors
+        if(!ok) continue;                              //Return in error
+
+        //Send device address
+        MasterWriteI2C2(w_address);
+        ok = i2c_master_wait_and_check(I2C_MOD2, 1);
+        if(!ok) continue;
+    }
+
+    return ok;
+}
+
+int i2c3_slave_ready(char address, long timeout)
+{
+    register int ok = 0;
+    char w_address = address[0]<<1;                //Address+W
+
+    while((ok == 0) && (timeout > 0))
+    {
+        timeout--;
+        //Waits while bus is busy
+        IdleI2C3();
+
+        //Init session sending Start condition
+        StartI2C3();
+        ok = i2c_master_wait_and_check(I2C_MOD3, 0);   //Wait op. ends and check errors
+        if(!ok) continue;                              //Return in error
+
+        //Send device address
+        MasterWriteI2C3(w_address);
+        ok = i2c_master_wait_and_check(I2C_MOD3, 1);
+        if(!ok) continue;
+    }
+
+    return ok;
+}
+
+/**
  * Send @num bytes from @data to I2C slave device at @address.
  *
  * @param data Out buffer of size equal or major than @len.

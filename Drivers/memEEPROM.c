@@ -20,22 +20,16 @@
 #include "memEEPROM.h"
 
 void writeEEPROM1(unsigned char address, char data){
-//    int max;
-    /* TODO: Implement slave ready */
-//    for(max=0x0FFF;max>0;max--){
-//        if( I2C1SlaveReady(MEP_EEPROM1_IDW)==1 ){break;}
-//    }
+    if( i2c1_slave_ready(MEP_EEPROM_ID, 0x0FFF) == 0 )
+        return;
 
     char _address[] = {MEP_EEPROM_ID, (char)address};
     i2c1_master_fputs(&data, 1, _address, 2);
 }
 
 unsigned char readEEPROM1(unsigned char address){
-        /* TODO: Implement slave ready */
-//    int max;
-//    for(max=0x0FFF;max>0;max--){
-//        if( I2C1SlaveReady(MEP_EEPROM1_IDW)==1 ){break;}
-//    }
+    if( i2c1_slave_ready(MEP_EEPROM_ID, 0x0FFF) == 0 )
+        return;
 
     char ret;
     char _address[] = {MEP_EEPROM_ID, (char)address};

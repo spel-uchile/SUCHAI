@@ -60,15 +60,12 @@ int main(void)
 
     /* Crating base tasks (others are created inside taskDeployment) */
     xTaskCreate(taskExecuter, (signed char *)"executer", 3*configMINIMAL_STACK_SIZE, NULL, 4, &taskExecuterHandle);
-    xTaskCreate(taskDispatcher, (signed char *)"dispatcher", 1*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
+    xTaskCreate(taskDispatcher, (signed char *)"dispatcher", 1.5*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
     xTaskCreate(taskDeployment, (signed char *)"deployment", 2*configMINIMAL_STACK_SIZE, NULL, 3, &taskDeploymentHandle);
     //xTaskCreate(taskConsole, (signed char *)"console", 4*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
 
-//    /* Libcsp init */
-//    csp_initialization();
-
     /* Start the scheduler. Should never return */
-    con_printf("\nStarting FreeRTOS [->]\r\n");
+    printf("\nStarting FreeRTOS [->]\r\n");
     vTaskStartScheduler();
 
     while(1)
@@ -77,7 +74,7 @@ int main(void)
          * El sistema solo llega hasta aca si el Scheduler falla debido
          * a falta de memoria u otro problema
          */
-        con_printf("\n>>FreeRTOS [FAIL]\n");
+        printf("\n>>FreeRTOS [FAIL]\n");
         ppc_reset(NULL);
     }
     
@@ -141,7 +138,7 @@ void    mon_putc(char ch);
 int __attribute__((__weak__, __section__(".libc")))
 write(int handle, void * buffer, unsigned int len)
 {
-    xSemaphoreTake(consolePrintfSem, portMAX_DELAY);
+//    xSemaphoreTake(consolePrintfSem, portMAX_DELAY);
     int i = 0;
     switch (handle)
     {
@@ -151,7 +148,7 @@ write(int handle, void * buffer, unsigned int len)
                 mon_putc(((char*)buffer)[i++]);
             break;
     }
-    xSemaphoreGive(consolePrintfSem);
+//    xSemaphoreGive(consolePrintfSem);
     return (len);  // number of characters written
 }
 

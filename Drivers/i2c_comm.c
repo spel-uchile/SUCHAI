@@ -43,8 +43,8 @@ static char i2c3_slave_getc(void);
 /**
  * Slave reception mode. Uncomment only one define statement
  */
-#define _I2C_SLAVE_BUFF ///< Uses buffer in ram to store recived data
-//#define _I2C_SLAVE_RTOS ///< Uses Queue to store slave recived data
+//#define _I2C_SLAVE_BUFF ///< Uses buffer in ram to store recived data
+#define _I2C_SLAVE_RTOS ///< Uses Queue to store slave recived data
 
 #ifdef _I2C_SLAVE_RTOS
 #include "FreeRTOS.h"
@@ -91,7 +91,7 @@ void i2c1_open(unsigned int BRG, char address)
     ConfigIntI2C1(MI2C_INT_ON & MI2C_INT_PRI_6 & SI2C_INT_ON & SI2C_INT_PRI_5); /* Interrupt mode state trantition */
 #endif
 
-    OpenI2C1(I2C_ON & I2C_IDLE_CON & I2C_CLK_HLD & I2C_IPMI_DIS & I2C_7BIT_ADD &
+    OpenI2C1(I2C_ON & I2C_IDLE_CON & I2C_CLK_HLD & I2C_IPMI_EN & I2C_7BIT_ADD &
             I2C_SLW_EN & I2C_SM_DIS & I2C_GCALL_DIS & I2C_STR_EN & I2C_ACK &
             I2C_ACK_DIS & I2C_RCV_DIS & I2C_STOP_DIS & I2C_RESTART_DIS & I2C_START_DIS,
             BRG) ; /* BRG according to I2C Clock Rate table*/

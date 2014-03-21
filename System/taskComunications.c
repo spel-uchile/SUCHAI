@@ -89,6 +89,8 @@ void taskComunications(void *param)
         /* Queue NewCmd - Non-Blocking (Wait 0.5 task period) */
         xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
 
+        continue;
+
         /* Actualizar la lectura de RSSI */
         TcNewCmd.cmdId = drp_id_update_dat_CubesatVar_trx_rssi;
         TcNewCmd.param = 0; /* None */
@@ -283,6 +285,7 @@ void com_RxI2C(xQueueHandle i2c_rx_queue)
     {
         if(nrcv > 0)
         {
+//            printf("New msg len: %d\n", (frame_p->len));
             frame_p->len = nrcv;
             csp_i2c_rx(frame_p, NULL);
 
@@ -296,6 +299,7 @@ void com_RxI2C(xQueueHandle i2c_rx_queue)
     //New data received
     else
     {
+//        printf("New data: %X\n at %d", new_data, nrcv);
         frame_p->data[nrcv] = new_data;
         nrcv++;
     }

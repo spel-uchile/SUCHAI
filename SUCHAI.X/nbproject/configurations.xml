@@ -286,7 +286,7 @@
         <property key="extra-include-directories"
                   value="..;../Drivers/include;../System/include;../FreeRTOS/Source/include;../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/;../Payloads/Cmd/include;../Payloads/Drivers/include;../Libcsp;../Libcsp/include/csp;../Libcsp/src;../Libcsp/include/csp/arch;../Libcsp/include/csp/drivers;../Libcsp/include/csp/interfaces;../Libcsp/src/interfaces;../Libcsp/src/interfaces/csp;../System/Internal/include"/>
         <property key="isolate-each-function" value="false"/>
-        <property key="keep-inline" value="false"/>
+        <property key="keep-inline" value="true"/>
         <property key="oXC16gcc-align-arr" value="false"/>
         <property key="oXC16gcc-cnsts-mauxflash" value="false"/>
         <property key="oXC16gcc-data-sects" value="false"/>
@@ -301,7 +301,7 @@
         <property key="oXC16gcc-sfr-warn" value="false"/>
         <property key="oXC16gcc-smar-io-lvl" value="1"/>
         <property key="oXC16gcc-smart-io-fmt" value=""/>
-        <property key="optimization-level" value="0"/>
+        <property key="optimization-level" value="1"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>
         <property key="preprocessor-macros" value="MPLAB_PIC24_PORT"/>

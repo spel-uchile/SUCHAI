@@ -257,7 +257,7 @@ int dep_launch_tasks(void *param)
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         con_printf("    * Creating taskConsole\r\n");
     #endif
-    xTaskCreate(taskConsole, (signed char *)"console", 1*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
+    xTaskCreate(taskConsole, (signed char *)"console", 1.5*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         con_printf("    * Creating taskHousekeeping\r\n");
@@ -504,7 +504,7 @@ static void csp_initialization(void)
     csp_i2c_init(MY_ADDRESS, 0, 400);
 
     csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
-    csp_route_start_task(configMINIMAL_STACK_SIZE, 1);
+    csp_route_start_task(1.5*configMINIMAL_STACK_SIZE, 1);
 
     /* Create socket without any socket options */
     csp_socket_t *sock = csp_socket(CSP_SO_NONE);

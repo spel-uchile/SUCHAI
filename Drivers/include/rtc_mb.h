@@ -4,7 +4,8 @@
 #include "i2c_comm.h"
 #include "DebugIncludes.h"  //para con_printf
 
-#define RTC_ID      (0b11010000)
+//#define RTC_ID    (0b11010000)
+#define RTC_ID      (0b01101000)
 #define RTC_IDW     (0b11010000)
 #define RTC_IDR     (0b11010001)
 
@@ -42,6 +43,7 @@ unsigned char RTC_ReadRegister(unsigned int reg);
 
 int RTC_init(void);
 int RTC_restart_osc(void);
+int RTC_isAlive(void);
 
 int RTC_get_milliseconds(void);
 int RTC_get_seconds(void);

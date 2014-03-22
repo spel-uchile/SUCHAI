@@ -784,6 +784,24 @@ DispCmd con_cmd_handler(void)
            return newCmd;
        }
 
+       /*EEPROM_AVLIVE PRINT*/
+       if(strcmp(con_cmd, "test_eeprom") == 0)
+       {
+           if(con_arg_count == 0)
+           {
+               memEEPROM_isAlive(); //TODO: FIXME
+           }
+           else
+           {
+               newCmd.cmdId = con_id_error_count_arg;
+           }
+
+           con_arg_toolong = FALSE;
+           con_entry_flag = FALSE;
+
+           return newCmd;
+       }
+
        /* ------ To get here the cmd has to fail all the comparisons  ------*/
        newCmd.cmdId = con_id_error_unknown_cmd; /* con_error_unknown_cmd */
 

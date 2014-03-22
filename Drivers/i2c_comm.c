@@ -132,6 +132,107 @@ void i2c3_open(unsigned int BRG, char address)
 }
 
 /**
+ * Check if slave is ready by polling ACK
+ *
+ * @param address 7bit slave address
+ * @param timeout number of polling sequences to whait
+ * @return 1=Salve ready, 0=Slave busy
+ */
+int i2c1_slave_ready(char address, long timeout)
+{
+    register int ok = 0;
+    char w_address = address<<1;                //Address+W
+
+    while((ok == 0) && (timeout > 0))
+    {
+        timeout--;
+        //Waits while bus is busy
+        IdleI2C1();
+
+        //Init session sending Start condition
+        StartI2C1();
+        ok = i2c_master_wait_and_check(I2C_MOD1, 0);   //Wait op. ends and check errors
+        if(!ok) continue;                              //Return in error
+
+        //Send device address
+        MasterWriteI2C1(w_address);
+        ok = i2c_master_wait_and_check(I2C_MOD1, 1);
+        if(!ok) continue;
+    }
+
+    //Close session sending stop condition
+    if(ok)
+    {
+        StopI2C1();
+        i2c_master_wait_and_check(I2C_MOD1, 0);
+    }
+
+    return ok;
+}
+
+int i2c2_slave_ready(char address, long timeout)
+{
+    register int ok = 0;
+    char w_address = address<<1;                //Address+W
+
+    while((ok == 0) && (timeout > 0))
+    {
+        timeout--;
+        //Waits while bus is busy
+        IdleI2C2();
+
+        //Init session sending Start condition
+        StartI2C2();
+        ok = i2c_master_wait_and_check(I2C_MOD2, 0);   //Wait op. ends and check errors
+        if(!ok) continue;                              //Return in error
+
+        //Send device address
+        MasterWriteI2C2(w_address);
+        ok = i2c_master_wait_and_check(I2C_MOD2, 1);
+        if(!ok) continue;
+    }
+
+    if(ok)
+    {
+        StopI2C2();
+        i2c_master_wait_and_check(I2C_MOD2, 0);
+    }
+
+    return ok;
+}
+
+int i2c3_slave_ready(char address, long timeout)
+{
+    register int ok = 0;
+    char w_address = address<<1;                //Address+W
+
+    while((ok == 0) && (timeout > 0))
+    {
+        timeout--;
+        //Waits while bus is busy
+        IdleI2C3();
+
+        //Init session sending Start condition
+        StartI2C3();
+        ok = i2c_master_wait_and_check(I2C_MOD3, 0);   //Wait op. ends and check errors
+        if(!ok) continue;                              //Return in error
+
+        //Send device address
+        MasterWriteI2C3(w_address);
+        ok = i2c_master_wait_and_check(I2C_MOD3, 1);
+        if(!ok) continue;
+    }
+
+    if(ok)
+    {
+        StopI2C3();
+        i2c_master_wait_and_check(I2C_MOD3, 0);
+    }
+
+    return ok;
+}
+
+/**
  * Send @num bytes from @data to I2C slave device at @address.
  *
  * @param data Out buffer of size equal or major than @len.
@@ -153,7 +254,7 @@ int i2c1_master_fputs(const char *data, int len, char *address, int addlen)
     IdleI2C1();
 
     //Init session sending Start condition
-    StartI2C1();            
+    StartI2C1();
     ok = i2c_master_wait_and_check(I2C_MOD1, 0);   //Wait op. ends and check errors
     if(!ok) return count;                          //Return in error
 
@@ -180,7 +281,7 @@ int i2c1_master_fputs(const char *data, int len, char *address, int addlen)
 
     //Close session sending stop condition
     StopI2C1();
-    i2c_master_wait_and_check(I2C_MOD1, 0); 
+    i2c_master_wait_and_check(I2C_MOD1, 0);
 
     return count;
 }
@@ -222,7 +323,7 @@ int i2c2_master_fputs(const char *data, int len, char *address, int addlen)
 
     //Close session sending stop condition
     StopI2C2();
-    i2c_master_wait_and_check(I2C_MOD2, 0); 
+    i2c_master_wait_and_check(I2C_MOD2, 0);
 
     return count;
 }
@@ -542,7 +643,7 @@ static int i2c_master_wait_and_check(int device, int check_ack)
     error = i2c_check_bus_collision(device);  //Check if bus collision occurred
 
     if(check_ack) error = error || (!i2c_check_ack(device));   //Check ACK
-    
+
     if(error)                                   //Send stop condition in error
     {
         switch(device)                          //Stop condition
@@ -557,11 +658,11 @@ static int i2c_master_wait_and_check(int device, int check_ack)
                 StopI2C3();
                 break;
         }
-        
+
         i2c_master_wait(device);
         return 0;                               //In error return 0
     }
-    
+
     return 1;                                   //If not return 1
 }
 
@@ -602,7 +703,7 @@ static int i2c_check_ack(int device)
  *       MI2CxIF flag
  *
  *     * Power save: CPU enters in IDLE mode until I2C ISR is generated.
- * 
+ *
  *     * FreeRTOS ISR: Uses interrupt service routine and semaphore sync with
  *       FreeRTOS
  */
@@ -634,7 +735,7 @@ static void i2c_master_wait(int device)
     return;
 }
 #endif
-    
+
 #ifdef _I2C_BUSY_WAIT
 {
     switch (device)
@@ -651,7 +752,7 @@ static void i2c_master_wait(int device)
         default:
             break;
     }
-    
+
     return;
 }
 #endif
@@ -705,7 +806,7 @@ void __attribute__((__interrupt__, auto_psv)) _SI2C1Interrupt(void)
             I2C1_SLAVE_ST = I2C_SLV_W_ADDR;
         else
             I2C1_SLAVE_ST = I2C_SLV_READ;
-        
+
         I2C1CONbits.SCLREL = 1;
         return;
     }
@@ -826,7 +927,7 @@ static void i2c1_slave_putc(char data)
     xQueueSendFromISR(i2cRxQueue, &data, &xHigherPriorityTaskWoken);
     //portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 #endif
-    
+
 #ifdef _I2C_SLAVE_BUFF
     if(i2c1_slave_address < _I2C1_RCV_BUFF_LEN)
         I2C1_BUFF[i2c1_slave_address] = data;

@@ -39,14 +39,17 @@
  *--------------------------------*/
 
 void i2c1_open(unsigned int BRG, char address);
+int i2c1_slave_ready(char address, long timeout);
 int i2c1_master_fputs(const char *data, int len, char *address, int addlen);
 int i2c1_master_fgets(char *data, int len, char *address, int addlen);
 
 void i2c2_open(unsigned int BRG, char address);
+int i2c2_slave_ready(char address, long timeout);
 int i2c2_master_fputs(const char *data, int len, char *address, int addlen);
 int i2c2_master_fgets(char *data, int len, char *address, int addlen);
 
 void i2c3_open(unsigned int BRG, char address);
+int i2c3_slave_ready(char address, long timeout);
 int i2c3_master_fputs(const char *data, int len, char *address, int addlen);
 int i2c3_master_fgets(char *data, int len, char *address, int addlen);
 

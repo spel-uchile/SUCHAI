@@ -44,9 +44,10 @@ Creation date        		:01/06/2012
 #define GYR_INT1_DURATION  	0x38
 
 // Read and write addresses for the gyro (depends on hardware configuration)
-#define GYR_ADD_READ	0xD3    //0b1101001-1
-#define GYR_ADD_WRITE   0xD2    //0b1101001-0
-#define GYR_ADD   0xD2    //0b1101001-0
+//#define GYR_ADD_READ	0xD3    //0b1101001-1
+//#define GYR_ADD_WRITE   0xD2    //0b1101001-0
+//#define GYR_ADD   0xD2    //0b1101001-0
+#define GYR_ADD   0b01101001
 
 typedef struct{
     int a_x;
@@ -77,6 +78,6 @@ GYR_DATA gyr_get_FIFO_samples(void);
 void gyr_get_data(unsigned char *dir, unsigned char muestras, GYR_DATA *res_data);
 
 
-void gyr_init_config(void);
-GYR_DATA gyr_take_samples(void);
+int gyr_init_config(void);
+GYR_DATA gyr_take_samples(BOOL verb);
 #endif

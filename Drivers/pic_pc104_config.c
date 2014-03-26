@@ -19,8 +19,6 @@
 
 #include "pic_pc104_config.h"
 
-#define PPC_DEBUG_PORT  SCH_UART_DEBUG_PORT
-#define PPC_LANGMUIR_ONBOARD SCH_PAY_LAGMUIR_ONBOARD
 
 /**
  * DEFAULT PIC CONFIG
@@ -30,8 +28,8 @@
 void default_PIC_config(void)
 {
     GPIO_PPM_init();
-	GPIO_MB_init();
-	GPIO_PC104_init();
+    GPIO_MB_init();
+    GPIO_PC104_init();
 
     //solo despues de llamar estas funciones se pueden usar los servicios
     //de con_printf()
@@ -455,7 +453,7 @@ void GPIO_MB_init(void)
     PPC_MB_nON_SD = 1;  // Conversor de voltaje SD apagado
     PPC_MB_nON_MHX = 0; // Conversor de voltaje TRX encendido
 
-    #if (PPC_DEBUG_PORT == 0)
+    #if (SCH_UART_DEBUG_PORT == 0)
         //Consola por puerto DB9
         PPC_MB_nOE_MHX      = 1; // Aislador TRX Apagado, lo activa el driver TRX
         PPC_MB_nOE_USB_nINT = 1; //Aislador USB Apagado, uso puerto DB9
@@ -612,7 +610,7 @@ void GPIO_PC104_init(void)
         _LATG9=0;			//parte en 0
     #endif
 //------------------------------------------------------------------------------  
-    #if (SCH_TRX_TYPE_ONBOARD == 1)
+    #if (SCH_TRX_ONBOARD == 1)
         // UART2 para TRX - Comparte pines con UART1
         // H1.17 - U1RX - RP10 - IO.7
         iPPSInput(IN_FN_PPS_U2RX,IN_PIN_PPS_RP10);
@@ -629,7 +627,7 @@ void GPIO_PC104_init(void)
         OpenTimer2(T2_ON & T2_IDLE_CON & T2_GATE_OFF & T2_PS_1_256 & T2_32BIT_MODE_OFF &
                    T2_SOURCE_INT, 62500); /* t[s]=X*ps/fcy => X=1*16MIPS/256.0 = 62500 */
         WriteTimer2(0);
-    #elif (SCH_TRX_TYPE_ONBOARD == 2)
+    #elif (SCH_TRX_ONBOARD == 2)
         /* La idea es que el TRX funcione normalmente salvo
          * para enviar TM, que lo hara el HAC-LM */
 
@@ -664,7 +662,7 @@ void GPIO_PC104_init(void)
     SetPriorityIntU1RX(5);
 
 //------------------------------------------------------------------------------
-    #if (PPC_LANGMUIR_ONBOARD == 1)
+    #if (SCH_PAY_LAGMUIR_ONBOARD == 1)
         // UART3 para la Langmiur
         // H1.19	RP30/CN70/RF2 (Pin 52) => (URX3) para el PAY_LANGMUIR
         iPPSInput(IN_FN_PPS_U3RX,IN_PIN_PPS_RP30);
@@ -685,7 +683,7 @@ void GPIO_PC104_init(void)
         _LATF3=0;			//parte en 0
     #endif
 //------------------------------------------------------------------------------
-    #if (SCH_EXTMEM_SD_ONBOARD==1)
+    #if (SCH_MEMSD_ONBOARD==1)
         // SPI2 para Tarjeta SD de la MB
         // H1.21	RP4/CN54/RD9 (Pin 69) => pin es RP4 (SCK)
         iPPSOutput(OUT_PIN_PPS_RP4,OUT_FN_PPS_SCK2OUT);
@@ -921,7 +919,7 @@ void GPIO_PC104_init(void)
         _LATB8=0;			//parte en 0
     #endif
 //------------------------------------------------------------------------------
-    #if (SCH_TRX_TYPE_ONBOARD==1 || SCH_TRX_TYPE_ONBOARD==2)
+    #if (SCH_TRX_ONBOARD==1 || SCH_TRX_ONBOARD==2)
         //Estos pines son TMS_COM, TCK_COM, TDI_COM, TDO_COM del JTAG del TRX
         //Sin embargo no son ni serian ocupados
 
@@ -962,7 +960,7 @@ void GPIO_PC104_init(void)
         // por lo que modificarlo implica posibles errores al querer debuggear con el ICD3
     #endif
 //------------------------------------------------------------------------------
-    #if (SCH_TRX_TYPE_ONBOARD==1 || SCH_TRX_TYPE_ONBOARD==2)
+    #if (SCH_TRX_ONBOARD==1 || SCH_TRX_ONBOARD==2)
         // H2.13	AN2/C2INB/RP13/CN4/RB2 (Pin 23)	 => PPC_nRX_FLAG TRX Reciviendo
         //nRX_FLAG del Transceiver, probalemente será progarmado con input_interrupt
         _PCFG2=1; 			//pin 0-ADC 1- I/O

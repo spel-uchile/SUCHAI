@@ -1,5 +1,6 @@
 #include "cmdTCM.h"
 
+
 cmdFunction tcmFunction[TCM_NCMD];
 int tcm_sysReq[TCM_NCMD];
 
@@ -115,12 +116,12 @@ int tcm_sendTM_pay_i(void *param){
     
     DAT_Payload pay_i = *((DAT_Payload*)param);
     int mode=2;
-    DAT_CubesatVar dat_pay_xxx_perform=dat_pay_i_to_performVar(pay_i);
+    STA_CubesatVar dat_pay_xxx_perform=dat_pay_i_to_performVar(pay_i);
 
     int res = tcm_sendTM_PayloadVar(mode, pay_i);
     if(res!=0x0000){
         //inicia nuevamente el ciclo del Payload
-        dat_setCubesatVar(dat_pay_xxx_perform, 0x0001 );
+        sta_setCubesatVar(dat_pay_xxx_perform, 0x0001 );
     }
     return res;
 }
@@ -147,9 +148,9 @@ int tcm_sendTM_cubesatVar(void *param)
     trx_tm_addtoframe(&tm_id, 1, CMD_ADDFRAME_START); /* New empty start frame */
 
     /* Read info and append to the frame */
-    DAT_CubesatVar indxVar;
-    for(indxVar=0; indxVar<dat_cubesatVar_last_one; indxVar++){
-        tm_id = dat_getCubesatVar(indxVar);
+    STA_CubesatVar indxVar;
+    for(indxVar=0; indxVar<sta_cubesatVar_last_one; indxVar++){
+        tm_id = sta_getCubesatVar(indxVar);
         trx_tm_addtoframe(&tm_id, 1, CMD_ADDFRAME_ADD);
 
         #if (SCH_CMDTCM_VERBOSE>=2)
@@ -158,8 +159,8 @@ int tcm_sendTM_cubesatVar(void *param)
             //itoa(buffer, (unsigned int)indxVar, 10);
             sprintf( buffer, "%d", (unsigned int)indxVar );
             con_printf(buffer); con_printf("]=");
-            //itoa(buffer,(unsigned int)dat_getCubesatVar(indxVar), 10);
-            sprintf( buffer, "0x%X", (unsigned int)dat_getCubesatVar(indxVar) );
+            //itoa(buffer,(unsigned int)sta_getCubesatVar(indxVar), 10);
+            sprintf( buffer, "0x%X", (unsigned int)sta_getCubesatVar(indxVar) );
             con_printf(buffer); con_printf("\r\n");
         #endif
         }
@@ -211,48 +212,48 @@ int tcm_send_beacon(void *param)
         strcpy(p_buff++, buff);
 
         /* opMode */
-        val = dat_getCubesatVar(dat_ppc_opMode);
+        val = sta_getCubesatVar(sta_ppc_opMode);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* hoursWithoutReset */
-        val = dat_getCubesatVar(dat_ppc_hoursWithoutReset);
+        val = sta_getCubesatVar(sta_ppc_hoursWithoutReset);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
         
         /* resetCounter */
-        val = dat_getCubesatVar(dat_ppc_resetCounter);
+        val = sta_getCubesatVar(sta_ppc_resetCounter);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
 
         /* ant_deployed */
-        val = dat_getCubesatVar(dat_dep_ant_deployed);
+        val = sta_getCubesatVar(sta_dep_ant_deployed);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* ant_tries */
-        val = dat_getCubesatVar(dat_dep_ant_tries);
+        val = sta_getCubesatVar(sta_dep_ant_tries);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* hours */
-        val = dat_getCubesatVar(dat_dep_hours);
+        val = sta_getCubesatVar(sta_dep_hours);
         itoa(buff,val,36); //Map 0-36 to 0-Z
         strcpy(p_buff++, buff);
 
         /* minutes */
-        val = dat_getCubesatVar(dat_dep_minutes);
+        val = sta_getCubesatVar(sta_dep_minutes);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
 
         /* bat0_voltage */
-        val = dat_getCubesatVar(dat_eps_bat0_voltage);
+        val = sta_getCubesatVar(sta_eps_bat0_voltage);
         d_val = -0.00939*val + 9.791;
         val = (int)(d_val*10.0); /* 7.4V -> 74 */
         itoa(buff,val/10,10);
@@ -261,7 +262,7 @@ int tcm_send_beacon(void *param)
         strcpy(p_buff++, buff);
 
         /* bat0_tmp */
-        val = dat_getCubesatVar(dat_eps_bat0_temp);
+        val = sta_getCubesatVar(sta_eps_bat0_temp);
         d_val =  -0.163*val+110.338;
         val = (int)(d_val); /* 18.3C -> 18 */
         itoa(buff,val/10,10);
@@ -270,17 +271,17 @@ int tcm_send_beacon(void *param)
         strcpy(p_buff++, buff);
 
         /* eps_soc */
-        val = dat_getCubesatVar(dat_eps_soc);
+        val = sta_getCubesatVar(sta_eps_soc);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* eps_charging*/
-        val = dat_getCubesatVar(dat_eps_charging);
+        val = sta_getCubesatVar(sta_eps_charging);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* rssi_mean */
-        val = dat_getCubesatVar(dat_trx_rssi_mean);
+        val = sta_getCubesatVar(sta_trx_rssi_mean);
         val = val < 0 ? -1*val:val;
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
@@ -288,19 +289,19 @@ int tcm_send_beacon(void *param)
         strcpy(p_buff++, buff);
         
         /* count_tm */
-        val = dat_getCubesatVar(dat_trx_count_tm);
+        val = sta_getCubesatVar(sta_trx_count_tm);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
         
         /* count_tc */
-        val = dat_getCubesatVar(dat_trx_count_tc);
+        val = sta_getCubesatVar(sta_trx_count_tc);
         itoa(buff,val,36); //Map 0-36 to 0-Z
         strcpy(p_buff++, buff);
         
         /* msd_status */
-        val = dat_getCubesatVar(dat_msd_status);
+        val = sta_getCubesatVar(sta_MemSD_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
@@ -411,7 +412,7 @@ int tcm_sendTM_PayloadVar(int mode, DAT_Payload pay_i){
             //itoa(buffer, (unsigned int)indxVar, 10);
             sprintf( buffer, "%d", (unsigned int)indx );
             con_printf(buffer); con_printf("]=");
-            //itoa(buffer,(unsigned int)dat_getCubesatVar(indxVar), 10);
+            //itoa(buffer,(unsigned int)sta_getCubesatVar(indxVar), 10);
             sprintf( buffer, "0x%X", (unsigned int)val );
             con_printf(buffer); con_printf("\r\n");
         #endif

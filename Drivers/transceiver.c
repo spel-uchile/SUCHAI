@@ -327,9 +327,9 @@ int TRX_LoadTelemetry(unsigned char *telemetry, unsigned int len)
     unsigned int ok = 0;
 
     int trx_type = 0;
-    #if (SCH_TRX_TYPE_ONBOARD==1)
+    #if (SCH_TRX_ONBOARD==1)
         trx_type=1;
-    #elif (SCH_TRX_TYPE_ONBOARD==2)
+    #elif (SCH_TRX_ONBOARD==2)
         trx_type=2;
     #endif
 
@@ -481,9 +481,9 @@ int TRX_SendTelemetry(void)
     unsigned char ok;
 
     int trx_type=0;
-    #if (SCH_TRX_TYPE_ONBOARD==1)
+    #if (SCH_TRX_ONBOARD==1)
         trx_type=1;
-    #elif (SCH_TRX_TYPE_ONBOARD==2)
+    #elif (SCH_TRX_ONBOARD==2)
         trx_type=2;
     #endif
 

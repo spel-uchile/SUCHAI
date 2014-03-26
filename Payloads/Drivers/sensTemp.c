@@ -19,24 +19,27 @@
 
 #include "sensTemp.h"
 
-void sensTemp_init(unsigned char sens_x){
+int sensTemp_init(unsigned char sens_x){
     //        11100000
     unsigned char data = 0b01100000;
     writeSensTemp(sens_x, STx_REG_CONFIG, data);
 
-    #if (SCH_SENS_TEMP_VERBOSE>=1)
-        char ret[10];
-        con_printf("sensTemp_init: Config=");
-        unsigned char val = readSensTemp( ST1_ADD_WRITE, STx_REG_CONFIG);
-        //utoa(ret, (unsigned int)val, 16);
-        sprintf (ret, "0x%X", val);
-        con_printf(ret); con_printf("\r\n");
-    #endif
+//    if(verb){
+//        char ret[10];
+//        con_printf("sensTemp_init: Config=");
+//        unsigned char val = readSensTemp( ST1_ADDRESS, STx_REG_CONFIG);
+//        //utoa(ret, (unsigned int)val, 16);
+//        sprintf (ret, "0x%X", val);
+//        con_printf(ret); con_printf("\r\n");
+//    }
+
+    //Como saber que init fue correcto?
+    return 1;
 }
-int sensTemp_take(unsigned char sens_x){
+int sensTemp_take(unsigned char sens_addr, BOOL verb){
     char val[2];
     unsigned char reg=STx_REG_TEMP_READ;
-    char address[] = {sens_x, (char)reg};
+    char address[] = {sens_addr, (char)reg};
 
     i2c3_master_fgets(val, 2, address, 2);
 
@@ -45,25 +48,25 @@ int sensTemp_take(unsigned char sens_x){
     val2=(val2)|((unsigned int)val[1]);
     val2=(val2>>4);
 
-    #if (SCH_SENS_TEMP_VERBOSE>=1)
+    if(verb){
         char ret[10];
         con_printf("SensTemp=");
         //utoa(ret, (unsigned int)val2, 10);
         sprintf (ret, "0x%X", val2);
         con_printf(ret); con_printf("\r\n");
-    #endif
+    }
     return val2;
 }
 void sensTemp_stop(unsigned char sens_x){
-    
+    //nothing to do
 }
 
 //*****************************************************************************************
 void writeSensTemp(unsigned char sens_x, unsigned char address, unsigned char data){
-    int max;
-    for(max=0x0FFF;max>0;max--){
-//TODO:        if( I2C3SlaveReady( (sens_x&0b11111110) )==1 ){break;}
-    }
+//    int max;
+//    for(max=0x0FFF;max>0;max--){
+////TODO:        if( I2C3SlaveReady( (sens_x&0b11111110) )==1 ){break;}
+//    }
 
     char DATA[1];
     DATA[0] = (char)data;

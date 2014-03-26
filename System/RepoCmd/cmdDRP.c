@@ -24,8 +24,8 @@ int drp_sysReq[DRP_NCMD];
 
 void drp_onResetCmdDRP(){
     //De display
-    drpFunction[(unsigned char)drp_id_print_dat_CubesatVar] = drp_print_dat_CubesatVar;
-    drp_sysReq[(unsigned char)drp_id_print_dat_CubesatVar]  = CMD_SYSREQ_MIN;
+    drpFunction[(unsigned char)drp_id_print_sta_CubesatVar] = drp_print_sta_CubesatVar;
+    drp_sysReq[(unsigned char)drp_id_print_sta_CubesatVar]  = CMD_SYSREQ_MIN;
     drpFunction[(unsigned char)drp_id_print_dat_TelecmdBuff] = drp_print_dat_TelecmdBuff;
     drp_sysReq[(unsigned char)drp_id_print_dat_TelecmdBuff]  = CMD_SYSREQ_MIN;
     drpFunction[(unsigned char)drp_id_print_dat_FlightPlan] = drp_print_dat_FlightPlan;
@@ -34,23 +34,23 @@ void drp_onResetCmdDRP(){
     drp_sysReq[(unsigned char)drp_id_print_dat_PayloadIndxs]  = CMD_SYSREQ_MIN;
     drpFunction[(unsigned char)drp_id_print_dat_PayloadVar] = drp_print_dat_PayloadVar;
     drp_sysReq[(unsigned char)drp_id_print_dat_PayloadVar]  = CMD_SYSREQ_MIN;
-    //De update en general en dat_CubesatVar
-    drpFunction[(unsigned char)drp_id_updateAll_dat_CubesatVar] = drp_updateAll_dat_CubesatVar;
-    drp_sysReq[(unsigned char)drp_id_updateAll_dat_CubesatVar]  = CMD_SYSREQ_MIN;
-    drpFunction[(unsigned char)drp_id_update_dat_CubesatVar_hoursAlive] = drp_update_dat_CubesatVar_hoursAlive;
-    drp_sysReq[(unsigned char)drp_id_update_dat_CubesatVar_hoursAlive]  = CMD_SYSREQ_MIN;
-    drpFunction[(unsigned char)drp_id_update_dat_CubesatVar_hoursWithoutReset] = drp_update_dat_CubesatVar_hoursWithoutReset;
-    drp_sysReq[(unsigned char)drp_id_update_dat_CubesatVar_hoursWithoutReset]  = CMD_SYSREQ_MIN;
-    drpFunction[(unsigned char)drp_id_update_dat_CubesatVar_nSended_tm] = drp_update_dat_CubesatVar_nSended_tm;
-    drp_sysReq[(unsigned char)drp_id_update_dat_CubesatVar_nSended_tm]  = CMD_SYSREQ_MIN;
-    drpFunction[(unsigned char)drp_id_update_dat_CubesatVar_nReceived_tc] = drp_update_dat_CubesatVar_nReceived_tc;
-    drp_sysReq[(unsigned char)drp_id_update_dat_CubesatVar_nReceived_tc]  = CMD_SYSREQ_MIN;
-    drpFunction[(unsigned char)drp_id_update_dat_CubesatVar_opMode] = drp_update_dat_CubesatVar_opMode;
-    drp_sysReq[(unsigned char)drp_id_update_dat_CubesatVar_opMode]  = CMD_SYSREQ_MIN;
-    drpFunction[(unsigned char)drp_id_update_dat_CubesatVar_trx_rssi] = drp_update_dat_CubesatVar_trx_rssi;
-    drp_sysReq[(unsigned char)drp_id_update_dat_CubesatVar_trx_rssi]  = CMD_SYSREQ_MIN;
-    drpFunction[(unsigned char)drp_id_update_dat_CubesatVar_trx_rssi_mean] = drp_update_dat_CubesatVar_trx_rssi_mean;
-    drp_sysReq[(unsigned char)drp_id_update_dat_CubesatVar_trx_rssi_mean]  = CMD_SYSREQ_MIN;
+    //De update en general en sta_CubesatVar
+    drpFunction[(unsigned char)drp_id_updateAll_sta_CubesatVar] = drp_updateAll_sta_CubesatVar;
+    drp_sysReq[(unsigned char)drp_id_updateAll_sta_CubesatVar]  = CMD_SYSREQ_MIN;
+    drpFunction[(unsigned char)drp_id_update_sta_CubesatVar_hoursAlive] = drp_update_sta_CubesatVar_hoursAlive;
+    drp_sysReq[(unsigned char)drp_id_update_sta_CubesatVar_hoursAlive]  = CMD_SYSREQ_MIN;
+    drpFunction[(unsigned char)drp_id_update_sta_CubesatVar_hoursWithoutReset] = drp_update_sta_CubesatVar_hoursWithoutReset;
+    drp_sysReq[(unsigned char)drp_id_update_sta_CubesatVar_hoursWithoutReset]  = CMD_SYSREQ_MIN;
+    drpFunction[(unsigned char)drp_id_update_sta_CubesatVar_nSended_tm] = drp_update_sta_CubesatVar_nSended_tm;
+    drp_sysReq[(unsigned char)drp_id_update_sta_CubesatVar_nSended_tm]  = CMD_SYSREQ_MIN;
+    drpFunction[(unsigned char)drp_id_update_sta_CubesatVar_nReceived_tc] = drp_update_sta_CubesatVar_nReceived_tc;
+    drp_sysReq[(unsigned char)drp_id_update_sta_CubesatVar_nReceived_tc]  = CMD_SYSREQ_MIN;
+    drpFunction[(unsigned char)drp_id_update_sta_CubesatVar_opMode] = drp_update_sta_CubesatVar_opMode;
+    drp_sysReq[(unsigned char)drp_id_update_sta_CubesatVar_opMode]  = CMD_SYSREQ_MIN;
+    drpFunction[(unsigned char)drp_id_update_sta_CubesatVar_trx_rssi] = drp_update_sta_CubesatVar_trx_rssi;
+    drp_sysReq[(unsigned char)drp_id_update_sta_CubesatVar_trx_rssi]  = CMD_SYSREQ_MIN;
+    drpFunction[(unsigned char)drp_id_update_sta_CubesatVar_trx_rssi_mean] = drp_update_sta_CubesatVar_trx_rssi_mean;
+    drp_sysReq[(unsigned char)drp_id_update_sta_CubesatVar_trx_rssi_mean]  = CMD_SYSREQ_MIN;
     //De mem ext (EEPROM y SD)
     drpFunction[(unsigned char)drp_id_executeBeforeFlight] = drp_executeBeforeFlight;
     drp_sysReq[(unsigned char)drp_id_executeBeforeFlight]  = CMD_SYSREQ_MIN;
@@ -67,35 +67,35 @@ void drp_onResetCmdDRP(){
 }
 
 // comands to update Cubestat. They may take one, or no arguments
-int drp_updateAll_dat_CubesatVar(void *param){
+int drp_updateAll_sta_CubesatVar(void *param){
     #if (SCH_CMDDRP_VERBOSE>=1)
-        con_printf("drp_updateAll_dat_CubesatVar()..\r\n");
+        con_printf("drp_updateAll_sta_CubesatVar()..\r\n");
     #endif
 
     #if (SCH_EPS_ONBOARD==1)
         updateSOCEPS();
         updateStatusEPS();
     #else
-        dat_setCubesatVar(dat_eps_soc, CMD_SYSREQ_MAX);
+        sta_setCubesatVar(sta_eps_soc, CMD_SYSREQ_MAX);
     #endif
 
-    DAT_CubesatVar indxVar;
-    for(indxVar=0;indxVar<dat_cubesatVar_last_one;indxVar++){
+    STA_CubesatVar indxVar;
+    for(indxVar=0;indxVar<sta_cubesatVar_last_one;indxVar++){
         drp_CubesatVar_update(indxVar);
     }
 
     return 1;
 }
 
-int drp_update_dat_CubesatVar_opMode(void *param){
+int drp_update_sta_CubesatVar_opMode(void *param){
 
     int arg = *((int *)param);
-    dat_setCubesatVar(dat_ppc_opMode, arg);
+    sta_setCubesatVar(sta_ppc_opMode, arg);
 
     return 1;
 }
 
-int drp_update_dat_CubesatVar_hoursWithoutReset(void *param)
+int drp_update_sta_CubesatVar_hoursWithoutReset(void *param)
 {
     /* En el futro esta funcion deber� ser llamada desde alguna interrupcion periodica del RTCC.
      * O leer del RTCC y comparar con su valor actual (get_ppc_hoursWithoutReset) y decidir
@@ -104,38 +104,38 @@ int drp_update_dat_CubesatVar_hoursWithoutReset(void *param)
     //int ar=*( (int *)param ); char ret[6];
     //con_printf("param= ");  Hex16ToAscii( ar, ret); con_printf(buffer); con_printf("\n");
     //solo debe ser llamada cada 1hora
-    int arg = dat_getCubesatVar(dat_ppc_hoursWithoutReset)+1;
-    dat_setCubesatVar(dat_ppc_hoursWithoutReset, arg);
+    int arg = sta_getCubesatVar(sta_ppc_hoursWithoutReset)+1;
+    sta_setCubesatVar(sta_ppc_hoursWithoutReset, arg);
     return 1;
 }
 
-int drp_update_dat_CubesatVar_hoursAlive(void *param){
+int drp_update_sta_CubesatVar_hoursAlive(void *param){
     //solo debe ser llamada cada 1hora
-    int arg = dat_getCubesatVar(dat_ppc_hoursAlive)+1;
-    dat_setCubesatVar(dat_ppc_hoursAlive, arg);
+    int arg = sta_getCubesatVar(sta_ppc_hoursAlive)+1;
+    sta_setCubesatVar(sta_ppc_hoursAlive, arg);
     return 1;
 }
 
-int drp_update_dat_CubesatVar_nSended_tm(void *param){
+int drp_update_sta_CubesatVar_nSended_tm(void *param){
     //solo debe ser llamada cada 1hora
-    int arg = dat_getCubesatVar(dat_trx_count_tm)+1;
-    dat_setCubesatVar(dat_trx_count_tm, arg);
+    int arg = sta_getCubesatVar(sta_trx_count_tm)+1;
+    sta_setCubesatVar(sta_trx_count_tm, arg);
     return 1;
 }
 
-int drp_update_dat_CubesatVar_nReceived_tc(void *param){
+int drp_update_sta_CubesatVar_nReceived_tc(void *param){
     //solo debe ser llamada cada 1hora
-    int arg = dat_getCubesatVar(dat_trx_count_tc)+1;
-    dat_setCubesatVar(dat_trx_count_tc, arg);
+    int arg = sta_getCubesatVar(sta_trx_count_tc)+1;
+    sta_setCubesatVar(sta_trx_count_tc, arg);
     return 1;
 }
 
-int drp_update_dat_CubesatVar_trx_rssi_mean(void *param)
+int drp_update_sta_CubesatVar_trx_rssi_mean(void *param)
 {
     int new_value=*((int *)param);
     int res = drp_trx_rssi_mean(new_value);
     
-    dat_setCubesatVar(dat_trx_rssi_mean, res);
+    sta_setCubesatVar(sta_trx_rssi_mean, res);
 
     return 1;
 }
@@ -148,7 +148,7 @@ int drp_update_dat_CubesatVar_trx_rssi_mean(void *param)
  * Arguments          : none
  * Return Value       : int: 1=Always successfull
  *----------------------------------------------------------------------------*/
-int drp_update_dat_CubesatVar_trx_rssi(void *param)
+int drp_update_sta_CubesatVar_trx_rssi(void *param)
 {
     //Actualizar periodicamente el rssi, para modo sin telecomandos
     drp_trx_rssi();
@@ -169,13 +169,13 @@ int drp_trx_newTcFrame(void *param)
 #if (SCH_CMDDRP_VERBOSE >= 1)
     char buffer[6];
     con_printf("trx_newTcFrame= ");
-    itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_newTcFrame), 10);
+    itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_newTcFrame), 10);
     con_printf(buffer);
     con_printf("\r\n");
 #endif
 
     int flag=*( (int *)param );
-    dat_setCubesatVar(dat_trx_newTcFrame, flag);     /* indico que llego un telecomando */
+    sta_setCubesatVar(sta_trx_newTcFrame, flag);     /* indico que llego un telecomando */
     return 1;
 }
 
@@ -192,13 +192,13 @@ int drp_trx_newCmdBuff(void *param)
 #if (SCH_CMDDRP_VERBOSE >= 1)
     char buffer[6];
     con_printf("trx_newCmdBuff= ");
-    itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_newCmdBuff), 10);
+    itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_newCmdBuff), 10);
     con_printf(buffer);
     con_printf("\r\n");
 #endif
 
     int flag = *(int *)param;
-    dat_setCubesatVar(dat_trx_newCmdBuff, flag);     /* indico que llegaron Comandos al  buff interno */
+    sta_setCubesatVar(sta_trx_newCmdBuff, flag);     /* indico que llegaron Comandos al  buff interno */
     return 1;
 }
 
@@ -211,7 +211,7 @@ int drp_trx_newCmdBuff(void *param)
  * Return Value       : int
  * ID                 : 0x501D
  *----------------------------------------------------------------------------*/
-int drp_print_dat_CubesatVar(void *param)
+int drp_print_sta_CubesatVar(void *param)
 {
     char buffer[10];
     int arg=*((int *)param);
@@ -222,146 +222,146 @@ int drp_print_dat_CubesatVar(void *param)
 
     if(arg==1)
     {
-        DAT_CubesatVar indxVar;
-        for(indxVar=0; indxVar<dat_cubesatVar_last_one; indxVar++)
+        STA_CubesatVar indxVar;
+        for(indxVar=0; indxVar<sta_cubesatVar_last_one; indxVar++)
         {
-            con_printf("dat_CubesatVar[");
+            con_printf("sta_CubesatVar[");
             //itoa(buffer, (unsigned int)indxVar, 10);
             sprintf( buffer, "%d", (unsigned int)indxVar );
             con_printf(buffer); con_printf("]=");
-            //itoa(buffer,(unsigned int)dat_getCubesatVar(indxVar), 10);
-            sprintf( buffer, "0x%X", (unsigned int)dat_getCubesatVar(indxVar) );
+            //itoa(buffer,(unsigned int)sta_getCubesatVar(indxVar), 10);
+            sprintf( buffer, "0x%X", (unsigned int)sta_getCubesatVar(indxVar) );
             con_printf(buffer); con_printf("\r\n");
         }
     }
     else
     {
         /* Get mPPC */
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_ppc_opMode), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_opMode), 10);
         con_printf("ppc_opMode= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_ppc_lastResetSource), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_lastResetSource), 10);
         con_printf("ppc_lastResetSource= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_ppc_hoursAlive), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_hoursAlive), 10);
         con_printf("ppc_hoursAlive= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_ppc_hoursWithoutReset), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_hoursWithoutReset), 10);
         con_printf("ppc_hoursWithoutReset= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_ppc_resetCounter), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_resetCounter), 10);
         con_printf("ppc_resetCounter= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_ppc_enwdt), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_enwdt), 10);
         con_printf("ppc_enwdt= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_ppc_osc), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_osc), 10);
         con_printf("ppc_osc= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_ppc_MB_nOE_USB_nINT_stat), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_MB_nOE_USB_nINT_stat), 10);
         con_printf("ppc_MB_nOE_USB_nINT_stat= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_ppc_MB_nOE_MHX_stat), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_MB_nOE_MHX_stat), 10);
         con_printf("ppc_MB_nOE_MHX_stat= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_ppc_MB_nON_MHX_stat), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_MB_nON_MHX_stat), 10);
         con_printf("ppc_MB_nON_MHX_stat= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_ppc_MB_nON_SD_stat), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_MB_nON_SD_stat), 10);
         con_printf("ppc_MB_nON_SD_stat= "); con_printf(buffer); con_printf("\r\n");
         con_printf("-----------------------------------\r\n");
 
         /* Get mDEP */
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_dep_ant_deployed), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_ant_deployed), 10);
         con_printf("dep_ant_deployed= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_dep_ant_tries), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_ant_tries), 10);
         con_printf("dep_ant_tries= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_dep_year), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_year), 10);
         con_printf("dep_year= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_dep_month), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_month), 10);
         con_printf("dep_month= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_dep_week_day), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_week_day), 10);
         con_printf("dep_week_day= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_dep_day_number), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_day_number), 10);
         con_printf("dep_day_number= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_dep_hours), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_hours), 10);
         con_printf("dep_hours= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_dep_minutes), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_minutes), 10);
         con_printf("dep_minutes= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_dep_seconds), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_seconds), 10);
         con_printf("dep_seconds= "); con_printf(buffer); con_printf("\r\n");
         con_printf("-----------------------------------\r\n");
 
         /* Get mRTC */
-        itoa(buffer, (unsigned int)dat_getCubesatVar(dat_rtc_year), 10); //itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_rtc_year), 10);
+        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_rtc_year), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_rtc_year), 10);
         con_printf("rtc_year= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)dat_getCubesatVar(dat_rtc_month), 10); //itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_rtc_month), 10);
+        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_rtc_month), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_rtc_month), 10);
         con_printf("rtc_month= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)dat_getCubesatVar(dat_rtc_week_day), 10); //itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_rtc_week_day), 10);
+        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_rtc_week_day), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_rtc_week_day), 10);
         con_printf("rtc_week_day= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)dat_getCubesatVar(dat_rtc_day_number), 10); //itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_rtc_day_number), 10);
+        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_rtc_day_number), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_rtc_day_number), 10);
         con_printf("rtc_day_number= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)dat_getCubesatVar(dat_rtc_hours), 10); //itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_rtc_hours), 10);
+        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_rtc_hours), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_rtc_hours), 10);
         con_printf("rtc_hours= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)dat_getCubesatVar(dat_rtc_minutes), 10); //itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_rtc_minutes), 10);
+        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_rtc_minutes), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_rtc_minutes), 10);
         con_printf("rtc_minutes= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)dat_getCubesatVar(dat_rtc_seconds), 10); //itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_rtc_seconds), 10);
+        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_rtc_seconds), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_rtc_seconds), 10);
         con_printf("rtc_seconds= "); con_printf(buffer); con_printf("\r\n");
         con_printf("-----------------------------------\r\n");
 
         /* Get mEPS */
 
-        itoa(buffer,   (unsigned int)dat_getCubesatVar(dat_eps_bat0_voltage), 10);
+        itoa(buffer,   (unsigned int)sta_getCubesatVar(sta_eps_bat0_voltage), 10);
         con_printf("eps_bat0_voltage= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_eps_bat0_current), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_bat0_current), 10);
         con_printf("eps_bat0_current= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_eps_bus5V_current), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_bus5V_current), 10);
         con_printf("eps_bus5V_current= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_eps_bus3V_current), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_bus3V_current), 10);
         con_printf("eps_bus3V_current= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_eps_bus_battery_current), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_bus_battery_current), 10);
         con_printf("eps_bus_battery_current= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_eps_bat0_temp), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_bat0_temp), 10);
         con_printf("eps_bat0_temp= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_eps_panel_pwr), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_panel_pwr), 10);
         con_printf("eps_panel_pwr= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_eps_status), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_status), 10);
         con_printf("eps_status= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_eps_soc), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_soc), 10);
         con_printf("eps_soc= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_eps_socss), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_socss), 10);
         con_printf("eps_socss= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_eps_state_flag), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_state_flag), 10);
         con_printf("eps_state_flag= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_eps_charging), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_charging), 10);
         con_printf("eps_charging= "); con_printf(buffer); con_printf("\r\n");
         con_printf("-----------------------------------\r\n");
 
         /* Get mTRX */
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_frec_tx), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_frec_tx), 10);
         con_printf("trx_frec_tx= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_frec_rx), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_frec_rx), 10);
         con_printf("trx_frec_rx= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_opmode), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_opmode), 10);
         con_printf("trx_opmode= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_temp_hpa), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_temp_hpa), 10);
         con_printf("trx_temp_hpa= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_temp_mcu), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_temp_mcu), 10);
         con_printf("trx_temp_mcu= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)dat_getCubesatVar(dat_trx_rssi), 10); //itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_rssi), 10);
+        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_trx_rssi), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_rssi), 10);
         con_printf("trx_rssi= "); con_printf(buffer); con_printf(" dBm\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_beacon_pwr), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_beacon_pwr), 10);
         con_printf("trx_beacon_pwr= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_telemetry_pwr), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_telemetry_pwr), 10);
         con_printf("trx_telemetry_pwr= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_status_tc), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_status_tc), 10);
         con_printf("trx_status_tc= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_count_tm), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_count_tm), 10);
         con_printf("trx_count_tm= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_count_tc), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_count_tc), 10);
         con_printf("trx_count_tc= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_lastcmd_day), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_lastcmd_day), 10);
         con_printf("trx_lastcmd_day= "); con_printf(buffer); con_printf("\r\n");
         con_printf("-----------------------------------\r\n");
 
         // Cmd buffer control
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_newTcFrame), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_newTcFrame), 10);
         con_printf("trx_newTcFrame= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_newCmdBuff), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_newCmdBuff), 10);
         con_printf("trx_newCmdBuff= "); con_printf(buffer); con_printf("\r\n");        
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_fpl_index), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_fpl_index), 10);
         con_printf("fpl_index= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_msd_status), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_MemSD_isAlive), 10);
         con_printf("msd_status= "); con_printf(buffer); con_printf("\r\n");
         con_printf("-----------------------------------\r\n");
     }
@@ -374,21 +374,21 @@ int drp_print_dat_TelecmdBuff(void *param)
     char buffer[10];
 
     con_printf("===================================\r\n");
-    con_printf("Reading dat_TelecmdBuff Buffer\r\n");
+    con_printf("Reading sta_TelecmdBuff Buffer\r\n");
     con_printf("===================================\r\n");
 
     // Cmd buffer control
-    itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_newTcFrame), 10);
+    itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_newTcFrame), 10);
     con_printf("drp_trx_newTcFrame= "); con_printf(buffer); con_printf("\r\n");
-    itoa(buffer,  (unsigned int)dat_getCubesatVar(dat_trx_newCmdBuff), 10);
+    itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_newCmdBuff), 10);
     con_printf("drp_trx_newCmdBuff= "); con_printf(buffer); con_printf("\r\n");
 
-    con_printf("Contenido del dat_telecmdBuff:\r\n");
+    con_printf("Contenido del sta_telecmdBuff:\r\n");
     int i;
     for(i=0; i<DAT_MAX_BUFF_TELECMD; i++)
     {
         itoa(buffer,  (unsigned int)dat_getTelecmdBuff(i), 10);
-        con_printf("dat_telecmdBuff["); itoa(buffer, (unsigned int)i, 10);
+        con_printf("sta_telecmdBuff["); itoa(buffer, (unsigned int)i, 10);
         con_printf(buffer); con_printf("]= "); con_printf(buffer); con_printf("\r\n");
 
     }
@@ -397,14 +397,14 @@ int drp_print_dat_TelecmdBuff(void *param)
 
 int drp_print_dat_FlightPlan(void *param){
     con_printf("===================================\r\n");
-    con_printf("Reading dat_FligthPlan Buffer\r\n");
+    con_printf("Reading sta_FligthPlan Buffer\r\n");
     con_printf("===================================\r\n");
 
     int i; char buffer[10];
     for(i=0; i<SCH_FLIGHTPLAN_N_CMD; i++)
     {
         DispCmd dcmd = dat_getFlightPlan(i);
-        con_printf("dat_FlightPlan[");
+        con_printf("sta_FlightPlan[");
         itoa(buffer, (unsigned int)i, 10); con_printf(buffer); con_printf("]: cmdId=");
         itoa(buffer,  (unsigned int)dcmd.cmdId, 10); con_printf(buffer); con_printf(" param=");
         itoa(buffer,  (unsigned int)dcmd.param, 10); con_printf(buffer); con_printf("\r\n");
@@ -414,7 +414,7 @@ int drp_print_dat_FlightPlan(void *param){
 
 int drp_print_dat_PayloadIndxs(void *param){
     con_printf("===================================\r\n");
-    con_printf("Reading dat_PayloadIndxs Block\r\n");
+    con_printf("Reading sta_PayloadIndxs Block\r\n");
     con_printf("===================================\r\n");
 
     char buffer[10];
@@ -444,7 +444,7 @@ int drp_print_dat_PayloadVar(void *param){
     int pay_i2 = *((int *)param);
     
     con_printf("===================================\r\n");
-    con_printf("Reading dat_PayloadVar \r\n");
+    con_printf("Reading sta_PayloadVar \r\n");
     con_printf("===================================\r\n");
 
     char buffer[10];
@@ -466,7 +466,7 @@ int drp_print_dat_PayloadVar(void *param){
     {
         dat_getPayloadVar(pay_i, indx, &val);
         
-        con_printf("dat_getPayloadVar[");
+        con_printf("sta_getPayloadVar[");
         //itoa(buffer, (unsigned int)indx,10);
         sprintf (buffer, "%d", (unsigned int)indx);
         con_printf(buffer); con_printf("]=");
@@ -494,7 +494,7 @@ int drp_print_dat_PayloadVar(void *param){
 int drp_fpl_set_index(void *param)
 {
     int index = *((int *)param);
-    dat_setCubesatVar(dat_fpl_index, index);
+    sta_setCubesatVar(sta_fpl_index, index);
 
     return 1;
 }
@@ -503,7 +503,7 @@ int drp_fpl_set_index(void *param)
  *                              DRP_FLP_SET_CMD
  *------------------------------------------------------------------------------
  * @brief             : Agrega la id del comando dado al flight plan en la
- *                       posicion dado por el valor actual de dat_fpl_index
+ *                       posicion dado por el valor actual de sta_fpl_index
  * @return            : 1 - Success, 0 - Fail
  * ID                 : 0x5028
  *----------------------------------------------------------------------------*/
@@ -511,7 +511,7 @@ int drp_fpl_set_cmd(void *param)
 {
     //Se recupera el comando y el indice
     int cmdid = *((int *)param);
-    int index = dat_getCubesatVar(dat_fpl_index);
+    int index = sta_getCubesatVar(sta_fpl_index);
 
     //Se actualiza el flight plan
     int result = dat_setFlightPlan_cmd(index, cmdid);
@@ -524,7 +524,7 @@ int drp_fpl_set_cmd(void *param)
  *------------------------------------------------------------------------------
  * @brief             : Actualiza en el flight plan el valor del parametro
  *                      asociado al indice que contiene actualmente la variable
- *                      dat_fpl_index.
+ *                      sta_fpl_index.
  * @return            : 1 - Success, 0 - Fail
  * ID                 : 0x5029
  *----------------------------------------------------------------------------*/
@@ -532,7 +532,7 @@ int drp_fpl_set_param(void *param)
 {
     //Se recupera el comando y el indice
     int var = *((int *)param);
-    int index = dat_getCubesatVar(dat_fpl_index);
+    int index = sta_getCubesatVar(sta_fpl_index);
 
     //Se actualiza el flight plan
     int result = dat_setFlightPlan_param(index, var);
@@ -568,7 +568,7 @@ int drp_debug(void *param){
 }
 
 int drp_executeBeforeFlight(void *param){
-    drp_dat_CubesatVar_EBF();
+    drp_sta_CubesatVar_EBF();
     drp_dat_FlightPlan_EBF();
     drp_dat_TelecmdBuffer_EBF();
 
@@ -592,7 +592,7 @@ int drp_executeBeforeFlight(void *param){
     return 1;
 }
 
-void drp_dat_CubesatVar_EBF(void){
+void drp_sta_CubesatVar_EBF(void){
     #if (SCH_CMDDRP_VERBOSE>=1)
         con_printf("Setting CubesatVar in launch configuration\n");
     #endif
@@ -603,29 +603,29 @@ void drp_dat_CubesatVar_EBF(void){
     //settings particulares:
 
     //Operation mode partir�a en modo RSSI
-    dat_setCubesatVar(dat_ppc_opMode, DAT_PPC_OPMODE_RSSI);
+    sta_setCubesatVar(sta_ppc_opMode, STA_PPC_OPMODE_RSSI);
     // hoursAive debe partir en cero, para que Housekeeping la incremente cada 1 hora
-    dat_setCubesatVar(dat_ppc_hoursAlive, 0x0000);  
+    sta_setCubesatVar(sta_ppc_hoursAlive, 0x0000);
     // hoursWithoutReset debe partir en cero, para que Housekeeping la incremente cada 1 hora
-    dat_setCubesatVar(dat_ppc_hoursWithoutReset, 0x0000);
+    sta_setCubesatVar(sta_ppc_hoursWithoutReset, 0x0000);
     //memSD parte como inactiva
-    dat_setCubesatVar(dat_msd_status, 0);
+    sta_setCubesatVar(sta_MemSD_isAlive, 0);
     //Telecomand Buffer parte vacios
-    dat_setCubesatVar(dat_trx_newCmdBuff, 0x0000);      // Doesn't exist unproccessed TC Frames in TRX
-    dat_setCubesatVar(dat_trx_newTcFrame, 0x0000);      // Doues't exist unproccessed TC in internal buffer
+    sta_setCubesatVar(sta_trx_newCmdBuff, 0x0000);      // Doesn't exist unproccessed TC Frames in TRX
+    sta_setCubesatVar(sta_trx_newTcFrame, 0x0000);      // Doues't exist unproccessed TC in internal buffer
     //Todos los Payloads dat_pay_xxx_perform parten activos
-    DAT_Payload pay_i; DAT_CubesatVar pay_i_perfVar;
+    DAT_Payload pay_i; STA_CubesatVar pay_i_perfVar;
     for(pay_i=0; pay_i<dat_pay_last_one; pay_i++)
     {
         pay_i_perfVar = dat_pay_i_to_performVar(pay_i);
-        dat_setCubesatVar(pay_i_perfVar, 0x0001);
+        sta_setCubesatVar(pay_i_perfVar, 0x0001);
     }
 
     //Se considera a la antena como NO-Desplegada
-    dat_setCubesatVar(dat_dep_ant_deployed, 0);
+    sta_setCubesatVar(sta_dep_ant_deployed, 0);
 
     //Al desplegarse el SUCHAI, se parte bloqueando comandos de TCM hasta que la bateria se cargue
-    dat_setCubesatVar(dat_eps_state_flag, 1 );
+    sta_setCubesatVar(sta_eps_state_flag, 1 );
 }
 
 void drp_memEEPROM_erase(void){
@@ -656,8 +656,8 @@ void drp_dat_FlightPlan_EBF(void){
     int i;
     for(i=0;i<1440;i++){
         if(i%2==0){
-            //dat_setFlightPlan_cmd(i, 0x1002);
-            //dat_setFlightPlan_param(i, 0x0000);
+            //sta_setFlightPlan_cmd(i, 0x1002);
+            //sta_setFlightPlan_param(i, 0x0000);
         }
     }
 }
@@ -680,196 +680,196 @@ void drp_CubesatVar_update(int indxVar){
     #endif
 
     switch(indxVar){
-        case dat_ppc_lastResetSource:
+        case sta_ppc_lastResetSource:
             //drp_ppc_lastResetSource();
-            //Variables modificada solamente en dat_onResetCubesatVar
+            //Variables modificada solamente en sta_onResetCubesatVar
             break;
-        case dat_ppc_hoursAlive:
+        case sta_ppc_hoursAlive:
             //drp_ppc_hoursAlive();
             //Solo ee llama (actualiza) por taskHousekeeping cada 1hora
             break;
-        case dat_ppc_hoursWithoutReset:
+        case sta_ppc_hoursWithoutReset:
             //drp_ppc_hoursWithoutReset();
             //Solo ee llama (actualiza) por taskHousekeeping cada 1hora
             break;
-        case dat_ppc_resetCounter:
+        case sta_ppc_resetCounter:
             //drp_ppc_resetCounter();
-            // resetCounter no se actualiza durante la marcha, solo en dat_init_Cubestat
+            // resetCounter no se actualiza durante la marcha, solo en sta_init_Cubestat
             break;
-        case dat_ppc_enwdt: // 1=WDT Active, 0=WDT Inactive
+        case sta_ppc_enwdt: // 1=WDT Active, 0=WDT Inactive
             drp_ppc_enwdt();
             break;
-        case dat_ppc_osc: // holds Current Oscillator
+        case sta_ppc_osc: // holds Current Oscillator
             drp_ppc_osc();
             break;
-        case dat_ppc_MB_nOE_USB_nINT_stat:
+        case sta_ppc_MB_nOE_USB_nINT_stat:
             drp_ppc_MB_nOE_USB_nINT_stat();
             break;
-        case dat_ppc_MB_nOE_MHX_stat:
+        case sta_ppc_MB_nOE_MHX_stat:
             drp_ppc_MB_nOE_MHX_stat();
             break;
-        case dat_ppc_MB_nON_MHX_stat:
+        case sta_ppc_MB_nON_MHX_stat:
             drp_ppc_MB_nON_MHX_stat();
             break;
-        case dat_ppc_MB_nON_SD_stat:
+        case sta_ppc_MB_nON_SD_stat:
             drp_ppc_MB_nON_SD_stat();
             break;
 
     //DEP => (C&DH subsystem)
-        case dat_dep_ant_deployed: // 1=already deployed, 0=not deployed yet
+        case sta_dep_ant_deployed: // 1=already deployed, 0=not deployed yet
             /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
             * comandos para actualizarlo */
             break;
-        case dat_dep_ant_tries: // Number of tries to deploy antenna
+        case sta_dep_ant_tries: // Number of tries to deploy antenna
             /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
             * comandos para actualizarlo */
             break;
-        case dat_dep_year:
+        case sta_dep_year:
             /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
             * comandos para actualizarlo */
             break;
-        case dat_dep_month:
+        case sta_dep_month:
             /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
             * comandos para actualizarlo */
             break;
-        case dat_dep_week_day:
+        case sta_dep_week_day:
             /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
             * comandos para actualizarlo */
             break;
-        case dat_dep_day_number:
+        case sta_dep_day_number:
             /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
             * comandos para actualizarlo */
             break;
-        case dat_dep_hours:
+        case sta_dep_hours:
             /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
             * comandos para actualizarlo */
             break;
-        case dat_dep_minutes:
+        case sta_dep_minutes:
             /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
             * comandos para actualizarlo */
             break;
-        case dat_dep_seconds:
+        case sta_dep_seconds:
             /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
             * comandos para actualizarlo */
             break;
 
     //RTC => (C&DH subsystem)
-        case dat_rtc_year:
+        case sta_rtc_year:
             drp_rtc_year();
             break;
-        case dat_rtc_month:
+        case sta_rtc_month:
             drp_rtc_month();
             break;
-        case dat_rtc_week_day:
+        case sta_rtc_week_day:
             drp_rtc_week_day();
             break;
-        case dat_rtc_day_number:
+        case sta_rtc_day_number:
             drp_rtc_day_number();
             break;
-        case dat_rtc_hours:
+        case sta_rtc_hours:
             drp_rtc_hours();
             break;
-        case dat_rtc_minutes:
+        case sta_rtc_minutes:
             drp_rtc_minutes();
             break;
-        case dat_rtc_seconds:
+        case sta_rtc_seconds:
             drp_rtc_seconds();
             break;
 
     //EPS => (Energy subsystem)
 
     #if SCH_EPS_ONBOARD==1            
-        case dat_eps_bat0_voltage:          
+        case sta_eps_bat0_voltage:
             drp_eps_bat0_voltage();
             break;
-        case dat_eps_bat0_current:
+        case sta_eps_bat0_current:
             drp_eps_bat0_current();
             break;
-        case dat_eps_bus5V_current:
+        case sta_eps_bus5V_current:
             drp_eps_bus5V_current();
             break;
-        case dat_eps_bus3V_current:
+        case sta_eps_bus3V_current:
             drp_eps_bus3V_current();
             break;
-        case dat_eps_bus_battery_current:
+        case sta_eps_bus_battery_current:
             drp_eps_bus_battery_current();
             break;
-        case dat_eps_bat0_temp:
+        case sta_eps_bat0_temp:
             drp_eps_bat0_temp();
             break;
-        case dat_eps_panel_pwr:
+        case sta_eps_panel_pwr:
             drp_eps_panel_pwr();
             break;
-        case dat_eps_status:
+        case sta_eps_status:
             drp_eps_status();
             break;
-        case dat_eps_soc:
+        case sta_eps_soc:
             drp_eps_soc();
             break;
-        case dat_eps_socss:
+        case sta_eps_socss:
             drp_eps_socss();
             break;
-        case dat_eps_state_flag:
+        case sta_eps_state_flag:
             drp_eps_state_flag();
             break;
-        case dat_eps_charging:
+        case sta_eps_charging:
             drp_eps_charging();
             break;
     #endif
 
-    #if (SCH_TRX_TYPE_ONBOARD==1 || SCH_TRX_TYPE_ONBOARD==2)
+    #if (SCH_TRX_ONBOARD==1 || SCH_TRX_ONBOARD==2)
         //TRX => (Communication subsystem)
-        case dat_trx_frec_tx:
+        case sta_trx_frec_tx:
             drp_trx_frec_tx();
             break;          // TX Freq
-        case dat_trx_frec_rx:
+        case sta_trx_frec_rx:
             drp_trx_frec_rx();
             break;          // RX Freq
-        case dat_trx_opmode:
+        case sta_trx_opmode:
             drp_trx_opmode();
             break;           // Operation mode
-        case dat_trx_temp_hpa:
+        case sta_trx_temp_hpa:
             drp_trx_temp_hpa();
             break;         // Temp of HPA
-        case dat_trx_temp_mcu:
+        case sta_trx_temp_mcu:
             drp_trx_temp_mcu();
             break;         // Temp of MCU
-        case dat_trx_rssi:
+        case sta_trx_rssi:
             drp_trx_rssi();
             break;             // RSSI        case :             break; Signal level
-        case dat_trx_rssi_mean:
+        case sta_trx_rssi_mean:
             //drp_trx_rssi_mean();
             //lo hace taskCommunication
             break;
-        case dat_trx_beacon_pwr:
+        case sta_trx_beacon_pwr:
             drp_trx_beacon_pwr();
             break;       // Beacon power
-        case dat_trx_telemetry_pwr:
+        case sta_trx_telemetry_pwr:
             drp_trx_telemetry_pwr();
             break;    // Telemetry Power
-        case dat_trx_status_tc:
+        case sta_trx_status_tc:
             drp_trx_status_tc();
             break;        // Status Register of TC
-        case dat_trx_lastcmd_day:
+        case sta_trx_lastcmd_day:
             /* Se actualiza cuando se reciben TC */
             break;
-        case dat_trx_count_tc:
+        case sta_trx_count_tc:
             /* Se actualiza cuando se reciben TC */
             break;
-        case dat_trx_count_tm:
+        case sta_trx_count_tm:
             /* Se actualiza cuando se envia TM */
             break;
     #endif
     // Cmd buffer control
-        case dat_trx_newTcFrame:
+        case sta_trx_newTcFrame:
             //Variables modificada solamente en taskComunications
             break;       // Exist any unprocessed TcFrame
-        case dat_trx_newCmdBuff:
+        case sta_trx_newCmdBuff:
             //Variables modificada solamente en taskComunications
             break;       // Exist unprocessed CMD in the internal buffer
 
     //FLIGHT PLAN
-        case dat_fpl_index:
+        case sta_fpl_index:
             //Solo se modifica no se actualiza
             break;            // Indice del flight plan que sera editado
 
@@ -892,8 +892,8 @@ void drp_CubesatVar_update(int indxVar){
 
 /*
 void drp_ppc_hoursAlive(void){
-    int arg = dat_getCubesatVar(dat_ppc_hoursAlive)+1;
-    dat_setCubesatVar(dat_ppc_hoursAlive, arg);
+    int arg = sta_getCubesatVar(sta_ppc_hoursAlive)+1;
+    sta_setCubesatVar(sta_ppc_hoursAlive, arg);
 }
 void drp_ppc_hoursWithoutReset(void)
 {
@@ -904,8 +904,8 @@ void drp_ppc_hoursWithoutReset(void)
 
     //int ar=*( (int *)param ); char ret[6];
     //con_printf("param= ");  Hex16ToAscii( ar, ret); con_printf(ret); con_printf("\n");
-    int arg = dat_getCubesatVar(dat_ppc_hoursWithoutReset)+1;
-    dat_setCubesatVar(dat_ppc_hoursWithoutReset, arg);
+    int arg = sta_getCubesatVar(sta_ppc_hoursWithoutReset)+1;
+    sta_setCubesatVar(sta_ppc_hoursWithoutReset, arg);
     
 }
 */
@@ -946,7 +946,7 @@ void drp_ppc_osc(void)
     *  FRC_OSC_WITH_POSTSCALER           0x0007 //Internal oscillator with postscalar
      */
 
-    dat_setCubesatVar(dat_ppc_osc, (int)Current_OSCILLATOR() );
+    sta_setCubesatVar(sta_ppc_osc, (int)Current_OSCILLATOR() );
 
     
 }
@@ -962,11 +962,11 @@ void drp_ppc_MB_nOE_USB_nINT_stat(void)
 {
     if(PPC_MB_nOE_USB_nINT_CHECK)
     {
-        dat_setCubesatVar(dat_ppc_MB_nOE_USB_nINT_stat, 1);
+        sta_setCubesatVar(sta_ppc_MB_nOE_USB_nINT_stat, 1);
     }
     else
     {
-        dat_setCubesatVar(dat_ppc_MB_nOE_USB_nINT_stat, 0);
+        sta_setCubesatVar(sta_ppc_MB_nOE_USB_nINT_stat, 0);
     }
     
 }
@@ -982,11 +982,11 @@ void drp_ppc_MB_nOE_MHX_stat(void)
 {
     if(PPC_MB_nOE_MHX_CHECK)
     {
-        dat_setCubesatVar(dat_ppc_MB_nOE_MHX_stat, 1);
+        sta_setCubesatVar(sta_ppc_MB_nOE_MHX_stat, 1);
     }
     else
     {
-        dat_setCubesatVar(dat_ppc_MB_nOE_MHX_stat, 0);
+        sta_setCubesatVar(sta_ppc_MB_nOE_MHX_stat, 0);
     }
     
 }
@@ -1002,11 +1002,11 @@ void drp_ppc_MB_nON_MHX_stat(void)
 {
     if(PPC_MB_nON_MHX_CHECK)
     {
-        dat_setCubesatVar(dat_ppc_MB_nON_MHX_stat, 1);
+        sta_setCubesatVar(sta_ppc_MB_nON_MHX_stat, 1);
     }
     else
     {
-        dat_setCubesatVar(dat_ppc_MB_nON_MHX_stat, 0);
+        sta_setCubesatVar(sta_ppc_MB_nON_MHX_stat, 0);
     }
     
 }
@@ -1022,11 +1022,11 @@ void drp_ppc_MB_nON_SD_stat(void)
 {
     if(PPC_MB_nON_SD_CHECK)
     {
-        dat_setCubesatVar(dat_ppc_MB_nON_SD_stat, 1);
+        sta_setCubesatVar(sta_ppc_MB_nON_SD_stat, 1);
     }
     else
     {
-        dat_setCubesatVar(dat_ppc_MB_nON_SD_stat, 0);
+        sta_setCubesatVar(sta_ppc_MB_nON_SD_stat, 0);
     }
     
 }
@@ -1046,43 +1046,43 @@ void drp_ppc_MB_nON_SD_stat(void)
  *----------------------------------------------------------------------------*/
 void drp_rtc_year(void)
 {
-    dat_setCubesatVar(dat_rtc_year, RTC_get_year() );
+    sta_setCubesatVar(sta_rtc_year, RTC_get_year() );
     
 }
 
 void drp_rtc_month(void)
 {
-    dat_setCubesatVar(dat_rtc_month, RTC_get_month() );
+    sta_setCubesatVar(sta_rtc_month, RTC_get_month() );
     
 }
 
 void drp_rtc_week_day(void)
 {
-    dat_setCubesatVar(dat_rtc_week_day, RTC_get_week_day() );
+    sta_setCubesatVar(sta_rtc_week_day, RTC_get_week_day() );
     
 }
 
 void drp_rtc_day_number(void)
 {
-    dat_setCubesatVar(dat_rtc_day_number, RTC_get_day_num() );
+    sta_setCubesatVar(sta_rtc_day_number, RTC_get_day_num() );
     
 }
 
 void drp_rtc_hours(void)
 {
-    dat_setCubesatVar(dat_rtc_hours, RTC_get_hours() );
+    sta_setCubesatVar(sta_rtc_hours, RTC_get_hours() );
     
 }
 
 void drp_rtc_minutes(void)
 {
-    dat_setCubesatVar(dat_rtc_minutes, RTC_get_minutes() );
+    sta_setCubesatVar(sta_rtc_minutes, RTC_get_minutes() );
     
 }
 
 void drp_rtc_seconds(void)
 {
-    dat_setCubesatVar(dat_rtc_seconds, RTC_get_seconds() );
+    sta_setCubesatVar(sta_rtc_seconds, RTC_get_seconds() );
     
 }
 
@@ -1096,7 +1096,7 @@ void drp_rtc_seconds(void)
  *----------------------------------------------------------------------------*/
 void drp_eps_bat0_voltage(void)
 {
-    dat_setCubesatVar(dat_eps_bat0_voltage, readEPSvars(EPS_ID_bat0_voltage));
+    sta_setCubesatVar(sta_eps_bat0_voltage, readEPSvars(EPS_ID_bat0_voltage));
     
 }
 
@@ -1109,7 +1109,7 @@ void drp_eps_bat0_voltage(void)
  *----------------------------------------------------------------------------*/
 void drp_eps_bat0_current(void)
 {
-    dat_setCubesatVar(dat_eps_bat0_current, readEPSvars(EPS_ID_bat0_current));
+    sta_setCubesatVar(sta_eps_bat0_current, readEPSvars(EPS_ID_bat0_current));
     
 }
 
@@ -1122,7 +1122,7 @@ void drp_eps_bat0_current(void)
  *----------------------------------------------------------------------------*/
 void drp_eps_bus5V_current(void)
 {
-    dat_setCubesatVar(dat_eps_bus5V_current, readEPSvars(EPS_ID_bus5V_current));
+    sta_setCubesatVar(sta_eps_bus5V_current, readEPSvars(EPS_ID_bus5V_current));
     
 }
 
@@ -1135,7 +1135,7 @@ void drp_eps_bus5V_current(void)
  *----------------------------------------------------------------------------*/
 void drp_eps_bus3V_current(void)
 {
-    dat_setCubesatVar(dat_eps_bus3V_current, readEPSvars(EPS_ID_bus3V_current));
+    sta_setCubesatVar(sta_eps_bus3V_current, readEPSvars(EPS_ID_bus3V_current));
     
 }
 
@@ -1148,7 +1148,7 @@ void drp_eps_bus3V_current(void)
  *----------------------------------------------------------------------------*/
 void drp_eps_bus_battery_current(void)
 {
-    dat_setCubesatVar(dat_eps_bus_battery_current, readEPSvars(EPS_ID_bus_battery_current));
+    sta_setCubesatVar(sta_eps_bus_battery_current, readEPSvars(EPS_ID_bus_battery_current));
     
 }
 
@@ -1161,7 +1161,7 @@ void drp_eps_bus_battery_current(void)
  *----------------------------------------------------------------------------*/
 void drp_eps_bat0_temp(void)
 {
-    dat_setCubesatVar(dat_eps_bat0_temp, readEPSvars(EPS_ID_bat0_temp));
+    sta_setCubesatVar(sta_eps_bat0_temp, readEPSvars(EPS_ID_bat0_temp));
     
 }
 
@@ -1174,7 +1174,7 @@ void drp_eps_bat0_temp(void)
  *----------------------------------------------------------------------------*/
 void drp_eps_panel_pwr(void)
 {
-    dat_setCubesatVar(dat_eps_panel_pwr, readEPSvars(EPS_ID_panel_pwr));
+    sta_setCubesatVar(sta_eps_panel_pwr, readEPSvars(EPS_ID_panel_pwr));
     
 }
 
@@ -1187,7 +1187,7 @@ void drp_eps_panel_pwr(void)
  *----------------------------------------------------------------------------*/
 void drp_eps_status(void)
 {
-    dat_setCubesatVar(dat_eps_status, readEPSvars(EPS_ID_status));
+    sta_setCubesatVar(sta_eps_status, readEPSvars(EPS_ID_status));
     
 }
 
@@ -1201,7 +1201,7 @@ void drp_eps_status(void)
 void drp_eps_soc(void)
 {
     int soc = readEPSvars(EPS_ID_soc);
-    dat_setCubesatVar(dat_eps_soc, soc);
+    sta_setCubesatVar(sta_eps_soc, soc);
     
     #if (SCH_CMDDRP_VERBOSE >=1)
         char buf[10];
@@ -1220,7 +1220,7 @@ void drp_eps_soc(void)
  *----------------------------------------------------------------------------*/
 void drp_eps_socss(void)
 {
-    dat_setCubesatVar(dat_eps_socss, readEPSvars(EPS_ID_socss));
+    sta_setCubesatVar(sta_eps_socss, readEPSvars(EPS_ID_socss));
 }
 
 /*------------------------------------------------------------------------------
@@ -1237,7 +1237,7 @@ void drp_eps_socss(void)
  *----------------------------------------------------------------------------*/
 void drp_eps_state_flag(void)
 {
-    dat_setCubesatVar(dat_eps_state_flag, readEPSvars(EPS_ID_state_flag));
+    sta_setCubesatVar(sta_eps_state_flag, readEPSvars(EPS_ID_state_flag));
 }
 
 /*------------------------------------------------------------------------------
@@ -1251,7 +1251,7 @@ void drp_eps_charging(void)
 {
     int i_value = readEPSvars(EPS_ID_current_dir);
     i_value = i_value < 256 ? 1:0;
-    dat_setCubesatVar(dat_eps_charging, i_value);
+    sta_setCubesatVar(sta_eps_charging, i_value);
 }
 
 /*------------------------------------------------------------------------------
@@ -1270,7 +1270,7 @@ void drp_trx_frec_tx(void)
     long_value = long_value | (long) TRX_ReadRegister(TRX_FTX_M)<<8;
     long_value = long_value | (long) TRX_ReadRegister(TRX_FTX_L);
     /* Writing TRX_FTX to repo */
-    dat_setCubesatVar(dat_trx_frec_tx, (int)long_value);
+    sta_setCubesatVar(sta_trx_frec_tx, (int)long_value);
 }
 
 /*------------------------------------------------------------------------------
@@ -1289,7 +1289,7 @@ void drp_trx_frec_rx(void)
     long_value = long_value | (long) TRX_ReadRegister(TRX_FRX_M)<<8;
     long_value = long_value | (long) TRX_ReadRegister(TRX_FRX_L);
     /* Writing TRX_FRX to repo */
-    dat_setCubesatVar(dat_trx_frec_rx, (int)long_value);
+    sta_setCubesatVar(sta_trx_frec_rx, (int)long_value);
 
     
 }
@@ -1308,7 +1308,7 @@ void drp_trx_opmode(void)
     char char_value;
     char_value = TRX_ReadRegister(TRX_MODE);
     /* Writing TRX_FTX to repo */
-    dat_setCubesatVar(dat_trx_opmode, (int)char_value);
+    sta_setCubesatVar(sta_trx_opmode, (int)char_value);
 
     
 }
@@ -1330,7 +1330,7 @@ void drp_trx_temp_hpa(void)
     int_value = (int)TRX_ReadRegister(TRX_TEMPHPA_H)<<8;
     int_value = int_value | (int)TRX_ReadRegister(TRX_TEMPHPA_L);
     /* Writing TEMP_HPA to repo */
-    dat_setCubesatVar(dat_trx_temp_hpa, int_value);
+    sta_setCubesatVar(sta_trx_temp_hpa, int_value);
 
     
 }
@@ -1343,7 +1343,7 @@ void drp_trx_temp_mcu(void)
     int_value = (int)TRX_ReadRegister(TRX_TEMPMCU_H)<<8;
     int_value = int_value | (int)TRX_ReadRegister(TRX_TEMPMCU_L);
     /* Writing TEMP_MCU to repo */
-    dat_setCubesatVar(dat_trx_temp_mcu, int_value);
+    sta_setCubesatVar(sta_trx_temp_mcu, int_value);
 
     
 }
@@ -1437,7 +1437,7 @@ void drp_trx_rssi(void)
 #endif
 
     /* Writing RSSI to repo */
-    dat_setCubesatVar(dat_trx_rssi, int_value);
+    sta_setCubesatVar(sta_trx_rssi, int_value);
 }
 
 /*------------------------------------------------------------------------------
@@ -1454,7 +1454,7 @@ void drp_trx_beacon_pwr(void)
     char char_value;
     char_value = TRX_ReadRegister(TRX_BEACONPOWER);
     /* Writing BEACON_PWR to repo */
-    dat_setCubesatVar(dat_trx_beacon_pwr, (int)char_value);
+    sta_setCubesatVar(sta_trx_beacon_pwr, (int)char_value);
 }
 
 /*------------------------------------------------------------------------------
@@ -1471,7 +1471,7 @@ void drp_trx_telemetry_pwr(void)
     /* Reading TELEMETRY_PWR */
     char_value = TRX_ReadRegister(TRX_TMPOWER);
     /* Writing BEACON_PWR to repo */
-    dat_setCubesatVar(dat_trx_telemetry_pwr, (int)char_value);
+    sta_setCubesatVar(sta_trx_telemetry_pwr, (int)char_value);
 }
 
 /*------------------------------------------------------------------------------
@@ -1488,7 +1488,7 @@ void drp_trx_status_tc(void)
     /* Reading STATUS_TC */
     value = TRX_CheckNewTC();
     /* Writing BEACON_PWR to repo */
-    dat_setCubesatVar(dat_trx_status_tc, value);
+    sta_setCubesatVar(sta_trx_status_tc, value);
 }
 
 /*------------------------------------------------------------------------------
@@ -1501,18 +1501,18 @@ void drp_trx_status_tc(void)
  *----------------------------------------------------------------------------*/
 void drp_dep_write_deployed(int dep_state, int dep_tries)
 {
-    dat_setCubesatVar(dat_dep_ant_deployed, dep_state);
-    dat_setCubesatVar(dat_dep_ant_tries, dep_tries);
+    sta_setCubesatVar(sta_dep_ant_deployed, dep_state);
+    sta_setCubesatVar(sta_dep_ant_tries, dep_tries);
 
     if(dep_state)
     {
-        dat_setCubesatVar(dat_dep_year, RTC_get_year() );
-        dat_setCubesatVar(dat_dep_month, RTC_get_month() );
-        dat_setCubesatVar(dat_dep_day_number, RTC_get_day_num() );
-        dat_setCubesatVar(dat_dep_week_day, RTC_get_week_day() );
-        dat_setCubesatVar(dat_dep_hours, RTC_get_hours() );
-        dat_setCubesatVar(dat_dep_minutes, RTC_get_minutes() );
-        dat_setCubesatVar(dat_dep_seconds, RTC_get_seconds() );
+        sta_setCubesatVar(sta_dep_year, RTC_get_year() );
+        sta_setCubesatVar(sta_dep_month, RTC_get_month() );
+        sta_setCubesatVar(sta_dep_day_number, RTC_get_day_num() );
+        sta_setCubesatVar(sta_dep_week_day, RTC_get_week_day() );
+        sta_setCubesatVar(sta_dep_hours, RTC_get_hours() );
+        sta_setCubesatVar(sta_dep_minutes, RTC_get_minutes() );
+        sta_setCubesatVar(sta_dep_seconds, RTC_get_seconds() );
     }
 }
 
@@ -1647,34 +1647,34 @@ void drp_debug5(void){
 
     //Seteo
     dat_setMaxPayIndx(pay_i, maxIndx);
-    con_printf("dat_setMaxPayIndx( pay_i, maxIndx);\r\n");
+    con_printf("sta_setMaxPayIndx( pay_i, maxIndx);\r\n");
     dat_setNextPayIndx(pay_i, nextIndx);
-    con_printf("dat_setNextPayIndx( pay_i, nextIndx);\r\n");
+    con_printf("sta_setNextPayIndx( pay_i, nextIndx);\r\n");
 
     //Compruebo
     indx = dat_getMaxPayIndx(pay_i);
-    con_printf("indx = dat_getMaxPayIndx(pay_i);\r\nindx = ");
+    con_printf("indx = sta_getMaxPayIndx(pay_i);\r\nindx = ");
     itoa(buffer, (unsigned int)indx,10); con_printf(buffer); con_printf("\r\n");
     indx = dat_getNextPayIndx(pay_i);
-    con_printf("indx = dat_getNextPayIndx(pay_i);\r\nindx = ");
+    con_printf("indx = sta_getNextPayIndx(pay_i);\r\nindx = ");
     itoa(buffer, (unsigned int)indx,10); con_printf(buffer); con_printf("\r\n");
 
     con_printf("=>FIFO buffer check:\r\n");
     unsigned int i; int value=0xAA00, val; BOOL stat;
     for(i=0;i<0x000F;i++,value++){
         indx = dat_getNextPayIndx(pay_i);
-        con_printf("indx = dat_getNextPayIndx(pay_i);\r\nindx = ");
+        con_printf("indx = sta_getNextPayIndx(pay_i);\r\nindx = ");
         itoa(buffer, (unsigned int)indx,10); con_printf(buffer); con_printf("\r\n");
 
         //escribo
         stat = dat_setPayloadVar( pay_i, value);
-        con_printf("stat = dat_setPayloadVar( pay_i, value);\r\nstat =  ");
+        con_printf("stat = sta_setPayloadVar( pay_i, value);\r\nstat =  ");
         if(stat==TRUE){ con_printf("TRUE\r\n"); }
         else{ con_printf("FALSE\nFin del test\r\n"); break; }
 
         //leo
         stat = dat_getPayloadVar( pay_i, indx, &val);
-        con_printf("stat = dat_getPayloadVar( pay_i, indx, &val);\r\nstat = ");
+        con_printf("stat = sta_getPayloadVar( pay_i, indx, &val);\r\nstat = ");
         if(stat==TRUE){ con_printf("TRUE\r\n"); }
         else{ con_printf("FALSE\nFin del test\r\n"); break; }
 

@@ -84,33 +84,23 @@ int init_memEEPROM(void){
 int memEEPROM_isAlive(void)
 {
     //check if working normally
-    char ascii_val[10]; int dd;
 
     int indxVar;    //DAT_CubesatVar indxVar;
     int wvalue,rvalue;
 
-    indxVar = 2;  //indxVar = sta_mep_testVal;
+    indxVar = 0;  //indxVar = sta_mep_testVal;
     
     wvalue = 5005;
-    dd = wvalue;
-    itoa(ascii_val,dd,10);
-    con_printf("value = ");
-    con_printf(ascii_val);
     rvalue = 0;
     mem_setVar(indxVar, wvalue);
     rvalue = mem_getVar(indxVar);
-    dd = rvalue;
-    itoa(ascii_val,dd,10);
-    con_printf("\nvalue = ");
-    con_printf(ascii_val);
-    con_printf("\r\n");
     if(rvalue!=wvalue){return 0;}
 
-//    wvalue = 0xAB;
-//    rvalue = 0x00;
-//    mem_setVar(indxVar, wvalue);
-//    rvalue = mem_getVar(indxVar);
-//    if(rvalue!=wvalue){return 0;}
+    wvalue = 5006;
+    rvalue = 0x00;
+    mem_setVar(indxVar, wvalue);
+    rvalue = mem_getVar(indxVar);
+    if(rvalue!=wvalue){return 0;}
 
     return 1;
 }

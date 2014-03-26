@@ -251,41 +251,41 @@ int trx_reset_tm_pointer(void *param)
  */
 int trx_initialize(void *param)
 {
-    TxRxSettings Settings;
-    unsigned int result = 0;
-
-    /* CONFIGURAR VALORES DESEADOS ACA */
-    Settings._BCN_PWR   = SCH_CMDTRX_INIT_BEACON_PWR; //TRX_DEF_BCNPWR; /* 0 - 19 */
-    Settings._BCN_TMR   = 3; /*x4 seconds*/
-    Settings._BCN_WPM   = SCH_CMDTRX_INIT_BEACON_WPM; //TRX_DEF_BCNWPM;
-
-    Settings._HKP_PER   = TRX_DEF_HKPER;
-
-    Settings._TM_CMX    = TRX_DEF_TMCMX;
-    Settings._TM_PRE    = TRX_DEF_TMPRE;
-    Settings._TM_PWR    = SCH_CMDTRX_INIT_TELEMETRY_PWR; //TRX_DEF_TMPWR; /* 0 - 19 */
-
-//    Settings._BSTUF     = TRX_DEF_BSTUF;
-
-    Settings._FRX_H     = TRX_DEF_FRXH;
-    Settings._FRX_M     = TRX_DEF_FRXM;
-    Settings._FRX_L     = TRX_DEF_FRXL;
-
-    Settings._FTX_H     = TRX_DEF_FTXH;
-    Settings._FTX_M     = TRX_DEF_FTXM;
-    Settings._FTX_L     = TRX_DEF_FTXL;
-
-    Settings._FSEP_H    = TRX_DEF_FSEPH;
-    Settings._FSEP_L    = TRX_DEF_FSEPL;
-
-    Settings._MODE_TRX  = SCH_CMDTRX_INIT_MODE; //TRX_MODE_NOBEACON; //TRX_MODE_NOMINAL;
-
-    /* Actualizando valores configurados */
-    TRX_SetTransceiverSettings(&Settings);
-    
-    // Settings beacon contents
-    for(result = 0x0EFF;result>0;result--); //Delay
-    result = trx_set_beacon(param);
+//    TxRxSettings Settings;
+//    unsigned int result = 0;
+//
+//    /* CONFIGURAR VALORES DESEADOS ACA */
+//    Settings._BCN_PWR   = SCH_CMDTRX_INIT_BEACON_PWR; //TRX_DEF_BCNPWR; /* 0 - 19 */
+//    Settings._BCN_TMR   = 3; /*x4 seconds*/
+//    Settings._BCN_WPM   = SCH_CMDTRX_INIT_BEACON_WPM; //TRX_DEF_BCNWPM;
+//
+//    Settings._HKP_PER   = TRX_DEF_HKPER;
+//
+//    Settings._TM_CMX    = TRX_DEF_TMCMX;
+//    Settings._TM_PRE    = TRX_DEF_TMPRE;
+//    Settings._TM_PWR    = SCH_CMDTRX_INIT_TELEMETRY_PWR; //TRX_DEF_TMPWR; /* 0 - 19 */
+//
+////    Settings._BSTUF     = TRX_DEF_BSTUF;
+//
+//    Settings._FRX_H     = TRX_DEF_FRXH;
+//    Settings._FRX_M     = TRX_DEF_FRXM;
+//    Settings._FRX_L     = TRX_DEF_FRXL;
+//
+//    Settings._FTX_H     = TRX_DEF_FTXH;
+//    Settings._FTX_M     = TRX_DEF_FTXM;
+//    Settings._FTX_L     = TRX_DEF_FTXL;
+//
+//    Settings._FSEP_H    = TRX_DEF_FSEPH;
+//    Settings._FSEP_L    = TRX_DEF_FSEPL;
+//
+//    Settings._MODE_TRX  = SCH_CMDTRX_INIT_MODE; //TRX_MODE_NOBEACON; //TRX_MODE_NOMINAL;
+//
+//    /* Actualizando valores configurados */
+//    TRX_SetTransceiverSettings(&Settings);
+//
+//    // Settings beacon contents
+//    for(result = 0x0EFF;result>0;result--); //Delay
+//    result = trx_set_beacon(param);
 
     return 1;
 }
@@ -328,17 +328,17 @@ int trx_asknewtc(void *param)
     value = TRX_CheckNewTC() > 0 ? 1:0;
 
     /* Setting status in data repository */
-    dat_setCubesatVar(dat_trx_newTcFrame, value);
+    sta_setCubesatVar(sta_trx_newTcFrame, value);
 
     if(value)
     {
         /* Get the day when new TC arrived */
-        unsigned int today =    dat_getCubesatVar(dat_rtc_day_number)*
-                                dat_getCubesatVar(dat_rtc_month)*
-                                dat_getCubesatVar(dat_rtc_year);
+        unsigned int today =    sta_getCubesatVar(sta_rtc_day_number)*
+                                sta_getCubesatVar(sta_rtc_month)*
+                                sta_getCubesatVar(sta_rtc_year);
 
         /* Set de lastcmd_day status variable */
-        dat_setCubesatVar(dat_trx_lastcmd_day, today);
+        sta_setCubesatVar(sta_trx_lastcmd_day, today);
     }
 
     #if (SCH_CMDTRX_VERBOSE>=2)
@@ -422,11 +422,11 @@ int trx_parsetcframe(void *param)
     if(result)
     {
         /* Aumentar el contador de TC recividos */
-        result += dat_getCubesatVar(dat_trx_count_tc);
-        dat_setCubesatVar(dat_trx_count_tc, result);
+        result += sta_getCubesatVar(sta_trx_count_tc);
+        sta_setCubesatVar(sta_trx_count_tc, result);
 
         /* Indicar que hay comandos que procesar en el buffer de Cmd */
-        dat_setCubesatVar(dat_trx_newCmdBuff, 1);
+        sta_setCubesatVar(sta_trx_newCmdBuff, 1);
     }
 
     return result;

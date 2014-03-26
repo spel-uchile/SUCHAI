@@ -125,7 +125,25 @@ int RTC_init(void)
         RTC_WriteRegister(0x0C, 0x00);
     }
 
-    return 1;
+    return RTC_isAlive();
+}
+/**
+ * Check if the RTC is working
+ * @return 1 = is working 0 = not working
+ */
+int RTC_isAlive(void){
+    //verificar correcto funcionamiento
+    int seg1 = RTC_get_seconds();
+    /* Wait some seconds  */
+    unsigned long i;
+    for(i = 0x004FFFFF; i>0; i--){}
+    int seg2 = RTC_get_seconds();
+    if(seg1!=seg2){
+        return 1;
+    }
+    else{
+        return 0;
+    }
 }
 
 /*------------------------------------------------------------------------------

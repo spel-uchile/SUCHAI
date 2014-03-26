@@ -29,119 +29,24 @@
 
 #include "cmdIncludes.h"
 
+#include "statusRepository.h"
+
 
 //***STATUS REPOSITORY**********************************************************
 
-void dat_onReset_memEEPROM(void);
-
-/**
- * Cubesat's State Variables
- */
-typedef enum{
-    //PPC => (C&DH subsystem)
-    dat_ppc_opMode=0,
-    dat_ppc_lastResetSource,
-    dat_ppc_hoursAlive,
-    dat_ppc_hoursWithoutReset,
-    dat_ppc_resetCounter,
-    dat_ppc_enwdt,				// 1=WDT Active, 0=WDT Inactive
-    dat_ppc_osc,				// holds Current Oscillator
-    dat_ppc_MB_nOE_USB_nINT_stat,
-    dat_ppc_MB_nOE_MHX_stat,
-    dat_ppc_MB_nON_MHX_stat,
-    dat_ppc_MB_nON_SD_stat,
-
-    //DEP => (C&DH subsystem)
-    dat_dep_ant_deployed,            // 1=already deployed, 0=not deployed yet
-    dat_dep_ant_tries,               // Number of tries to deploy antenna
-    dat_dep_year,
-    dat_dep_month,
-    dat_dep_week_day,
-    dat_dep_day_number,
-    dat_dep_hours,
-    dat_dep_minutes,
-    dat_dep_seconds,
-
-    //RTC => (C&DH subsystem)
-    dat_rtc_year,
-    dat_rtc_month,
-    dat_rtc_week_day,
-    dat_rtc_day_number,
-    dat_rtc_hours,
-    dat_rtc_minutes,
-    dat_rtc_seconds,
-
-    //EPS => (Energy subsystem)
-    dat_eps_bat0_voltage,
-    dat_eps_bat0_current,
-    dat_eps_bus5V_current,
-    dat_eps_bus3V_current,
-    dat_eps_bus_battery_current,
-    dat_eps_bat0_temp,
-    dat_eps_panel_pwr,
-    dat_eps_status,
-    dat_eps_soc,
-    dat_eps_socss,
-    dat_eps_state_flag,
-    dat_eps_charging,
-
-    //TRX => (Communication subsystem)
-    dat_trx_frec_tx,          // TX Freq
-    dat_trx_frec_rx,          // RX Freq
-    dat_trx_opmode,           // Operation mode
-    dat_trx_temp_hpa,         // Temp of HPA
-    dat_trx_temp_mcu,         // Temp of MCU
-    dat_trx_rssi,             // RSSI, Signal level
-    dat_trx_rssi_mean,        // RSSI_MEAN
-    dat_trx_beacon_pwr,       // Beacon power
-    dat_trx_telemetry_pwr,    // Telemetry Power
-    dat_trx_status_tc,        // Status Register of TC
-    dat_trx_count_tm,         // number of sended TM
-    dat_trx_count_tc,         // number of received TC
-    dat_trx_lastcmd_day,      // day of the last received tc (since 1/1/00)
-    // Cmd buffer control
-    dat_trx_newTcFrame,       // Exist any unprocessed TcFram?
-    dat_trx_newCmdBuff,       // Exist unprocessed CMD in the ernal buffer
-    //trx_repo_telecmd[DAT_MAX_BUFF_TELECMD],   // Assuming that each Telecommand is of the form: [cmdId|param]
-
-    //FLIGHT PLAN
-    dat_fpl_index,            // Indice del flight plan que sera editado
-
-    //memSD
-    dat_msd_status,
-
-    //PAYLOAD
-    dat_pay_lagmuirProbe_perform,
-    dat_pay_sensTemp_perform,
-    dat_pay_gps_perform,
-    dat_pay_expFis_perform,
-    dat_pay_camera_perform,
-    dat_pay_gyro_perform,
-    dat_pay_tmEstado_perform,
-    dat_pay_test1_perform,
-    dat_pay_test2_perform,
-
-    //*************
-    dat_cubesatVar_last_one     //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
-}DAT_CubesatVar;                // SUCHAI's most important variables
+int dat_init_memEEPROM(void);
+int dat_memEEPROM_isAlive(void);
 
 
-void dat_setCubesatVar(DAT_CubesatVar indxVar, int value);
-int dat_getCubesatVar(DAT_CubesatVar indxVar);
-void dat_onResetCubesatVar(void);
 void dat_init_ppc_lastResetSource(void);
 void dat_reset_pay_i_performVar(void);
-
-#define DAT_PPC_OPMODE_NORMAL   (0) /* Operacion normal*/
-#define DAT_PPC_OPMODE_RSSI     (1) /* No hay telecomandos, solo usa RSSI*/
-#define DAT_PPC_OPMODE_FAIL     (2) /* Falla total */
 
 //***************************************************************************************************************
 
 /**
  * This function assigns the Memory Map of the external memSD
  */
-void dat_onReset_memSD(void);
+void dat_onReset_memSD(BOOL verbose);
 //***************************************************************************************************************
 //The following is an API to interface with the dataRepository cubesat telecomand buffer
 
@@ -219,10 +124,9 @@ unsigned int dat_getMaxPayIndx(DAT_Payload pay_i);
 void dat_setNextPayIndx(DAT_Payload pay_i, unsigned int nextIndx);
 //Obtiene el valor del indice actual del buffer de cierto payload
 unsigned int dat_getNextPayIndx(DAT_Payload pay_i);
-void dat_memSD_BlockErase(unsigned long block_address);
+void msd_blockErase(unsigned long block_address);
 void dat_erase_pay_i_buff(DAT_Payload pay_i);
 unsigned long dat_pay_i_to_block(DAT_Payload pay_i);
-DAT_CubesatVar dat_pay_i_to_performVar(DAT_Payload pay_i);
 //*************************************************************************************************
 
 /**

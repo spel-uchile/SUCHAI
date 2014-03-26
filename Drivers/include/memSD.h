@@ -7,7 +7,7 @@
 #include "pic_pc104_config.h"       //para usar SPI_nSS_x
 
 
-
+void msd_blockErase(unsigned long block_address);
 
 BOOL msd_setVar_1BlockExtMem(unsigned long block, unsigned char indx, int value);
 BOOL msd_getVar_1BlockExtMem(unsigned long block, unsigned char indx, int *value);

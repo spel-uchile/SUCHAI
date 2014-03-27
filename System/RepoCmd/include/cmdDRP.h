@@ -42,17 +42,17 @@
  */
 typedef enum{
     //De update en general de dat_CubesatVar
-    drp_id_updateAll_dat_CubesatVar=((unsigned int)CMD_DRP*0x100), ///< @cmd_first
-    drp_id_update_dat_CubesatVar_hoursWithoutReset, ///< @cmd
-    drp_id_update_dat_CubesatVar_opMode, ///< @cmd
-    drp_id_update_dat_CubesatVar_hoursAlive, ///< @cmd
-    drp_id_update_dat_CubesatVar_nSended_tm, ///< @cmd
-    drp_id_update_dat_CubesatVar_nReceived_tc, ///< @cmd
-    drp_id_update_dat_CubesatVar_trx_rssi, ///< @cmd
-    drp_id_update_dat_CubesatVar_trx_rssi_mean, ///< @cmd
+    drp_id_updateAll_sta_CubesatVar=((unsigned int)CMD_DRP*0x100), ///< @cmd_first
+    drp_id_update_sta_CubesatVar_hoursWithoutReset, ///< @cmd
+    drp_id_update_sta_CubesatVar_opMode, ///< @cmd
+    drp_id_update_sta_CubesatVar_hoursAlive, ///< @cmd
+    drp_id_update_sta_CubesatVar_nSended_tm, ///< @cmd
+    drp_id_update_sta_CubesatVar_nReceived_tc, ///< @cmd
+    drp_id_update_sta_CubesatVar_trx_rssi, ///< @cmd
+    drp_id_update_sta_CubesatVar_trx_rssi_mean, ///< @cmd
 
     //De display
-    drp_id_print_dat_CubesatVar, ///< @cmd 
+    drp_id_print_sta_CubesatVar, ///< @cmd
     drp_id_print_dat_TelecmdBuff, ///< @cmd
     drp_id_print_dat_FlightPlan, ///< @cmd
     drp_id_print_dat_PayloadIndxs, ///< @cmd
@@ -82,21 +82,21 @@ void drp_onResetCmdDRP();
 
 
 // command's to print dat_CubesatVar
-int drp_print_dat_CubesatVar(void *param);
+int drp_print_sta_CubesatVar(void *param);
 int drp_print_dat_TelecmdBuff(void *param);
 int drp_print_dat_FlightPlan(void *param);
 int drp_print_dat_PayloadIndxs(void *param);
 int drp_print_dat_PayloadVar(void *param);
 
 // command's to update dat_CubesatVar
-int drp_updateAll_dat_CubesatVar(void *param);
-int drp_update_dat_CubesatVar_hoursWithoutReset(void *param);
-int drp_update_dat_CubesatVar_opMode(void *param);
-int drp_update_dat_CubesatVar_hoursAlive(void *param);
-int drp_update_dat_CubesatVar_nSended_tm(void *param);
-int drp_update_dat_CubesatVar_nReceived_tc(void *param);
-int drp_update_dat_CubesatVar_trx_rssi(void *param);
-int drp_update_dat_CubesatVar_trx_rssi_mean(void *param);
+int drp_updateAll_sta_CubesatVar(void *param);
+int drp_update_sta_CubesatVar_hoursWithoutReset(void *param);
+int drp_update_sta_CubesatVar_opMode(void *param);
+int drp_update_sta_CubesatVar_hoursAlive(void *param);
+int drp_update_sta_CubesatVar_nSended_tm(void *param);
+int drp_update_sta_CubesatVar_nReceived_tc(void *param);
+int drp_update_sta_CubesatVar_trx_rssi(void *param);
+int drp_update_sta_CubesatVar_trx_rssi_mean(void *param);
 
 //comandos para mem ext (SD y EEPROM)
 int drp_executeBeforeFlight(void *param);
@@ -115,7 +115,7 @@ int drp_trx_newCmdBuff(void *param);
 
 //****************************************************
 //funciones auxiliares
-void drp_dat_CubesatVar_EBF(void);
+void drp_sta_CubesatVar_EBF(void);
 void drp_dat_FlightPlan_EBF(void);
 void drp_dat_TelecmdBuffer_EBF(void);
 void drp_memEEPROM_erase(void);

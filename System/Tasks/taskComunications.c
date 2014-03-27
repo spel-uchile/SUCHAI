@@ -26,7 +26,7 @@
 extern xQueueHandle dispatcherQueue; /* Commands queue */
 extern xQueueHandle i2cRxQueue;
 
-void com_RxI2C(xQueueHandle i2c_rx_queue);
+static void com_RxI2C(xQueueHandle i2c_rx_queue);
 
 void taskComunications(void *param)
 {
@@ -46,10 +46,10 @@ void taskComunications(void *param)
     TcNewCmd.idOrig = CMD_IDORIG_TCOMUNICATIONS; /* Comunications */
     TcNewCmd.param = 0;
 
-    int COMM_OP_MODE = dat_getCubesatVar(dat_ppc_opMode); /* MODO DE OPERACION */
+    int COMM_OP_MODE = sta_getCubesatVar(sta_ppc_opMode); /* MODO DE OPERACION */
     int NEW_TC = 0;
     int NEW_CMD_BUF = 0;
-    int LAST_CMD_DAY = dat_getCubesatVar(dat_trx_lastcmd_day);
+    int LAST_CMD_DAY = sta_getCubesatVar(sta_trx_lastcmd_day);
     int RSSI = 0;
     unsigned int RSSI_CNT = 0; /* Tiempo que hay RSSI, rel. a la ejecucion de la tarea */
     int RSSI_MEAN = 0;
@@ -95,18 +95,18 @@ void taskComunications(void *param)
         continue;
 
         /* Actualizar la lectura de RSSI */
-        TcNewCmd.cmdId = drp_id_update_dat_CubesatVar_trx_rssi;
+        TcNewCmd.cmdId = drp_id_update_sta_CubesatVar_trx_rssi;
         TcNewCmd.param = 0; /* None */
         /* Queue NewCmd - Non-Blocking (Wait 0.5 task period) */
         xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
 
         /* Recuperar variables de estado */
-        NEW_TC          = dat_getCubesatVar(dat_trx_newTcFrame);
-        NEW_CMD_BUF     = dat_getCubesatVar(dat_trx_newCmdBuff);
-        LAST_CMD_DAY    = dat_getCubesatVar(dat_trx_lastcmd_day);
-        COMM_OP_MODE    = dat_getCubesatVar(dat_ppc_opMode);
-        RSSI            = dat_getCubesatVar(dat_trx_rssi);
-        RSSI_MEAN       = dat_getCubesatVar(dat_trx_rssi_mean);
+        NEW_TC          = sta_getCubesatVar(sta_trx_newTcFrame);
+        NEW_CMD_BUF     = sta_getCubesatVar(sta_trx_newCmdBuff);
+        LAST_CMD_DAY    = sta_getCubesatVar(sta_trx_lastcmd_day);
+        COMM_OP_MODE    = sta_getCubesatVar(sta_ppc_opMode);
+        RSSI            = sta_getCubesatVar(sta_trx_rssi);
+        RSSI_MEAN       = sta_getCubesatVar(sta_trx_rssi_mean);
 
         #if (SCH_TASKCOMUNICATIONS_VERBOSE >=2)
             itoa(buf,NEW_TC,10);
@@ -125,14 +125,14 @@ void taskComunications(void *param)
         #endif
 
         /* Modo de operacion solo con RSSI */
-        if(COMM_OP_MODE == DAT_PPC_OPMODE_RSSI)
+        if(COMM_OP_MODE == STA_PPC_OPMODE_RSSI)
         {
             /* Llegaron TC, cambiar el modo a normal */
             if(NEW_TC)
             {
                 /* Comando para cambiar el modo a NORMAL */
-                TcNewCmd.cmdId = drp_id_update_dat_CubesatVar_opMode;
-                TcNewCmd.param = DAT_PPC_OPMODE_NORMAL;
+                TcNewCmd.cmdId = drp_id_update_sta_CubesatVar_opMode;
+                TcNewCmd.param = STA_PPC_OPMODE_NORMAL;
                 xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
             }
 
@@ -150,7 +150,7 @@ void taskComunications(void *param)
                 if(RSSI_CNT >= SCH_COMM_RSSI_CNT_MAX )
                 {
                     /* Agregar el nuevo valor al promedio */
-                    TcNewCmd.cmdId = drp_id_update_dat_CubesatVar_trx_rssi_mean;
+                    TcNewCmd.cmdId = drp_id_update_sta_CubesatVar_trx_rssi_mean;
                     TcNewCmd.param = RSSI;
                     xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
                 }
@@ -164,7 +164,7 @@ void taskComunications(void *param)
                 }
 
                 /* Cuando no hay carrier, actualizar el valor de ruido promedio */
-                TcNewCmd.cmdId = drp_id_update_dat_CubesatVar_trx_rssi_mean;
+                TcNewCmd.cmdId = drp_id_update_sta_CubesatVar_trx_rssi_mean;
                 TcNewCmd.param = RSSI; /* Valor de RSSI actual */
                 xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
                 
@@ -175,12 +175,12 @@ void taskComunications(void *param)
 
         
         /* Modo de operacion con telecomandos */
-        else if(COMM_OP_MODE == DAT_PPC_OPMODE_NORMAL)
+        else if(COMM_OP_MODE == STA_PPC_OPMODE_NORMAL)
         {
             /* Calcular cuandos dias han pasado desde el ultimo TC */
-            unsigned int today =    dat_getCubesatVar(dat_rtc_day_number)*
-                                    dat_getCubesatVar(dat_rtc_month)*
-                                    dat_getCubesatVar(dat_rtc_year);
+            unsigned int today =    sta_getCubesatVar(sta_rtc_day_number)*
+                                    sta_getCubesatVar(sta_rtc_month)*
+                                    sta_getCubesatVar(sta_rtc_year);
 
             unsigned int days_wo_tc = today - LAST_CMD_DAY;
 
@@ -188,8 +188,8 @@ void taskComunications(void *param)
             if(days_wo_tc >= SCH_COMM_NO_TC_DAYS)
             {
                 /* Comando para cambiar el modo a RSSI */
-                TcNewCmd.cmdId = drp_id_update_dat_CubesatVar_opMode;
-                TcNewCmd.param = DAT_PPC_OPMODE_RSSI;
+                TcNewCmd.cmdId = drp_id_update_sta_CubesatVar_opMode;
+                TcNewCmd.param = STA_PPC_OPMODE_RSSI;
                 xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
             }
 
@@ -266,7 +266,7 @@ void com_doOnRSSI(xQueueHandle dispatcherQueue)
  * @param frame_p i2c_frame_t pointer to a valid frame
  * @param i2c_rx_queue Valid queue to read data from
  */
-void com_RxI2C(xQueueHandle i2c_rx_queue)
+static void com_RxI2C(xQueueHandle i2c_rx_queue)
 {
     static int nrcv = 0;
     static uint8_t new_data = 0;

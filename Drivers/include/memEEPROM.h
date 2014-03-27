@@ -3,7 +3,9 @@
 
 #include "i2c_comm.h"
 
-#define MEP_EEPROM_ID   0b01010000 /* I2C node address (7bit hex) */
+//#define MEP_EEPROM_ID 0b1010000 /* I2C node address (7bit hex) */
+#define MEP_EEPROM_ID   0b01010000 /* I2C node address (7bit hex), mem 1 */
+//#define MEP_EEPROM_ID   0b01010111 /* I2C node address (7bit hex), mem 2 */
 #define MEP_EEPROM1_IDW 0b10100000 /* I2C node address Write */
 #define MEP_EEPROM1_IDR 0b10100001 /* I2C node address Read */
 
@@ -15,5 +17,11 @@ unsigned char readEEPROM1(unsigned char address);
 
 void writeIntEEPROM1(unsigned char indx, int value);
 int readIntEEPROM1(unsigned char indx);
+
+int init_memEEPROM(void);
+int memEEPROM_isAlive(void);
+
+void mem_setVar( unsigned char indxVar, int value);
+int mem_getVar( unsigned char indxVar);
 
 #endif /* MEM_EEPROM_H   */

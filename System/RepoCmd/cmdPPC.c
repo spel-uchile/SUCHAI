@@ -139,13 +139,13 @@ int ppc_enwdt(void *on_off)
     {
          EnableWDT( WDT_DISABLE );
          txt_result = "WDT_DISABLE\r\n";
-         dat_setCubesatVar(dat_ppc_enwdt, 0);
+         sta_setCubesatVar(sta_ppc_enwdt, 0);
     }
     else if( i==1 )
     {
          EnableWDT( WDT_ENABLE );
          txt_result = "WDT_ENABLE\r\n";
-         dat_setCubesatVar(dat_ppc_enwdt, 1);
+         sta_setCubesatVar(sta_ppc_enwdt, 1);
     }
     else
     {
@@ -393,7 +393,7 @@ int ppc_rtos_debug(void *param)
     utoa(buff,water_mark,10);
     con_printf("taskHousekeeping, "); con_printf(buff); con_printf("\n");
 
-    #if (SCH_TRX_ONBOARD==1 || SCH_TRX_ONBOARD==2)
+    #if (SCH_TRX_ONBOARD==1)
     {
         /* cheking taskComunications stack */
         water_mark = uxTaskGetStackHighWaterMark(&taskComunicationsHandle);
@@ -402,7 +402,7 @@ int ppc_rtos_debug(void *param)
     }
     #endif
 
-    #if (SCH_FLIGHTPLAN_TYPE==1) || (SCH_FLIGHTPLAN_TYPE==3)
+    #if (SCH_USE_FLIGHTPLAN==1)
     {
         /* cheking taskFlightPlan stack */
         water_mark = uxTaskGetStackHighWaterMark(&taskFlightPlanHandle);
@@ -411,7 +411,7 @@ int ppc_rtos_debug(void *param)
     }
     #endif
 
-    #if (SCH_FLIGHTPLAN_TYPE==2) || (SCH_FLIGHTPLAN_TYPE==3)
+    #if (SCH_USE_FLIGHTPLAN2==1)
     {
         /* cheking taskFlightPlan2 stack */
         water_mark = uxTaskGetStackHighWaterMark(&taskFlightPlan2Handle);

@@ -246,13 +246,13 @@ int repo_setCmd(int cmdID, cmdFunction function)
 int repo_onResetCmdRepo(void)
 {
     ppc_onResetCmdPPC();
-    trx_onResetCmdTRX();
-    eps_onResetCmdEPS();
-    con_onResetCmdCON();
-    pay_onResetCmdPAY();
     drp_onResetCmdDRP();
-    rtc_onResetCmdRTC();
+    con_onResetCmdCON();
+    trx_onResetCmdTRX();
     tcm_onResetCmdTCM();
+    eps_onResetCmdEPS();
+    pay_onResetCmdPAY();
+    rtc_onResetCmdRTC();
 
     return 1;
 }

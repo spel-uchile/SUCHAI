@@ -270,6 +270,7 @@ int trx_initialize(void *param)
 //    int beacon = 0; // Set suchai beacon
 //    int result = trx_set_beacon((void *)(&beacon)); //Also call trx_set_conf
 
+    /* Toopazo: DEBE devolver 1 si tiene exito y avisar con 0 si falla */
     return 1;
 }
 
@@ -315,7 +316,7 @@ int trx_asknewtc(void *param)
     if ((conn = csp_accept(sock, 250)) == NULL)
     {
         /* Setting status in data repository */
-        dat_setCubesatVar(dat_trx_newTcFrame, 0); //No new TC
+        sta_setCubesatVar(sta_trx_newTcFrame, 0); //No new TC
         return 1;
     }
 
@@ -331,8 +332,8 @@ int trx_asknewtc(void *param)
                 printf("[New packet] ");
 
                  /* Setting status in data repository */
-                dat_setCubesatVar(dat_trx_newTcFrame, 1);
-                new_cmd_buff = dat_getCubesatVar(dat_trx_newCmdBuff);
+                sta_setCubesatVar(sta_trx_newTcFrame, 1);
+                new_cmd_buff = sta_getCubesatVar(sta_trx_newCmdBuff);
 
                 if(new_cmd_buff == 0)
                     trx_parsetcframe((void *)packet->data16); //TODO: Check frame lenght
@@ -346,7 +347,7 @@ int trx_asknewtc(void *param)
                 csp_service_handler(conn, packet);
 
                 /* Setting status in data repository */
-                dat_setCubesatVar(dat_trx_newTcFrame, 0);
+                sta_setCubesatVar(sta_trx_newTcFrame, 0);
                 break;
         }
     }
@@ -419,11 +420,11 @@ int trx_parsetcframe(void *param)
     if(result)
     {
         /* Aumentar el contador de TC recibidos */
-        result += dat_getCubesatVar(dat_trx_count_tc);
-        dat_setCubesatVar(dat_trx_count_tc, result);
+        result += sta_getCubesatVar(sta_trx_count_tc);
+        sta_setCubesatVar(sta_trx_count_tc, result);
 
         /* Indicar que hay comandos que procesar en el buffer de Cmd */
-        dat_setCubesatVar(dat_trx_newCmdBuff, 1);
+        sta_setCubesatVar(sta_trx_newCmdBuff, 1);
     }
 
     return result;
@@ -460,46 +461,49 @@ int trx_read_tcframe(void *param)
  */
 int trx_tm_trxstatus(void *param)
 {
-    int data_len = 0x36;
-    int data = 0;
-    unsigned char status[data_len];
+    /*Toopazo: Funcion del TRX antiguo, ocupaba "PPC_nTX_FLAG, PPC_nRX_FLAG" que ahora no existen */
 
-    int mode = *((int *)param);
-
-    if((mode == 0) || (mode == 2))
-    {
-        /* Start a new session (Single or normal) */
-        data = 0x000A; /* TM ID */
-        trx_tm_addtoframe(&data, 0, CMD_ADDFRAME_FIN);   /* Close previos sessions */
-        trx_tm_addtoframe(&data, 1, CMD_ADDFRAME_START); /* New empty start frame */
-
-        /* Read info and append to the frame */
-//        TRX_GetStatus(status);
-        /*To int*/
-        int data_int[data_len]; int i;
-        for(i=0; i<data_len;i++) {data_int[i] = (int)status[i];}
-        /* Add data */
-        trx_tm_addtoframe(data_int, data_len, CMD_ADDFRAME_ADD);
-
-        // Close session
-        // data = trx_tm_addtoframe(&data, 0, CMD_ADDFRAME_STOP);     /* Empty stop frame */
-        data = trx_tm_addtoframe(&data, 0, CMD_ADDFRAME_FIN);      /* End session */
-    }
-
-    if((mode == 1) || (mode == 2))
-    {
-        /* Evitar enviar el comando transmitir si los flags nTX o nRX estan activos */
-        while(!(PPC_nTX_FLAG && PPC_nRX_FLAG))
-        {
-            long i;
-            for(i=0; i<0xFFFFFF; i++);
-        }
-
-        /* Transmmit info */
-//        data = TRX_SendTelemetry();
-    }
-
-    return data;
+//    int data_len = 0x36;
+//    int data = 0;
+//    unsigned char status[data_len];
+//
+//    int mode = *((int *)param);
+//
+//    if((mode == 0) || (mode == 2))
+//    {
+//        /* Start a new session (Single or normal) */
+//        data = 0x000A; /* TM ID */
+//        trx_tm_addtoframe(&data, 0, CMD_ADDFRAME_FIN);   /* Close previos sessions */
+//        trx_tm_addtoframe(&data, 1, CMD_ADDFRAME_START); /* New empty start frame */
+//
+//        /* Read info and append to the frame */
+////        TRX_GetStatus(status);
+//        /*To int*/
+//        int data_int[data_len]; int i;
+//        for(i=0; i<data_len;i++) {data_int[i] = (int)status[i];}
+//        /* Add data */
+//        trx_tm_addtoframe(data_int, data_len, CMD_ADDFRAME_ADD);
+//
+//        // Close session
+//        // data = trx_tm_addtoframe(&data, 0, CMD_ADDFRAME_STOP);     /* Empty stop frame */
+//        data = trx_tm_addtoframe(&data, 0, CMD_ADDFRAME_FIN);      /* End session */
+//    }
+//
+//    if((mode == 1) || (mode == 2))
+//    {
+//        /* Evitar enviar el comando transmitir si los flags nTX o nRX estan activos */
+//        while(!(PPC_nTX_FLAG && PPC_nRX_FLAG))
+//        {
+//            long i;
+//            for(i=0; i<0xFFFFFF; i++);
+//        }
+//
+//        /* Transmmit info */
+////        data = TRX_SendTelemetry();
+//    }
+//
+//    return data;
+    return 0;
 }
 
 /**

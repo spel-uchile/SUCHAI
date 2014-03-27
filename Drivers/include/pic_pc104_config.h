@@ -96,13 +96,6 @@ void GPIO_PC104_init(void);
     #define PPC_ANT2_SWITCH     _LATE8
     #define PPC_ANT12_CHECK     _RF0
 #endif
-#if (SCH_TRX_ONBOARD==1 || SCH_TRX_ONBOARD==2)
-    #define PPC_nRX_FLAG _RB2    ///< RX Flag
-    #define PPC_nTX_FLAG _RB3    ///< TX Flag
-#else
-    #define PPC_nRX_FLAG 1
-    #define PPC_nTX_FLAG 1
-#endif
 #if (SCH_PAY_GYRO_ONBOARD==1)
     #define PPC_GYRO_INT2_CHECK   _RF1
 #else

@@ -84,13 +84,13 @@ int main(void)
         printf("\n>>FreeRTOS [FAIL]\n");
         ppc_reset(NULL);
     }
-    
+
     return 0;
 }
 
 void vApplicationIdleHook(void)
 {
-    /* 
+    /*
      * **configUSE_IDLE_HOOK must be set to 1**
      * Esta funcion se ejecuta cuando el procesador
      * no esta siendo utilizado por otra tarea

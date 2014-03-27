@@ -7,6 +7,12 @@
 #include "pic_pc104_config.h"
 #include "rs232_suchai.h"
 
+#if(SCH_PAY_LAGMUIR_ONBOARD==1)
+    #define LAG_BUFFER_LEN      (1096)
+#else
+    #define LAG_BUFFER_LEN      (1)
+#endif
+
 #define LAG_COMMPORT    RS2_M_UART3 
 #define LAG_BAUDRATE    (38400) /* BAUD 38400 => ABAUD 25*/
 #define LAG_ABAUD       (25) /* BAUD 38400 => ABAUD 25*/
@@ -32,7 +38,7 @@
  *                      https://docs.google.com/spreadsheet/ccc?key=0AlJNKX_r8AXcdHpNbVROMFg1cWtiNXVRa3hHb091Ync#gid=0
  * Return Value       : 1 - OK, 0 - Fail
  *----------------------------------------------------------------------------*/
-int lag_read_cal_packet(unsigned int* buffer);
+int lag_read_cal_packet(BOOL verb);
 
 /*------------------------------------------------------------------------------
  *		 	LAG READ PLASMA PACKET
@@ -44,7 +50,7 @@ int lag_read_cal_packet(unsigned int* buffer);
  *                      https://docs.google.com/spreadsheet/ccc?key=0AlJNKX_r8AXcdHpNbVROMFg1cWtiNXVRa3hHb091Ync#gid=0
  * Return Value       : 1 - OK, 0 - Fail
  *----------------------------------------------------------------------------*/
-int lag_read_plasma_packet(unsigned int* buffer);
+int lag_read_plasma_packet(BOOL verb);
 
 /*------------------------------------------------------------------------------
  *		 	LAG READ SWEEP PACKET
@@ -56,6 +62,27 @@ int lag_read_plasma_packet(unsigned int* buffer);
  *                      https://docs.google.com/spreadsheet/ccc?key=0AlJNKX_r8AXcdHpNbVROMFg1cWtiNXVRa3hHb091Ync#gid=0
  * Return Value       : 1 - OK, 0 - Fail
  *----------------------------------------------------------------------------*/
-int lag_read_sweep_packet(unsigned int* buffer);
+int lag_read_sweep_packet(BOOL verb);
+
+/**
+ * Prints the received buffer
+ * @param len lenght of the expected message
+ */
+void lag_print_buffer(int len);
+/**
+ * Erase received buffer
+  */
+void lag_erase_buffer(void);
+/**
+ * Waits the LAG_BUSY to come free,
+ * @return 1 = ok 0 = timeout happend
+ */
+int lag_wait_busy_wtimeout(void);
+/**
+ * Get the value of the ind-esim char of langmuir_buffer
+ * @param ind-esim char of langmuir_buffer
+ * @return value of the ind-esim char of langmuir_buffer
+ */
+unsigned int lag_get_langmuir_buffer_i(int ind);
 
 #endif //LANGMUIR_H

@@ -8,7 +8,6 @@
         <itemPath>../Drivers/include/interfaz_SPI.h</itemPath>
         <itemPath>../Drivers/include/pic_pc104_config.h</itemPath>
         <itemPath>../Drivers/include/rs232_suchai.h</itemPath>
-        <itemPath>../Drivers/include/transceiver.h</itemPath>
         <itemPath>../Drivers/include/console.h</itemPath>
         <itemPath>../Drivers/include/eps_suchai.h</itemPath>
         <itemPath>../Drivers/include/rtc_mb.h</itemPath>
@@ -17,6 +16,7 @@
         <itemPath>../Drivers/include/memEEPROM.h</itemPath>
         <itemPath>../Drivers/include/interfaz_ADC.h</itemPath>
         <itemPath>../Drivers/include/i2c_comm.h</itemPath>
+        <itemPath>../Drivers/include/nanocom.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="FreeRTOS" projectFiles="true">
         <itemPath>../FreeRTOS/Source/include/croutine.h</itemPath>
@@ -79,16 +79,19 @@
         <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/portmacro.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f4" displayName="System" projectFiles="true">
+<<<<<<< HEAD
+        <logicalFolder name="include" displayName="include" projectFiles="true">
+          <itemPath>../System/Internal/include/cmdRepository.h</itemPath>
+          <itemPath>../System/Internal/include/taskExecuter.h</itemPath>
+          <itemPath>../System/Internal/include/taskDispatcher.h</itemPath>
+          <itemPath>../System/Internal/include/dataRepository.h</itemPath>
+        </logicalFolder>
         <itemPath>../System/include/taskConsole.h</itemPath>
-        <itemPath>../System/include/taskDispatcher.h</itemPath>
-        <itemPath>../System/include/taskExecuter.h</itemPath>
         <itemPath>../System/include/cmdIncludes.h</itemPath>
         <itemPath>../System/include/cmdPPC.h</itemPath>
         <itemPath>../System/include/cmdConsole.h</itemPath>
         <itemPath>../System/include/taskHouskeeping.h</itemPath>
         <itemPath>../System/include/taskFlightPlan.h</itemPath>
-        <itemPath>../System/include/dataRepository.h</itemPath>
-        <itemPath>../System/include/cmdRepository.h</itemPath>
         <itemPath>../System/include/cmdTRX.h</itemPath>
         <itemPath>../System/include/cmdDRP.h</itemPath>
         <itemPath>../System/include/taskComunications.h</itemPath>
@@ -98,6 +101,38 @@
         <itemPath>../System/include/cmdTCM.h</itemPath>
         <itemPath>../System/include/taskFlightPlan2.h</itemPath>
         <itemPath>../System/include/DebugIncludes.h</itemPath>
+        <itemPath>../System/include/taskTest.h</itemPath>
+=======
+        <logicalFolder name="RepoCmd" displayName="RepoCmd" projectFiles="true">
+          <logicalFolder name="include" displayName="include" projectFiles="true">
+            <itemPath>../System/RepoCmd/include/cmdCON.h</itemPath>
+            <itemPath>../System/RepoCmd/include/cmdDRP.h</itemPath>
+            <itemPath>../System/RepoCmd/include/cmdEPS.h</itemPath>
+            <itemPath>../System/RepoCmd/include/cmdPPC.h</itemPath>
+            <itemPath>../System/RepoCmd/include/cmdRTC.h</itemPath>
+            <itemPath>../System/RepoCmd/include/cmdTCM.h</itemPath>
+            <itemPath>../System/RepoCmd/include/cmdTRX.h</itemPath>
+          </logicalFolder>
+        </logicalFolder>
+        <logicalFolder name="Tasks" displayName="Tasks" projectFiles="true">
+          <logicalFolder name="include" displayName="include" projectFiles="true">
+            <itemPath>../System/Tasks/include/taskFlightPlan.h</itemPath>
+            <itemPath>../System/Tasks/include/taskHouskeeping.h</itemPath>
+            <itemPath>../System/Tasks/include/taskFlightPlan2.h</itemPath>
+            <itemPath>../System/Tasks/include/taskComunications.h</itemPath>
+            <itemPath>../System/Tasks/include/taskTest.h</itemPath>
+            <itemPath>../System/Tasks/include/taskConsole.h</itemPath>
+          </logicalFolder>
+        </logicalFolder>
+        <itemPath>../System/include/cmdIncludes.h</itemPath>
+        <itemPath>../System/include/cmdRepository.h</itemPath>
+        <itemPath>../System/include/dataRepository.h</itemPath>
+        <itemPath>../System/include/DebugIncludes.h</itemPath>
+        <itemPath>../System/include/statusRepository.h</itemPath>
+        <itemPath>../System/include/taskDeployment.h</itemPath>
+        <itemPath>../System/include/taskDispatcher.h</itemPath>
+        <itemPath>../System/include/taskExecuter.h</itemPath>
+>>>>>>> testPay
       </logicalFolder>
       <itemPath>../FreeRTOSConfig.h</itemPath>
       <itemPath>../SUCHAI_config.h</itemPath>
@@ -114,7 +149,6 @@
         <itemPath>../Drivers/interfaz_SPI.c</itemPath>
         <itemPath>../Drivers/pic_pc104_config.c</itemPath>
         <itemPath>../Drivers/rs232_suchai.c</itemPath>
-        <itemPath>../Drivers/transceiver.c</itemPath>
         <itemPath>../Drivers/console.c</itemPath>
         <itemPath>../Drivers/eps_suchai.c</itemPath>
         <itemPath>../Drivers/rtc_mb.c</itemPath>
@@ -123,6 +157,7 @@
         <itemPath>../Drivers/memEEPROM.c</itemPath>
         <itemPath>../Drivers/interfaz_ADC.c</itemPath>
         <itemPath>../Drivers/i2c_comm.c</itemPath>
+        <itemPath>../Drivers/nanocom.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="FreeRTOS" projectFiles="true">
         <itemPath>../FreeRTOS/Source/croutine.c</itemPath>
@@ -199,15 +234,18 @@
         <itemPath>../FreeRTOS/Source/portable/MemMang/heap_2.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f4" displayName="System" projectFiles="true">
+<<<<<<< HEAD
+        <logicalFolder name="Internal" displayName="Internal" projectFiles="true">
+          <itemPath>../System/Internal/cmdRepository.c</itemPath>
+          <itemPath>../System/Internal/taskExecuter.c</itemPath>
+          <itemPath>../System/Internal/taskDispatcher.c</itemPath>
+          <itemPath>../System/Internal/dataRepository.c</itemPath>
+        </logicalFolder>
         <itemPath>../System/taskConsole.c</itemPath>
-        <itemPath>../System/taskDispatcher.c</itemPath>
-        <itemPath>../System/taskExecuter.c</itemPath>
         <itemPath>../System/cmdPPC.c</itemPath>
         <itemPath>../System/cmdConsole.c</itemPath>
         <itemPath>../System/taskHousekeeping.c</itemPath>
         <itemPath>../System/taskFlightPlan.c</itemPath>
-        <itemPath>../System/dataRepository.c</itemPath>
-        <itemPath>../System/cmdRepository.c</itemPath>
         <itemPath>../System/cmdTRX.c</itemPath>
         <itemPath>../System/cmdDRP.c</itemPath>
         <itemPath>../System/taskComunications.c</itemPath>
@@ -216,6 +254,31 @@
         <itemPath>../System/cmdRTC.c</itemPath>
         <itemPath>../System/cmdTCM.c</itemPath>
         <itemPath>../System/taskFlightPlan2.c</itemPath>
+        <itemPath>../System/taskTest.c</itemPath>
+=======
+        <logicalFolder name="RepoCmd" displayName="RepoCmd" projectFiles="true">
+          <itemPath>../System/RepoCmd/cmdEPS.c</itemPath>
+          <itemPath>../System/RepoCmd/cmdDRP.c</itemPath>
+          <itemPath>../System/RepoCmd/cmdRTC.c</itemPath>
+          <itemPath>../System/RepoCmd/cmdPPC.c</itemPath>
+          <itemPath>../System/RepoCmd/cmdTRX.c</itemPath>
+          <itemPath>../System/RepoCmd/cmdTCM.c</itemPath>
+          <itemPath>../System/RepoCmd/cmdCON.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="Tasks" displayName="Tasks" projectFiles="true">
+          <itemPath>../System/Tasks/taskHousekeeping.c</itemPath>
+          <itemPath>../System/Tasks/taskFlightPlan.c</itemPath>
+          <itemPath>../System/Tasks/taskConsole.c</itemPath>
+          <itemPath>../System/Tasks/taskFlightPlan2.c</itemPath>
+          <itemPath>../System/Tasks/taskComunications.c</itemPath>
+        </logicalFolder>
+        <itemPath>../System/taskDispatcher.c</itemPath>
+        <itemPath>../System/taskExecuter.c</itemPath>
+        <itemPath>../System/dataRepository.c</itemPath>
+        <itemPath>../System/cmdRepository.c</itemPath>
+        <itemPath>../System/taskDeployment.c</itemPath>
+        <itemPath>../System/statusRepository.c</itemPath>
+>>>>>>> testPay
       </logicalFolder>
       <itemPath>../main.c</itemPath>
     </logicalFolder>
@@ -226,13 +289,10 @@
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
-<<<<<<< HEAD
     <Elem>../Libcsp/include</Elem>
     <Elem>../Libcsp/src</Elem>
     <Elem>../FreeRTOS/Source/portable</Elem>
-=======
-    <Elem>..</Elem>
->>>>>>> master
+    <Elem>../System/Internal</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -244,7 +304,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>ICD3PlatformTool</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>1.20</languageToolchainVersion>
+        <languageToolchainVersion>1.11</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <compileType>
@@ -281,9 +341,13 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value="..;../Drivers/include;../System/include;../FreeRTOS/Source/include;../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/;../Payloads/Cmd/include;../Payloads/Drivers/include;../Libcsp;../Libcsp/include/csp;../Libcsp/src;../Libcsp/include/csp/arch;../Libcsp/include/csp/drivers;../Libcsp/include/csp/interfaces;../Libcsp/src/interfaces;../Libcsp/src/interfaces/csp"/>
+<<<<<<< HEAD
+                  value="..;../Drivers/include;../System/include;../FreeRTOS/Source/include;../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/;../Payloads/Cmd/include;../Payloads/Drivers/include;../Libcsp;../Libcsp/include/csp;../Libcsp/src;../Libcsp/include/csp/arch;../Libcsp/include/csp/drivers;../Libcsp/include/csp/interfaces;../Libcsp/src/interfaces;../Libcsp/src/interfaces/csp;../System/Internal/include"/>
+=======
+                  value="..;../Drivers/include;../System/include;../FreeRTOS/Source/include;../Payloads/Cmd/include;../Payloads/Drivers/include;../System/RepoCmd/include;../System/Tasks/include"/>
+>>>>>>> testPay
         <property key="isolate-each-function" value="false"/>
-        <property key="keep-inline" value="false"/>
+        <property key="keep-inline" value="true"/>
         <property key="oXC16gcc-align-arr" value="false"/>
         <property key="oXC16gcc-cnsts-mauxflash" value="false"/>
         <property key="oXC16gcc-data-sects" value="false"/>
@@ -298,7 +362,7 @@
         <property key="oXC16gcc-sfr-warn" value="false"/>
         <property key="oXC16gcc-smar-io-lvl" value="1"/>
         <property key="oXC16gcc-smart-io-fmt" value=""/>
-        <property key="optimization-level" value="0"/>
+        <property key="optimization-level" value="1"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>
         <property key="preprocessor-macros" value="MPLAB_PIC24_PORT"/>
@@ -446,7 +510,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>Simulator</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>1.20</languageToolchainVersion>
+        <languageToolchainVersion>1.11</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <compileType>

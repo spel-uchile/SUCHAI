@@ -53,8 +53,8 @@ void taskFlightPlan(void *param)
 
         /* Map hh:mm to MM minutues of the day to obtain the
          * index of the next command to read from fligh plan */
-        current_hour = dat_getCubesatVar(dat_rtc_hours);
-        current_mins = dat_getCubesatVar(dat_rtc_minutes);
+        current_hour = sta_getCubesatVar(sta_rtc_hours);
+        current_mins = sta_getCubesatVar(sta_rtc_minutes);
         index = current_hour*60 + current_mins;
         index = index / SCH_FLIGHTPLAN_RESOLUTION;
 

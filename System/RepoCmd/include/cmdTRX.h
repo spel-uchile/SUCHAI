@@ -66,6 +66,8 @@ typedef enum{
 
 #define TRX_NCMD ((unsigned char)trx_id_last_one)
 
+
+
 void trx_onResetCmdTRX(void);
 int trx_set_conf(void *param);
 int trx_send_beacon(void *param);

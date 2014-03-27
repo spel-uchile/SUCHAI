@@ -35,7 +35,7 @@ void taskDeployment(void *param)
     #endif
 
     /* Perifericos*/
-    dep_init_Peripherals(NULL);
+    dep_init_hw(NULL);
 
     /* Repositorios */
     dep_init_Repos(NULL);
@@ -43,11 +43,21 @@ void taskDeployment(void *param)
     /* Otras estructuras */
     dep_init_GnrlStrct(NULL);
 
+    /* Toopazo: Ahora deberia ser un comando (el rpimero) llamado en taskFligthPlan o equivalente */
+//    /* Antena */
+//    #if (SCH_ANTENNA_ONBOARD==1)
+//        int realTime2 = SCH_TASKDEPLOYMENT_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
+//        dep_deploy_antenna( (void *)&realTime2 );
+//    #endif
+
+
     /* Initializing Transceiver */
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         printf("    * Setting TRX config\r\n");
     #endif
-    trx_initialize(NULL);
+    #if (SCH_TRX_ONBOARD==1)
+        trx_initialize(NULL);
+    #endif
 }
 
 /**
@@ -59,10 +69,28 @@ void taskDeployment(void *param)
 int dep_init_Repos(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        printf("\n[dep_init_Repos] Initializing data repositories...\r\n");
+        con_printf("\n[dep_init_Repos] Initializing status repositories...\r\n");
     #endif
 
-    #if (SCH_FLIGHTPLAN_TYPE == 1) || (SCH_FLIGHTPLAN_TYPE == 3)
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        con_printf("    * Status rep.\r\n");
+    #endif
+    sta_onResetStatRepo();
+//------------------------------------------------------------------------------
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
+        con_printf("\n[dep_init_Repos] Initializing command repositories...\r\n");
+    #endif
+
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        con_printf("    * Commands rep.\r\n");
+    #endif
+    repo_onResetCmdRepo();
+//------------------------------------------------------------------------------
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
+        con_printf("\n[dep_init_Repos] Initializing data repositories...\r\n");
+    #endif
+
+    #if (SCH_USE_FLIGHTPLAN == 1 )
         /* Initializing dataRepository */
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             printf("    * FlighPlan\r\n");
@@ -76,20 +104,9 @@ int dep_init_Repos(void *param)
     dat_onResetTelecmdBuff();
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * Payloads status rep.\r\n");
+        con_printf("    * Payloads data rep.\r\n");
     #endif
     dat_onResetPayloadVar();
-
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * Status rep.\r\n");
-    #endif
-    dat_onResetCubesatVar();
-
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * Commands rep.\r\n");
-    #endif
-    /* Initializing cmdRepository */
-    repo_onResetCmdRepo();
 
     return 1;
 }
@@ -110,7 +127,7 @@ int dep_init_GnrlStrct(void *param)
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         printf("    * init EPS structs\r\n");
     #endif
-    setStateFlagEPS( (unsigned char)dat_getCubesatVar(dat_eps_state_flag) );
+    setStateFlagEPS( (unsigned char)sta_getCubesatVar(sta_eps_state_flag) );
 
     return 1;
 }
@@ -168,26 +185,22 @@ int dep_launch_tasks(void *param)
         xTaskCreate(taskRxI2C, (signed char *)"I2C", 3*configMINIMAL_STACK_SIZE, NULL, 2, &taskComunicationsHandle);
     #endif
 
-    if( dat_getCubesatVar(dat_msd_status) == 1 )
+    if( sta_getCubesatVar(sta_MemSD_isAlive) == 1 )
     {
-        #if (SCH_FLIGHTPLAN_TYPE==0)
-            //launching nothing..
-        #elif (SCH_FLIGHTPLAN_TYPE==1)
+        #if (SCH_USE_FLIGHTPLAN==0)
+            //launch nothing..
+        #elif (SCH_USE_FLIGHTPLAN==1)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
                     printf("    * Creating taskFlightPlan\r\n");
             #endif
             xTaskCreate(taskFlightPlan, (signed char *)"flightplan", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlanHandle);
-        #elif (SCH_FLIGHTPLAN_TYPE==2)
+        #endif
+        #if (SCH_USE_FLIGHTPLAN2==0)
+            //launch nothing..
+        #elif (SCH_USE_FLIGHTPLAN2==1)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                    printf("    * Creating taskFlightPlan2\r\n");
+                    con_printf("    * Creating taskFlightPlan2\r\n");
             #endif
-            xTaskCreate(taskFlightPlan2, (signed char *)"flightplan2", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlan2Handle);
-        #elif (SCH_FLIGHTPLAN_TYPE==3)
-            #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                printf("    * Creating taskFlightPlan\r\n");
-                printf("    * Creating taskFlightPlan2\r\n");
-            #endif
-            xTaskCreate(taskFlightPlan, (signed char *)"flightplan", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlanHandle);
             xTaskCreate(taskFlightPlan2, (signed char *)"flightplan2", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlan2Handle);
         #endif
     }
@@ -207,7 +220,7 @@ int dep_deploy_antenna(void *param)
         printf("\n[dep_deploy_antenna] Deploying TRX Antenna... \r\n");
     #endif
 
-    if( dat_getCubesatVar(dat_dep_ant_deployed) == 0x0001 )
+    if( sta_getCubesatVar(sta_dep_ant_deployed) == 0x0001 )
     {
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
             printf("    * Antenna is already deployed\r\n");
@@ -300,85 +313,117 @@ int dep_deploy_antenna(void *param)
  * @param param Not used.
  * @return 1 success, 0 fail.
  */
-int dep_init_Peripherals(void *param)
+int dep_init_hw(void *param)
 {
+    int resp;
+    STA_CubesatVar hw_isAlive;
+
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        printf("\n[dep_init_Peripherals] Initializig external pheripherals...\r\n");
-    #endif
-
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * External RTC\r\n");
-    #endif
-    RTC_init();
-
-    #if (SCH_PAYCAM_nMEMFLASH_ONBOARD == 0) /* Camara no abordo*/
-    {
-        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            printf("    * External flash memory\r\n");
-        #endif
-//        mem_init_memFlash();
-    }
-    #endif
-
-    #if (SCH_TRX_ONBOARD ==1)
-    {
-        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            printf("    * Setting TRX\r\n");
-        #endif
-        /* Initializing Transceiver */
-        trx_initialize(NULL);
-    }
+        con_printf("\n[dep_init_hw] Initializig external hardware...\r\n");
     #endif
 
     #if (SCH_SYSBUS_ONBOARD==1)
     {
-        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            printf("    * EEPROM Memories\r\n");
+        #if (SCH_MEMEEPROM_ONBOARD==1)
+        {
+            #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+                con_printf("    * External MemEEPROM .. ");
+            #endif
+            resp = init_memEEPROM();
+            hw_isAlive = sta_MemEEPROM_isAlive;
+            sta_setCubesatVar(hw_isAlive, resp);
+            #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+                if(resp == 0x01){
+                    con_printf("Ok\r\n");
+                }
+                else{
+                    con_printf("Fail\r\n");
+                }
+            #endif
+        }
         #endif
-        dat_onReset_memEEPROM();
     }
     #endif
 
-    #if (SCH_EXTMEM_SD_ONBOARD==1)
+    #if (SCH_RTC_ONBOARD==1)
     {
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            printf("    * SD Memory  [delay]\r\n");
+            con_printf("    * External RTC .. ");
         #endif
-        PPC_MB_nON_SD=1;
-
-        /* Un delay para poder inicializar conrrectamente la SD si el PIC se resetea */
-        const unsigned long DelaySd = 3000 / portTICK_RATE_MS;
-        vTaskDelay(DelaySd);
-
+        resp = RTC_init();
+        hw_isAlive = sta_RTC_isAlive;
+        sta_setCubesatVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            printf("    * SD Memory [init ");
+            if(resp == 0x01){
+                con_printf("Ok\r\n");
+            }
+            else{
+                con_printf("Fail\r\n");
+            }
         #endif
-        PPC_MB_nON_SD=0;
-        unsigned char r = SD_init();
-        if(r == 0)
-        {
-            #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                printf("OK]\r\n");
-            #endif
-            dat_setCubesatVar(dat_msd_status, 1);
-        }
-        else
-        {
-            #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                printf("FAIL]\r\n");
-            #endif
-            dat_setCubesatVar(dat_msd_status, 0);
-        }
+    }
+    #endif
 
+    #if (SCH_TRX_ONBOARD==1)
+    {
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            printf("    * SD Memory [onReset]");
+            con_printf("    * External TRX .. ");
         #endif
-        dat_onReset_memSD();
+        resp  = trx_initialize(NULL);
+        hw_isAlive = sta_TRX_isAlive;
+        sta_setCubesatVar(hw_isAlive, resp);
+        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            if(resp == 0x01){
+                con_printf("Ok\r\n");
+            }
+            else{
+                con_printf("Fail\r\n");
+            }
+        #endif
+    }
+    #endif
+
+    #if (SCH_MEMSD_ONBOARD==1)
+    {
+        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            con_printf("    * External MemSD .. ");
+        #endif
+        resp = dat_sd_init();
+        hw_isAlive = sta_MemSD_isAlive;
+        sta_setCubesatVar(hw_isAlive, resp);
+        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            if(resp == 0x01){
+                con_printf("Ok\r\n");
+            }
+            else{
+                con_printf("Fail\r\n");
+            }
+        #endif
     }
     #endif
 
     return 1;
 }
+
+int dat_sd_init(void){
+    //apagar energia MemSD
+    PPC_MB_nON_SD=1;
+    /* Un delay para poder inicializar conrrectamente la SD si el PIC se resetea */
+    //__delay_ms(3000);
+    unsigned long i;
+    for(i = 0x004FFFFF; i>0; i--){}
+    //encender energia MemSD
+    PPC_MB_nON_SD=0;
+    unsigned char r = SD_init();
+    if(r == 0){
+        dat_onReset_memSD(FALSE);
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
 
 //Libcsp defines and functions
 #define MY_ADDRESS (0)

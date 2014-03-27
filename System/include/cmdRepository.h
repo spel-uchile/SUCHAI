@@ -14,7 +14,7 @@
 #include "cmdIncludes.h"
 /* Add files with commands */
 #include "cmdTCM.h"
-#include "cmdConsole.h"
+#include "cmdCON.h"
 #include "cmdPPC.h"
 #include "cmdTRX.h"
 #include "cmdEPS.h"

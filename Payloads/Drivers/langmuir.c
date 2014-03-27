@@ -20,7 +20,8 @@
 #include "langmuir.h"
 
 char lag_ostream[4] = {LAG_SYNC, LAG_SYNC, LAG_SYNC, LAG_SYNC}; //Buffer de salida
-unsigned int* LAG_BUFFER; //Buffer de llegada (Se modifica en cada funcion)
+unsigned int langmuir_buffer[LAG_BUFFER_LEN]; /* Buffer para datos de langmuir */
+
 INT16 LAG_MAX_READ = 0; //Numero de bytes que se espera recibir desde lagmuir
 INT16 LAG_COUNT = 0; //Contador de bytes recibidos
 BOOL LAG_BUSY = 0; //Estado de la comunicacion
@@ -47,6 +48,39 @@ static int lag_send_ctrl_packet(int function)
     return 1;
 }
 
+void lag_print_buffer(int len){
+    int i;
+    for(i = 0; i<len; i++)
+    {
+        printf ("0x%X,", (unsigned int)langmuir_buffer[i] );
+    }
+    printf("\n");
+}
+void lag_erase_buffer(void){
+    int i;
+    for(i = 0; i<LAG_BUFFER_LEN; i++)
+    {
+        langmuir_buffer[i] = 0;
+    }
+}
+int lag_wait_busy_wtimeout(void){
+    unsigned long int i = 50242879;
+    while(LAG_BUSY){
+        i--;
+        if(i<=0){
+            printf("LAG_BUSY timeout !!\n");
+            LAG_BUSY = 0;
+            LAG_COUNT = 0;
+            return 0;
+        }
+    }
+    //printf("lag_wait_busy_wtimeout = %lu\n", i);
+    return 1;
+}
+unsigned int lag_get_langmuir_buffer_i(int ind){
+    if(ind>=LAG_BUFFER_LEN){return 0;}
+    return langmuir_buffer[ind];
+}
 /*------------------------------------------------------------------------------
  *		 	LAG READ CAL PACKET
  *------------------------------------------------------------------------------
@@ -57,25 +91,31 @@ static int lag_send_ctrl_packet(int function)
  *                      https://docs.google.com/spreadsheet/ccc?key=0AlJNKX_r8AXcdHpNbVROMFg1cWtiNXVRa3hHb091Ync#gid=0
  * Return Value       : 1 - OK, 0 - Fail
  *----------------------------------------------------------------------------*/
-
 /**
  * Sends proper control packet to receive a calibration
  * @param buffer unsigned int* buffer[40] - Receive buffer
  * @return  1 - OK, 0 - Fail
  */
-int lag_read_cal_packet(unsigned int* buffer)
+int lag_read_cal_packet(BOOL verb)
 {
     LAG_MAX_READ = 40;
     LAG_COUNT = 0;
     LAG_BUSY = 1;
-    LAG_BUFFER = buffer;
+
+    //erase buffer
+    lag_erase_buffer();
 
     //Write CAL function
     lag_send_ctrl_packet(LAG_CAL);
 
-    while(LAG_BUSY);
+    /* Wait some seconds (with time out) */
+    int r = lag_wait_busy_wtimeout();
 
-    return 1;
+    if(verb){
+        lag_print_buffer(LAG_MAX_READ);
+    }
+    
+    return r;
 }
 
 /*------------------------------------------------------------------------------
@@ -88,19 +128,26 @@ int lag_read_cal_packet(unsigned int* buffer)
  *                      https://docs.google.com/spreadsheet/ccc?key=0AlJNKX_r8AXcdHpNbVROMFg1cWtiNXVRa3hHb091Ync#gid=0
  * Return Value       : 1 - OK, 0 - Fail
  *----------------------------------------------------------------------------*/
-int lag_read_plasma_packet(unsigned int* buffer)
+int lag_read_plasma_packet(BOOL verb)
 {
     LAG_MAX_READ = 10;
     LAG_COUNT = 0;
     LAG_BUSY = 1;
-    LAG_BUFFER = buffer;
+
+    //erase buffer
+    lag_erase_buffer();
 
     //Write PLASMA function
     lag_send_ctrl_packet(LAG_PLASMA);
 
-    while(LAG_BUSY);
+    /* Wait some seconds (with time out) */
+    int r = lag_wait_busy_wtimeout();
 
-    return 1;
+    if(verb){
+        lag_print_buffer(LAG_MAX_READ);
+    }
+
+    return r;
 }
 
 /*------------------------------------------------------------------------------
@@ -113,19 +160,26 @@ int lag_read_plasma_packet(unsigned int* buffer)
  *                      https://docs.google.com/spreadsheet/ccc?key=0AlJNKX_r8AXcdHpNbVROMFg1cWtiNXVRa3hHb091Ync#gid=0
  * Return Value       : 1 - OK, 0 - Fail
  *----------------------------------------------------------------------------*/
-int lag_read_sweep_packet(unsigned int* buffer)
+int lag_read_sweep_packet(BOOL verb)
 {
     LAG_MAX_READ = 1096;
     LAG_COUNT = 0;
     LAG_BUSY = 1;
-    LAG_BUFFER = buffer;
+
+    //erase buffer
+    lag_erase_buffer();
 
     //Write SWEEP function
     lag_send_ctrl_packet(LAG_SWEEP);
 
-    while(LAG_BUSY);
+    /* Wait some seconds (with time out) */
+    int r = lag_wait_busy_wtimeout();
 
-    return 1;
+    if(verb){
+        lag_print_buffer(LAG_MAX_READ);
+    }
+
+    return r;
 }
 
 /*------------------------------------------------------------------------------
@@ -138,15 +192,14 @@ int lag_read_sweep_packet(unsigned int* buffer)
 void __attribute__((__interrupt__, auto_psv)) _U3RXInterrupt(void)
 {
     unsigned int c = langmuir_read();
-    LAG_BUFFER[LAG_COUNT] = c;
+    langmuir_buffer[LAG_COUNT] = c;
     LAG_COUNT++;
-    U3RX_Clear_Intr_Status_Bit;
 
     if(LAG_COUNT >= LAG_MAX_READ)
     {
         LAG_BUSY = 0;
-        LAG_BUFFER = NULL;
         LAG_COUNT = 0;
-        LAG_MAX_READ = 0;
     }
+
+    U3RX_Clear_Intr_Status_Bit;
 }

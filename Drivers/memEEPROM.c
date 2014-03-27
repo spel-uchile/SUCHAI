@@ -29,7 +29,7 @@ void writeEEPROM1(unsigned char address, char data){
 
 unsigned char readEEPROM1(unsigned char address){
     if( i2c1_slave_ready(MEP_EEPROM_ID, 0x0FFF) == 0 )
-        return;
+        return 0;
 
     char ret;
     char _address[] = {MEP_EEPROM_ID, (char)address};
@@ -69,3 +69,51 @@ int readIntEEPROM1(unsigned char indx){
     return value;
 }
 
+/**
+ * Funcion a llamar luego de un Reset del PIC, y antes de usar la memEEPROM.
+ */
+int init_memEEPROM(void){
+    //nothing to do
+    //check if working normally
+    return memEEPROM_isAlive();
+}
+/**
+ * Check if MemEEPROM is working
+ * @return  1 = is working 0 = not working
+ */
+int memEEPROM_isAlive(void)
+{
+    //check if working normally
+
+    int indxVar;    //DAT_CubesatVar indxVar;
+    int wvalue,rvalue;
+
+    indxVar = 0;  //indxVar = sta_mep_testVal;
+    
+    wvalue = 5005;
+    rvalue = 0;
+    mem_setVar(indxVar, wvalue);
+    rvalue = mem_getVar(indxVar);
+    if(rvalue!=wvalue){return 0;}
+
+    wvalue = 5006;
+    rvalue = 0x00;
+    mem_setVar(indxVar, wvalue);
+    rvalue = mem_getVar(indxVar);
+    if(rvalue!=wvalue){return 0;}
+
+    return 1;
+}
+
+void mem_setVar( unsigned char indxVar, int value){
+    //Para el caso de guardar las variables en la memI2C
+    writeIntEEPROM1( (unsigned char)indxVar, value);
+}
+
+
+int mem_getVar( unsigned char indxVar){
+    int value;
+    //Para el caso de obtener las variables de la memI2C
+    value = readIntEEPROM1( (unsigned char)indxVar );
+    return value;
+}

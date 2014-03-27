@@ -316,7 +316,7 @@ int trx_asknewtc(void *param)
     if ((conn = csp_accept(sock, 250)) == NULL)
     {
         /* Setting status in data repository */
-        dat_setCubesatVar(dat_trx_newTcFrame, 0); //No new TC
+        sta_setCubesatVar(sta_trx_newTcFrame, 0); //No new TC
         return 1;
     }
 
@@ -337,8 +337,8 @@ int trx_asknewtc(void *param)
                 printf("\n");
 
                  /* Setting status in data repository */
-                dat_setCubesatVar(dat_trx_newTcFrame, 1);
-                new_cmd_buff = dat_getCubesatVar(dat_trx_newCmdBuff);
+                sta_setCubesatVar(sta_trx_newTcFrame, 1);
+                new_cmd_buff = sta_getCubesatVar(sta_trx_newCmdBuff);
 
                 if(new_cmd_buff == 0)
                     trx_parsetcframe((void *)packet->data16); //TODO: Check frame lenght
@@ -352,7 +352,7 @@ int trx_asknewtc(void *param)
                 csp_service_handler(conn, packet);
 
                 /* Setting status in data repository */
-                dat_setCubesatVar(dat_trx_newTcFrame, 0);
+                sta_setCubesatVar(sta_trx_newTcFrame, 0);
                 break;
         }
     }
@@ -425,11 +425,11 @@ int trx_parsetcframe(void *param)
     if(result)
     {
         /* Aumentar el contador de TC recibidos */
-        result += dat_getCubesatVar(dat_trx_count_tc);
-        dat_setCubesatVar(dat_trx_count_tc, result);
+        result += sta_getCubesatVar(sta_trx_count_tc);
+        sta_setCubesatVar(sta_trx_count_tc, result);
 
         /* Indicar que hay comandos que procesar en el buffer de Cmd */
-        dat_setCubesatVar(dat_trx_newCmdBuff, 1);
+        sta_setCubesatVar(sta_trx_newCmdBuff, 1);
     }
 
     return result;

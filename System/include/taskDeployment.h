@@ -45,7 +45,8 @@ int dep_init_Repos(void *param);
 int dep_init_GnrlStrct(void *param);
 int dep_suicide(void *param);
 int dep_launch_tasks(void *param);
-int dep_init_Peripherals(void *param);
+int dep_init_hw(void *param);
+int dat_sd_init(void);
 int dep_deploy_antenna(void *param);
 int dep_silent_time(void *param);
 

@@ -25,21 +25,25 @@
 
 /* Realtime config */
 #define SCH_TASKDEPLOYMENT_SILENT_REALTIME  (0)  ///< 1=Realtime 0=Debugtime
-#define SCH_TASKDEPLOYMENT_ANTENNA_REALTIME (1)  ///< 1=Realtime 0=Debugtime
-#define SCH_TASKHOUSEKEEPING_REALTIME       (1)  ///< 1=Realtime 0=Debugtime
-#define SCH_TASKFLIGHTPLAN_REALTIME         (1)  ///< 1=Realtime 0=Debugtime
-#define SCH_FLIGHTPLAN2_REALTIME            (1)  ///< 1=Realtime 0=Debugtime
+#define SCH_TASKDEPLOYMENT_ANTENNA_REALTIME (0)  ///< 1=Realtime 0=Debugtime
+#define SCH_TASKHOUSEKEEPING_REALTIME       (0)  ///< 1=Realtime 0=Debugtime
+#define SCH_TASKFLIGHTPLAN_REALTIME         (0)  ///< 1=Realtime 0=Debugtime
+#define SCH_FLIGHTPLAN2_REALTIME            (0)  ///< 1=Realtime 0=Debugtime
 
-
-/* PPS configuration (0=offboard 1=Onboard) */
+/* Bus Onboard */
 #define SCH_SYSBUS_ONBOARD                  (0)  //< Onboard => I2C1 en uso
 #define SCH_PAYBUS_ONBOARD                  (1)  ///< Onboard => I2C3 en uso
+#define SCH_ANTENNA_ONBOARD                 (0) ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
+#define SCH_TRX_ONBOARD                     (0) ///< 0=Ninguno, 2=HACLM12 y TRX Allspace, 1= TRX Allspace => I2C1 en uso, UART2 en uso (H1.17), 2 pin(es) en modo Check
+#define SCH_RTC_ONBOARD                     (1) ///< 1 = Onboard 0 = Not Onboard
+#define SCH_MEMEEPROM_ONBOARD               (1) ///< 1 = Onboard 0 = Not Onboard
+#define SCH_EPS_ONBOARD                     (0) ///< Onboard => I2C1 en uso
+#define SCH_MEMSD_ONBOARD                   (1) ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_MGN_ONBOARD                     (0)  ///< Onboard => 1 pin(es) en modo Switch
-#define SCH_ANTENNA_ONBOARD                 (0)  ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
-#define SCH_TRX_TYPE_ONBOARD                (0)  ///< 0=Ninguno, 2=HACLM12 y TRX Allspace, 1= TRX Allspace => I2C1 en uso, UART2 en uso (H1.17), 2 pin(es) en modo Check
-#define SCH_EPS_ONBOARD                     (0)  ///< Onboard => I2C1 en uso
-#define SCH_EXTMEM_SD_ONBOARD               (0)  //< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
-#define SCH_PAY_LAGMUIR_ONBOARD             (0)  ///< Ocupa UART3_en_H1.19_y_H1.20
+
+/* Payloads Onboard */
+//#define SCH_PAYLOADS_ONBOARD                (0) ///< 0 = no payloads is onboard
+#define SCH_PAY_LAGMUIR_ONBOARD             (1) ///< Ocupa UART3_en_H1.19_y_H1.20
 #define SCH_PAY_FIS_ONBOARD                 (0)  ///<
 #define SCH_PAY_GYRO_ONBOARD                (0)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_PAY_SENSTEMP_ONBOARD            (0)  ///<
@@ -48,13 +52,14 @@
 #define SCH_PAY_TEST1_ONBOARD               (0)  ///< Onboard =>
 #define SCH_PAY_TEST2_ONBOARD               (0)  ///< Onboard =>
 
-/* General configs */
+/* Software configs */
+#define SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE  (0) ///< 1=Activo ( EPS montada ) 0= Inactivo ( EPS no montada SOC se lleva a MAX_SOC )
+
+/* TRX configs */
 #define SCH_COMM_NO_TC_DAYS                (1)      ///< Dias sin TC para pasar a modo RSII
 #define SCH_COMM_RSSI_MIN_TIME             (10)     ///< [s] Segundos minimos que debe haber senal para considerar RSSI
 #define SCH_COMM_RSSI_MAX_TIME             (20)     ///< [s] Segundos maximos que debe haber senal para considerar RSSI
 #define SCH_COMM_RSSI_CNT_MAX              (60)     ///< Segundos que RSSI_CNT puede pasar sin que se actualice RSSI_MEAN
-#define SCH_COMM_RESEND_ON_RSSI            (0)      ///< Si 1 y el modo es RSSI, el satelite transmitira 2 veces del conjunto de telemetria generada cuando se detecta la senal, con un intervalo de 1min entre transmisiones.
-
 #define SCH_TRX_BEACON_PERIOD              (4*60)   ///< [s] Periodo del beacon en segundos (UINT16)
 #define SCH_TRX_BEACON_WPM                 (20)     ///< Velocidad del beacon en palabras por minuto 1-255
 #define SCH_TRX_BEACON_BAT_LVL             (550)    ///< Nivel de bateria minimo para transmitir beacon
@@ -75,6 +80,7 @@
 #define SCH_FLIGHTPLAN_RESOLUTION               (10)    ///< [MINUTES] Resolucion de tiempo del flight plan
 #define SCH_FLIGHTPLAN_N_CMD                    ((24 * 60) / SCH_FLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]
 #define SCH_FLIGHTPLAN_MEMORY                   (0)     ///< (0) buffer en  RAM, (1) en memoria SD
+#define SCH_USE_FLIGHTPLAN2                     (0) ///< 1 = usar, 0 = no usar
 
 /**
  * @def SCH_DATAREPOSITORY_MAX_BUFF_TELECMD
@@ -99,11 +105,11 @@
 #define SCH_RS232_SUCHAI_VERBOSE            (1)   ///< 1=verboso 0=austero
 #define SCH_RTC_MB_VERBOSE                  (1)   ///< 1=verboso 0=austero
 #define SCH_TRASNCEIVER_VERBOSE             (1)   ///< 1=verboso 0=austero
-#define SCH_CAMERA_VERBOSE                  (1)
-#define SCH_GYRO_VERBOSE                    (1)
-#define SCH_FISICA_VERBOSE                  (1)
-#define SCH_LANGMUIR_VERBOSE                (1)
-#define SCH_SENS_TEMP_VERBOSE               (1)
+#define SCH_CAMERA_VERBOSE                  (1)   ///< 1=verboso 0=austero
+#define SCH_GYRO_VERBOSE                    (1)   ///< 1=verboso 0=austero
+#define SCH_FISICA_VERBOSE                  (1)   ///< 1=verboso 0=austero
+#define SCH_LANGMUIR_VERBOSE                (1)   ///< 1=verboso 0=austero
+#define SCH_SENS_TEMP_VERBOSE               (1)   ///< 1=verboso 0=austero
 
 //System config VERBOSE:
 #define SCH_CMDCONSOLE_VERBOSE              (1)  ///< 1=verboso 0=austero

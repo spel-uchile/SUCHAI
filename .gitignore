@@ -23,3 +23,8 @@
 .directory
 *private
 
+#kdiff3 .orig
+*.orig
+
+#gedit
+*~

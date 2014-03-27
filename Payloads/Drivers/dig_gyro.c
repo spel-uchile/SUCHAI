@@ -437,7 +437,7 @@ void gyr_config_GYR_CTRL_REG5(unsigned char boot, unsigned char FIFO_en, unsigne
     #endif
 }
 
-void gyr_init_config(void){
+int gyr_init_config(void){
     #if (SCH_GYRO_VERBOSE>=2)
         whoami();
         // Obtain device identification (for debugging purposes -  Check I2C functionality)
@@ -453,45 +453,43 @@ void gyr_init_config(void){
     gyr_config_GYR_CTRL_REG3(0x04);                    // Only Watermark interruption enabled
     gyr_config_GYR_CTRL_REG4(0x01, 0x03, 0x00);        // NO continous update, 2000 dps and self test disabled
     gyr_config_GYR_CTRL_REG5(0x01, 0x01, 0x01, 0x03);  // Reboot memory content, FIFO enable, HPF enabled and LPF anbled
-}
-GYR_DATA gyr_take_samples(void){
 
-    #if (SCH_GYRO_VERBOSE>=2)
-        con_printf("config REG1 process...\r\n");
-    #endif
+    return 1;
+}
+GYR_DATA gyr_take_samples(BOOL verb){
     gyr_config_GYR_CTRL_REG1(0x01, 0x03);  // 200 Hz datarate and 70 cutoff
     gyr_enable_axis(0x07);                  // Enable three axes
     gyr_powermode(0x01);                    // Enable device
     gyr_do_delay(0x00000FFF);
 
     config_FIFO_GYR_CTRL_REG(0b00000010);   // configure FIFO_GYR_CTRL_REG with watermark
-    #if(SCH_GYRO_VERBOSE>=2)
+    if(verb){
         gyr_print_remain_samp();            // Obtain the number of remaining samples
-    #endif
+    }
     gyr_config_FIFO_mode(0x01);         // Mode to FIFO mode
 
     while(!GYR_INT2){
-        #if (SCH_GYRO_VERBOSE>=2)
+        if(verb){
             con_printf("GYR_INT2=0\r\n");
-        #endif
+        }
     }
     gyr_do_delay(0x00000FFF);
 
-    #if(SCH_GYRO_VERBOSE>=2)
+    if(verb){
         gyr_print_FIFO_int_source();    // see FIFO interruption
         gyr_print_remain_samp();        // Samples to read
         gyr_print_temp();               // Read the temperature of the sensor
-    #endif
+    }
 
 
     gyr_do_delay(0x00000FFF);
-    #if (SCH_GYRO_VERBOSE>=2)
+    if(verb){
         con_printf("showing samples from buffer\r\n");
-    #endif
+    }
 
     GYR_DATA res_data;
     res_data = gyr_get_FIFO_samples();  // read FIFO data
-    #if (SCH_GYRO_VERBOSE>=1)
+    if(verb){
         char ret[10];
 	//con_printf("Average\r\n");
 	con_printf("X axis :");
@@ -500,7 +498,7 @@ GYR_DATA gyr_take_samples(void){
         itoa(ret,  (unsigned int)res_data.a_y, 10); con_printf(ret); con_printf("\r\n");
 	con_printf("Z axis:");
         itoa(ret,  (unsigned int)res_data.a_z, 10); con_printf(ret); con_printf("\r\n");
-    #endif
+    }
 
     gyr_do_delay(0x00000FFF);
 

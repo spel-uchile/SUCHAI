@@ -33,8 +33,7 @@ PPC_DEFAULT_CW1();
 PPC_DEFAULT_CW2();
 PPC_DEFAULT_CW3();
 
-xQueueHandle dispatcherQueue, executerCmdQueue, executerStatQueue;
-xQueueHandle i2cRxQueue;
+xQueueHandle dispatcherQueue, executerCmdQueue, executerStatQueue, i2cRxQueue;
 xSemaphoreHandle dataRepositorySem, consolePrintfSem, rtcPrintSem;
 
 xTaskHandle taskDeploymentHandle, taskDispatcherHandle, taskExecuterHandle;
@@ -47,7 +46,7 @@ int main(void)
     dispatcherQueue = xQueueCreate(25,sizeof(DispCmd));
     executerCmdQueue = xQueueCreate(1,sizeof(ExeCmd));
     executerStatQueue = xQueueCreate(1,sizeof(int));
-    i2cRxQueue = xQueueCreate(TRX_TMFRAMELEN, sizeof(char));   //TRX_GOMSPACE
+    i2cRxQueue = xQueueCreate(I2C_MTU, sizeof(char));   //TRX_GOMSPACE
 
     /* Initializing shared Semaphore */
     dataRepositorySem = xSemaphoreCreateMutex();
@@ -58,11 +57,19 @@ int main(void)
     /* NOTA: EL TIMER 1 Y SU INTERRUPCION ESTAN CONFIGURADOS POR EL S.0. (FreeRTOS) */
     default_PIC_config();
 
-    /* Crating base tasks (others are created inside taskDeployment) */
-    xTaskCreate(taskExecuter, (signed char *)"executer", 3*configMINIMAL_STACK_SIZE, NULL, 4, &taskExecuterHandle);
-    xTaskCreate(taskDispatcher, (signed char *)"dispatcher", 1.5*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
-    xTaskCreate(taskDeployment, (signed char *)"deployment", 2*configMINIMAL_STACK_SIZE, NULL, 3, &taskDeploymentHandle);
-    //xTaskCreate(taskConsole, (signed char *)"console", 4*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
+    /* System initialization */
+    taskDeployment(NULL);
+
+    /* Crating base tasks */
+    printf("\n[main] Starting base tasks...\r\n");
+    xTaskCreate(taskExecuter, (signed char *)"EXE", 3*configMINIMAL_STACK_SIZE, NULL, 4, &taskExecuterHandle);
+    xTaskCreate(taskDispatcher, (signed char *)"DIS", 1.5*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
+
+    /* Initializing LibCSP*/
+    dep_csp_initialization();
+
+    /* Creating other tasks*/
+    dep_launch_tasks(NULL);
 
     /* Start the scheduler. Should never return */
     printf("\nStarting FreeRTOS [->]\r\n");
@@ -77,13 +84,13 @@ int main(void)
         printf("\n>>FreeRTOS [FAIL]\n");
         ppc_reset(NULL);
     }
-    
+
     return 0;
 }
 
 void vApplicationIdleHook(void)
 {
-    /* 
+    /*
      * **configUSE_IDLE_HOOK must be set to 1**
      * Esta funcion se ejecuta cuando el procesador
      * no esta siendo utilizado por otra tarea
@@ -95,36 +102,9 @@ void vApplicationIdleHook(void)
 
 void vApplicationStackOverflowHook(xTaskHandle* pxTask, signed char* pcTaskName)
 {
-    con_printf(">> Stak overflow! - TaskName: ");
-    con_printf((char *)pcTaskName);
-    con_printf("\n");
-
+    printf(">> Stak overflow! - TaskName: %s\n", pcTaskName);
     ppc_reset(NULL);
 }
-
-
-////Libcsp defines and functions
-//#define MY_ADDRESS 2
-//static void csp_initialization(void)
-//{
-//    /* Init buffer system with 3 packets of maximum 256 bytes each */
-//    csp_buffer_init(5, TRX_TMFRAMELEN+5);
-//
-//    /* Init CSP with address MY_ADDRESS */
-//    csp_init(MY_ADDRESS);
-//    csp_i2c_init(MY_ADDRESS, 0, 400);
-//
-//    csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
-//    csp_route_start_task(2*configMINIMAL_STACK_SIZE, 2);
-//
-//    //DEBUG
-//    printf("\n---- Conn table ----\n");
-//    csp_conn_print_table();
-//    printf("---- Route table ----\n");
-//    csp_route_print_table();
-//    printf("---- Interfaces ----\n");
-//    csp_route_print_interfaces();
-//}
 
 #define STDIN   0
 #define STDOUT  1
@@ -138,7 +118,7 @@ void    mon_putc(char ch);
 int __attribute__((__weak__, __section__(".libc")))
 write(int handle, void * buffer, unsigned int len)
 {
-//    xSemaphoreTake(consolePrintfSem, portMAX_DELAY);
+    xSemaphoreTake(consolePrintfSem, portMAX_DELAY);
     int i = 0;
     switch (handle)
     {
@@ -148,7 +128,7 @@ write(int handle, void * buffer, unsigned int len)
                 mon_putc(((char*)buffer)[i++]);
             break;
     }
-//    xSemaphoreGive(consolePrintfSem);
+    xSemaphoreGive(consolePrintfSem);
     return (len);  // number of characters written
 }
 

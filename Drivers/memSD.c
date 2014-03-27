@@ -23,6 +23,32 @@
 //modo para lograr que la seññal de SCK llegue a la memSD, a pesar de que nSS=1
 //En la MB de Pumpkins se peude solo si nSS=0, producto del buffer intermedio
 
+void msd_blockErase(unsigned long block_address){
+    #if (SCH_DATAREPOSITORY_VERBOSE>=2)
+        static int ind; char ret[10]; unsigned int ib;
+        ind++;
+        if(ind==1){ib=block_address;}
+        if( (ind%32)==0 ){
+            con_printf("    dat_memSD_BlockErase\r\n");
+            con_printf("    erasing also.. block=");
+            sprintf (ret, "%d", (unsigned int)block_address);
+            con_printf(ret); con_printf("\r\n");
+        }
+        if(ind==256){
+            con_printf("    Sucessfully erased 256Block (starting in block ");
+            sprintf (ret, "%d", (unsigned int)ib);
+            con_printf(ret); con_printf(")\r\n");
+            ind=0;
+        }
+    #endif
+
+    unsigned char buff[512]; int i;
+    for(i=0;i<512;i++){buff[i]=0xFF;}
+    unsigned char resp;
+
+    resp = Single_Block_Write(block_address, buff);
+}
+
 //****************************************************************************
 BOOL msd_setVar_256BlockExtMem(unsigned long block_i, unsigned int indx, int value){
     // MAX(indx)=2^16 => 2^16 variables por setear. Si hay 256 variables por bloque, entonces

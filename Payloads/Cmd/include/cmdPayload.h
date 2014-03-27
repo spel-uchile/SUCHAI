@@ -22,6 +22,7 @@
 #include "langmuir.h"
 #include "fis_payload.h"
 #include "camera.h"
+//#include "CameraC329.h"
 #include "dig_gyro.h"
 #include "sensTemp.h"
 
@@ -29,23 +30,27 @@
 
 #include "cmdIncludes.h"
 #include "dataRepository.h"
+#include "statusRepository.h"
 
 /**
  * Lista de comandos disponibles.
  */
 typedef enum{
-    pay_id_debug=((unsigned int)(CMD_PAY)*0x100), ///< @cmd_first
+    pay_id_test_dataRepo=((unsigned int)(CMD_PAY)*0x100), ///< @cmd_first
 
     pay_id_FSM_default, ///< @cmd
 
+    pay_id_debug_sensTemp, ///< @cmd
     pay_id_init_sensTemp, ///< @cmd
     pay_id_take_sensTemp, ///< @cmd
     pay_id_stop_sensTemp, ///< @cmd
 
+    pay_id_debug_gyro, ///< @cmd
     pay_id_init_gyro, ///< @cmd
     pay_id_take_gyro, ///< @cmd
     pay_id_stop_gyro, ///< @cmd
 
+    pay_id_debug_camera, ///< @cmd
     pay_id_init_camera, ///< @cmd
     pay_id_take_camera, ///< @cmd
     pay_id_stop_camera, ///< @cmd
@@ -54,6 +59,7 @@ typedef enum{
     pay_id_take_gps, ///< @cmd
     pay_id_stop_gps, ///< @cmd
 
+    pay_id_debug_expFis, ///< @cmd
     pay_id_init_expFis, ///< @cmd
     pay_id_take_expFis, ///< @cmd
     pay_id_stop_expFis, ///< @cmd
@@ -66,10 +72,10 @@ typedef enum{
     pay_id_take_test2, ///< @cmd
     pay_id_stop_test2, ///< @cmd
 
+    pay_id_debug_langmuirProbe, ///< @cmd
     pay_id_init_lagmuirProbe, ///< @cmd
     pay_id_take_lagmuirProbe, ///< @cmd
     pay_id_stop_lagmuirProbe, ///< @cmd
-    pay_id_debug_langmuirProbe, ///< @cmd
     pay_id_send_to_lagimur, ///< @cmd
             
     //*********************
@@ -77,6 +83,8 @@ typedef enum{
 }PAY_CmdIndx;
 
 #define PAY_NCMD ((unsigned char)pay_id_last_one)
+
+
 void pay_onResetCmdPAY(void);
 
 
@@ -93,7 +101,7 @@ void pay_currentStateLogic(PAY_State pay_sem_state, DAT_Payload pay_i);
 
 //Comandos
 //Debug
-int pay_debug(void *param);
+int pay_test_dataRepo(void *param);
 //comandos para inicializar/realizar los experimientos
 int pay_FSM_default(void *param);
 //test1
@@ -105,10 +113,12 @@ int pay_init_test2(void *param);
 int pay_take_test2(void *param);
 int pay_stop_test2(void *param);
 //expFis
+int pay_debug_expFis(void *param);
 int pay_init_expFis(void *param);
 int pay_take_expFis(void *param);
 int pay_stop_expFis(void *param);
 //sensTemp
+int pay_debug_sensTemp(void *param);
 int pay_take_sensTemp(void *param);
 int pay_init_sensTemp(void *param);
 int pay_stop_sensTemp(void *param);
@@ -119,6 +129,7 @@ int pay_stop_lagmuirProbe(void *param);
 int pay_send_to_lagimur(void *param);
 int pay_debug_langmuir(void *param);
 //Gyro
+int pay_debug_gyro(void *param);
 int pay_take_gyro(void *param);
 int pay_init_gyro(void *param);
 int pay_stop_gyro(void *param);
@@ -127,6 +138,7 @@ int pay_init_tmEstado(void *param);
 int pay_take_tmEstado(void *param);
 int pay_stop_tmEstado(void *param);
 //Camera
+int pay_debug_camera(void *param);
 int pay_take_camera(void *param);
 int pay_init_camera(void *param);
 int pay_stop_camera(void *param);

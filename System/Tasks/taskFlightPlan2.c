@@ -140,12 +140,12 @@ void fp2_pay_i_simultaneous(xQueueHandle dispatcherQueue)
     NewCmd.param = 0;
 
     //ejecuto payloads, "simultaneamente" osea, todos en cada ciclo
-    DAT_CubesatVar dat_pay_xxx_perform = dat_pay_i_to_performVar(dat_pay_tmEstado);
+    STA_CubesatVar dat_pay_xxx_perform = dat_pay_i_to_performVar(dat_pay_tmEstado);
     DAT_Payload pay_i;
 
     for(pay_i = 0; pay_i < dat_pay_last_one; pay_i++)
     {
-        if(dat_getCubesatVar(dat_pay_xxx_perform) == 0x0001)
+        if(sta_getCubesatVar(dat_pay_xxx_perform) == 0x0001)
         {
             NewCmd.cmdId = pay_id_FSM_default;
             NewCmd.param = pay_i;

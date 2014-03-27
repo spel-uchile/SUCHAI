@@ -32,23 +32,23 @@ void default_PIC_config(void)
     GPIO_PC104_init();
 
     //solo despues de llamar estas funciones se pueden usar los servicios
-    //de con_printf()
+    //de printf()
     #if SCH_PIC_PC104_CONFIG_VERBOSE
-        con_printf("\n--------- SUCHAI BOOT SEQUENCE ---------\r\n");
-        con_printf("\nInitializing sattelite bus\r\n");
-        con_printf("    * Microcontroller IO pins\r\n");
-        con_printf("    * CubesatKit MB\r\n");
-        con_printf("    * PC104 Bus\r\n");
+        printf("\n--------- SUCHAI BOOT SEQUENCE ---------\r\n");
+        printf("\nInitializing sattelite bus\r\n");
+        printf("    * Microcontroller IO pins\r\n");
+        printf("    * CubesatKit MB\r\n");
+        printf("    * PC104 Bus\r\n");
     #endif
 
     #if SCH_PIC_PC104_CONFIG_VERBOSE
-        con_printf("\nInitilizing Microcontroller\r\n");
-        con_printf("    * Reset status\r\n");
+        printf("\nInitilizing Microcontroller\r\n");
+        printf("    * Reset status\r\n");
     #endif
 	init_Check_Reset_Status();
 
     #if SCH_PIC_PC104_CONFIG_VERBOSE
-        con_printf("    * Setting oscillator\r\n");
+        printf("    * Setting oscillator\r\n");
     #endif
 	PwrMgnt_ClkDiv_Sel(INTR_NO_EFFECT_DOZEN& PERI_CLK_RATIO_1& PERI_CLK_RATIO_ENABLE& FRC_POSTSCALER_SEL_256);
 	REFO_enabled(0);
@@ -57,12 +57,12 @@ void default_PIC_config(void)
 	PPC_ENABLE_SOSC();  //Habilita el SOSC
 	
     #if SCH_PIC_PC104_CONFIG_VERBOSE
-        con_printf("    * mPWRMGNT_Regulator_ActiveInSleep\r\n");
+        printf("    * mPWRMGNT_Regulator_ActiveInSleep\r\n");
     #endif
 	mPWRMGNT_Regulator_ActiveInSleep();
 	
     #if SCH_PIC_PC104_CONFIG_VERBOSE
-        con_printf("    * Enabling WDT\r\n");
+        printf("    * Enabling WDT\r\n");
     #endif
     EnableWDT( PPC_INITIAL_WDT_STATE );
 }
@@ -119,7 +119,7 @@ void Check_Reset_Status(void)
 void POWER_ON_Reset_Routine(void)
 {
     //Si NO!! ha ocurrido Reset se llama  esta Rutina
-    con_printf("A POWER_ON_Reset event occurred\r\n");
+    printf("A POWER_ON_Reset event occurred\r\n");
     mPWRMGNT_Clear_PORbit();
 }
 
@@ -134,7 +134,7 @@ void BURN_OUT_Reset_Routine(void)
      * confundirse aquel caso de RESET ser? ignorado y asi la lastResetSource
      * no se actualizar? equivocadamente. He dicho! caso cerrado!
      */
-    con_printf("A BURN_OUT_Reset event occurred\r\n");
+    printf("A BURN_OUT_Reset event occurred\r\n");
     mPWRMGNT_Clear_BORbit();
 }
 
@@ -144,7 +144,7 @@ void BURN_OUT_Reset_Routine(void)
 void WATCHDOG_Reset_Routine(void)
 {
     //rutina a ejecutar luego de este reset
-    con_printf("A WATCHDOG_Reset event occurred\r\n");
+    printf("A WATCHDOG_Reset event occurred\r\n");
     mPWRMGNT_Clear_WDTObit();
 }
 
@@ -154,7 +154,7 @@ void WATCHDOG_Reset_Routine(void)
 void SOFTWARE_Reset_Routine(void)
 {
     //rutina a ejecutar luego de este reset
-    con_printf("A SOFTWARE_Reset event occurred\r\n");
+    printf("A SOFTWARE_Reset event occurred\r\n");
     mPWRMGNT_Clear_SWRbit();
 }
 
@@ -164,7 +164,7 @@ void SOFTWARE_Reset_Routine(void)
 void EXTERNAL_Reset_Routine(void)
 {
     //rutina a ejecutar luego de este reset
-    con_printf("An EXTERNAL_Reset event occurred\r\n");
+    printf("An EXTERNAL_Reset event occurred\r\n");
     mPWRMGNT_Clear_EXTRbit();
 }
 
@@ -174,7 +174,7 @@ void EXTERNAL_Reset_Routine(void)
 void CFG_WORD_MISMATCH_Reset_Routine(void)
 {
     //rutina a ejecutar luego de este reset
-    con_printf("A CFG_WORD_MISMATCH_Reset event occurred\r\n");
+    printf("A CFG_WORD_MISMATCH_Reset event occurred\r\n");
     mPWRMGNT_Clear_CMbit();
 }
 
@@ -184,7 +184,7 @@ void CFG_WORD_MISMATCH_Reset_Routine(void)
 void ILLEGAL_INSTR_Reset_Routine(void)
 {
     //rutina a ejecutar luego de este reset
-    con_printf("An ILLEGAL_INSTR_Reset event occurred\r\n");
+    printf("An ILLEGAL_INSTR_Reset event occurred\r\n");
     mPWRMGNT_Clear_IOPUWRbit();
 }
 
@@ -194,7 +194,7 @@ void ILLEGAL_INSTR_Reset_Routine(void)
 void TRAP_Reset_Routine(void)
 {
     //rutina a ejecutar luego de este reset
-    con_printf("A TRAP_Reset event occurred\r\n");
+    printf("A TRAP_Reset event occurred\r\n");
     mPWRMGNT_Clear_TRAPRbit();
 }
 
@@ -222,7 +222,7 @@ void Check_Wakeup_Status(void)
 void WAKEUP_SLEEP_Routine(void)
 {
     //rutina a ejecutar luego de este wakeup
-    con_printf("A WAKEUP_SLEEP event occurred\r\n");
+    printf("A WAKEUP_SLEEP event occurred\r\n");
 }
 
 /**
@@ -231,7 +231,7 @@ void WAKEUP_SLEEP_Routine(void)
 void WAKEUP_IDLE_Routine(void)
 {
     //rutina a ejecutar luego de este wakeup
-    con_printf("A WAKEUP_IDLE event occurred\r\n");
+    printf("A WAKEUP_IDLE event occurred\r\n");
 }
 
 /**
@@ -257,20 +257,20 @@ void Check_FSCM(void)
 void FSCM_Routine(void)
 {
     //rutina a ejecutar luego de este fallo
-    con_printf("*******************************************************\r\n");
-    con_printf("Ocurrió un error con el CLK configurado en pic_pc104\r\n");
-    con_printf("Actualmente el PIC esta en modo FSCM, osea clk=FRC\r\n");
-    con_printf("Se trataró de cambiar a clk=FRC w PLL\r\n");
-    con_printf("*******************************************************\r\n");
+    printf("*******************************************************\r\n");
+    printf("Ocurrio un error con el CLK configurado en pic_pc104\r\n");
+    printf("Actualmente el PIC esta en modo FSCM, osea clk=FRC\r\n");
+    printf("Se tratara de cambiar a clk=FRC w PLL\r\n");
+    printf("*******************************************************\r\n");
     
     int arg=FRC_OSC_WITH_POSTSCALER_PLL;
     ppc_newosc((void *)&arg);
 
-    con_printf("***************************************************************\r\n");
-    con_printf("Si ves esto, es porque ahora clk=FRC w PLL\r\n");
-    con_printf("FSCM se acivo por una falla en el clk configurado en pic_pc104 (probablemente PRIM OSC w PLL)\r\n");
-    con_printf("Ahora clk=FRC w PLL y se proceder? AHORA a Resetear el PIC\r\n");
-    con_printf("***************************************************************\r\n");
+    printf("***************************************************************\r\n");
+    printf("Si ves esto, es porque ahora clk=FRC w PLL\r\n");
+    printf("FSCM se acivo por una falla en el clk configurado en pic_pc104 (probablemente PRIM OSC w PLL)\r\n");
+    printf("Ahora clk=FRC w PLL y se proceder? AHORA a Resetear el PIC\r\n");
+    printf("***************************************************************\r\n");
 
     mPWRMGNT_GetClkFailDetectBit()=0;
     ppc_reset(NULL);
@@ -610,45 +610,6 @@ void GPIO_PC104_init(void)
         _LATG9=0;			//parte en 0
     #endif
 //------------------------------------------------------------------------------  
-    #if (SCH_TRX_TYPE_ONBOARD == 1)
-        // UART2 para TRX - Comparte pines con UART1
-        // H1.17 - U1RX - RP10 - IO.7
-        iPPSInput(IN_FN_PPS_U2RX,IN_PIN_PPS_RP10);
-
-        // UART2 - PARA TRX - 9600, 8, N, 1 - No transmite
-        ConfigRS232(103, RS2_M_UART2);
-        EnableIntU2RX;
-        SetPriorityIntU1RX(4);
-        U2STAbits.UTXEN = 0; //TX desactivado
-
-        //TIMER 2 COMO WATCHDOG PARA UART 2
-        //Configure Timer 2 @ 1[s] w/interrupt
-        ConfigIntTimer2(T2_INT_PRIOR_6 & T2_INT_ON);
-        OpenTimer2(T2_ON & T2_IDLE_CON & T2_GATE_OFF & T2_PS_1_256 & T2_32BIT_MODE_OFF &
-                   T2_SOURCE_INT, 62500); /* t[s]=X*ps/fcy => X=1*16MIPS/256.0 = 62500 */
-        WriteTimer2(0);
-    #elif (SCH_TRX_TYPE_ONBOARD == 2)
-        /* La idea es que el TRX funcione normalmente salvo
-         * para enviar TM, que lo hara el HAC-LM */
-
-        // UART2 para TRX - Comparte pines con UART1
-        // H1.17 - U1RX - RP10 - IO.7
-        iPPSInput(IN_FN_PPS_U2RX,IN_PIN_PPS_RP10);
-
-        // UART2 - PARA TRX - 1200, 8, N, 1 - No transmite
-        ConfigRS232(832, RS2_M_UART2);
-        EnableIntU2RX;
-        SetPriorityIntU1RX(4);
-        U2STAbits.UTXEN = 0; //TX desactivado
-
-        //TIMER 2 COMO WATCHDOG PARA UART 2
-        //Configure Timer 2 @ 1[s] w/interrupt
-        ConfigIntTimer2(T2_INT_PRIOR_6 & T2_INT_ON);
-        OpenTimer2(T2_ON & T2_IDLE_CON & T2_GATE_OFF & T2_PS_1_256 & T2_32BIT_MODE_OFF &
-                   T2_SOURCE_INT, 62500); /* t[s]=X*ps/fcy => X=1*16MIPS/256.0 = 62500 */
-        WriteTimer2(0);
-    #endif
-
     //Conifg para Consola:
     // H1.17 - U1RX - RP10 - IO.7 - UART 1 PARA CONSOLA SERIAL
     iPPSInput(IN_FN_PPS_U1RX,IN_PIN_PPS_RP10);
@@ -789,7 +750,7 @@ void GPIO_PC104_init(void)
     // copia de H1.17
 
 //------------------------------------------------------------------------------
-    #if (SCH_SYSBUS_ONBOARD==1)
+    #if ((SCH_SYSBUS_ONBOARD == 1) || (SCH_TRX_ONBOARD == 1))
         // I2C1 para TRX, EPS y otros perifericos del sistema
         // H1.41	SDA1/CN84/RG3 (Pin 56) => pin es SDA1
 
@@ -919,68 +880,36 @@ void GPIO_PC104_init(void)
         _LATB8=0;			//parte en 0
     #endif
 //------------------------------------------------------------------------------
-    #if (SCH_TRX_TYPE_ONBOARD==1 || SCH_TRX_TYPE_ONBOARD==2)
-        //Estos pines son TMS_COM, TCK_COM, TDI_COM, TDO_COM del JTAG del TRX
-        //Sin embargo no son ni serian ocupados
+    //Estos pines son TMS_COM, TCK_COM, TDI_COM, TDO_COM del JTAG del TRX
+    //Sin embargo no son ni serian ocupados
 
-        // H2.09	PGED2/AN7/RP7/CN25/RB7 (Pin 27) => pin es RB7
-        _PCFG7=1;               	//pin 0-ADC 1- I/O
-        _TRISB7=0; 			//pin 0-output 1-input.
-        _LATB7=0;			//parte en 0
+    // H2.09	PGED2/AN7/RP7/CN25/RB7 (Pin 27) => pin es RB7
+    _PCFG7=1;               	//pin 0-ADC 1- I/O
+    _TRISB7=0; 			//pin 0-output 1-input.
+    _LATB7=0;			//parte en 0
 
-        // H2.10	PGEC2/AN6/RP6/CN24/RB6 (Pin 26) => pin es RB6
-        _PCFG6=1;            		//pin 0-ADC 1- I/O
-        _TRISB6=0; 			//pin 0-output 1-input.
-        _LATB6=0;			//parte en 0
+    // H2.10	PGEC2/AN6/RP6/CN24/RB6 (Pin 26) => pin es RB6
+    _PCFG6=1;            		//pin 0-ADC 1- I/O
+    _TRISB6=0; 			//pin 0-output 1-input.
+    _LATB6=0;			//parte en 0
 
-        // H2.11	PGED1/AN0/RP0/CN2/RB0 (Pin 25) => pin es PGED1
-        // este pin es usado como PGED1 para programming/debugging con ICD
-        // por lo que modificarlo implica posibles errores al querer debuggear con el ICD3
+    // H2.11	PGED1/AN0/RP0/CN2/RB0 (Pin 25) => pin es PGED1
+    // este pin es usado como PGED1 para programming/debugging con ICD
+    // por lo que modificarlo implica posibles errores al quierer debuggear con el ICD3
 
-        // H2.12	PGEC1/AN1/RP1/CN3/RB1 (Pin 24) => pin es PGEC1
-        // este pin es usado como PGEC1 para programming/debugging con ICD
-        // por lo que modificarlo implica posibles errores al querer debuggear con el ICD3
-    #else
-        // H2.09	PGED2/AN7/RP7/CN25/RB7 (Pin 27) => pin es RB7
-        _PCFG7=1;               	//pin 0-ADC 1- I/O
-        _TRISB7=0; 			//pin 0-output 1-input.
-        _LATB7=0;			//parte en 0
-
-        // H2.10	PGEC2/AN6/RP6/CN24/RB6 (Pin 26) => pin es RB6
-        _PCFG6=1;            		//pin 0-ADC 1- I/O
-        _TRISB6=0; 			//pin 0-output 1-input.
-        _LATB6=0;			//parte en 0
-
-        // H2.11	PGED1/AN0/RP0/CN2/RB0 (Pin 25) => pin es PGED1
-        // este pin es usado como PGED1 para programming/debugging con ICD
-        // por lo que modificarlo implica posibles errores al quierer debuggear con el ICD3
-
-        // H2.12	PGEC1/AN1/RP1/CN3/RB1 (Pin 24) => pin es PGEC1
-        // este pin es usado como PGEC1 para programming/debugging con ICD
-        // por lo que modificarlo implica posibles errores al querer debuggear con el ICD3
-    #endif
+    // H2.12	PGEC1/AN1/RP1/CN3/RB1 (Pin 24) => pin es PGEC1
+    // este pin es usado como PGEC1 para programming/debugging con ICD
+    // por lo que modificarlo implica posibles errores al querer debuggear con el ICD3
 //------------------------------------------------------------------------------
-    #if (SCH_TRX_TYPE_ONBOARD==1 || SCH_TRX_TYPE_ONBOARD==2)
-        // H2.13	AN2/C2INB/RP13/CN4/RB2 (Pin 23)	 => PPC_nRX_FLAG TRX Reciviendo
-        //nRX_FLAG del Transceiver, probalemente será progarmado con input_interrupt
-        _PCFG2=1; 			//pin 0-ADC 1- I/O
-        _TRISB2=1; 			//pin 0-output 1-input.
+    // H2.13	AN2/C2INB/RP13/CN4/RB2 (Pin 23)	 => pin es RB2
+    _PCFG2=1; 			//pin 0-ADC 1- I/O
+    _TRISB2=0; 			//pin 0-output 1-input.
+    _LATB2=1;			//parte en 1 (por si TRX esta conectado, aunque no deberia)
 
-        // H2.14	AN3/C2INA/CN5/RB3 (Pin 22) => pin es PPC_nTX_FLAG TRX transmitiendo
-        //nTX_FLAG del Transceiver, probalemente será progarmado con input_interrupt
-        _PCFG3=1; 			//pin 0-ADC 1- I/O
-        _TRISB3=1; 			//pin 0-output 1-input.
-    #else
-        // H2.13	AN2/C2INB/RP13/CN4/RB2 (Pin 23)	 => pin es RB2
-        _PCFG2=1; 			//pin 0-ADC 1- I/O
-        _TRISB2=0; 			//pin 0-output 1-input.
-        _LATB2=1;			//parte en 1 (por si TRX esta conectado, aunque no deberia)
-        
-        // H2.14	AN3/C2INA/CN5/RB3 (Pin 22) => pin es RB3
-        _PCFG3=1; 			//pin 0-ADC 1- I/O
-        _TRISB3=0; 			//pin 0-output 1-input.
-        _LATB3=1;			//parte en (por si TRX esta conectado, aunque no deberia)
-    #endif
+    // H2.14	AN3/C2INA/CN5/RB3 (Pin 22) => pin es RB3
+    _PCFG3=1; 			//pin 0-ADC 1- I/O
+    _TRISB3=0; 			//pin 0-output 1-input.
+    _LATB3=1;			//parte en (por si TRX esta conectado, aunque no deberia)
 //------------------------------------------------------------------------------
     #if (SCH_PAY_GPS_ONBOARD==1)
         // H2.15	PGED3/AN4/C1INB/RP28/CN6/RB4 (Pin 21) => pin es RP28 (TX del UART4)

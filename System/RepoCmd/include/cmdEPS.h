@@ -34,7 +34,11 @@ typedef enum{
     eps_id_last_one    //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
 }EPS_CmdIndx;
 
+
 #define EPS_NCMD ((unsigned char)eps_id_last_one)
+
+
+
 void eps_onResetCmdEPS(void);
 
 

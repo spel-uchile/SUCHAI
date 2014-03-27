@@ -139,13 +139,13 @@ int ppc_enwdt(void *on_off)
     {
          EnableWDT( WDT_DISABLE );
          txt_result = "WDT_DISABLE\r\n";
-         dat_setCubesatVar(dat_ppc_enwdt, 0);
+         sta_setCubesatVar(sta_ppc_enwdt, 0);
     }
     else if( i==1 )
     {
          EnableWDT( WDT_ENABLE );
          txt_result = "WDT_ENABLE\r\n";
-         dat_setCubesatVar(dat_ppc_enwdt, 1);
+         sta_setCubesatVar(sta_ppc_enwdt, 1);
     }
     else
     {
@@ -191,6 +191,9 @@ int ppc_osc(void *param)
         break;
         case 7:
             con_printf("Oscillator is FRC_OSC_WITH_POSTSCALER\r\n");
+        break;
+        default:
+            con_printf("Oscillator is default\r\n");
         break;
     }
 
@@ -368,62 +371,62 @@ int ppc_set_PPC_MB_nON_SD(void* param)
  */
 int ppc_rtos_debug(void *param)
 {
-    char buff[10];
-    unsigned int water_mark = 0;
-
-    con_printf("Task, Stak Highwatermark\n");
-    
-    /* cheking taskDispatcher stack */
-    water_mark = uxTaskGetStackHighWaterMark(&taskDispatcherHandle);
-    utoa(buff,water_mark,10);
-    con_printf("taskDispatcher, "); con_printf(buff); con_printf("\n");
-    
-    /* cheking taskExecuter stack */
-    water_mark = uxTaskGetStackHighWaterMark(&taskExecuterHandle);
-    utoa(buff,water_mark,10);
-    con_printf("taskExecuter, "); con_printf(buff); con_printf("\n");
-
-    /* cheking taskConsole stack */
-    water_mark = uxTaskGetStackHighWaterMark(&taskConsoleHandle);
-    utoa(buff,water_mark,10);
-    con_printf("taskConsole,"); con_printf(buff); con_printf("\n");
-
-    /* cheking taskHousekeeping stack */
-    water_mark = uxTaskGetStackHighWaterMark(&taskHouskeepingHandle);
-    utoa(buff,water_mark,10);
-    con_printf("taskHousekeeping, "); con_printf(buff); con_printf("\n");
-
-    #if (SCH_TRX_ONBOARD==1 || SCH_TRX_ONBOARD==2)
-    {
-        /* cheking taskComunications stack */
-        water_mark = uxTaskGetStackHighWaterMark(&taskComunicationsHandle);
-        utoa(buff,water_mark,10);
-        con_printf("taskComunications, "); con_printf(buff); con_printf("\n");
-    }
-    #endif
-
-    #if (SCH_FLIGHTPLAN_TYPE==1) || (SCH_FLIGHTPLAN_TYPE==3)
-    {
-        /* cheking taskFlightPlan stack */
-        water_mark = uxTaskGetStackHighWaterMark(&taskFlightPlanHandle);
-        utoa(buff,water_mark,10);
-        con_printf("taskFlightPlan, "); con_printf(buff); con_printf("\n");
-    }
-    #endif
-
-    #if (SCH_FLIGHTPLAN_TYPE==2) || (SCH_FLIGHTPLAN_TYPE==3)
-    {
-        /* cheking taskFlightPlan2 stack */
-        water_mark = uxTaskGetStackHighWaterMark(&taskFlightPlan2Handle);
-        utoa(buff,water_mark,10);
-        con_printf("taskFlightPlan2, "); con_printf(buff); con_printf("\n");
-    }
-    #endif
-
-
-    size_t mem_heap = xPortGetFreeHeapSize();
-    itoa(buff,mem_heap,10);
-    con_printf("Free heap size, "); con_printf(buff); con_printf("\n");
+//    char buff[10];
+//    unsigned int water_mark = 0;
+//
+//    con_printf("Task, Stak Highwatermark\n");
+//
+//    /* cheking taskDispatcher stack */
+//    water_mark = uxTaskGetStackHighWaterMark(&taskDispatcherHandle);
+//    utoa(buff,water_mark,10);
+//    con_printf("taskDispatcher, "); con_printf(buff); con_printf("\n");
+//
+//    /* cheking taskExecuter stack */
+//    water_mark = uxTaskGetStackHighWaterMark(&taskExecuterHandle);
+//    utoa(buff,water_mark,10);
+//    con_printf("taskExecuter, "); con_printf(buff); con_printf("\n");
+//
+//    /* cheking taskConsole stack */
+//    water_mark = uxTaskGetStackHighWaterMark(&taskConsoleHandle);
+//    utoa(buff,water_mark,10);
+//    con_printf("taskConsole,"); con_printf(buff); con_printf("\n");
+//
+//    /* cheking taskHousekeeping stack */
+//    water_mark = uxTaskGetStackHighWaterMark(&taskHouskeepingHandle);
+//    utoa(buff,water_mark,10);
+//    con_printf("taskHousekeeping, "); con_printf(buff); con_printf("\n");
+//
+//    #if (SCH_TRX_ONBOARD==1)
+//    {
+//        /* cheking taskComunications stack */
+//        water_mark = uxTaskGetStackHighWaterMark(&taskComunicationsHandle);
+//        utoa(buff,water_mark,10);
+//        con_printf("taskComunications, "); con_printf(buff); con_printf("\n");
+//    }
+//    #endif
+//
+//    #if (SCH_USE_FLIGHTPLAN==1)
+//    {
+//        /* cheking taskFlightPlan stack */
+//        water_mark = uxTaskGetStackHighWaterMark(&taskFlightPlanHandle);
+//        utoa(buff,water_mark,10);
+//        con_printf("taskFlightPlan, "); con_printf(buff); con_printf("\n");
+//    }
+//    #endif
+//
+//    #if (SCH_USE_FLIGHTPLAN2==1)
+//    {
+//        /* cheking taskFlightPlan2 stack */
+//        water_mark = uxTaskGetStackHighWaterMark(&taskFlightPlan2Handle);
+//        utoa(buff,water_mark,10);
+//        con_printf("taskFlightPlan2, "); con_printf(buff); con_printf("\n");
+//    }
+//    #endif
+//
+//
+//    size_t mem_heap = xPortGetFreeHeapSize();
+//    itoa(buff,mem_heap,10);
+//    con_printf("Free heap size, "); con_printf(buff); con_printf("\n");
 
     return 1;
 }

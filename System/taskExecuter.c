@@ -25,8 +25,8 @@ extern xQueueHandle executerStatQueue; /* Comands queue*/
 
 void taskExecuter(void *param)
 {
-#if SCH_TASKEXECUTER_VERBOSE
-        con_printf(">>[Executer] Started\r\n");
+#if (SCH_TASKEXECUTER_VERBOSE>=1)
+        printf("[Executer] Started\r\n");
 #endif
 
     ExeCmd RunCmd;
@@ -37,8 +37,8 @@ void taskExecuter(void *param)
         /* Read the CMD that Dispatcher sent - BLOCKING */
         queueStat = xQueueReceive(executerCmdQueue, &RunCmd, portMAX_DELAY);
 
-#if SCH_TASKEXECUTER_VERBOSE > 1
-        con_printf("[Executer] Executing a new command...\r\n");
+#if (SCH_TASKEXECUTER_VERBOSE > 1)
+        printf("[Executer] Executing a new command...\r\n");
 #endif
         
         if(queueStat == pdPASS)
@@ -53,12 +53,8 @@ void taskExecuter(void *param)
             /* Si el comando se ejecuto bien reseteo el WDT */
             ClrWdt();
             
-#if SCH_TASKEXECUTER_VERBOSE > 1
-            //Hex16ToAscii(cmdStat,stat);
-            char ret[10];
-            sprintf (ret, "0x%X", (unsigned int)cmdStat);
-            con_printf("[Executer] Return status: ");
-            con_printf(ret); con_printf("\r\n");
+#if (SCH_TASKEXECUTER_VERBOSE > 1)
+            printf("[Executer] Return status: %d\n", (unsigned int)cmdStat );
 #endif
             /* Send the result to Dispatcher - BLOCKING */
             xQueueSend(executerStatQueue, &cmdStat, portMAX_DELAY);

@@ -85,4 +85,13 @@ int i2c_init(int handle, int mode, uint8_t addr, uint16_t speed, int queue_len_t
  */
 int i2c_send(int handle, i2c_frame_t * frame, uint16_t timeout);
 
+/**
+ * toopazo: Include definition in csp_i2c.h to avoid warning when using this function
+ * @param frame
+ * @param pxTaskWoken
+ */
+void csp_i2c_rx(i2c_frame_t * frame, void * pxTaskWoken);
+
 #endif /* I2C_H_ */
+
+    

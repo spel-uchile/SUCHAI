@@ -3,6 +3,8 @@
 
 #include <stdio.h>  //para sprintf
 #include <stdlib.h>  //para itoa
+#define FCY 16000000UL      //FOSC = 32MHz => FCY = FOSC/2
+#include <libpic30.h>     //to use __delay_ms(..)
 
 #include "rs232_suchai.h"
 
@@ -13,5 +15,7 @@
 #define con_strncpy(a,b,n) strncpy(a,b,n); *((a)+(n))='\0';
 
 void con_printf(char *c);
+
+
 
 #endif /* _DEBUG_INCLUDES_H */

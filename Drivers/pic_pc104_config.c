@@ -644,7 +644,7 @@ void GPIO_PC104_init(void)
         _LATF3=0;			//parte en 0
     #endif
 //------------------------------------------------------------------------------
-    #if (SCH_EXTMEM_SD_ONBOARD==1)
+    #if (SCH_MEMSD_ONBOARD==1)
         // SPI2 para Tarjeta SD de la MB
         // H1.21	RP4/CN54/RD9 (Pin 69) => pin es RP4 (SCK)
         iPPSOutput(OUT_PIN_PPS_RP4,OUT_FN_PPS_SCK2OUT);

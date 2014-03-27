@@ -22,9 +22,119 @@
 
 #define _FISICA_VERBOSE_ISR_T5     1
 
-static unsigned int sens_buff[FIS_SAMP_PER_ROUND];
+static unsigned int sens_buff[FIS_SENS_BUFF_LEN];
 static int sens_buff_ind;
 
+int fis_wait_busy_wtimeout(void){
+    int seg_timeout = 30;
+    while( fis_sens_buff_isFull()==FALSE ){
+        __delay_ms(1000);
+        seg_timeout--;
+        if(seg_timeout<=0){
+            printf("expFis timeout !!\n");
+            return 0;
+        }
+    }
+    //printf("fis_wait_busy_wtimeout = %lu\n", i);
+    return 1;
+}
+void fis_print_sens_buff(void){
+    int ind;
+    for(ind=0; ind<FIS_SENS_BUFF_LEN; ind++){
+        if(ind%2==0){
+            printf("sens_buff[%02d]=%04d, ", ind, sens_buff[ind]);
+        }
+        else{
+            printf("sens_buff[%02d]=%04d\n", ind, sens_buff[ind]);
+        }
+    }
+}
+void fis_erase_sens_buff(void){
+    int ind;
+    for(ind=0;ind<FIS_SENS_BUFF_LEN;ind++){
+        sens_buff[ind] = 0;
+    }
+}
+unsigned int fis_get_sens_buff_i(int ind){
+    if(ind>=FIS_SENS_BUFF_LEN){return 0;}
+    return sens_buff[ind];
+}
+BOOL fis_sens_buff_isFull(void){
+//esperar mientras se termina de llenar el sens_buff (buffer intermedio)
+    if( sens_buff_ind<FIS_SENS_BUFF_LEN ){
+        return FALSE;
+    }
+    return TRUE;
+}
+//******************************************************************************
+static int fis_ADC_period_i;
+static int fis_round;
+static int fis_eoi;
+static const unsigned int *fis_ADC_period;
+static int fis_len;
+static int fis_rounds_per_ADC_period;
+
+BOOL fis_iterate_isComplete(void){
+    if(fis_eoi==1){ return TRUE; }
+    else{ return FALSE; }
+}
+/**
+ * Reset the iterate_config settings, a new call to "fis_iterate_config"
+ * is nedded to use fis_iterate again. Not doing so will certainly end in
+ * SEGMENTATOIN FAULTS !! So, don't call its a internal function
+ */
+static void fis_iterate_reset(void){
+    //printf("fis_reset_iterate..\n");
+    fis_ADC_period = NULL;
+    fis_len = 0;
+    fis_rounds_per_ADC_period = 0;
+
+    fis_round = 0;
+    fis_ADC_period_i = 0;
+    fis_eoi = 0;
+}
+int fis_iterate_config(const unsigned int _ADC_period[], int _len, int _rounds_per_ADC_period){
+    printf("fis_iterate_config..\n");
+    fis_iterate_reset();
+
+    fis_ADC_period = _ADC_period;
+    fis_len = _len;
+    fis_rounds_per_ADC_period = _rounds_per_ADC_period;
+    return FIS_SENS_BUFF_LEN;
+}
+BOOL fis_iterate(void){
+    printf("fis_iterate..\n");
+    if(fis_eoi==1){return FALSE;}
+
+    printf("    len( ADC_period[] ) = %d\n", fis_len );
+    printf("    ADC_period[%d] = %d\n", fis_ADC_period_i, fis_ADC_period[fis_ADC_period_i] );
+    printf("    round = %d/%d\n", fis_round+1,fis_rounds_per_ADC_period);
+
+    int normal_wait;
+
+    fis_erase_sens_buff();
+    fis_start_expFis(fis_ADC_period[fis_ADC_period_i]);
+    normal_wait = fis_wait_busy_wtimeout();
+
+    //update round 
+    fis_round++;
+
+    //check round
+    if(fis_round==fis_rounds_per_ADC_period){
+        //go to next ADC_period
+        fis_ADC_period_i++;
+        fis_round = 0;
+    }
+    //check ADC_period_i
+    if(fis_ADC_period_i==fis_len){
+        //end of iterations
+        fis_eoi = 1;
+    }
+
+    if( normal_wait==0 ){ return FALSE; }
+    else{ return TRUE; }
+}
+//******************************************************************************
 void fis_testDAC(void){
     int j;
     for(j=0x0FFF;j>0;j--){
@@ -35,7 +145,6 @@ void fis_testDAC(void){
         fis_payload_writeDAC(arg);
     }
 }
-
 
 unsigned int fis_frec_i_to_ADC_period(DAT_GnrlPurpBuff pay_frec_i){
     unsigned int ADC_period;
@@ -98,56 +207,45 @@ unsigned int fis_frec_i_to_ADC_period(DAT_GnrlPurpBuff pay_frec_i){
     return ADC_period;
 }
 void fis_save_sens_buff_to_GPB(DAT_GnrlPurpBuff frec_i, int rst_gbp_indx){
-    int i,j; unsigned int ind; unsigned long prom=0;
+    unsigned int ind; unsigned long prom=0;
 
     //esperar mientras se termina de llenar el sens_buff (buffer intermedio)
-    while( sens_buff_ind<(FIS_SAMP_PER_ROUND) ){
-        for(i=0;i<0x00FF;i++){j=i*1;}
-        i=j+2;
+    while( sens_buff_ind<(FIS_SENS_BUFF_LEN) ){
+        __delay_ms(1000);
     }
-    
+
     //calculo promedio sens1
-    for(ind=0;ind<FIS_SAMP_PER_ROUND;ind=ind+2){
+    for(ind=0;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
         prom=prom+sens_buff[ind];
     }
-    prom=prom/FIS_SAMP_PER_ROUND;
+    prom=prom/FIS_SENS_BUFF_LEN;
     //resto el promedio sens1
-    for(ind=0;ind<FIS_SAMP_PER_ROUND;ind=ind+2){
+    for(ind=0;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
         sens_buff[ind]=sens_buff[ind]-prom;
     }
-    
+
     //calculo promedio sens2
-    for(ind=1;ind<FIS_SAMP_PER_ROUND;ind=ind+2){
+    for(ind=1;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
         prom=prom+sens_buff[ind];
     }
-    prom=prom/FIS_SAMP_PER_ROUND;
+    prom=prom/FIS_SENS_BUFF_LEN;
     //resto el promedio sens2
-    for(ind=1;ind<FIS_SAMP_PER_ROUND;ind=ind+2){
+    for(ind=1;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
         sens_buff[ind]=sens_buff[ind]-prom;
     }
-    
+
     //guardo en memSD
     static unsigned int gpb_indx;
     if( rst_gbp_indx==1 ){
         gpb_indx=0;
     }
-    for(ind=0;ind<FIS_SAMP_PER_ROUND;ind++){
+    for(ind=0;ind<FIS_SENS_BUFF_LEN;ind++){
         //Set DAT_GnrlPurpBuff
         dat_setGPB(frec_i, gpb_indx, sens_buff[ind] );
         gpb_indx++;
     }
 }
-void fis_print_sens_buff(void){
-    int ind; char ret[10];
-    for(ind=0;ind<FIS_SAMP_PER_ROUND;ind++){
-        //utoa(ret,  (unsigned int)ind, 16);
-        sprintf (ret, "0x%X", (unsigned int)ind);
-        con_printf("sens_buff["); con_printf(ret); con_printf("]=");
-        //utoa(ret,  (unsigned int)sens_buff[ind], 16);
-        sprintf (ret, "0x%X", (unsigned int)sens_buff[ind]);
-        con_printf(ret); con_printf("\r\n");
-    }
-}
+//******************************************************************************
 void fis_payload_writeDAC(unsigned int arg){
     unsigned char r,msb,lsb;
     msb=(unsigned char)(arg>>8);
@@ -165,8 +263,8 @@ void fis_stop_expFis(void){
     DisableIntT4;
     DisableIntADC1;
 
-    #if (SCH_FISICA_VERBOSE>=2)
-        con_printf("stoping expFis ISRs\r\n");
+    #if (SCH_FISICA_VERBOSE>=1)
+        con_printf("expFis ISRs are down..\r\n");
     #endif
     //Modules
     CloseTimer4();
@@ -174,21 +272,22 @@ void fis_stop_expFis(void){
     CloseADC10();
 }
 void fis_start_expFis(unsigned int period){
-    char ret[10];
-    #if (SCH_FISICA_VERBOSE>=1)
-        itoa(ret,  (unsigned int)period, 10);
-        con_printf("  period="); con_printf(ret); con_printf("\r\n");
-    #endif  
     #if (SCH_FISICA_VERBOSE>=2)
-        con_printf("  sens_buff_ind=0..\r\n");
-        con_printf("  fis_ADC_config()..\r\n");
-        con_printf("  fis_Timer4_config(period*3)..\r\n");
-        con_printf("  fis_Timer5_config(period)..\r\n");
-    #endif
+        printf("ADC_period (DAC_period=3*ADC_period) = %d\n", period);
+    #endif  
+//    #if (SCH_FISICA_VERBOSE>=2)
+//        con_printf("  sens_buff_ind=0..\r\n");
+//        con_printf("  fis_ADC_config()..\r\n");
+//        con_printf("  fis_Timer4_config(period*3)..\r\n");
+//        con_printf("  fis_Timer5_config(period)..\r\n");
+//    #endif
     sens_buff_ind=0;
     fis_ADC_config();
     fis_Timer4_config(period*3);
     fis_Timer5_config(period);
+    #if (SCH_FISICA_VERBOSE>=1)
+        con_printf("expFis ISRs are up..\r\n");
+    #endif
 }
 
 void fis_ADC_config(void){
@@ -217,17 +316,23 @@ void fis_ADC_config(void){
 
     ConfigIntADC10(ADC_INT_DISABLE & ADC_INT_PRI_2 );
     //IFS0bits.AD1IF = 0;
+
+    //printf("adc_config\n");
 }
 
 void fis_Timer4_config(unsigned int period){
     //                      7654321076543210
     unsigned int config = 0b1000000000110000; //T4_ON & T4_GATE_ON & T4_IDLE_CON & T4_PS_1_1 & T4_SOURCE_INT;
     //                      7654321076543210
-    //unsigned int period = 0b0000000000001011;
+    //config = T4_ON & T4_GATE_OFF & T4_IDLE_CON & T4_PS_1_8 & T4_SOURCE_INT & T4_32BIT_MODE_OFF;
+    //unsigned int period2 = 0b0000000001001011;
     WriteTimer4(0x0000);
     OpenTimer4( config, period );
 
-    ConfigIntTimer4(T4_INT_ON & T4_INT_PRIOR_1);
+    //ConfigIntTimer4(T4_INT_ON & T4_INT_PRIOR_3);
+    EnableIntT4;
+
+    //printf("t4_config\n");
 }
 void fis_Timer5_config(unsigned int period){
     //                      7654321076543210
@@ -237,13 +342,16 @@ void fis_Timer5_config(unsigned int period){
     WriteTimer5(0x0000);
     OpenTimer5( config, period );
 
-    ConfigIntTimer5(T5_INT_ON & T5_INT_PRIOR_1);
+    //ConfigIntTimer5(T5_INT_ON & T5_INT_PRIOR_1);
+    EnableIntT5;
+
+    //printf("t5_config\n");
 }
 
 //ISR del T4
 //void _ISR _T4Interrupt(void){
 void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
-    //con_printf("en ISR T4\r\n");
+    //printf("en ISR T4\n");
     
     unsigned char c= rand();
     unsigned int arg=c;
@@ -256,41 +364,36 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
 //ISR del T5
 //void _ISR _T5Interrupt(void){
 void __attribute__((__interrupt__, auto_psv)) _T5Interrupt(void){
-    //con_printf("ISR T5\r\n");
-  
-    ConvertADC10();
-    unsigned long i,j;
-    for(i=0;i<0x00000001;i++){j=i*1;}
-    i=j+2;
-    ConvertADC10();
-    for(i=0;i<0x00000001;i++){j=i*1;}
-    i=j+2;
-    //static int asd;
-    //if( BusyADC10()==0 && asd==0){con_printf("ADC10 is ready\r\n"); asd=2;}
+    //printf("ISR T5\n");
+    unsigned long i;
+    int sens1, sens2;
 
-    int sens1,sens2;
+    //convert ADC_SCAN_AN11
+    ConvertADC10();
+    for(i=0;i<0x0000000F;i++){}
+
+    //convert ADC_SCAN_AN13
+    ConvertADC10();
+    for(i=0;i<0x0000000F;i++){}
+
     sens2=ReadADC10(0);
     sens1=ReadADC10(1);
 
     #if (_FISICA_VERBOSE_ISR_T5>=2)
-        char ret[6];
-        con_printf("sens[1"); con_printf(ret); con_printf("]=");
-        Hex16ToAscii(  (unsigned int)sens1, ret); con_printf(ret); con_printf("\r\n");
-        con_printf("sens[2"); con_printf(ret); con_printf("]=");
-        Hex16ToAscii(  (unsigned int)sens2, ret); con_printf(ret); con_printf("\r\n");
+        printf("sens1 = %d\n", sens1);
+        printf("sens2 = %d\n", sens2);
     #endif
 
     sens_buff[sens_buff_ind]=sens1;
     sens_buff_ind++;
     sens_buff[sens_buff_ind]=sens2;
     sens_buff_ind++;
-    
+
     #if (_FISICA_VERBOSE_ISR_T5>=2)
-        Hex16ToAscii(  (unsigned int)sens_buff_ind, ret);
-        con_printf("sens_buff_ind="); con_printf(ret); con_printf("\r\n");
+        printf("sens_buff_ind=%d\n", sens_buff_ind);
     #endif
-    
-    if(sens_buff_ind>=(FIS_SAMP_PER_ROUND)){
+
+    if(sens_buff_ind>=(FIS_SENS_BUFF_LEN)){
         #if (_FISICA_VERBOSE_ISR_T5>=2)
             con_printf("ISR T5: sens_buff_ind == FIS_SENS_BUFF_LENGTH\r\n");
         #endif
@@ -337,7 +440,7 @@ void hist(void){
     long v1, v2, mul, ran, prev; unsigned long v1u, v2u;
 
     //realiza multiplicacion para cada frecuencia
-    max=(2*FIS_SAMP_PER_ROUND);//(FIS_REPEAT_PER_ROUND*FIS_SAMP_PER_ROUND);
+    max=(2*FIS_SENS_BUFF_LEN);//(FIS_REPEAT_PER_ROUND*FIS_SAMP_PER_ROUND);
     for(gpb_frec_i=dat_gpb_expFis_f0; gpb_frec_i<=dat_gpb_expFis_f9; gpb_frec_i++){
         for(i=0;i<max;i=i+2){
             v1 = (long)dat_getGPB(gpb_frec_i, i);
@@ -354,7 +457,7 @@ void hist(void){
     }
 
     //realiza histograma para cada frecuencia
-    max=(2*FIS_SAMP_PER_ROUND);//(FIS_REPEAT_PER_ROUND*FIS_SAMP_PER_ROUND);
+    max=(2*FIS_SENS_BUFF_LEN);//(FIS_REPEAT_PER_ROUND*FIS_SAMP_PER_ROUND);
     for(gpb_frec_i=dat_gpb_expFis_f0; gpb_frec_i<=dat_gpb_expFis_f9; gpb_frec_i++){
         
         for(i=0;i<max;i=i+2){

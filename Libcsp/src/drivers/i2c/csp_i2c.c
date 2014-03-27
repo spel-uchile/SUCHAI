@@ -67,3 +67,4 @@ int i2c_send(int handle, i2c_frame_t * frame, uint16_t timeout)
         return CSP_ERR_DRIVER;
     }
 }
+

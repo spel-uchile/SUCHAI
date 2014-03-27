@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cmdConsole.h"
+#include "cmdCON.h"
 
 cmdFunction conFunction[CON_NCMD];
 int con_sysReq[CON_NCMD];

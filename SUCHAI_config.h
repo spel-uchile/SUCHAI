@@ -19,7 +19,7 @@
 
 /* Peripheral's config */
 #define SCH_UART_DEBUG_PORT     (1) ///< 0-Habilita DB9, 1-Habilita USB
-#define SCH_I2C1_ADDR           (0x02) ///< I2C 1 Slave address
+#define SCH_I2C1_ADDR           (0x00) ///< I2C 1 Slave address
 #define SCH_I2C2_ADDR           (0xF3) ///< I2C 2 Slave address
 #define SCH_I2C3_ADDR           (0xF4) ///< I2C 3 Slave address
 
@@ -36,9 +36,9 @@
 #define SCH_PAYBUS_ONBOARD                  (1)  ///< Onboard => I2C3 en uso
 #define SCH_MGN_ONBOARD                     (0)  ///< Onboard => 1 pin(es) en modo Switch
 #define SCH_ANTENNA_ONBOARD                 (0)  ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
-#define SCH_TRX_TYPE_ONBOARD                (0)  ///< 0=Ninguno, 2=HACLM12 y TRX Allspace, 1= TRX Allspace => I2C1 en uso, UART2 en uso (H1.17), 2 pin(es) en modo Check
+#define SCH_TRX_ONBOARD                     (1)  ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
 #define SCH_EPS_ONBOARD                     (0)  ///< Onboard => I2C1 en uso
-#define SCH_EXTMEM_SD_ONBOARD               (0)  //< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
+#define SCH_EXTMEM_SD_ONBOARD               (0)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_PAY_LAGMUIR_ONBOARD             (0)  ///< Ocupa UART3_en_H1.19_y_H1.20
 #define SCH_PAY_FIS_ONBOARD                 (0)  ///<
 #define SCH_PAY_GYRO_ONBOARD                (0)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
@@ -91,7 +91,7 @@
 /* Drivers config VERBOSE */
 #define SCH_CONSOLE_VERBOSE                 (1)   ///< 1=verboso 0=austero
 #define SCH_EPS_SUCHAI_VERBOSE              (1)   ///< 1=verboso 0=austero
-#define SCH_I2C_SUCHAI_VERBOSE              (1)   ///< 1=verboso 0=austero
+#define SCH_I2C_SUCHAI_VERBOSE              (0)   ///< 1=verboso 0=austero
 #define SCH_INTERFAZ_SPI_VERBOSE            (1)   ///< 1=verboso 0=austero
 #define SCH_MEMFLASH_VERBOSE                (1)   ///< 1=verboso 0=austero
 #define SCH_MEMSD_VERBOSE                   (1)   ///< 1=verboso 0=austero
@@ -119,7 +119,7 @@
 #define SCH_TASKCOMUNICATIONS_VERBOSE       (1)  ///< 1=verboso 0=austero
 #define SCH_TASKCONSOLE_VERBOSE             (1)  ///< 1=verboso 0=austero
 #define SCH_TASKDEPLOYMENT_VERBOSE          (2)  ///< 1=verboso 0=austero
-#define SCH_TASKDISPATCHER_VERBOSE          (0)  ///< 1=verboso 0=austero
+#define SCH_TASKDISPATCHER_VERBOSE          (1)  ///< 1=verboso 0=austero
 #define SCH_TASKEXECUTER_VERBOSE            (0)  ///< 1=verboso 0=austero
 #define SCH_TASKFLIGHTPLAN_VERBOSE          (1)  ///< 1=verboso 0=austero
 #define SCH_FLIGHTPLAN2_VERBOSE             (1)  ///< 1=verboso 0=austero

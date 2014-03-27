@@ -96,13 +96,13 @@ void do_csp_debug(csp_debug_level_t level, const char * format, ...) {
 		vsnprintf(buf, 250, format, args);
 		csp_debug_hook_func(level, buf);
 	} else {
-		csp_sys_set_color(color);
+//		csp_sys_set_color(color);
 #ifdef __AVR__
 		vfprintf_P(stdout, format, args);
 #else
-		vprintf(format, args);
+		printf(format, args);
 #endif
-		csp_sys_set_color(COLOR_RESET);
+//		csp_sys_set_color(COLOR_RESET);
 	}
 
 	va_end(args);

@@ -29,7 +29,7 @@ void writeEEPROM1(unsigned char address, char data){
 
 unsigned char readEEPROM1(unsigned char address){
     if( i2c1_slave_ready(MEP_EEPROM_ID, 0x0FFF) == 0 )
-        return;
+        return 0;
 
     char ret;
     char _address[] = {MEP_EEPROM_ID, (char)address};

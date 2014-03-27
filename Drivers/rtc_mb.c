@@ -100,7 +100,7 @@ int RTC_init(void)
     /* Restarting the oscilator */
     if(reg)
     {
-        con_printf(">>RTC Restarting cristal\n\r");
+        printf(">>RTC Restarting cristal\n\r");
         RTC_WriteRegister(RTC_SEC_REG, 0x80);
         RTC_WriteRegister(RTC_SEC_REG, 0x00);
 

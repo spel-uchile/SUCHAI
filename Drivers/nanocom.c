@@ -8,7 +8,7 @@
 #include "nanocom.h"
 #include "csp.h"
 #include "csp_endian.h"
-//#include <util/log.h>
+#include <stdio.h>
 
 int com_set_conf(nanocom_conf_t * config, uint8_t node, uint32_t timeout) {
 	config->morse_bat_level = csp_hton16(config->morse_bat_level);
@@ -119,16 +119,16 @@ void com_print_conf(nanocom_conf_t * com_conf) {
 }
 
 void com_printf_status(nanocom_data_t * com_stat) {
-        printf("Bits corrected total: %u\r\n", com_stat->bit_corr_tot);
-        printf("Bytes corrected total:  %u\r\n", com_stat->byte_corr_tot);
-        printf("RX packets:  %u\r\n", com_stat->rx);
-        printf("RX checksum errors:  %u\r\n", com_stat->rx_err);
-        printf("TX packets:  %u\r\n", com_stat->tx);
+        printf("Bits corrected total: %lu\r\n", com_stat->bit_corr_tot);
+        printf("Bytes corrected total:  %lu\r\n", com_stat->byte_corr_tot);
+        printf("RX packets:  %lu\r\n", com_stat->rx);
+        printf("RX checksum errors:  %lu\r\n", com_stat->rx_err);
+        printf("TX packets:  %lu\r\n", com_stat->tx);
         printf("Freq. Error:  %d\r\n", com_stat->last_rferr);
         printf("Last RSSI:  %d\r\n", com_stat->last_rssi);
         printf("Last A temp:  %d\r\n", com_stat->last_temp_a);
         printf("Last B temp:  %d\r\n", com_stat->last_temp_b);
         printf("Last TX current:  %d\r\n", com_stat->last_txcurrent);
         printf("Last Battery Voltage:  %d\r\n", com_stat->last_batt_volt);
-        printf("Bootcount:  %u\r\n", com_stat->bootcount);
+        printf("Bootcount:  %lu\r\n", com_stat->bootcount);
 }

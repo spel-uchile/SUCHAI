@@ -18,30 +18,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "taskDeployment.h"
-#include "csp.h"
-#include "csp_if_i2c.h"
-#include "taskTest.h"
 
 extern xTaskHandle taskComunicationsHandle;
 extern xTaskHandle taskConsoleHandle;
 extern xTaskHandle taskFlightPlanHandle;
 extern xTaskHandle taskFlightPlan2Handle;
 extern xTaskHandle taskHouskeepingHandle;
-
 extern xQueueHandle dispatcherQueue;
 
-//Libcsp function
-static void csp_initialization(void);
 
 void taskDeployment(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE)
-        con_printf(">>[Deployment] Started\r\n");
-        con_printf("\n[Deployment] INITIALIZING SUCHAI FLIGHT SOFTWARE\r\n");
+        printf(">>[Deployment] Started\r\n");
+        printf("\n[Deployment] INITIALIZING SUCHAI FLIGHT SOFTWARE\r\n");
     #endif
 
     /* Perifericos*/
-    //dep_init_Peripherals(NULL);
+    dep_init_Peripherals(NULL);
 
     /* Repositorios */
     dep_init_Repos(NULL);
@@ -49,30 +43,11 @@ void taskDeployment(void *param)
     /* Otras estructuras */
     dep_init_GnrlStrct(NULL);
 
-    /* Silent time */
-    int realTime1 = SCH_TASKDEPLOYMENT_SILENT_REALTIME; /* 1=Real Time, 0=Debug Time */
-    //dep_silent_time( (void *)&realTime1 );
-
-    /* Antena */
-    #if (SCH_ANTENNA_ONBOARD==1)
-        int realTime2 = SCH_TASKDEPLOYMENT_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
-        dep_deploy_antenna( (void *)&realTime2 );
-    #endif
-
     /* Initializing Transceiver */
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        con_printf("    * Setting TRX\r\n");
+        printf("    * Setting TRX config\r\n");
     #endif
-    //trx_initialize(NULL);
-
-    /* Tareas */
-    dep_launch_tasks(NULL);
-
-    /* Start libcsp services */
-    csp_initialization();
-
-    /* Fin */
-    dep_suicide(NULL);
+    trx_initialize(NULL);
 }
 
 /**
@@ -84,34 +59,34 @@ void taskDeployment(void *param)
 int dep_init_Repos(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        con_printf("\n[dep_init_Repos] Initializing data repositories...\r\n");
+        printf("\n[dep_init_Repos] Initializing data repositories...\r\n");
     #endif
 
     #if (SCH_FLIGHTPLAN_TYPE == 1) || (SCH_FLIGHTPLAN_TYPE == 3)
         /* Initializing dataRepository */
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            con_printf("    * FlighPlan\r\n");
+            printf("    * FlighPlan\r\n");
         #endif
         dat_onResetFlightPlan();
     #endif
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        con_printf("    * Telecommands buffer\r\n");
+        printf("    * Telecommands buffer\r\n");
     #endif
     dat_onResetTelecmdBuff();
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        con_printf("    * Payloads status rep.\r\n");
+        printf("    * Payloads status rep.\r\n");
     #endif
     dat_onResetPayloadVar();
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        con_printf("    * Status rep.\r\n");
+        printf("    * Status rep.\r\n");
     #endif
     dat_onResetCubesatVar();
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        con_printf("    * Commands rep.\r\n");
+        printf("    * Commands rep.\r\n");
     #endif
     /* Initializing cmdRepository */
     repo_onResetCmdRepo();
@@ -128,94 +103,14 @@ int dep_init_Repos(void *param)
 int dep_init_GnrlStrct(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        con_printf("\n[dep_init_GnrlStruct] Initializing other structures...\r\n");
+        printf("\n[dep_init_GnrlStruct] Initializing other structures...\r\n");
     #endif
 
     /* Initializing EPS struct */
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        con_printf("    * init EPS structs\r\n");
+        printf("    * init EPS structs\r\n");
     #endif
     setStateFlagEPS( (unsigned char)dat_getCubesatVar(dat_eps_state_flag) );
-
-    return 1;
-}
-
-/**
- * Implements mandatory radial silence
- * @param param 1-Realtime, 0-Debug time
- * @return 1-Ok, 0-Fails
- */
-int dep_silent_time(void *param)
-{
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        con_printf("\n[dep_silent_time] Mandatory inactivity time...\r\n");
-    #endif
-
-    //Reviso si antenas ya estan desplegadas
-    #if (SCH_ANTENNA_ONBOARD==1)
-    {
-        if( dat_getCubesatVar(dat_dep_ant_deployed) == 0x0001 )
-        {
-            #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-                con_printf("    Satellite launched. Antenna deployed\r\n");
-                con_printf("    FINISHING SILENT TIME\r\n");
-            #endif
-            return 1;
-        }
-        
-
-        #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-            con_printf("    First time on. Antenna NOT deployed\r\n");
-            con_printf("    STARTING 30MIN SILENT TIME\r\n");
-        #endif
-    }
-    #endif
-
-    //Sino, 1) silencio el TRX
-    #if (SCH_TRX_TYPE_ONBOARD==1 || SCH_TRX_TYPE_ONBOARD==2)
-        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            con_printf("    * Turning off TX\r\b");
-        #endif
-
-        /* A delay before config TRX */
-        const unsigned long Delaytrx = 1000 / portTICK_RATE_MS;
-        vTaskDelay(Delaytrx);
-            
-        int trx_mode=2;
-        trx_setmode( (void *)&trx_mode );
-    #endif
-
-    //Y 2) duermo el SUCHAI por 30min
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        con_printf("    * System halted at ");
-        rtc_print(NULL); /* EL RTC no ha sido inicializado aun */
-    #endif
-
-    int mode= *( (int *)param );
-    if(mode)    /* RealTIme */
-    {
-        const unsigned int time_out = (0xFFFF) / portTICK_RATE_MS; /* 65,535[s]*/
-
-        unsigned int indx2;
-        for(indx2=0; indx2<TDP_SILENT_TIME_MIN-1; indx2++)
-        {
-            vTaskDelay(time_out);
-        }
-
-        con_printf("    * 65[s] remaining ...\r\n");
-        vTaskDelay(time_out);
-    }
-    else    /* NO RealTIme */
-    {
-        const unsigned int time_out = (10000) / portTICK_RATE_MS; /* 2[s]*/
-        vTaskDelay(time_out);
-    }
-
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        con_printf("    * System resumed at ");
-        rtc_print(NULL);
-        con_printf("    FINISHING SILENT TIME\r\n");
-    #endif
 
     return 1;
 }
@@ -228,14 +123,14 @@ int dep_silent_time(void *param)
 int dep_suicide(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE)
-        con_printf("[Deployment] ENDS\r\n");
-        con_printf("[Deployment] Deleting task\r\n");
+        printf("[Deployment] ENDS\r\n");
+        printf("[Deployment] Deleting task\r\n");
     #endif
     vTaskDelete(NULL);
 
     while(1)
     {
-        con_printf("    vTaskDelete(NULL) did NOT work out...\r\n");
+        printf("    vTaskDelete(NULL) did NOT work out...\r\n");
         const unsigned long Delayms = 0xFFFF / portTICK_RATE_MS;
         vTaskDelay(Delayms);
     }
@@ -251,27 +146,27 @@ int dep_suicide(void *param)
 int dep_launch_tasks(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        con_printf("\n[dep_launch_tasks] Starting all tasks...\r\n");
+        printf("\n[dep_launch_tasks] Starting all tasks...\r\n");
     #endif
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        con_printf("    * Creating taskConsole\r\n");
+        printf("    * Creating taskConsole\r\n");
     #endif
     xTaskCreate(taskConsole, (signed char *)"console", 1.5*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        con_printf("    * Creating taskHousekeeping\r\n");
+//        printf("    * Creating taskHousekeeping\r\n");
     #endif
-    //xTaskCreate(taskHouskeeping, (signed char *)"housekeeping", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskHouskeepingHandle);
+//    xTaskCreate(taskHouskeeping, (signed char *)"housekeeping", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskHouskeepingHandle);
     
-    #if (SCH_TRX_TYPE_ONBOARD==1 || SCH_TRX_TYPE_ONBOARD==2)
+    #if (SCH_TRX_ONBOARD == 1)
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            con_printf("    * Creating taskCommunications\r\n");
+            printf("    * Creating taskCommunications\r\n");
         #endif
-        xTaskCreate(taskComunications, (signed char *)"comunications", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskComunicationsHandle);
+//        xTaskCreate(taskComunications, (signed char *)"comunications", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskComunicationsHandle);
+        xTaskCreate(taskServerCSP, (signed char *)"SRV", 3*configMINIMAL_STACK_SIZE, NULL, 2, &taskComunicationsHandle);
+        xTaskCreate(taskRxI2C, (signed char *)"I2C", 3*configMINIMAL_STACK_SIZE, NULL, 2, &taskComunicationsHandle);
     #endif
-    xTaskCreate(taskComunications, (signed char *)"comunications", 3*configMINIMAL_STACK_SIZE, NULL, 1, &taskComunicationsHandle);
-
 
     if( dat_getCubesatVar(dat_msd_status) == 1 )
     {
@@ -279,18 +174,18 @@ int dep_launch_tasks(void *param)
             //launching nothing..
         #elif (SCH_FLIGHTPLAN_TYPE==1)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                    con_printf("    * Creating taskFlightPlan\r\n");
+                    printf("    * Creating taskFlightPlan\r\n");
             #endif
             xTaskCreate(taskFlightPlan, (signed char *)"flightplan", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlanHandle);
         #elif (SCH_FLIGHTPLAN_TYPE==2)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                    con_printf("    * Creating taskFlightPlan2\r\n");
+                    printf("    * Creating taskFlightPlan2\r\n");
             #endif
             xTaskCreate(taskFlightPlan2, (signed char *)"flightplan2", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlan2Handle);
         #elif (SCH_FLIGHTPLAN_TYPE==3)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                con_printf("    * Creating taskFlightPlan\r\n");
-                con_printf("    * Creating taskFlightPlan2\r\n");
+                printf("    * Creating taskFlightPlan\r\n");
+                printf("    * Creating taskFlightPlan2\r\n");
             #endif
             xTaskCreate(taskFlightPlan, (signed char *)"flightplan", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlanHandle);
             xTaskCreate(taskFlightPlan2, (signed char *)"flightplan2", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlan2Handle);
@@ -309,14 +204,13 @@ int dep_deploy_antenna(void *param)
 {
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        char buffer[10];
-        con_printf("\n[dep_deploy_antenna] Deploying TRX Antenna... \r\n");
+        printf("\n[dep_deploy_antenna] Deploying TRX Antenna... \r\n");
     #endif
 
     if( dat_getCubesatVar(dat_dep_ant_deployed) == 0x0001 )
     {
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-            con_printf("    * Antenna is already deployed\r\n");
+            printf("    * Antenna is already deployed\r\n");
         #endif
         return 1;
     }
@@ -345,9 +239,7 @@ int dep_deploy_antenna(void *param)
         for(tries_indx=1; tries_indx<=TDP_TRY_DEPLOY; tries_indx++)
         {
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                itoa(buffer,  tries_indx, 10);
-                con_printf("    [Deploying] Attempt #"); con_printf(buffer);
-                con_printf("\r\n"); //con_printf(" at "); rtc_print(NULL);
+                printf("    [Deploying] Attempt #%d\r\n", tries_indx);
             #endif
 
             PPC_ANT12_SWITCH=1;
@@ -383,9 +275,7 @@ int dep_deploy_antenna(void *param)
                 if(PPC_ANT12_CHECK==0)   /* RE-reviso */
                 {
                     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-                        itoa(buffer, (unsigned int)tries_indx, 10);
-                        con_printf("    ANTENNA DEPLOYED SUCCESSFULLY [");
-                        con_printf(buffer); con_printf(" TRIES]\r\n");
+                        printf("    ANTENNA DEPLOYED SUCCESSFULLY [%d TRIES]\r\n", tries_indx);
                     #endif
 
                     drp_dep_write_deployed(1, tries_indx);
@@ -397,9 +287,7 @@ int dep_deploy_antenna(void *param)
     #endif
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        itoa(buffer, (unsigned int)TDP_TRY_DEPLOY, 10);
-        con_printf("    ANTENNA DEPLOY FAIL [ ");
-        con_printf(buffer); con_printf(" TRIES]\r\n");
+        printf("    ANTENNA DEPLOY FAIL [%d TRIES]\r\n", TDP_TRY_DEPLOY);
     #endif
 
     drp_dep_write_deployed(0, tries_indx);
@@ -415,37 +303,37 @@ int dep_deploy_antenna(void *param)
 int dep_init_Peripherals(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        con_printf("\n[dep_init_Peripherals] Initializig external pheripherals...\r\n");
+        printf("\n[dep_init_Peripherals] Initializig external pheripherals...\r\n");
     #endif
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        con_printf("    * External RTC\r\n");
+        printf("    * External RTC\r\n");
     #endif
     RTC_init();
 
     #if (SCH_PAYCAM_nMEMFLASH_ONBOARD == 0) /* Camara no abordo*/
     {
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            con_printf("    * External flash memory\r\n");
+            printf("    * External flash memory\r\n");
         #endif
-        mem_init_memFlash();
+//        mem_init_memFlash();
     }
     #endif
 
-//    #if (SCH_TRX_TYPE_ONBOARD==1 || SCH_TRX_TYPE_ONBOARD==2)
-//    {
-//        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-//            con_printf("    * Setting TRX\r\n");
-//        #endif
-//        /* Initializing Transceiver */
-//        trx_initialize(NULL);
-//    }
-//    #endif
+    #if (SCH_TRX_ONBOARD ==1)
+    {
+        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            printf("    * Setting TRX\r\n");
+        #endif
+        /* Initializing Transceiver */
+        trx_initialize(NULL);
+    }
+    #endif
 
     #if (SCH_SYSBUS_ONBOARD==1)
     {
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            con_printf("    * EEPROM Memories\r\n");
+            printf("    * EEPROM Memories\r\n");
         #endif
         dat_onReset_memEEPROM();
     }
@@ -454,7 +342,7 @@ int dep_init_Peripherals(void *param)
     #if (SCH_EXTMEM_SD_ONBOARD==1)
     {
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            con_printf("    * SD Memory  [delay]\r\n");
+            printf("    * SD Memory  [delay]\r\n");
         #endif
         PPC_MB_nON_SD=1;
 
@@ -463,27 +351,27 @@ int dep_init_Peripherals(void *param)
         vTaskDelay(DelaySd);
 
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            con_printf("    * SD Memory [init ");
+            printf("    * SD Memory [init ");
         #endif
         PPC_MB_nON_SD=0;
         unsigned char r = SD_init();
         if(r == 0)
         {
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                con_printf("OK]\r\n");
+                printf("OK]\r\n");
             #endif
             dat_setCubesatVar(dat_msd_status, 1);
         }
         else
         {
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                con_printf("FAIL]\r\n");
+                printf("FAIL]\r\n");
             #endif
             dat_setCubesatVar(dat_msd_status, 0);
         }
 
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            con_printf("    * SD Memory [onReset]");
+            printf("    * SD Memory [onReset]");
         #endif
         dat_onReset_memSD();
     }
@@ -493,18 +381,24 @@ int dep_init_Peripherals(void *param)
 }
 
 //Libcsp defines and functions
-#define MY_ADDRESS 2
-static void csp_initialization(void)
+#define MY_ADDRESS (0)
+void dep_csp_initialization(void)
 {
+    csp_debug_set_level(CSP_INFO, 1);
+    csp_debug_set_level(CSP_PACKET, 1);
+    csp_debug_set_level(CSP_BUFFER, 1);
+    csp_debug_set_level(CSP_ERROR, 1);
+    csp_debug_set_level(CSP_WARN, 1);
+
     /* Init buffer system with 3 packets of maximum 256 bytes each */
-    csp_buffer_init(3, TRX_TMFRAMELEN+5);
+    csp_buffer_init(3, I2C_MTU+5);
 
     /* Init CSP with address MY_ADDRESS */
     csp_init(MY_ADDRESS);
-    csp_i2c_init(MY_ADDRESS, 0, 400);
+    csp_i2c_init(SCH_I2C1_ADDR, 0, 400);
 
     csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
-    csp_route_start_task(1.5*configMINIMAL_STACK_SIZE, 1);
+    csp_route_start_task(2*configMINIMAL_STACK_SIZE, 3);
 
     /* Create socket without any socket options */
     csp_socket_t *sock = csp_socket(CSP_SO_NONE);
@@ -513,9 +407,10 @@ static void csp_initialization(void)
     csp_bind(sock, CSP_ANY);
 
     /* Create connections backlog queue */
-    csp_listen(sock, 2);
+    csp_listen(sock, 5);
 
     //DEBUG
+    csp_debug_set_level(CSP_ERROR, 1);
     printf("\n---- Conn table ----\n");
     csp_conn_print_table();
     printf("---- Route table ----\n");

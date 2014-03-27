@@ -99,7 +99,7 @@ int drp_update_dat_CubesatVar_opMode(void *param){
 
 int drp_update_dat_CubesatVar_hoursWithoutReset(void *param)
 {
-    /* En el futro esta funcion deber� ser llamada desde alguna interrupcion periodica del RTCC.
+    /* En el futro esta funcion deberia ser llamada desde alguna interrupcion periodica del RTCC.
      * O leer del RTCC y comparar con su valor actual (get_ppc_hoursWithoutReset) y decidir
      * si debe incrementarlo y por cuanto */
 
@@ -604,7 +604,7 @@ void drp_dat_CubesatVar_EBF(void){
 
     //settings particulares:
 
-    //Operation mode partir�a en modo RSSI
+    //Operation mode partira en modo RSSI
     dat_setCubesatVar(dat_ppc_opMode, DAT_PPC_OPMODE_RSSI);
     // hoursAive debe partir en cero, para que Housekeeping la incremente cada 1 hora
     dat_setCubesatVar(dat_ppc_hoursAlive, 0x0000);  
@@ -819,7 +819,7 @@ void drp_CubesatVar_update(int indxVar){
             break;
     #endif
 
-    #if (SCH_TRX_TYPE_ONBOARD==1 || SCH_TRX_TYPE_ONBOARD==2)
+    #if (SCH_TRX_ONBOARD==1 || SCH_TRX_ONBOARD==2)
         //TRX => (Communication subsystem)
         case dat_trx_frec_tx:
             drp_trx_frec_tx();
@@ -899,7 +899,7 @@ void drp_ppc_hoursAlive(void){
 }
 void drp_ppc_hoursWithoutReset(void)
 {
-    // En el futro esta funcion deber� ser llamada desde alguna interrupcion periodica del RTCC.
+    // En el futro esta funcion deberia ser llamada desde alguna interrupcion periodica del RTCC.
     // O leer del RTCC y comparar con su valor actual (get_ppc_hoursWithoutReset) y decidir
     // si debe incrementarlo y por cuanto 
 
@@ -924,7 +924,7 @@ void drp_ppc_enwdt(void)
     /* Leer el registro de los CONFIGWORD no es directo
      * (esta "beyond user visibility pages"). Asi es que la 
      * implementacion de este comando es asumir que se parte en WDT_ENABLE
-     *  y luego registrar las desactivaciones/activaciones del WDT a trav�s
+     *  y luego registrar las desactivaciones/activaciones del WDT a traves
      * de ppc_enwdt (ojo: no es lo mismo que drp_ppc_enwdt )*/
 
     
@@ -1157,7 +1157,7 @@ void drp_eps_bus_battery_current(void)
 /*------------------------------------------------------------------------------
  *                                  drp_eps_bat0_temp
  *------------------------------------------------------------------------------
- * Description        : Updates the battery �temp based on the last meassurement
+ * Description        : Updates the battery temp based on the last meassurement
  * Arguments          : None
  * Return Value       : int: 1=Always successfull
  *----------------------------------------------------------------------------*/

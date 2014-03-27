@@ -393,7 +393,7 @@ int ppc_rtos_debug(void *param)
     utoa(buff,water_mark,10);
     con_printf("taskHousekeeping, "); con_printf(buff); con_printf("\n");
 
-    #if (SCH_TRX_TYPE_ONBOARD==1 || SCH_TRX_TYPE_ONBOARD==2)
+    #if (SCH_TRX_ONBOARD==1 || SCH_TRX_ONBOARD==2)
     {
         /* cheking taskComunications stack */
         water_mark = uxTaskGetStackHighWaterMark(&taskComunicationsHandle);

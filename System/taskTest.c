@@ -33,28 +33,22 @@ void taskClientCSP(void *param)
 
 void taskServerCSP(void *param)
 {
-    printf("[ServerCSP Started]\n");
-    /* Create socket without any socket options */
-    csp_socket_t *sock = csp_socket(CSP_SO_NONE);
+    printf(">>[ServerCSP] Started\n");
+    
     /* Pointer to current connection and packet */
     csp_conn_t *conn;
     csp_packet_t *packet;
 
     /* Bind all ports to socket */
-    csp_bind(sock, CSP_ANY);
-
-    /* Create connections backlog queue */
-    csp_listen(sock, 2);
+    csp_socket_t *sock = csp_port_get_socket(CSP_ANY);
 
     /* Process incoming connections */
     while (1)
     {
-//        printf("[SRV] Waiting connection\n");
         /* Wait for connection, 10000 ms timeout */
         if ((conn = csp_accept(sock, 10000)) == NULL)
             continue;
 
-//        printf("[SRV] New connection\n");
         /* Read packets. Timout is 1000 ms */
         while ((packet = csp_read(conn, 1000)) != NULL)
         {
@@ -64,13 +58,12 @@ void taskServerCSP(void *param)
             {
                 case 10:
                     /* Print data in this port */
-                    printf("[New packet] ");
+                    printf("[SRV] New packet: ");
                     for(i=0; i<packet->length; i++)
                         printf("%c", packet->data[i]);
                     printf("\n");
-                    break;
 
-                default:
+                default:                 
                     /* Let the service handler reply pings, buffer use, etc. */
                     csp_service_handler(conn, packet);
                     break;
@@ -79,15 +72,14 @@ void taskServerCSP(void *param)
 
         /* Close current connection, and handle next */
         csp_close(conn);
-//        printf("[SRV] Connection closed\n");
     }
 }
 
 void taskRxI2C(void *param)
 {
-    printf("[RxI2C Started]\n");
+    printf("[RxI2C] Started\n");
     int n_recv = 0;
-    uint8_t new_data = 0;
+    char new_data = 0;
     portBASE_TYPE result = pdFALSE;
     i2c_frame_t *frame = (i2c_frame_t *) csp_buffer_get(100);
 
@@ -111,7 +103,7 @@ void taskRxI2C(void *param)
         //New data received
         else
         {
-            frame->data[n_recv] = new_data;
+            frame->data[n_recv] = (uint8_t)new_data;
             n_recv++;
         }
     }

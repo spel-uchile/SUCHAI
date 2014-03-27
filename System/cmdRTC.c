@@ -125,6 +125,7 @@ int rtc_print(void *param)
     int sec, min, hour, mo, dd, yy;
 
     /* Critical seccion */
+    //TODO: Check this, probabbly is working as desired
     xSemaphoreTake(rtcPrintSem, portMAX_DELAY);
     sec = RTC_get_seconds();
     min = RTC_get_minutes();
@@ -134,31 +135,7 @@ int rtc_print(void *param)
     yy = RTC_get_year();
     xSemaphoreGive(rtcPrintSem);
 
-    char ascii_val[10];
-    itoa(ascii_val,dd,10);
-    con_printf(">>[");
-    con_printf(ascii_val);
-    con_printf("/");
-
-    itoa(ascii_val,mo,10);
-    con_printf(ascii_val);
-    con_printf("/");
-
-    itoa(ascii_val,yy,10);
-    con_printf(ascii_val);
-    con_printf(" - ");
-
-    itoa(ascii_val,hour,10);
-    con_printf(ascii_val);
-    con_printf(":");
-
-    itoa(ascii_val,min,10);
-    con_printf(ascii_val);
-    con_printf(":");
-
-    itoa(ascii_val,sec,10);
-    con_printf(ascii_val);
-    con_printf("]\n");
+    printf(">> %d/%d/%d %d:%d:%d\n", dd, mo, yy, hour, min, sec);
 
     return 1;
 }

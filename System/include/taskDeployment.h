@@ -32,6 +32,10 @@
 #include "taskFlightPlan.h"
 #include "taskFlightPlan2.h"
 
+#include "csp.h"
+#include "csp_if_i2c.h"
+#include "taskTest.h"
+
 #define TDP_SILENT_TIME_MIN 30          ///< cuantos "minutos" (65,535[s]) estara en inactividad antes de iniciarse
 #define TDP_TRY_DEPLOY 10               ///< cuantas veces tratara desplegar la antena antes de anunciar fracaso
 #define TDP_DEPLOY_TIME 0xB0FF          ///< 2*TDP_DEPLOY_TIME/1000 indica cuantos "s" estara activo el bus de 3.3V quemando el nilon
@@ -47,6 +51,6 @@ int dep_suicide(void *param);
 int dep_launch_tasks(void *param);
 int dep_init_Peripherals(void *param);
 int dep_deploy_antenna(void *param);
-int dep_silent_time(void *param);
+void dep_csp_initialization(void);
 
 #endif //_DEPLOYMENT_H

@@ -13,6 +13,7 @@
 /** Default node address */
 #define NODE_COM				5
 #define NODE_TNC				9
+#define NANOCOM_ADD                             0x05
 
 /** Port numbers */
 #define COM_PORT_CONF			7

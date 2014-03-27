@@ -19,11 +19,14 @@
  */
 
 #include "taskComunications.h"
-#include "csp_i2c.h"
+
 #include "csp.h"
+#include "csp_i2c.h"
 
 extern xQueueHandle dispatcherQueue; /* Commands queue */
 extern xQueueHandle i2cRxQueue;
+
+void com_RxI2C(xQueueHandle i2c_rx_queue);
 
 void taskComunications(void *param)
 {

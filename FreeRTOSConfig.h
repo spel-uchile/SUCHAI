@@ -100,8 +100,8 @@
 #define configTICK_RATE_HZ                      ( ( portTickType ) 100 )
 #define configMAX_PRIORITIES                    ( ( unsigned portBASE_TYPE ) 5 )
 #define configMINIMAL_STACK_SIZE                ( 115 ) /* Don't change (115 bytes Min) */
-#define configTOTAL_HEAP_SIZE                   ( ( size_t ) 5400 )
-#define configMAX_TASK_NAME_LEN                 ( 8 )
+#define configTOTAL_HEAP_SIZE                   ( ( size_t ) 6400 )
+#define configMAX_TASK_NAME_LEN                 ( 4 )
 #define configUSE_TRACE_FACILITY                1
 #define configUSE_16_BIT_TICKS                  1
 #define configIDLE_SHOULD_YIELD                 1
@@ -153,7 +153,7 @@ to exclude the API function. */
 #define INCLUDE_uxTaskGetStackHighWaterMark     1
 #define INCLUDE_xTaskGetIdleTaskHandle          0
 #define INCLUDE_xTimerGetTimerDaemonTaskHandle  0
-#define INCLUDE_pcTaskGetTaskName               0
+#define INCLUDE_pcTaskGetTaskName               1
 #define INCLUDE_eTaskGetState                   0
 
 /* A header file that defines trace macro can be included here. */

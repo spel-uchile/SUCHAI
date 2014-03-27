@@ -55,11 +55,8 @@ static unsigned int dat_gpb_i_256Block_buff[dat_gpb_last_one];
 void dat_erase_TeleCmdBuff(void){
 
     #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-        char ret[10];
-        con_printf("  dat_erase_TeleCmdBuff()..");
-        con_printf("    starting at block=");
-        sprintf (ret, "%d", (unsigned int)dat_Trx_Tc_1Block);
-        con_printf(ret); con_printf("\r\n");
+        printf("  dat_erase_TeleCmdBuff()..\n");
+        printf("    starting at block= %u\n", (unsigned int)dat_Trx_Tc_1Block);
     #endif
     msd_blockErase(dat_Trx_Tc_1Block);
 }
@@ -168,11 +165,8 @@ void dat_erase_FlightPlanBuff(void){
 
 #if (SCH_FLIGHTPLAN_MEMORY == 1)
     #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-        char ret[10];
-        con_printf("  dat_erase_FlightPlanBuff()..");
-        con_printf("    starting at block=");
-        sprintf (ret, "%d", (unsigned int)dat_FlightPlan_256Block);
-        con_printf(ret); con_printf("\r\n");
+        printf("  dat_erase_FlightPlanBuff()..\n");
+        printf("    starting at block = %d\n", (unsigned int)dat_FlightPlan_256Block);
     #endif
 
     unsigned int i;
@@ -308,11 +302,8 @@ void dat_erase_pay_i_buff(DAT_Payload pay_i){
     block = dat_pay_i_to_block(pay_i);
 
     #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-        char ret[10];
-        con_printf("  dat_erase_pay_i_buff()..");
-        con_printf("    starting at block=");
-        sprintf (ret, "%d", (unsigned int)block);
-        con_printf(ret); con_printf("\r\n");
+        printf("  dat_erase_pay_i_buff()..\n");
+        printf("    starting at block = %u\n", (unsigned int)block);
     #endif
 
     for(i=0;i<256;i++){
@@ -370,10 +361,7 @@ BOOL dat_setPayloadVar(DAT_Payload pay_i, int value){
     nextIndx = dat_getNextPayIndx(pay_i);
 
     #if (SCH_DATAREPOSITORY_VERBOSE>=2)
-        char ret[10];
-        con_printf("setPayloadVar [0x");
-        itoa(ret, nextIndx, 16); con_printf(ret); con_printf("] = 0x");
-        itoa(ret, value, 16); con_printf(ret); con_printf("\r\n");
+        printf("setPayloadVar [%04d] = %0x%X\n", nextIndx, value);
     #endif
 
     //guardo el valor de value
@@ -392,7 +380,7 @@ BOOL dat_getPayloadVar(DAT_Payload pay_i, unsigned int indx, int *value){
 
     if(pay_i>=dat_pay_last_one){
         #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-            con_printf("getPayloadVar: payload invalido\r\n");
+            printf("getPayloadVar: payload invalido\n");
         #endif
         return FALSE;   //payload invalido
     }
@@ -401,7 +389,7 @@ BOOL dat_getPayloadVar(DAT_Payload pay_i, unsigned int indx, int *value){
     maxIndx = dat_getMaxPayIndx(pay_i);
     if(desiredIndx>maxIndx){
         #if (SCH_DATAREPOSITORY_VERBOSE>=2)
-            con_printf("getPayloadVar: buffer lleno, desiredIndx>maxIndx\r\n");
+            printf("getPayloadVar: buffer lleno, desiredIndx>maxIndx\n");
         #endif
         return FALSE;   //buffer lleno, indice fuera de rango
     }
@@ -418,7 +406,7 @@ BOOL dat_isFullPayloadBuffer(DAT_Payload pay_i){
     
     if(pay_i>=dat_pay_last_one){
         #if (SCH_DATAREPOSITORY_VERBOSE>=2)
-            con_printf("isFullPayloadBuffer: payload invalido\r\n");
+            printf("isFullPayloadBuffer: payload invalido\n");
         #endif
         return FALSE;   //payload invalido
     }
@@ -427,24 +415,22 @@ BOOL dat_isFullPayloadBuffer(DAT_Payload pay_i){
     maxIndx = dat_getMaxPayIndx(pay_i);
     if(nextIndx>maxIndx){
         #if (SCH_DATAREPOSITORY_VERBOSE>=2)
-            con_printf("isFullPayloadBuffer: buffer lleno, desiredIndx>maxIndx\r\n");
+            printf("isFullPayloadBuffer: buffer lleno, desiredIndx>maxIndx\n");
         #endif
         return TRUE;   //buffer lleno, indice fuera de rango
     }
     return FALSE;
 }
 
-void dat_onReset_memSD(BOOL verbose){
-    char ret[10];
-    
+void dat_onReset_memSD(BOOL verbose){   
     if(verbose){
-        con_printf("  dat_onReset_memSD()..\r\n");
+        printf("  dat_onReset_memSD()..\n");
     }
     DAT_Payload pay_i; DAT_GnrlPurpBuff gpb_i;
 
     //calcula y ASIGNA los block para cada estructura
     if(verbose){
-        con_printf("    Static structures..\r\n");
+        printf("    Static structures..\n");
     }
     dat_first_1Block=31;
     dat_Trx_Tc_1Block=dat_first_1Block;
@@ -452,67 +438,44 @@ void dat_onReset_memSD(BOOL verbose){
     dat_nextIndx_1Block=dat_FlightPlan_256Block+256;
     dat_maxIndx_1Block=dat_nextIndx_1Block+1;
     if(verbose){
-        char ret[10];
-        con_printf("    dat_Trx_Tc_1Block=");
-        sprintf (ret, "%d", (unsigned int)( dat_Trx_Tc_1Block ) );
-        con_printf(ret); con_printf("\r\n");
-        con_printf("    dat_FlightPlan_256Block=");
-        sprintf (ret, "%d", (unsigned int)( dat_FlightPlan_256Block ) );
-        con_printf(ret); con_printf("\r\n");
-        con_printf("    dat_nextIndx_1Block=");
-        sprintf (ret, "%d", (unsigned int)( dat_nextIndx_1Block ) );
-        con_printf(ret); con_printf("\r\n");
-        con_printf("    dat_maxIndx_1Block=");
-        sprintf (ret, "%d", (unsigned int)( dat_maxIndx_1Block ) );
-        con_printf(ret); con_printf("\r\n");
+        printf("    dat_Trx_Tc_1Block = %u\n", (unsigned int)( dat_Trx_Tc_1Block ) );
+        printf("    dat_FlightPlan_256Block = %u\n", (unsigned int)( dat_FlightPlan_256Block ) );
+        printf("    dat_nextIndx_1Block = %u\n", (unsigned int)( dat_nextIndx_1Block ) );
+        printf("    dat_maxIndx_1Block = %u\n", (unsigned int)( dat_maxIndx_1Block ) );
     }
 
     //calcula y ASIGNA los block para cada pay_i
     if(verbose){
-        con_printf("    DAT_Payload()..\r\n");
+        printf("    DAT_Payload()..\n");
     }
     dat_pay_i_256Block_buff[0]=dat_maxIndx_1Block+256;
     if(verbose){
-        con_printf("    pay_i=0 => 256Block=");
-        sprintf (ret, "%d", (unsigned int)( dat_pay_i_256Block_buff[0] ) );
-        con_printf(ret); con_printf("\r\n");
+        printf("    pay_i=0 => 256Block = %u\n", (unsigned int)( dat_pay_i_256Block_buff[0] ) );
     }
 
     for(pay_i=1; pay_i<dat_pay_last_one; pay_i++){
         dat_pay_i_256Block_buff[pay_i]=dat_pay_i_256Block_buff[(pay_i-1)] + 256;
 
         if(verbose){
-            con_printf("    pay_i=");
-            sprintf (ret, "%d", (unsigned int)pay_i);
-            con_printf(ret);
-            con_printf(" => 256Block=");
-            sprintf (ret, "%d", (unsigned int)( dat_pay_i_256Block_buff[pay_i] ) );
-            con_printf(ret); con_printf("\r\n");
+            printf("    pay_i = %u  => 256Block = %u \n", (unsigned int)pay_i, (unsigned int)( dat_pay_i_256Block_buff[pay_i])  );
         }
     }
 
     //calcula y ASIGNA los block para cada gpb_i
     if(verbose){
-        con_printf("    DAT_GnrlPurpBuff()..\r\n");
+        printf("    DAT_GnrlPurpBuff()..\n");
     }
 
     dat_gpb_i_256Block_buff[0]=dat_pay_i_256Block_buff[ (dat_pay_last_one-1) ] + 256;
     if(verbose){
-        con_printf("    gpb_i=0 => block=");
-        sprintf (ret, "%d", (unsigned int)( dat_gpb_i_256Block_buff[0] ) );
-        con_printf(ret); con_printf("\r\n");
+        printf("    gpb_i = 0 => block = %u\n", (unsigned int)( dat_gpb_i_256Block_buff[0] ) );
     }
 
     for(gpb_i=1; gpb_i<dat_gpb_last_one; gpb_i++){
         dat_gpb_i_256Block_buff[gpb_i]=dat_gpb_i_256Block_buff[(gpb_i-1)] + 256;
 
         if(verbose){
-            con_printf("    gpb_i=");
-            sprintf (ret, "%d", (unsigned int)gpb_i);
-            con_printf(ret);
-            con_printf(" => block=");
-            sprintf (ret, "%d", (unsigned int)( dat_gpb_i_256Block_buff[gpb_i] ) );
-            con_printf(ret); con_printf("\r\n");
+            printf("    gpb_i = %u => block = %u\n", (unsigned int)gpb_i, (unsigned int)dat_gpb_i_256Block_buff[gpb_i] );
         }
     }   
 }
@@ -530,17 +493,13 @@ void dat_onResetPayloadVar(void){
 
 void dat_resetPayloadBuffer(DAT_Payload pay_i, unsigned int maxIndx, int mode){
     #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-        con_printf("Borrando buffer de pay_i=");
-        char ret[10];
-        //(ret, (unsigned int)pay_i, 16);
-        sprintf (ret, "0x%X", (unsigned int)pay_i);
-        con_printf(ret);
-        con_printf("\r\nUsando mode=");
+        printf("Borrando buffer de pay_i = %u\n", (unsigned int)pay_i );
+        printf("Usando mode = ");
         if(mode==1){
-            con_printf("1 (con borrado)..\r\n");
+            printf("1 (con borrado)..\n");
         }
         else{
-                con_printf("0 (sin borrado)..\r\n");
+                printf("0 (sin borrado)..\n");
         }
     #endif
 
@@ -555,7 +514,7 @@ void dat_resetPayloadBuffer(DAT_Payload pay_i, unsigned int maxIndx, int mode){
     //Reinicio el Buffer
     dat_setNextPayIndx(pay_i, 0);
     #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-        con_printf("reseteo de payload completo\n");
+        printf("reseteo de payload completo\n");
     #endif
 }
 

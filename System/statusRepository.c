@@ -98,17 +98,16 @@ void sta_onResetStatRepo(void)
     if( sta_getCubesatVar(sta_ppc_resetCounter) == 0xFFFF ){
         sta_setCubesatVar(sta_ppc_resetCounter, 0);
         #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-            con_printf("        - First time on! Setting resetCounter to 0\r\n");
+            printf("        - First time on! Setting resetCounter to 0\r\n");
         #endif
     }
     else{
         int rc=sta_getCubesatVar(sta_ppc_resetCounter) + 1;
         sta_setCubesatVar(sta_ppc_resetCounter, rc);
         #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-            char ret[10];
-            itoa(ret, (unsigned int)rc, 10);
-            con_printf("            - NOT the First time on! resetCounter++\r\n");
-            con_printf("            - resetCounter = "); con_printf(ret); con_printf("\r\n");
+
+            printf("            - NOT the First time on! resetCounter++\r\n");
+            printf("            - resetCounter = %d\n", rc);
         #endif
     }
     sta_setCubesatVar(sta_ppc_enwdt, PPC_INITIAL_WDT_STATE);
@@ -154,43 +153,43 @@ int sta_get_ppc_lastResetSource(BOOL verb){
     }
 
     if(verb){
-        con_printf("        - LastResetSouce: ");
+        printf("        - LastResetSouce: ");
         switch ( lreset )
         {
             case POWER_ON_Reset:
-                con_printf("POWER_ON_Reset\r\n");      /* 0x00 Aun nose cuando salta */
+                printf("POWER_ON_Reset\r\n");      /* 0x00 Aun nose cuando salta */
                 mPWRMGNT_Clear_PORbit();
             break;
             case BURN_OUT_Reset:
-                con_printf("BURN_OUT_Reset\r\n");      /* 0x01 ver nota mas arriba*/
+                printf("BURN_OUT_Reset\r\n");      /* 0x01 ver nota mas arriba*/
                 mPWRMGNT_Clear_BORbit();
             break;
             case WATCHDOG_Reset:
-                con_printf("WATCHDOG_Reset\r\n");      /* 0x02 al overflow del WDT, luego de aprox 2 min sin ejecutarse ClrWdt(); */
+                printf("WATCHDOG_Reset\r\n");      /* 0x02 al overflow del WDT, luego de aprox 2 min sin ejecutarse ClrWdt(); */
                 mPWRMGNT_Clear_WDTObit();
             break;
             case SOFTWARE_Reset:
-                con_printf("SOFTWARE_Reset\r\n");      /* 0x03 ocurre luego de ejecutar ppc_reset() */
+                printf("SOFTWARE_Reset\r\n");      /* 0x03 ocurre luego de ejecutar ppc_reset() */
                 mPWRMGNT_Clear_SWRbit();
             break;
             case EXTERNAL_Reset:
-                con_printf("EXTERNAL_Reset\r\n");      /* 0x04 Ocurre cuando se programa y cuando se energiza/desenergiza el PIC*/
+                printf("EXTERNAL_Reset\r\n");      /* 0x04 Ocurre cuando se programa y cuando se energiza/desenergiza el PIC*/
                 mPWRMGNT_Clear_EXTRbit();
             break;
             case CFG_WORD_MISMATCH_Reset:
-                con_printf("CFG_WORD_MISMATCH_Reset\r\n");
+                printf("CFG_WORD_MISMATCH_Reset\r\n");
                 mPWRMGNT_Clear_CMbit();
             break;
             case ILLEGAL_INSTR_Reset:
-                con_printf("ILLEGAL_INSTR_Reset\r\n");
+                printf("ILLEGAL_INSTR_Reset\r\n");
                 mPWRMGNT_Clear_IOPUWRbit();
             break;
             case TRAP_Reset:
-                con_printf("TRAP_Reset\r\n");
+                printf("TRAP_Reset\r\n");
                 mPWRMGNT_Clear_TRAPRbit();
             break;
             default:
-                con_printf("No new RESET\r\n");
+                printf("No new RESET\r\n");
                 lreset= -1;
                 /* ver nota mas arriba */
             break;

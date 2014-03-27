@@ -29,14 +29,6 @@ Note(1)               		:Uses Carlos Gonzalez's I2C implementation
 
 #include "dig_gyro.h"
 
-void gyr_do_delay(unsigned long d){
-    unsigned long c; int a,b;
-    for(c=0;c<d;c++){
-        a=c*1;
-    }
-    b=a+c;
-}
-
 // ============================================================================================================
 // Write a register
 // Arguments	: unsigned char reg Register to write
@@ -442,7 +434,7 @@ int gyr_init_config(void){
         whoami();
         // Obtain device identification (for debugging purposes -  Check I2C functionality)
     #endif
-    gyr_do_delay(0x00000FFF);
+    __delay_ms(50);
 
     #if (SCH_GYRO_VERBOSE>=2)
         con_printf("config REG2,3,4,5 process...\r\n");
@@ -460,7 +452,7 @@ GYR_DATA gyr_take_samples(BOOL verb){
     gyr_config_GYR_CTRL_REG1(0x01, 0x03);  // 200 Hz datarate and 70 cutoff
     gyr_enable_axis(0x07);                  // Enable three axes
     gyr_powermode(0x01);                    // Enable device
-    gyr_do_delay(0x00000FFF);
+    __delay_ms(50);
 
     config_FIFO_GYR_CTRL_REG(0b00000010);   // configure FIFO_GYR_CTRL_REG with watermark
     if(verb){
@@ -473,7 +465,7 @@ GYR_DATA gyr_take_samples(BOOL verb){
             con_printf("GYR_INT2=0\r\n");
         }
     }
-    gyr_do_delay(0x00000FFF);
+    __delay_ms(50);
 
     if(verb){
         gyr_print_FIFO_int_source();    // see FIFO interruption
@@ -482,7 +474,7 @@ GYR_DATA gyr_take_samples(BOOL verb){
     }
 
 
-    gyr_do_delay(0x00000FFF);
+    __delay_ms(50);
     if(verb){
         con_printf("showing samples from buffer\r\n");
     }
@@ -500,11 +492,11 @@ GYR_DATA gyr_take_samples(BOOL verb){
         itoa(ret,  (unsigned int)res_data.a_z, 10); con_printf(ret); con_printf("\r\n");
     }
 
-    gyr_do_delay(0x00000FFF);
+    __delay_ms(50);
 
     gyr_config_FIFO_mode(0x00);     // go to bypass mode (in order to go
                                     // to FIFO mode again - device requirement)
-    gyr_do_delay(0x00000FFF);
+    __delay_ms(50);
 
 
     //ClrWdt();

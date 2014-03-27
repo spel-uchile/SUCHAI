@@ -259,11 +259,8 @@ int repo_onResetCmdRepo(void)
 
 int cmdNULL(void *param)
 {
-    char ret[10];
     int arg=*( (int *)param );
-    //itoa(ret, (unsigned int)arg, 16);
-    sprintf (ret, "0x%X", (unsigned int)arg);
-    con_printf("cmdNULL was used with param "); con_printf(ret); con_printf("\r\n");
+    printf("cmdNULL was used with param %d\n", arg );
 
     return 1;
 }

@@ -69,25 +69,25 @@ void taskDeployment(void *param)
 int dep_init_Repos(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        con_printf("\n[dep_init_Repos] Initializing status repositories...\r\n");
+        printf("\n[dep_init_Repos] Initializing status repositories...\r\n");
     #endif
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        con_printf("    * Status rep.\r\n");
+        printf("    * Status rep.\r\n");
     #endif
     sta_onResetStatRepo();
 //------------------------------------------------------------------------------
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        con_printf("\n[dep_init_Repos] Initializing command repositories...\r\n");
+        printf("\n[dep_init_Repos] Initializing command repositories...\r\n");
     #endif
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        con_printf("    * Commands rep.\r\n");
+        printf("    * Commands rep.\r\n");
     #endif
     repo_onResetCmdRepo();
 //------------------------------------------------------------------------------
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        con_printf("\n[dep_init_Repos] Initializing data repositories...\r\n");
+        printf("\n[dep_init_Repos] Initializing data repositories...\r\n");
     #endif
 
     #if (SCH_USE_FLIGHTPLAN == 1 )
@@ -104,7 +104,7 @@ int dep_init_Repos(void *param)
     dat_onResetTelecmdBuff();
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        con_printf("    * Payloads data rep.\r\n");
+        printf("    * Payloads data rep.\r\n");
     #endif
     dat_onResetPayloadVar();
 
@@ -148,8 +148,7 @@ int dep_suicide(void *param)
     while(1)
     {
         printf("    vTaskDelete(NULL) did NOT work out...\r\n");
-        const unsigned long Delayms = 0xFFFF / portTICK_RATE_MS;
-        vTaskDelay(Delayms);
+        __delay_ms(3000);
     }
 
     return 1;
@@ -199,7 +198,7 @@ int dep_launch_tasks(void *param)
             //launch nothing..
         #elif (SCH_USE_FLIGHTPLAN2==1)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                    con_printf("    * Creating taskFlightPlan2\r\n");
+                    printf("    * Creating taskFlightPlan2\r\n");
             #endif
             xTaskCreate(taskFlightPlan2, (signed char *)"flightplan2", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlan2Handle);
         #endif
@@ -319,7 +318,7 @@ int dep_init_hw(void *param)
     STA_CubesatVar hw_isAlive;
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        con_printf("\n[dep_init_hw] Initializig external hardware...\r\n");
+        printf("\n[dep_init_hw] Initializig external hardware...\r\n");
     #endif
 
     #if (SCH_SYSBUS_ONBOARD==1)
@@ -327,17 +326,17 @@ int dep_init_hw(void *param)
         #if (SCH_MEMEEPROM_ONBOARD==1)
         {
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                con_printf("    * External MemEEPROM .. ");
+                printf("    * External MemEEPROM .. ");
             #endif
             resp = init_memEEPROM();
             hw_isAlive = sta_MemEEPROM_isAlive;
             sta_setCubesatVar(hw_isAlive, resp);
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
                 if(resp == 0x01){
-                    con_printf("Ok\r\n");
+                    printf("Ok\r\n");
                 }
                 else{
-                    con_printf("Fail\r\n");
+                    printf("Fail\r\n");
                 }
             #endif
         }
@@ -348,17 +347,17 @@ int dep_init_hw(void *param)
     #if (SCH_RTC_ONBOARD==1)
     {
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            con_printf("    * External RTC .. ");
+            printf("    * External RTC .. ");
         #endif
         resp = RTC_init();
         hw_isAlive = sta_RTC_isAlive;
         sta_setCubesatVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
-                con_printf("Ok\r\n");
+                printf("Ok\r\n");
             }
             else{
-                con_printf("Fail\r\n");
+                printf("Fail\r\n");
             }
         #endif
     }
@@ -367,17 +366,17 @@ int dep_init_hw(void *param)
     #if (SCH_TRX_ONBOARD==1)
     {
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            con_printf("    * External TRX .. ");
+            printf("    * External TRX .. ");
         #endif
         resp  = trx_initialize(NULL);
         hw_isAlive = sta_TRX_isAlive;
         sta_setCubesatVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
-                con_printf("Ok\r\n");
+                printf("Ok\r\n");
             }
             else{
-                con_printf("Fail\r\n");
+                printf("Fail\r\n");
             }
         #endif
     }
@@ -386,17 +385,17 @@ int dep_init_hw(void *param)
     #if (SCH_MEMSD_ONBOARD==1)
     {
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            con_printf("    * External MemSD .. ");
+            printf("    * External MemSD .. ");
         #endif
         resp = dat_sd_init();
         hw_isAlive = sta_MemSD_isAlive;
         sta_setCubesatVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
-                con_printf("Ok\r\n");
+                printf("Ok\r\n");
             }
             else{
-                con_printf("Fail\r\n");
+                printf("Fail\r\n");
             }
         #endif
     }
@@ -409,9 +408,9 @@ int dat_sd_init(void){
     //apagar energia MemSD
     PPC_MB_nON_SD=1;
     /* Un delay para poder inicializar conrrectamente la SD si el PIC se resetea */
-    //__delay_ms(3000);
-    unsigned long i;
-    for(i = 0x004FFFFF; i>0; i--){}
+//    unsigned long i;
+//    for(i = 0x004FFFFF; i>0; i--){}
+    __delay_ms(3000);
     //encender energia MemSD
     PPC_MB_nON_SD=0;
     unsigned char r = SD_init();

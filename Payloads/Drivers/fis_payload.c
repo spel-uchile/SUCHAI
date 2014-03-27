@@ -26,10 +26,11 @@ static unsigned int sens_buff[FIS_SENS_BUFF_LEN];
 static int sens_buff_ind;
 
 int fis_wait_busy_wtimeout(void){
-    unsigned long int i = 50242879;
+    int seg_timeout = 30;
     while( fis_sens_buff_isFull()==FALSE ){
-        i--;
-        if(i<=0){
+        __delay_ms(1000);
+        seg_timeout--;
+        if(seg_timeout<=0){
             printf("expFis timeout !!\n");
             return 0;
         }
@@ -206,12 +207,11 @@ unsigned int fis_frec_i_to_ADC_period(DAT_GnrlPurpBuff pay_frec_i){
     return ADC_period;
 }
 void fis_save_sens_buff_to_GPB(DAT_GnrlPurpBuff frec_i, int rst_gbp_indx){
-    int i,j; unsigned int ind; unsigned long prom=0;
+    unsigned int ind; unsigned long prom=0;
 
     //esperar mientras se termina de llenar el sens_buff (buffer intermedio)
     while( sens_buff_ind<(FIS_SENS_BUFF_LEN) ){
-        for(i=0;i<0x00FF;i++){j=i*1;}
-        i=j+2;
+        __delay_ms(1000);
     }
 
     //calculo promedio sens1

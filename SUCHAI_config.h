@@ -126,7 +126,7 @@
 #define SCH_TASKCONSOLE_VERBOSE             (1)  ///< 1=verboso 0=austero
 #define SCH_TASKDEPLOYMENT_VERBOSE          (2)  ///< 1=verboso 0=austero
 #define SCH_TASKDISPATCHER_VERBOSE          (1)  ///< 1=verboso 0=austero
-#define SCH_TASKEXECUTER_VERBOSE            (2)  ///< 1=verboso 0=austero
+#define SCH_TASKEXECUTER_VERBOSE            (0)  ///< 1=verboso 0=austero
 #define SCH_TASKFLIGHTPLAN_VERBOSE          (1)  ///< 1=verboso 0=austero
 #define SCH_FLIGHTPLAN2_VERBOSE             (1)  ///< 1=verboso 0=austero
 #define SCH_TASKHOUSEKEEPING_VERBOSE        (1)  ///< 1=verboso 0=austero

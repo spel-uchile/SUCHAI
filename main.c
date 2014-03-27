@@ -118,7 +118,9 @@ void    mon_putc(char ch);
 int __attribute__((__weak__, __section__(".libc")))
 write(int handle, void * buffer, unsigned int len)
 {
-    xSemaphoreTake(consolePrintfSem, portMAX_DELAY);
+    portBASE_TYPE semStatus = xSemaphoreTake(consolePrintfSem, 2000/portTICK_RATE_MS);
+    if(semStatus != pdPASS){return 0;}
+
     int i = 0;
     switch (handle)
     {

@@ -136,9 +136,9 @@ int RTC_isAlive(void){
     int seg1 = RTC_get_seconds();
 
     /* Wait some seconds  */
-    unsigned long i;
-    for(i = 0x004FFFFF; i>0; i--){}
-    //__delay_ms(3000);
+//    unsigned long i;
+//    for(i = 0x004FFFFF; i>0; i--){}
+    __delay_ms(3000);
 
     int seg2 = RTC_get_seconds();
     if(seg1!=seg2){
@@ -176,7 +176,7 @@ int RTC_restart_osc(void)
 
         /* Wait before clear the flag (See M41T81S Datasheet) */
         long i;
-        for(i = 0xFFFFFF; i>0; i--);
+        for(i = 0x00FFFFFF; i>0; i--);
 
         /* Clear OF flag */
         RTC_WriteRegister(RTC_FLAGS_REG,0x00);

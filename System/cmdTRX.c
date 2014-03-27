@@ -267,10 +267,10 @@ int trx_initialize(void *param)
     TRX_CONFIG.tx_max_temp = 60;
 
     /* Save configuration to TRX */
-    int beacon = 0; // Set suchai beacon
-    int result = trx_set_beacon((void *)(&beacon)); //Also call trx_set_conf
+//    int beacon = 0; // Set suchai beacon
+//    int result = trx_set_beacon((void *)(&beacon)); //Also call trx_set_conf
 
-    return result;
+    return 1;
 }
 
 /**
@@ -281,12 +281,11 @@ int trx_initialize(void *param)
  */
 int trx_setmode(void *param)
 {
-    unsigned int value = 1;
     int mode = *(int *)param;
 
     //TODO: Implement
 
-    return 0;
+    return mode;
 }
 
 /**
@@ -325,16 +324,11 @@ int trx_asknewtc(void *param)
     //TODO: Update status variables and process frame
     while ((packet = csp_read(conn, 1000)) != NULL)
     {
-        int i;
-
         switch (csp_conn_dport(conn))
         {
             case SCH_TRX_PORT_TC:
                 /* Print data in this port */
                 printf("[New packet] ");
-                for(i=0; i<packet->length; i++)
-                    printf("%c", packet->data[i]);
-                printf("\n");
 
                  /* Setting status in data repository */
                 dat_setCubesatVar(dat_trx_newTcFrame, 1);

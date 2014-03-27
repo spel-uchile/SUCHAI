@@ -35,10 +35,10 @@ void trx_onResetCmdTRX(void){
     /*TRX*/
     trxFunction[(unsigned char)trx_id_send_beacon] = trx_send_beacon;
     trx_sysReq[(unsigned char)trx_id_send_beacon]  = CMD_SYSREQ_MIN;
-    trxFunction[(unsigned char)trx_id_readreg] = trx_read_conf;
-    trx_sysReq[(unsigned char)trx_id_readreg]  = CMD_SYSREQ_MIN;
-    trxFunction[(unsigned char)trx_id_idleframe] = trx_test_frame;
-    trx_sysReq[(unsigned char)trx_id_idleframe]  = CMD_SYSREQ_MIN;
+    trxFunction[(unsigned char)trx_id_readconf] = trx_read_conf;
+    trx_sysReq[(unsigned char)trx_id_readconf]  = CMD_SYSREQ_MIN;
+    trxFunction[(unsigned char)trx_id_ping] = trx_ping;
+    trx_sysReq[(unsigned char)trx_id_ping]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_getstatus] = trx_getstatus;
     trx_sysReq[(unsigned char)trx_id_getstatus]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_set_beacon] = trx_set_beacon;
@@ -160,7 +160,7 @@ int trx_send_beacon(void *param)
  * @param param int Node to transmit
  * @return 1 - OK
  */
-int trx_test_frame(void *param)
+int trx_ping(void *param)
 {
     int result;
     int node = *((int *)param);

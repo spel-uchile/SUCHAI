@@ -19,6 +19,7 @@
  */
 
 #include "console.h"
+#include "csp.h"
 extern xSemaphoreHandle consolePrintfSem;
 
 
@@ -275,14 +276,13 @@ DispCmd con_cmd_handler(void)
            return newCmd;
         }
        /*----------------------- TRX COMMAND ------------------------*/
-
-       /* TRX SEND BEACON */
-       if(strcmp(con_cmd, "trx_sendbeacon") == 0)
+       /*TRX READ REG*/
+       if(strcmp(con_cmd, "trx_cg") == 0)
        {
            if(con_arg_count == 0)
            {
-               newCmd.cmdId=trx_id_send_beacon;//0x3000;
-               newCmd.param = 1;
+                newCmd.cmdId=trx_id_readconf;
+                newCmd.param = 0;
            }
            else
            {
@@ -291,66 +291,42 @@ DispCmd con_cmd_handler(void)
 
            con_arg_toolong = FALSE;
            con_entry_flag = FALSE;
+
            return newCmd;
        }
 
-       /*TRX READ REG*/
-       if(strcmp(con_cmd, "trx_read_reg") == 0)
-       {
+        /*TRX PING <PARAM>*/
+        if(strcmp(con_cmd, "trx_ping") == 0)
+        {
            if(con_arg_count == 1)
            {
-                int reg;
-                char* end;
-                reg=(int)strtol(con_args[0], &end,0);
-                newCmd.cmdId=trx_id_readreg;//0x3001;
-                newCmd.param = reg;
-           }
-           else
-           {
-               newCmd.cmdId = con_id_error_count_arg;
-           }
-
-           con_arg_toolong = FALSE;
-           con_entry_flag = FALSE;
-
-           return newCmd;
-       }
-
-        /*TRX TM <PARAM>*/
-        if(strcmp(con_cmd, "trx_tm") == 0)
-       {
-           int param = 1;
-           if(con_arg_count >= 1)
-           {
-               if(strcmp(con_args[0], "idle") == 0)
-               {
-                   param = atoi(con_args[1]); /* To node 2 */
-                   newCmd.cmdId=trx_id_idleframe;//0x3002; /*trx_idleframe*/
-               }
-               else if(strcmp(con_args[0], "test") == 0)
-               {
-                   newCmd.cmdId=tcm_id_testframe;//0x3003; /*trx_testframe*/
-               }
-               else if(strcmp(con_args[0], "status") == 0)
-               {
-                   param = 2; /*Store and send*/
-                   newCmd.cmdId=trx_id_tm_trxstatus;//0x300F; /*trx_tm_status*/
-               }
-               else if(strcmp(con_args[0], "resend") == 0)
-               {
-                   newCmd.cmdId=tcm_id_resend;//0x3005; /*trx_resend*/
-               }
-               else
-               {
-                   newCmd.cmdId = con_id_error_invalid_arg; /*con_error_invalid_arg*/
-               }
+               newCmd.cmdId=trx_id_ping;
+               newCmd.param = atoi(con_args[1]); /* To node X */;
            }
            else
            {
                newCmd.cmdId = con_id_error_count_arg; /*invalid count arg*/
            }
 
-           newCmd.param = param;
+           con_arg_toolong = FALSE;
+           con_entry_flag = FALSE;
+           return newCmd;
+       }
+
+        /*TRX send <PARAM>*/
+        if(strcmp(con_cmd, "trx_send") == 0)
+        {
+           if(con_arg_count > 0)
+           {
+               int len = strlen(con_args[0]);
+               csp_transaction(1, 10, 10, 5000, con_args[0], len, NULL, 0);
+               
+           }
+           else
+           {
+               newCmd.cmdId = tcm_id_testframe; /*invalid count arg*/
+               newCmd.param = 0;
+           }
 
            con_arg_toolong = FALSE;
            con_entry_flag = FALSE;
@@ -358,7 +334,7 @@ DispCmd con_cmd_handler(void)
        }
 
        /*TRX GET STATUS */
-       if(strcmp(con_cmd, "trx_getstatus") == 0)
+       if(strcmp(con_cmd, "trx_gs") == 0)
        {
            if(con_arg_count == 0)
            {
@@ -377,17 +353,17 @@ DispCmd con_cmd_handler(void)
        }
 
        /*TRX SET BEACON */
-       if(strcmp(con_cmd, "trx_setbeacon") == 0)
+       if(strcmp(con_cmd, "trx_mtext") == 0)
        {
            if(con_arg_count == 0)
            {
-                newCmd.cmdId = trx_id_set_beacon;//0x3006;
+                newCmd.cmdId = trx_id_set_beacon;
                 newCmd.param = 1;
            }
            if(con_arg_count == 1)
            {
                 char* end;
-                newCmd.cmdId = trx_id_set_beacon;//0x3006;
+                newCmd.cmdId = trx_id_set_beacon;
                 newCmd.param = (int)strtol(con_args[0], &end, 0);
            }
            else
@@ -402,164 +378,11 @@ DispCmd con_cmd_handler(void)
        }
 
        /*TRX INITIALIZE */
-       if(strcmp(con_cmd, "trx_initialize") == 0)
+       if(strcmp(con_cmd, "trx_init") == 0)
        {
            if(con_arg_count == 0)
            {
                 newCmd.cmdId=trx_id_initialize;//0x3007;
-                newCmd.param = 1;
-           }
-           else
-           {
-               newCmd.cmdId = con_id_error_count_arg;
-           }
-
-           con_arg_toolong = FALSE;
-           con_entry_flag = FALSE;
-
-           return newCmd;
-       }
-
-       /*TRX SET MODE */
-       if(strcmp(con_cmd, "trx_setmode") == 0)
-       {
-           int param = 5;
-           newCmd.cmdId = trx_id_setmode;//0x3008; /*trx_set_mode*/
-           if(con_arg_count == 1)
-           {
-               if(strcmp(con_args[0], "reset") == 0)
-               {
-                   param = 0;
-               }
-               else if(strcmp(con_args[0], "sysreset") == 0)
-               {
-                   param = 1;
-               }
-               else if(strcmp(con_args[0], "silent") == 0)
-               {
-                   param = 2;
-               }
-               else if(strcmp(con_args[0], "onlybeacon") == 0)
-               {
-                   param = 3;
-               }
-               else if(strcmp(con_args[0], "nobeacon") == 0)
-               {
-                   param = 4;
-               }
-               else if(strcmp(con_args[0], "nominal") == 0)
-               {
-                   param = 5;
-               }
-               else
-               {
-                   newCmd.cmdId = con_id_error_invalid_arg;
-               }
-               newCmd.param = param;
-           }
-           else
-           {
-               newCmd.cmdId = con_id_error_count_arg;
-           }
-
-           con_arg_toolong = FALSE;
-           con_entry_flag = FALSE;
-
-           return newCmd;
-       }
-
-        /*TRX SET TM PWR*/
-       if(strcmp(con_cmd, "trx_set_tm_pwr") == 0)
-       {
-           if(con_arg_count == 1)
-           {
-                int i;
-                i=atoi(con_args[0]);
-                newCmd.cmdId=trx_id_set_tm_pwr;//0x300C;
-                newCmd.param = i;
-           }
-           else
-           {
-               newCmd.cmdId = con_id_error_count_arg;
-           }
-
-           con_arg_toolong = FALSE;
-           con_entry_flag = FALSE;
-
-           return newCmd;
-       }
-
-        /*TRX SET BC PWR*/
-       if(strcmp(con_cmd, "trx_set_bc_pwr") == 0)
-       {
-           if(con_arg_count == 1)
-           {
-                int i;
-                i=atoi(con_args[0]);
-                newCmd.cmdId=trx_id_set_bc_pwr;//0x300D;
-                newCmd.param = i; //Store and send
-           }
-           else
-           {
-               newCmd.cmdId = con_id_error_count_arg;
-           }
-
-           con_arg_toolong = FALSE;
-           con_entry_flag = FALSE;
-
-           return newCmd;
-       }
-
-       /*TRX WRITE REG*/
-       if(strcmp(con_cmd, "trx_write_reg") == 0)
-       {
-           if(con_arg_count == 1)
-           {
-                int reg;
-                char* end;
-                reg=(int)strtol(con_args[0], &end,0);
-                newCmd.cmdId=trx_id_write_reg;//0x3010;
-                newCmd.param = reg; //reg
-           }
-           else
-           {
-               newCmd.cmdId = con_id_error_count_arg;
-           }
-
-           con_arg_toolong = FALSE;
-           con_entry_flag = FALSE;
-
-           return newCmd;
-       }
-
-        /*TRX SET REG VAL*/
-       if(strcmp(con_cmd, "trx_set_reg_val") == 0)
-       {
-           if(con_arg_count == 1)
-           {
-                int val;
-                char* end;
-                val=(int)strtol(con_args[0], &end,0);
-                newCmd.cmdId=trx_id_set_reg_val;//0x3011;
-                newCmd.param = val; //val
-           }
-           else
-           {
-               newCmd.cmdId = con_id_error_count_arg;
-           }
-
-           con_arg_toolong = FALSE;
-           con_entry_flag = FALSE;
-
-           return newCmd;
-       }
-
-        /*TRX READ TC*/
-       if(strcmp(con_cmd, "trx_read_tcframe") == 0)
-       {
-           if(con_arg_count == 0)
-           {
-                newCmd.cmdId=trx_id_read_tcframe;//0x300E;
                 newCmd.param = 1;
            }
            else

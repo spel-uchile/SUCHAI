@@ -43,8 +43,8 @@
  */
 typedef enum{
     trx_id_send_beacon=((unsigned int)(CMD_TRX)*0x100), ///< @cmd_first
-    trx_id_readreg, ///< @cmd
-    trx_id_idleframe, ///< @cmd
+    trx_id_readconf, ///< @cmd
+    trx_id_ping, ///< @cmd
     trx_id_getstatus, ///< @cmd
     trx_id_set_beacon, ///< @cmd
     trx_id_initialize, ///< @cmd
@@ -70,7 +70,7 @@ void trx_onResetCmdTRX(void);
 int trx_set_conf(void *param);
 int trx_send_beacon(void *param);
 int trx_read_conf(void *param);
-int trx_test_frame(void *param);
+int trx_ping(void *param);
 int trx_testframe(void *param);
 int trx_getstatus(void *param);
 int trx_set_beacon(void *param);

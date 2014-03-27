@@ -385,8 +385,8 @@ int dep_init_Peripherals(void *param)
 void dep_csp_initialization(void)
 {
     csp_debug_set_level(CSP_INFO, 1);
-    csp_debug_set_level(CSP_PACKET, 1);
-    csp_debug_set_level(CSP_BUFFER, 1);
+    csp_debug_set_level(CSP_PACKET, 0); /* Fails if activated */
+    csp_debug_set_level(CSP_BUFFER, 0); /* Fails if activated */
     csp_debug_set_level(CSP_ERROR, 1);
     csp_debug_set_level(CSP_WARN, 1);
 

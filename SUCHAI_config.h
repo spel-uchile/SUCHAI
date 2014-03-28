@@ -31,12 +31,12 @@
 #define SCH_FLIGHTPLAN2_REALTIME            (0)  ///< 1=Realtime 0=Debugtime
 
 /* Bus Onboard */
-#define SCH_SYSBUS_ONBOARD                  (1)  //< Onboard => I2C1 en uso
+#define SCH_SYSBUS_ONBOARD                  (0)  //< Onboard => I2C1 en uso
 #define SCH_PAYBUS_ONBOARD                  (0)  ///< Onboard => I2C3 en uso
 #define SCH_ANTENNA_ONBOARD                 (0) ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
-#define SCH_TRX_ONBOARD                     (0)  ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
+#define SCH_TRX_ONBOARD                     (1)  ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
 #define SCH_RTC_ONBOARD                     (1) ///< 1 = Onboard 0 = Not Onboard
-#define SCH_MEMEEPROM_ONBOARD               (1) ///< 1 = Onboard 0 = Not Onboard
+#define SCH_MEMEEPROM_ONBOARD               (0) ///< 1 = Onboard 0 = Not Onboard
 #define SCH_EPS_ONBOARD                     (0) ///< Onboard => I2C1 en uso
 #define SCH_MEMSD_ONBOARD                   (1) ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_MGN_ONBOARD                     (0)  ///< Onboard => 1 pin(es) en modo Switch
@@ -52,15 +52,7 @@
 #define SCH_PAY_TEST1_ONBOARD               (0)  ///< Onboard =>
 #define SCH_PAY_TEST2_ONBOARD               (0)  ///< Onboard =>
 
-/* Software configs */
-#define SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE  (0) ///< 1=Activo ( EPS montada ) 0= Inactivo ( EPS no montada SOC se lleva a MAX_SOC )
-#define SCH_TASKEXECUTER_INSIDE_TASKDISPATCHER  (1) //< 0=taskExecuter como tarea separada 1=taskExecuter como parte de taskDispatcher
-#define SCH_NUM_CMDXXX                          (10) //< Numero maximo de repositorios de comando que pueden ser agregados (min 0)
-/* TRX configs */
-#define SCH_COMM_NO_TC_DAYS                (1)      ///< Dias sin TC para pasar a modo RSII
-#define SCH_COMM_RSSI_MIN_TIME             (10)     ///< [s] Segundos minimos que debe haber senal para considerar RSSI
-#define SCH_COMM_RSSI_MAX_TIME             (20)     ///< [s] Segundos maximos que debe haber senal para considerar RSSI
-#define SCH_COMM_RSSI_CNT_MAX              (60)     ///< Segundos que RSSI_CNT puede pasar sin que se actualice RSSI_MEAN
+/* TRX and COMM configs */
 #define SCH_TRX_BEACON_PERIOD              (4*60)   ///< [s] Periodo del beacon en segundos (UINT16)
 #define SCH_TRX_BEACON_WPM                 (20)     ///< Velocidad del beacon en palabras por minuto 1-255
 #define SCH_TRX_BEACON_BAT_LVL             (550)    ///< Nivel de bateria minimo para transmitir beacon
@@ -70,13 +62,13 @@
 #define SCH_TRX_TX_BAUD                    (48)     /// TX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
 #define SCH_TRX_NODE_GND                   (10)     /// Nodo de la estacion terrena
 #define SCH_TRX_PORT_TM                    (10)     /// Puerto correspondiente a telemetria (en la estacion terrena)
-#define SCH_TRX_PORT_TC                    (10)     /// Puerto correspondiente a telemetria (en el software de vuelo)
+#define SCH_TRX_PORT_TC                    (10)     /// Puerto correspondiente a telecomandos (en el software de vuelo)
+#define SCH_TRX_PORT_DEBUG                 (11)     /// Puerto debug en software de vuelo. Solo imprimie el paquete
 
-#define SCH_TRX_BEACON_PWR                 (4)      ///< @deprecated Potencia beacon 0 - 24
-#define SCH_TRX_TELEMETRY_PWR              (8)      ///< @deprecated Potencia telemetria 0 - 24 q
-#define SCH_CMDTRX_INIT_MODE               (0x10)   ///< @deprecated Modo no beacon, si TM
-
-#define SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE  (0)     ///< 1=Activo ( EPS montada ) 0= Inactivo ( EPS no montada SOC se lleva a MAX_SOC )
+/* Other Software configs */
+#define SCH_NUM_CMDXXX                          (10) //< Numero maximo de repositorios de comando que pueden ser agregados (min 0)
+#define SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE  (0) ///< 1=Activo ( EPS montada ) 0= Inactivo ( EPS no montada SOC se lleva a MAX_SOC )
+#define SCH_TASKEXECUTER_INSIDE_TASKDISPATCHER  (1) //< 0=taskExecuter como tarea separada 1=taskExecuter como parte de taskDispatcher
 #define SCH_FLIGHTPLAN_TYPE                     (0)    ///< 0=ninguno, 1=taskFligthPlan 2=taskFlightPlan2 3=ambos
 #define SCH_FLIGHTPLAN_RESOLUTION               (10)    ///< [MINUTES] Resolucion de tiempo del flight plan
 #define SCH_FLIGHTPLAN_N_CMD                    ((24 * 60) / SCH_FLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]

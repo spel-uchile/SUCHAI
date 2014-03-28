@@ -275,20 +275,18 @@ int dep_launch_tasks(void *param)
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         printf("    * Creating taskConsole\r\n");
     #endif
-    xTaskCreate(taskConsole, (signed char *)"console", 1.5*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
+    xTaskCreate(taskConsole, (signed char *)"CON", 1.5*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-//        printf("    * Creating taskHousekeeping\r\n");
+        printf("    * Creating taskHousekeeping\r\n");
     #endif
-//    xTaskCreate(taskHouskeeping, (signed char *)"housekeeping", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskHouskeepingHandle);
+    xTaskCreate(taskHouskeeping, (signed char *)"HKP", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskHouskeepingHandle);
     
     #if (SCH_TRX_ONBOARD == 1)
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             printf("    * Creating taskCommunications\r\n");
         #endif
-//        xTaskCreate(taskComunications, (signed char *)"comunications", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskComunicationsHandle);
-        xTaskCreate(taskServerCSP, (signed char *)"SRV", 3*configMINIMAL_STACK_SIZE, NULL, 2, &taskComunicationsHandle);
-        xTaskCreate(taskRxI2C, (signed char *)"I2C", 3*configMINIMAL_STACK_SIZE, NULL, 2, &taskComunicationsHandle);
+        xTaskCreate(taskComunications, (signed char *)"COM", 3*configMINIMAL_STACK_SIZE, NULL, 2, &taskComunicationsHandle);
     #endif
 
     if( sta_getCubesatVar(sta_MemSD_isAlive) == 1 )
@@ -542,7 +540,7 @@ void dep_csp_initialization(void)
     csp_debug_set_level(CSP_WARN, 1);
 
     /* Init buffer system with 3 packets of maximum 256 bytes each */
-    csp_buffer_init(3, I2C_MTU+5);
+    csp_buffer_init(5, I2C_MTU+5);
 
     /* Init CSP with address MY_ADDRESS */
     csp_init(MY_ADDRESS);
@@ -561,7 +559,6 @@ void dep_csp_initialization(void)
     csp_listen(sock, 5);
 
     //DEBUG
-    csp_debug_set_level(CSP_ERROR, 1);
     printf("\n---- Conn table ----\n");
     csp_conn_print_table();
     printf("---- Route table ----\n");

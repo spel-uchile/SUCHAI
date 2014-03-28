@@ -21,12 +21,14 @@
 #include "taskComunications.h"
 
 #include "csp.h"
+#include "csp_port.h"
 #include "csp_i2c.h"
 
 extern xQueueHandle dispatcherQueue; /* Commands queue */
 extern xQueueHandle i2cRxQueue;
 
 static void com_RxI2C(xQueueHandle i2c_rx_queue);
+static void com_receive_tc(csp_packet_t *packet);
 
 void taskComunications(void *param)
 {
@@ -38,26 +40,18 @@ void taskComunications(void *param)
     int xsec = (delay_ms/1000);  //se ejecuta cada Xseg ahora
     portTickType delay_ticks = delay_ms / portTICK_RATE_MS; //Task period in ticks (==dalay_ms/10)
 
-//    i2c_frame_t *csp_frame_p = (i2c_frame_t *) csp_buffer_get(TRX_TMFRAMELEN);
-    
     DispCmd TcNewCmd;
-
     TcNewCmd.cmdId = CMD_CMDNULL;
     TcNewCmd.idOrig = CMD_IDORIG_TCOMUNICATIONS; /* Comunications */
     TcNewCmd.param = 0;
 
-    int COMM_OP_MODE = sta_getCubesatVar(sta_ppc_opMode); /* MODO DE OPERACION */
-    int NEW_TC = 0;
-    int NEW_CMD_BUF = 0;
-    int LAST_CMD_DAY = sta_getCubesatVar(sta_trx_lastcmd_day);
-    int RSSI = 0;
-    unsigned int RSSI_CNT = 0; /* Tiempo que hay RSSI, rel. a la ejecucion de la tarea */
-    int RSSI_MEAN = 0;
+    /* Pointer to current connection, packet and socket */
+    csp_conn_t *conn;
+    csp_packet_t *packet;
+    csp_socket_t *sock = csp_port_get_socket(CSP_ANY);
 
     unsigned long seconds_cnt = 0; /* Contador para comandos periodicos */
     unsigned int type_cnt = 0; /* Identificador del tipo de beacon siguiente */
-
-    char buf[10];
 
     portTickType xLastWakeTime = xTaskGetTickCount();
 
@@ -69,7 +63,6 @@ void taskComunications(void *param)
         seconds_cnt += xsec;
 
         /* Recibir datos a traves de I2C */
-//        com_RxI2C(csp_frame_p, i2cRxQueue);
         com_RxI2C(i2cRxQueue);
 
         /* Actualizar y enviar beacon */
@@ -86,178 +79,75 @@ void taskComunications(void *param)
             type_cnt++;
         }
 
-        /* Preguntar por nuevos telecomandos disponibles */
-        TcNewCmd.cmdId = trx_id_asknewtc;
-        TcNewCmd.param = 0; /* No Verbose */
-        /* Queue NewCmd - Non-Blocking (Wait 0.5 task period) */
-        xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
+        /*** Acts as csp server ***/
 
-        continue;
+        /* Wait for connection, 500 ms timeout */
+        if ((conn = csp_accept(sock, 500)) == NULL)
+            continue; /* Try again later */
 
-        /* Actualizar la lectura de RSSI */
-        TcNewCmd.cmdId = drp_id_update_sta_CubesatVar_trx_rssi;
-        TcNewCmd.param = 0; /* None */
-        /* Queue NewCmd - Non-Blocking (Wait 0.5 task period) */
-        xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
-
-        /* Recuperar variables de estado */
-        NEW_TC          = sta_getCubesatVar(sta_trx_newTcFrame);
-        NEW_CMD_BUF     = sta_getCubesatVar(sta_trx_newCmdBuff);
-        LAST_CMD_DAY    = sta_getCubesatVar(sta_trx_lastcmd_day);
-        COMM_OP_MODE    = sta_getCubesatVar(sta_ppc_opMode);
-        RSSI            = sta_getCubesatVar(sta_trx_rssi);
-        RSSI_MEAN       = sta_getCubesatVar(sta_trx_rssi_mean);
-
-        #if (SCH_TASKCOMUNICATIONS_VERBOSE >=2)
-            itoa(buf,NEW_TC,10);
-            con_printf(">>[taskComunications] NewTcFrame: "); con_printf(buf);
-            itoa(buf,NEW_CMD_BUF,10);
-            con_printf(" | newCmdBuff: "); con_printf(buf);
-            itoa(buf,COMM_OP_MODE,10);
-            con_printf(" | mode: "); con_printf(buf);
-            itoa(buf,RSSI_MEAN,10);
-            con_printf(" | rssi_mean: "); con_printf(buf);
-            itoa(buf,RSSI,10);
-            con_printf(" | rssi: "); con_printf(buf);
-            itoa(buf,RSSI_CNT,10);
-            con_printf(" | rssi_cnt: "); con_printf(buf);
-            con_printf("\r\n");
-        #endif
-
-        /* Modo de operacion solo con RSSI */
-        if(COMM_OP_MODE == STA_PPC_OPMODE_RSSI)
+        /* Read packets. Timout is 500 ms */
+        while ((packet = csp_read(conn, 500)) != NULL)
         {
-            /* Llegaron TC, cambiar el modo a normal */
-            if(NEW_TC)
+            switch (csp_conn_dport(conn))
             {
-                /* Comando para cambiar el modo a NORMAL */
-                TcNewCmd.cmdId = drp_id_update_sta_CubesatVar_opMode;
-                TcNewCmd.param = STA_PPC_OPMODE_NORMAL;
-                xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
+                case SCH_TRX_PORT_TC:
+                    /* Process incoming TC */
+                    com_receive_tc(packet);
+                    csp_buffer_free(packet);
+                    break;
+
+                case SCH_TRX_PORT_DEBUG:
+                    /* Debug port, only to print strings */
+                    printf((char *)(packet->data));
+                    csp_buffer_free(packet);
+                    break;
+                    
+                default:
+                    /* Let the service handler reply pings, buffer use, etc. */
+                    csp_service_handler(conn, packet);
+                    break;
             }
+        }
 
-            if(RSSI >= RSSI_MEAN+4) //Mayor en 4dB que el promedio
-            {                
-                RSSI_CNT +=xsec;  //Cuenta segundps con el nivel de RSSI
-
-                #if (SCH_TASKCOMUNICATIONS_VERBOSE >=1)
-                    itoa(buf, RSSI_CNT,10);
-                    con_printf("RSSI_CNT="); con_printf(buf); con_printf("\r\n");
-                #endif
-
-                /* Si hay alto nivel de RSSI durante mucho tiempo, entonces hay
-                 * alto ruido y se debe actualizar el promedio */
-                if(RSSI_CNT >= SCH_COMM_RSSI_CNT_MAX )
-                {
-                    /* Agregar el nuevo valor al promedio */
-                    TcNewCmd.cmdId = drp_id_update_sta_CubesatVar_trx_rssi_mean;
-                    TcNewCmd.param = RSSI;
-                    xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
-                }
-            }
-            else
-            {
-                /* Segundos que estuvo presente el RSSI */
-                if((RSSI_CNT > SCH_COMM_RSSI_MIN_TIME) && (RSSI_CNT < SCH_COMM_RSSI_MAX_TIME))
-                {                    
-                    com_doOnRSSI(dispatcherQueue);
-                }
-
-                /* Cuando no hay carrier, actualizar el valor de ruido promedio */
-                TcNewCmd.cmdId = drp_id_update_sta_CubesatVar_trx_rssi_mean;
-                TcNewCmd.param = RSSI; /* Valor de RSSI actual */
-                xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
-                
-                /* Resetear el contador, para capturar la permanencia del rssi */
-                RSSI_CNT = 0;
-            }
-        } /* MODE RSSI*/
-
-        
-        /* Modo de operacion con telecomandos */
-        else if(COMM_OP_MODE == STA_PPC_OPMODE_NORMAL)
-        {
-            /* Calcular cuandos dias han pasado desde el ultimo TC */
-            unsigned int today =    sta_getCubesatVar(sta_rtc_day_number)*
-                                    sta_getCubesatVar(sta_rtc_month)*
-                                    sta_getCubesatVar(sta_rtc_year);
-
-            unsigned int days_wo_tc = today - LAST_CMD_DAY;
-
-            /* Si no han llegado TC por varios dias, pasar a modo RSSI*/
-            if(days_wo_tc >= SCH_COMM_NO_TC_DAYS)
-            {
-                /* Comando para cambiar el modo a RSSI */
-                TcNewCmd.cmdId = drp_id_update_sta_CubesatVar_opMode;
-                TcNewCmd.param = STA_PPC_OPMODE_RSSI;
-                xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
-            }
-
-            /* Si hay nuevos frames parsear telecomandos */
-            //DEPRECATED: Los TC se parsean en cuanto llegan
-//            if(NEW_TC && !NEW_CMD_BUF) /* Ask new TC state */
-//            {
-//                TcNewCmd.cmdId = trx_id_parsetcframe; /* Parse tc frame */
-//                TcNewCmd.param = 0; /* No verboso */
-//                /* Queue NewCmd - Non-Blocking (Wait 0.5 task period) */
-//                xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
-//            }
-
-            if(NEW_CMD_BUF)
-            {
-                /* COMANDO que baja el flag de CmdBuff */
-                TcNewCmd.cmdId = drp_id_trx_newCmdBuff;
-                TcNewCmd.param = 0; /* Reset newCmdBuff flag in status repo */
-                xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
-
-                /* Ejecutar los telecomandos pendientes */
-                int i;
-                /* Read each TC from data repo in format [ID,ARG] */
-                for(i=0; i < SCH_DATAREPOSITORY_MAX_BUFF_TELECMD; i++)
-                {
-                    int cmdid = dat_getTelecmdBuff(i++); /* Get int cmdID */
-                    int arg = dat_getTelecmdBuff(i); /* Get int cmdArg */
-
-                    if(cmdid != CMD_CMDNULL)
-                    {
-                        TcNewCmd.cmdId = cmdid; /* Current read TC */
-                        TcNewCmd.param = arg;
-                        xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
-                    }
-                }
-            } /* NEW BUFF */
-        } /* MODE NOMRAL */
+        /* Close current connection, and handle next */
+        csp_close(conn);
     }
 }
 
 /**
- * Performs all tasks needed when the carrier is detected
+ * Parse TC frames and generates corresponding commands
  *
- * @param cmdQueue Queue to send commands
+ * @param packet TC Buffer
  */
-void com_doOnRSSI(xQueueHandle dispatcherQueue)
+static void com_receive_tc(csp_packet_t *packet)
 {
-    DispCmd TcNewCmd;
-    TcNewCmd.cmdId = CMD_CMDNULL;
-    TcNewCmd.idOrig = CMD_IDORIG_TCOMUNICATIONS; /* Comunications */
-    TcNewCmd.param = 0;
+    static DispCmd newCmd;
+    static int i, cmdid, cmdarg;
 
-    #if (SCH_TASKCOMUNICATIONS_VERBOSE >=1)
-        con_printf("com_doOnRSSI..\r\n");
-    #endif
+#if SCH_TASKCOMUNICATIONS_VERBOSE
+    printf("[SRV] New TCs: ");
+#endif
 
-    //CubesatVar
-//        TODO:
-//    TcNewCmd.cmdId = tcm_id_sendTM_cubesatVar;
-//    TcNewCmd.param = 2;
-//    xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
-    
-    // Payload
-//        TODO:
-    //envio TM de payload
-//    TcNewCmd.cmdId = tcm_id_sendTM_all_pay_i;
-//    TcNewCmd.param = 0;
-//    xQueueSend(dispatcherQueue, &TcNewCmd, portMAX_DELAY);
+    /* Read each TC from data repo in format [ID,ARG] */
+    for(i=0; i < (packet->length)/2; i+=2)
+    {
+        cmdid = packet->data16[i];
+        cmdarg = packet->data16[i+1];
+
+#if SCH_TASKCOMUNICATIONS_VERBOSE
+        printf("(0x%X, 0x%X),", cmdid, cmdarg);
+#endif
+        /* Check for stop bytes, then add new cmd */
+        if((cmdid != CMD_CMDNULL) && (cmdid != CMD_STOP) && (cmdarg != CMD_STOP))
+        {
+            newCmd.cmdId = cmdid; newCmd.param = cmdarg;
+            xQueueSend(dispatcherQueue, &newCmd, portMAX_DELAY);
+        }
+    }
+
+#if SCH_TASKCOMUNICATIONS_VERBOSE
+    printf("\n");
+#endif
 }
 
 /**
@@ -269,9 +159,9 @@ void com_doOnRSSI(xQueueHandle dispatcherQueue)
 static void com_RxI2C(xQueueHandle i2c_rx_queue)
 {
     static int nrcv = 0;
-    static uint8_t new_data = 0;
+    static char new_data = 0;
     static i2c_frame_t *frame_p = NULL;
-    portBASE_TYPE result = pdFALSE;
+    static portBASE_TYPE result = pdFALSE;
 
     if(frame_p == NULL)
     {
@@ -281,29 +171,28 @@ static void com_RxI2C(xQueueHandle i2c_rx_queue)
         return;
     }
 
-    result = xQueueReceive(i2c_rx_queue, &new_data, 50/ portTICK_RATE_MS);
-
-    //No more data received
-    if(result != pdPASS)
+    while(1) //Optimization, before: while(result == pdPASS)
     {
-        if(nrcv > 0)
+        result = xQueueReceive(i2c_rx_queue, &new_data, 50/ portTICK_RATE_MS);
+
+        //No more data received
+        if(result != pdPASS)
         {
-//            printf("New msg len: %d\n", (frame_p->len));
-            frame_p->len = nrcv;
-            csp_i2c_rx(frame_p, NULL);
+            if(nrcv > 0)
+            {
+                frame_p->len = nrcv;
+                csp_i2c_rx(frame_p, NULL);
+                csp_buffer_free(frame_p);
+                frame_p = NULL;
+            }
 
-            csp_buffer_free(frame_p);
-
-            frame_p = NULL;
-//            frame_p->len = 0;
-//            nrcv = 0;
+            break; //Optimization, not conditional while exit
         }
-    }
-    //New data received
-    else
-    {
-//        printf("New data: %X\n at %d", new_data, nrcv);
-        frame_p->data[nrcv] = new_data;
-        nrcv++;
+        //New data received
+        else
+        {
+            frame_p->data[nrcv] = (uint8_t)new_data;
+            nrcv++;
+        }
     }
 }

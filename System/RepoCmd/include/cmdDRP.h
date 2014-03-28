@@ -42,7 +42,7 @@
  */
 typedef enum{
     //De update en general de dat_CubesatVar
-    drp_id_updateAll_sta_CubesatVar=((unsigned int)CMD_DRP*0x100), ///< @cmd_first
+    drp_id_updateAll_sta_CubesatVar=((unsigned int)SCH_CMD_DRP*0x100), ///< @cmd_first
     drp_id_update_sta_CubesatVar_hoursWithoutReset, ///< @cmd
     drp_id_update_sta_CubesatVar_opMode, ///< @cmd
     drp_id_update_sta_CubesatVar_hoursAlive, ///< @cmd

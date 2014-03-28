@@ -107,7 +107,7 @@ int dep_init_Repos(void *param)
         printf("    * Attaching cmdPPC..\r\n");
     #endif
     CmdRepo_cmdXXX_handler cmdPPC_handler;
-    cmdPPC_handler.cmdOwn = 0x10;
+    cmdPPC_handler.cmdOwn = SCH_CMD_PPC;
     cmdPPC_handler.nCmd = PPC_NCMD;
     cmdPPC_handler.p_xxxFunction = ppcFunction;
     cmdPPC_handler.p_xxxSysReq = ppc_sysReq;
@@ -118,7 +118,7 @@ int dep_init_Repos(void *param)
         printf("    * Attaching cmdCON..\r\n");
     #endif
     CmdRepo_cmdXXX_handler cmdCON_handler;
-    cmdCON_handler.cmdOwn = 0x20;
+    cmdCON_handler.cmdOwn = SCH_CMD_CON;
     cmdCON_handler.nCmd = CON_NCMD;
     cmdCON_handler.p_xxxFunction = conFunction;
     cmdCON_handler.p_xxxSysReq = con_sysReq;
@@ -129,7 +129,7 @@ int dep_init_Repos(void *param)
         printf("    * Attaching cmdTRX..\r\n");
     #endif
     CmdRepo_cmdXXX_handler cmdTRX_handler;
-    cmdTRX_handler.cmdOwn = 0x30;
+    cmdTRX_handler.cmdOwn = SCH_CMD_TRX;
     cmdTRX_handler.nCmd = TRX_NCMD;
     cmdTRX_handler.p_xxxFunction = trxFunction;
     cmdTRX_handler.p_xxxSysReq = trx_sysReq;
@@ -140,7 +140,7 @@ int dep_init_Repos(void *param)
         printf("    * Attaching cmdEPS..\r\n");
     #endif
     CmdRepo_cmdXXX_handler cmdEPS_handler;
-    cmdEPS_handler.cmdOwn = 0x40;
+    cmdEPS_handler.cmdOwn = SCH_CMD_EPS;
     cmdEPS_handler.nCmd = EPS_NCMD;
     cmdEPS_handler.p_xxxFunction = epsFunction;
     cmdEPS_handler.p_xxxSysReq = eps_sysReq;
@@ -151,7 +151,7 @@ int dep_init_Repos(void *param)
         printf("    * Attaching cmdDRP..\r\n");
     #endif
     CmdRepo_cmdXXX_handler cmdDRP_handler;
-    cmdDRP_handler.cmdOwn = 0x50;
+    cmdDRP_handler.cmdOwn = SCH_CMD_DRP;
     cmdDRP_handler.nCmd = DRP_NCMD;
     cmdDRP_handler.p_xxxFunction = drpFunction;
     cmdDRP_handler.p_xxxSysReq = drp_sysReq;
@@ -162,7 +162,7 @@ int dep_init_Repos(void *param)
         printf("    * Attaching cmdPAY..\r\n");
     #endif
     CmdRepo_cmdXXX_handler cmdPAY_handler;
-    cmdPAY_handler.cmdOwn = 0x60;
+    cmdPAY_handler.cmdOwn = SCH_CMD_PAY;
     cmdPAY_handler.nCmd = PAY_NCMD;
     cmdPAY_handler.p_xxxFunction = payFunction;
     cmdPAY_handler.p_xxxSysReq = pay_sysReq;
@@ -173,7 +173,7 @@ int dep_init_Repos(void *param)
         printf("    * Attaching cmdRTC..\r\n");
     #endif
     CmdRepo_cmdXXX_handler cmdRTC_handler;
-    cmdRTC_handler.cmdOwn = 0x70;
+    cmdRTC_handler.cmdOwn = SCH_CMD_RTC;
     cmdRTC_handler.nCmd = RTC_NCMD;
     cmdRTC_handler.p_xxxFunction = rtcFunction;
     cmdRTC_handler.p_xxxSysReq = rtc_sysReq;
@@ -184,7 +184,7 @@ int dep_init_Repos(void *param)
         printf("    * Attaching cmdTCM..\r\n");
     #endif
     CmdRepo_cmdXXX_handler cmdTCM_handler;
-    cmdTCM_handler.cmdOwn = 0x80;
+    cmdTCM_handler.cmdOwn = SCH_CMD_TCM;
     cmdTCM_handler.nCmd = TCM_NCMD;
     cmdTCM_handler.p_xxxFunction = tcmFunction;
     cmdTCM_handler.p_xxxSysReq = tcm_sysReq;

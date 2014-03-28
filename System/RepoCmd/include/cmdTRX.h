@@ -42,7 +42,7 @@
  * Lista de comandos disponibles.
  */
 typedef enum{
-    trx_id_send_beacon=((unsigned int)(CMD_TRX)*0x100), ///< @cmd_first
+    trx_id_send_beacon=((unsigned int)(SCH_CMD_TRX)*0x100), ///< @cmd_first
     trx_id_readconf, ///< @cmd
     trx_id_ping, ///< @cmd
     trx_id_getstatus, ///< @cmd

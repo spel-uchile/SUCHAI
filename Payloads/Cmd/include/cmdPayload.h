@@ -36,7 +36,7 @@
  * Lista de comandos disponibles.
  */
 typedef enum{
-    pay_id_test_dataRepo=((unsigned int)(CMD_PAY)*0x100), ///< @cmd_first
+    pay_id_test_dataRepo=((unsigned int)(SCH_CMD_PAY)*0x100), ///< @cmd_first
 
     pay_id_FSM_default, ///< @cmd
 

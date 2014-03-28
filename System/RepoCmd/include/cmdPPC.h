@@ -24,7 +24,7 @@
  * Lista de comandos disponibles.
  */
 typedef enum{
-    ppc_id_reset=((unsigned int)(CMD_PPC)*0x100), ///< @cmd_first
+    ppc_id_reset=((unsigned int)(SCH_CMD_PPC)*0x100), ///< @cmd_first
     ppc_id_newosc, ///< @cmd
     ppc_id_osc, ///< @cmd
     ppc_id_enwdt, ///< @cmd

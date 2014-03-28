@@ -53,6 +53,13 @@ unsigned char gyr_read_reg(unsigned char reg){
     return (unsigned char)ret;
 }
 
+BOOL dig_isAlive(void){
+    unsigned char who_am_i = 0b11010011;
+    unsigned char val = 0;
+    val = gyr_read_reg(GYR_WHO_AM_I);
+    if(val==who_am_i){ return TRUE; }
+    else{ return FALSE; }
+}
 // ============================================================================================================
 // Returns the identification of the device 
 // Arguments	: None
@@ -173,7 +180,7 @@ void gyr_enable_axis(unsigned char axis){
 void gyr_print_remain_samp(void){
     unsigned char dummy = gyr_read_reg(GYR_FIFO_SRC_REG);
 
-    con_printf("FIFO remaining samples to be read :\t ");
+    con_printf("FIFO remaining samples to be read :");
     unsigned char numero = dummy&0x1F;
     char ret[10];
     //itoa(ret, (unsigned int)numero, 16);
@@ -229,7 +236,7 @@ void gyr_print_temp(void){
 // Arguments	: None
 // Return      	: int direcc_b (Value of first address of data buffer)
 // ============================================================================================================
-GYR_DATA gyr_get_FIFO_samples(void){
+void gyr_get_FIFO_samples(GYR_DATA *res_data){
     #if (SCH_GYRO_VERBOSE>=2)
 	con_printf("Entered to read FIFO\r\n");
     #endif
@@ -255,10 +262,8 @@ GYR_DATA gyr_get_FIFO_samples(void){
 
     unsigned char *direcc_b;
     direcc_b = &buffer[0];
-    GYR_DATA res_data;
-    gyr_get_data(direcc_b, muestras, &res_data);
+    gyr_get_data(direcc_b, muestras, res_data);
 
-    return res_data;
 }
 
 // ============================================================================================================
@@ -273,6 +278,12 @@ void gyr_get_data(unsigned char *dir, unsigned char muestras, GYR_DATA *res_data
     signed int c,f,z;
     signed long k,j,l;
     j = k = l = 0;
+
+    for(i=0; i<(3*2*muestras); i++){
+        printf("dir[%d] = 0x%X\n", i, dir[i]);
+        printf("************************\n");
+    }
+
     for(i=0; i<(3*2*muestras); i = i+6){
         a = dir[i+1];
         b = dir[i];
@@ -298,17 +309,15 @@ void gyr_get_data(unsigned char *dir, unsigned char muestras, GYR_DATA *res_data
     l = l/muestras;
 
     (*res_data).a_x=j;
-    (*res_data).a_x=k;
-    (*res_data).a_x=l;
+    (*res_data).a_y=k;
+    (*res_data).a_z=l;
 
-    #if (SCH_GYRO_VERBOSE>=2)
-	con_printf("Average\r\n");
-	con_printf("X axis :");
-        itoa(ret,  (unsigned int)j, 10); con_printf(ret); con_printf("\r\n");
-	con_printf("Y axis :");
-        itoa(ret,  (unsigned int)k, 10); con_printf(ret); con_printf("\r\n");
-	con_printf("Z axis:");
-        itoa(ret,  (unsigned int)l, 10); con_printf(ret); con_printf("\r\n");
+    #if (SCH_GYRO_VERBOSE>=1)
+	printf("gyr_get_data\r\n");
+	printf("X axis : %d\n", (int)j);
+        printf("Y axis : %d\n", (int)k);
+        printf("Z axis : %d\n", (int)l);
+        printf("************************\n");
     #endif
 }
 //******************************************************************************
@@ -448,13 +457,13 @@ int gyr_init_config(void){
 
     return 1;
 }
-GYR_DATA gyr_take_samples(BOOL verb){
+void gyr_take_samples(BOOL verb, GYR_DATA *res_data){
     gyr_config_GYR_CTRL_REG1(0x01, 0x03);  // 200 Hz datarate and 70 cutoff
     gyr_enable_axis(0x07);                  // Enable three axes
     gyr_powermode(0x01);                    // Enable device
     __delay_ms(50);
 
-    config_FIFO_GYR_CTRL_REG(0b00000010);   // configure FIFO_GYR_CTRL_REG with watermark
+    config_FIFO_GYR_CTRL_REG(0b00000111);   // configure FIFO_GYR_CTRL_REG with watermark
     if(verb){
         gyr_print_remain_samp();            // Obtain the number of remaining samples
     }
@@ -479,17 +488,13 @@ GYR_DATA gyr_take_samples(BOOL verb){
         con_printf("showing samples from buffer\r\n");
     }
 
-    GYR_DATA res_data;
-    res_data = gyr_get_FIFO_samples();  // read FIFO data
+    gyr_get_FIFO_samples(res_data);  // read FIFO data
     if(verb){
-        char ret[10];
-	//con_printf("Average\r\n");
-	con_printf("X axis :");
-        itoa(ret,  (unsigned int)res_data.a_x, 10); con_printf(ret); con_printf("\r\n");
-	con_printf("Y axis :");
-        itoa(ret,  (unsigned int)res_data.a_y, 10); con_printf(ret); con_printf("\r\n");
-	con_printf("Z axis:");
-        itoa(ret,  (unsigned int)res_data.a_z, 10); con_printf(ret); con_printf("\r\n");
+	printf("gyr_take_samples\r\n");
+	printf("X axis : %d\n", (*res_data).a_x );
+        printf("Y axis : %d\n", (*res_data).a_y );
+        printf("Z axis : %d\n", (*res_data).a_z );
+        printf("************************\n");
     }
 
     __delay_ms(50);
@@ -508,5 +513,4 @@ GYR_DATA gyr_take_samples(BOOL verb){
 
     gyr_powermode(0x00);						// to powerdown
     */
-    return res_data;
 }

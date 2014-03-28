@@ -11,6 +11,7 @@
 #ifndef CMD_RTC_H
 #define CMD_RTC_H
 
+#include "SUCHAI_config.h"
 #include "cmdIncludes.h"    //para CMD_XXX
 #include "DebugIncludes.h"  //para con_printf
 #include "rtc_mb.h"
@@ -22,7 +23,7 @@
  * Lista de comandos disponibles.
  */
 typedef enum{
-    rtc_id_adjust_year=((unsigned int)(CMD_RTC)*0x100), ///< @cmd_first
+    rtc_id_adjust_year=((unsigned int)(SCH_CMD_RTC)*0x100), ///< @cmd_first
     rtc_id_adjust_month, ///< @cmd
     rtc_id_adjust_day, ///< @cmd
     rtc_id_adjust_weekday, ///< @cmd

@@ -149,7 +149,8 @@ int pay_debugPay(void *param){
             con_printf("dat_pay_gyro\r\n");
             //config gyro
             gyr_init_config();
-            GYR_DATA res_data = gyr_take_samples(FALSE);
+            GYR_DATA res_data;
+            gyr_take_samples(FALSE, &res_data);
             printf ("a_x = %d\n", res_data.a_x);
             printf ("a_y = %d\n", res_data.a_y);
             printf ("a_z = %d\n", res_data.a_z);
@@ -617,11 +618,17 @@ int pay_stop_test2(void *param){
 //******************************************************************************
 int pay_debug_gyro(void *param){
     //config gyro
+    BOOL st = dig_isAlive();
+    printf("dig_isAlive() = %d\n", (int)st);
+
     gyr_init_config();
-    GYR_DATA res_data = gyr_take_samples(FALSE);
-    printf ("a_x = %d\n", res_data.a_x);
-    printf ("a_y = %d\n", res_data.a_y);
-    printf ("a_z = %d\n", res_data.a_z);
+    GYR_DATA res_data;
+    gyr_take_samples(TRUE, &res_data);
+    printf("pay_debug_gyro\r\n");
+    printf("X axis : %d\n", (res_data).a_x );
+    printf("Y axis : %d\n", (res_data).a_y );
+    printf("Z axis : %d\n", (res_data).a_z );
+    printf("************************\n");
 
     return 1;
 }
@@ -636,12 +643,13 @@ int pay_init_gyro(void *param){
     //config gyro
     gyr_init_config();
 
-    return 1;
+    return (int)dig_isAlive();
 }
 int pay_take_gyro(void *param){
     con_printf("pay_take_gyro()..\r\n");
 
-    GYR_DATA res_data = gyr_take_samples(FALSE);
+    GYR_DATA res_data;
+    gyr_take_samples(FALSE, &res_data);
     dat_setPayloadVar(dat_pay_gyro, res_data.a_x);
     dat_setPayloadVar(dat_pay_gyro, res_data.a_y);
     dat_setPayloadVar(dat_pay_gyro, res_data.a_z);

@@ -45,24 +45,6 @@ typedef struct ctrl_command{
 #define CMD_CMDNULL     (0xFFFF)    ///< Dummy command id. Represent a null command
 #define CMD_STOP        (0xFFFE)    ///< Reserved id. Represent a stop or separation code
 
-#define CMD_PPC         (0x10)
-#define CMD_CON         (0x20)
-#define CMD_TRX         (0x30)
-#define CMD_EPS         (0x40)
-#define CMD_DRP         (0x50)
-#define CMD_PAY         (0x60)
-//#define CMD_PAY_Lag     (0x61)
-//#define CMD_PAY_Cam     (0x62)
-//#define CMD_PAY_Gyr     (0x63)
-//#define CMD_PAY_Fis     (0x64)
-//#define CMD_PAY_ST1     (0x65)
-//#define CMD_PAY_ST2     (0x66)
-//#define CMD_PAY_ST3     (0x67)
-//#define CMD_PAY_ST4     (0x68)
-//#define CMD_PAY_GPS     (0x69)
-#define CMD_RTC         (0x70)
-#define CMD_TCM         (0x80)
-
 #define CMD_IDORIG_TCONSOLE         (0x1101)
 #define CMD_IDORIG_TCOMUNICATIONS   (0x1102)
 #define CMD_IDORIG_TFLIGHTPLAN      (0x1103)

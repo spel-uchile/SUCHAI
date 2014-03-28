@@ -54,6 +54,7 @@
 
 /* Software configs */
 #define SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE  (0) ///< 1=Activo ( EPS montada ) 0= Inactivo ( EPS no montada SOC se lleva a MAX_SOC )
+#define SCH_TASKEXECUTER_INSIDE_TASKDISPATCHER  (1) //< 0=taskExecuter como tarea separada 1=taskExecuter como parte de taskDispatcher
 
 /* TRX configs */
 #define SCH_COMM_NO_TC_DAYS                (1)      ///< Dias sin TC para pasar a modo RSII

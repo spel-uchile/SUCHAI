@@ -33,10 +33,10 @@ PPC_DEFAULT_CW1();
 PPC_DEFAULT_CW2();
 PPC_DEFAULT_CW3();
 
-xQueueHandle dispatcherQueue, executerCmdQueue, executerStatQueue, i2cRxQueue;
+xQueueHandle dispatcherQueue, i2cRxQueue, executerCmdQueue, executerStatQueue;
 xSemaphoreHandle dataRepositorySem, consolePrintfSem, rtcPrintSem;
 
-xTaskHandle taskDeploymentHandle, taskDispatcherHandle, taskExecuterHandle;
+xTaskHandle taskDeploymentHandle, taskDispatcherHandle;
 xTaskHandle taskComunicationsHandle, taskConsoleHandle, taskFlightPlanHandle,
             taskFlightPlan2Handle, taskHouskeepingHandle;
 
@@ -44,8 +44,12 @@ int main(void)
 {
     /* Initializing shared Queues */
     dispatcherQueue = xQueueCreate(25,sizeof(DispCmd));
-    executerCmdQueue = xQueueCreate(1,sizeof(ExeCmd));
-    executerStatQueue = xQueueCreate(1,sizeof(int));
+    #if(SCH_TASKEXECUTER_INSIDE_TASKDISPATCHER==1)
+        //no Queue creation
+    #else
+        executerCmdQueue = xQueueCreate(1,sizeof(ExeCmd));
+        executerStatQueue = xQueueCreate(1,sizeof(int));
+    #endif
     i2cRxQueue = xQueueCreate(I2C_MTU, sizeof(char));   //TRX_GOMSPACE
 
     /* Initializing shared Semaphore */
@@ -62,8 +66,13 @@ int main(void)
 
     /* Crating base tasks */
     printf("\n[main] Starting base tasks...\r\n");
-    xTaskCreate(taskExecuter, (signed char *)"EXE", 3*configMINIMAL_STACK_SIZE, NULL, 4, &taskExecuterHandle);
-    xTaskCreate(taskDispatcher, (signed char *)"DIS", 1.5*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
+    #if(SCH_TASKEXECUTER_INSIDE_TASKDISPATCHER==1)
+        //no taskExecuter
+        xTaskCreate(taskDispatcher, (signed char *)"DIS", 4*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
+    #else
+        xTaskCreate(taskExecuter, (signed char *)"EXE", 3*configMINIMAL_STACK_SIZE, NULL, 4, &taskExecuterHandle);
+        xTaskCreate(taskDispatcher, (signed char *)"DIS", 1.5*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
+    #endif
 
     /* Initializing LibCSP*/
     dep_csp_initialization();

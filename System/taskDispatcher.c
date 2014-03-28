@@ -63,11 +63,23 @@ void taskDispatcher(void *param)
                 exeCmd.fnct = repo_getCmd(newCmd.cmdId);
                 exeCmd.param = cmdParam;
 
-                /* Send the command to executer Queue - BLOCKING */
-                xQueueSend(executerCmdQueue, &exeCmd, portMAX_DELAY);
+                #if(SCH_TASKEXECUTER_INSIDE_TASKDISPATCHER==1)
+                    /* El comando tiene 2min aprox para ejecutarse */
+                    ClrWdt();
 
-                /* Get the result from Executer Stat Queue - BLOCKING */
-                xQueueReceive(executerStatQueue, &cmdResult, portMAX_DELAY);
+                    /* Execute the command */
+                    cmdParam = exeCmd.param;
+                    cmdResult = exeCmd.fnct((void *)&cmdParam);
+
+                    /* Si el comando se ejecuto bien reseteo el WDT */
+                    ClrWdt();
+                #else
+                    /* Send the command to executer Queue - BLOCKING */
+                    xQueueSend(executerCmdQueue, &exeCmd, portMAX_DELAY);
+
+                    /* Get the result from Executer Stat Queue - BLOCKING */
+                    xQueueReceive(executerStatQueue, &cmdResult, portMAX_DELAY);
+                #endif
 
                 #if SCH_TASKDISPATCHER_VERBOSE >= 1
                     printf("[Dispatcher] CMD Result: %d\n", cmdResult);

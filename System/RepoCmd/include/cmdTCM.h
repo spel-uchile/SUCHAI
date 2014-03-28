@@ -25,7 +25,7 @@
  * Lista de comandos disponibles.
  */
 typedef enum{
-    tcm_id_testframe=((unsigned int)(CMD_TCM)*0x100), ///< @cmd_first
+    tcm_id_testframe=((unsigned int)(SCH_CMD_TCM)*0x100), ///< @cmd_first
     tcm_id_resend, ///< @cmd
     //Beacon
     tcm_id_update_beacon, ///< @cmd

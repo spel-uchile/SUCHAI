@@ -132,7 +132,7 @@ int check_if_executable(DispCmd *newCmd)
         }
 
         //Prevent TCM command to discharge bat. (Pina-Bilbao Power Budget)
-        if((sta_getCubesatVar(sta_eps_state_flag) == 1) && ((cmdId>>8)==CMD_TCM))
+        if((sta_getCubesatVar(sta_eps_state_flag) == 1) && ((cmdId>>8)==SCH_CMD_TCM))
         {
             #if SCH_TASKDISPATCHER_VERBOSE >=1
                 printf("[Dispatcher] Orig: 0x%X | Cmd: 0x%X | Param: %d Refused because of EPS flag\n", idOrig, cmdId, param );

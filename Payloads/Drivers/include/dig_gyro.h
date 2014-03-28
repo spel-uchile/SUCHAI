@@ -60,6 +60,7 @@ void gyr_do_delay(unsigned long d);
 void gyr_write_reg(unsigned char reg, unsigned char val);
 unsigned char gyr_read_reg(unsigned char reg);
 void whoami(void);
+BOOL dig_isAlive(void);
 
 void gyr_config_CTRL_REG3(unsigned char reg);
 void gyr_config_CTRL_REG4(unsigned char reg);
@@ -74,10 +75,10 @@ void gyr_enable_axis(unsigned char axis);
 void gyr_print_remain_samp(void);
 void gyr_print_FIFO_int_source(void);
 void gyr_print_temp(void);
-GYR_DATA gyr_get_FIFO_samples(void);
+void gyr_get_FIFO_samples(GYR_DATA *res_data);
 void gyr_get_data(unsigned char *dir, unsigned char muestras, GYR_DATA *res_data);
 
 
 int gyr_init_config(void);
-GYR_DATA gyr_take_samples(BOOL verb);
+void gyr_take_samples(BOOL verb, GYR_DATA *res_data);
 #endif

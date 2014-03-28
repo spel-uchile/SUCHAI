@@ -19,7 +19,7 @@
  * Lista de comandos disponibles.
  */
 typedef enum{
-    con_id_help=((unsigned int)(CMD_CON)*0x100), ///< @cmd_first
+    con_id_help=((unsigned int)(SCH_CMD_CON)*0x100), ///< @cmd_first
     con_id_promt, ///< @cmd
     con_id_error_cmd_toolong, ///< @cmd
     con_id_debug_msg, ///< @cmd

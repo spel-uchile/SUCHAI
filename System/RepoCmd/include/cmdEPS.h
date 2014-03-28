@@ -21,7 +21,7 @@
  * Lista de comandos disponibles.
  */
 typedef enum{
-    eps_id_readreg=((unsigned int)(CMD_EPS)*0x100), ///< @cmd_first
+    eps_id_readreg=((unsigned int)(SCH_CMD_EPS)*0x100), ///< @cmd_first
     eps_id_soc_estimation, ///< @cmd
     eps_id_current_meassurement, ///< @cmd
     eps_id_panel_pwr_meassuerement, ///< @cmd

@@ -32,6 +32,7 @@ cmdFunction trxFunction[TRX_NCMD];
 int trx_sysReq[TRX_NCMD];
 
 void trx_onResetCmdTRX(void){
+    printf("        trx_onResetCmdTRX\n");
     /*TRX*/
     trxFunction[(unsigned char)trx_id_send_beacon] = trx_send_beacon;
     trx_sysReq[(unsigned char)trx_id_send_beacon]  = CMD_SYSREQ_MIN;

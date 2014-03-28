@@ -12,6 +12,8 @@ char *p_beacon_buff = beacon_buff+10;//+strlen(beacon_buff);
 extern nanocom_conf_t TRX_CONFIG; /** Global configuration var from cmdTRX.c*/
 
 void tcm_onResetCmdTCM(void){
+    printf("        tcm_onResetCmdTCM\n");
+
     int i;
     for(i=0; i<TCM_NCMD; i++) tcm_sysReq[i] = CMD_SYSREQ_MIN+SCH_TCM_SYS_REQ;
 

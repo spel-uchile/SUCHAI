@@ -35,6 +35,8 @@ cmdFunction ppcFunction[PPC_NCMD];
 int ppc_sysReq[PPC_NCMD];
 
 void ppc_onResetCmdPPC(void){
+    printf("        ppc_onResetCmdPPC\n");
+
     ppcFunction[(unsigned char)ppc_id_reset] = ppc_reset;
     ppc_sysReq[(unsigned char)ppc_id_reset]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_newosc] = ppc_newosc;

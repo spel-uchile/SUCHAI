@@ -25,6 +25,8 @@ cmdFunction rtcFunction[RTC_NCMD];
 int rtc_sysReq[RTC_NCMD];
 
 void rtc_onResetCmdRTC(void){
+    printf("        rtc_onResetCmdRTC\n");
+
     rtcFunction[(unsigned char)rtc_id_adjust_year] = rtc_adjust_year;
     rtc_sysReq[(unsigned char)rtc_id_adjust_year]  = CMD_SYSREQ_MIN;
     rtcFunction[(unsigned char)rtc_id_adjust_month] = rtc_adjust_month;

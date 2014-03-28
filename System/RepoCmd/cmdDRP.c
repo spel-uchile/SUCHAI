@@ -25,6 +25,8 @@ int drp_sysReq[DRP_NCMD];
 nanocom_rssi_t rssi_data[10];
 
 void drp_onResetCmdDRP(){
+    printf("        drp_onResetCmdDRP\n");
+
     //De display
     drpFunction[(unsigned char)drp_id_print_sta_CubesatVar] = drp_print_sta_CubesatVar;
     drp_sysReq[(unsigned char)drp_id_print_sta_CubesatVar]  = CMD_SYSREQ_MIN;

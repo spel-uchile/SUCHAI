@@ -60,6 +60,23 @@ void taskDeployment(void *param)
     #endif
 }
 
+//------------------------------------------------------------------------------
+extern cmdFunction trxFunction[];
+extern cmdFunction ppcFunction[];
+extern cmdFunction conFunction[];
+extern cmdFunction epsFunction[];
+extern cmdFunction drpFunction[];
+extern cmdFunction payFunction[];
+extern cmdFunction rtcFunction[];
+extern cmdFunction tcmFunction[];
+extern int trx_sysReq[];
+extern int ppc_sysReq[];
+extern int con_sysReq[];
+extern int eps_sysReq[];
+extern int drp_sysReq[];
+extern int pay_sysReq[];
+extern int rtc_sysReq[];
+extern int tcm_sysReq[];
 /**
  * Initializes all data repositories
  *
@@ -81,10 +98,100 @@ int dep_init_Repos(void *param)
         printf("\n[dep_init_Repos] Initializing command repositories...\r\n");
     #endif
 
+//    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+//        printf("    * Commands rep.\r\n");
+//    #endif
+//    repo_onResetCmdRepo();
+
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * Commands rep.\r\n");
+        printf("    * Attaching cmdPPC..\r\n");
     #endif
-    repo_onResetCmdRepo();
+    CmdRepo_cmdXXX_handler cmdPPC_handler;
+    cmdPPC_handler.cmdOwn = 0x10;
+    cmdPPC_handler.nCmd = PPC_NCMD;
+    cmdPPC_handler.p_xxxFunction = ppcFunction;
+    cmdPPC_handler.p_xxxSysReq = ppc_sysReq;
+    cmdPPC_handler.xxx_onReset = ppc_onResetCmdPPC;
+    repo_set_cmdXXX_hanlder(cmdPPC_handler);
+
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * Attaching cmdCON..\r\n");
+    #endif
+    CmdRepo_cmdXXX_handler cmdCON_handler;
+    cmdCON_handler.cmdOwn = 0x20;
+    cmdCON_handler.nCmd = CON_NCMD;
+    cmdCON_handler.p_xxxFunction = conFunction;
+    cmdCON_handler.p_xxxSysReq = con_sysReq;
+    cmdCON_handler.xxx_onReset = con_onResetCmdCON;
+    repo_set_cmdXXX_hanlder(cmdCON_handler);
+
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * Attaching cmdTRX..\r\n");
+    #endif
+    CmdRepo_cmdXXX_handler cmdTRX_handler;
+    cmdTRX_handler.cmdOwn = 0x30;
+    cmdTRX_handler.nCmd = TRX_NCMD;
+    cmdTRX_handler.p_xxxFunction = trxFunction;
+    cmdTRX_handler.p_xxxSysReq = trx_sysReq;
+    cmdTRX_handler.xxx_onReset = trx_onResetCmdTRX;
+    repo_set_cmdXXX_hanlder(cmdTRX_handler);
+
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * Attaching cmdEPS..\r\n");
+    #endif
+    CmdRepo_cmdXXX_handler cmdEPS_handler;
+    cmdEPS_handler.cmdOwn = 0x40;
+    cmdEPS_handler.nCmd = EPS_NCMD;
+    cmdEPS_handler.p_xxxFunction = epsFunction;
+    cmdEPS_handler.p_xxxSysReq = eps_sysReq;
+    cmdEPS_handler.xxx_onReset = eps_onResetCmdEPS;
+    repo_set_cmdXXX_hanlder(cmdEPS_handler);
+
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * Attaching cmdDRP..\r\n");
+    #endif
+    CmdRepo_cmdXXX_handler cmdDRP_handler;
+    cmdDRP_handler.cmdOwn = 0x50;
+    cmdDRP_handler.nCmd = DRP_NCMD;
+    cmdDRP_handler.p_xxxFunction = drpFunction;
+    cmdDRP_handler.p_xxxSysReq = drp_sysReq;
+    cmdDRP_handler.xxx_onReset = drp_onResetCmdDRP;
+    repo_set_cmdXXX_hanlder(cmdDRP_handler);
+
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * Attaching cmdPAY..\r\n");
+    #endif
+    CmdRepo_cmdXXX_handler cmdPAY_handler;
+    cmdPAY_handler.cmdOwn = 0x60;
+    cmdPAY_handler.nCmd = PAY_NCMD;
+    cmdPAY_handler.p_xxxFunction = payFunction;
+    cmdPAY_handler.p_xxxSysReq = pay_sysReq;
+    cmdPAY_handler.xxx_onReset = pay_onResetCmdPAY;
+    repo_set_cmdXXX_hanlder(cmdPAY_handler);
+
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * Attaching cmdRTC..\r\n");
+    #endif
+    CmdRepo_cmdXXX_handler cmdRTC_handler;
+    cmdRTC_handler.cmdOwn = 0x70;
+    cmdRTC_handler.nCmd = RTC_NCMD;
+    cmdRTC_handler.p_xxxFunction = rtcFunction;
+    cmdRTC_handler.p_xxxSysReq = rtc_sysReq;
+    cmdRTC_handler.xxx_onReset = rtc_onResetCmdRTC;
+    repo_set_cmdXXX_hanlder(cmdRTC_handler);
+
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * Attaching cmdTCM..\r\n");
+    #endif
+    CmdRepo_cmdXXX_handler cmdTCM_handler;
+    cmdTCM_handler.cmdOwn = 0x80;
+    cmdTCM_handler.nCmd = TCM_NCMD;
+    cmdTCM_handler.p_xxxFunction = tcmFunction;
+    cmdTCM_handler.p_xxxSysReq = tcm_sysReq;
+    cmdTCM_handler.xxx_onReset = tcm_onResetCmdTCM;
+    repo_set_cmdXXX_hanlder(cmdTCM_handler);
+   
+
 //------------------------------------------------------------------------------
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
         printf("\n[dep_init_Repos] Initializing data repositories...\r\n");

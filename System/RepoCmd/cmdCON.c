@@ -23,6 +23,8 @@ cmdFunction conFunction[CON_NCMD];
 int con_sysReq[CON_NCMD];
 
 void con_onResetCmdCON(void){
+    printf("        con_onResetCmdCON\n");
+
     conFunction[(unsigned char)con_id_help] = con_help;
     con_sysReq[(unsigned char)con_id_help]  = CMD_SYSREQ_MIN;
     conFunction[(unsigned char)con_id_promt] = con_promt;

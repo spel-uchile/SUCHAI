@@ -27,6 +27,8 @@ int pay_sysReq[PAY_NCMD];
 #define TEST2_MSJS 1
 
 void pay_onResetCmdPAY(void){
+    printf("        pay_onResetCmdPAY\n");
+
     int i;
     for(i=0; i<PAY_NCMD; i++) pay_sysReq[i] = CMD_SYSREQ_MIN;
 

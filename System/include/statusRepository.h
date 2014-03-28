@@ -93,6 +93,8 @@ typedef enum{
     sta_eps_state_flag,
     sta_eps_charging,
 
+    /* Revisar de aqui hacia abajo si aun son necesarios !!! */
+
     //TRX => (Communication subsystem)
     sta_trx_frec_tx,          // TX Freq
     sta_trx_frec_rx,          // RX Freq
@@ -110,7 +112,7 @@ typedef enum{
     // Cmd buffer control
     sta_trx_newTcFrame,       // Exist any unprocessed TcFram?
     sta_trx_newCmdBuff,       // Exist unprocessed CMD in the ernal buffer
-    //trx_repo_telecmd[STA_MAX_BUFF_TELECMD],   // Assuming that each Telecommand is of the form: [cmdId|param]
+    //trx_repo_telecmd[STA_MAX_BUFF_TELECMD],   // Assuming that each Telecommand is of the form: [cmdId | param]
 
     //FLIGHT PLAN
     sta_fpl_index,            // Indice del flight plan que sera editado

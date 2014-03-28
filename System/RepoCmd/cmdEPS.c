@@ -24,6 +24,8 @@ cmdFunction epsFunction[EPS_NCMD];
 int eps_sysReq[EPS_NCMD];
 
 void eps_onResetCmdEPS(void){
+    printf("        eps_onResetCmdEPS\n");
+
     epsFunction[(unsigned char)eps_id_readreg] = eps_readreg;
     eps_sysReq[(unsigned char)eps_id_readreg]  = CMD_SYSREQ_MIN;
     epsFunction[(unsigned char)eps_id_soc_estimation] = eps_soc_estimation;

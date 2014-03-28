@@ -17,6 +17,9 @@
  */
 typedef int (*cmdFunction)( void * );
 
+
+typedef void (*onResetFunction)( void );
+
 /**
  * Structure that represents a command passed to executer. Contains a pointer of
  * type cmdFunction with the function to execute and one parameter for that

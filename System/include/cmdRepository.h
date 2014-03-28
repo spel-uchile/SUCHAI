@@ -23,6 +23,23 @@
 
 #include "cmdPayload.h"
 
+/*
+extern cmdFunction tcmFunction[];
+extern int trx_sysReq[];
+ */
+typedef struct{
+    unsigned char cmdOwn;
+    unsigned int nCmd;
+    cmdFunction *p_xxxFunction;
+    int *p_xxxSysReq;
+    onResetFunction xxx_onReset;
+
+}CmdRepo_cmdXXX_handler;
+
+
+#define CMD_BUFF_CMDXX_LEN SCH_NUM_CMDXXX
+void repo_set_cmdXXX_hanlder(CmdRepo_cmdXXX_handler cmdPPC_handler);
+cmdFunction repo_getFunction(int cmdID);
 
 int cmdNULL(void *param);
 

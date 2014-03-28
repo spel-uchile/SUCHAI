@@ -60,7 +60,8 @@ void taskDispatcher(void *param)
                 #endif
 
                 /* Fill the executer command */
-                exeCmd.fnct = repo_getCmd(newCmd.cmdId);
+                //exeCmd.fnct = repo_getCmd(newCmd.cmdId);
+                exeCmd.fnct = repo_getFunction(newCmd.cmdId);
                 exeCmd.param = cmdParam;
 
                 #if(SCH_TASKEXECUTER_INSIDE_TASKDISPATCHER==1)

@@ -31,12 +31,12 @@
 #define SCH_FLIGHTPLAN2_REALTIME            (0)  ///< 1=Realtime 0=Debugtime
 
 /* Bus Onboard */
-#define SCH_SYSBUS_ONBOARD                  (0)  //< Onboard => I2C1 en uso
+#define SCH_SYSBUS_ONBOARD                  (1)  //< Onboard => I2C1 en uso
 #define SCH_PAYBUS_ONBOARD                  (1)  ///< Onboard => I2C3 en uso
 #define SCH_ANTENNA_ONBOARD                 (0) ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
-#define SCH_TRX_ONBOARD                     (1)  ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
+#define SCH_TRX_ONBOARD                     (0) ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
 #define SCH_RTC_ONBOARD                     (1) ///< 1 = Onboard 0 = Not Onboard
-#define SCH_MEMEEPROM_ONBOARD               (0) ///< 1 = Onboard 0 = Not Onboard
+#define SCH_MEMEEPROM_ONBOARD               (1) ///< 1 = Onboard 0 = Not Onboard
 #define SCH_EPS_ONBOARD                     (0) ///< Onboard => I2C1 en uso
 #define SCH_MEMSD_ONBOARD                   (1) ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_MGN_ONBOARD                     (0)  ///< Onboard => 1 pin(es) en modo Switch
@@ -44,7 +44,7 @@
 /* Payloads Onboard */
 //#define SCH_PAYLOADS_ONBOARD                (0) ///< 0 = no payloads is onboard
 #define SCH_PAY_LAGMUIR_ONBOARD             (0) ///< Ocupa UART3_en_H1.19_y_H1.20
-#define SCH_PAY_FIS_ONBOARD                 (0)  ///<
+#define SCH_PAY_FIS_ONBOARD                 (1)  ///<
 #define SCH_PAY_GYRO_ONBOARD                (1)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_PAY_SENSTEMP_ONBOARD            (1)  ///<
 #define SCH_PAY_GPS_ONBOARD                 (0)  ///< Onboard => UART4 en uso, 1 pin(es) en modo Switch
@@ -52,17 +52,17 @@
 #define SCH_PAY_TEST1_ONBOARD               (0)  ///< Onboard =>
 #define SCH_PAY_TEST2_ONBOARD               (0)  ///< Onboard =>
 
+/* Command Repo configs */
+#define SCH_CMD_PPC         (0x10)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_CON         (0x20)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_TRX         (0x30)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_EPS         (0x40)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_DRP         (0x50)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_PAY         (0x60)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_RTC         (0x70)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_TCM         (0x80)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+
 /* TRX and COMM configs */
-
-#define SCH_CMD_PPC         (0x10)
-#define SCH_CMD_CON         (0x20)
-#define SCH_CMD_TRX         (0x30)
-#define SCH_CMD_EPS         (0x40)
-#define SCH_CMD_DRP         (0x50)
-#define SCH_CMD_PAY         (0x60)
-#define SCH_CMD_RTC         (0x70)
-#define SCH_CMD_TCM         (0x80)
-
 #define SCH_TRX_BEACON_PERIOD              (4*60)   ///< [s] Periodo del beacon en segundos (UINT16)
 #define SCH_TRX_BEACON_WPM                 (20)     ///< Velocidad del beacon en palabras por minuto 1-255
 #define SCH_TRX_BEACON_BAT_LVL             (550)    ///< Nivel de bateria minimo para transmitir beacon
@@ -76,14 +76,15 @@
 #define SCH_TRX_PORT_DEBUG                 (11)     /// Puerto debug en software de vuelo. Solo imprimie el paquete
 
 /* Other Software configs */
-#define SCH_NUM_CMDXXX                          (10) //< Numero maximo de repositorios de comando que pueden ser agregados (min 0)
-#define SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE  (0) ///< 1=Activo ( EPS montada ) 0= Inactivo ( EPS no montada SOC se lleva a MAX_SOC )
-#define SCH_TASKEXECUTER_INSIDE_TASKDISPATCHER  (1) //< 0=taskExecuter como tarea separada 1=taskExecuter como parte de taskDispatcher
-#define SCH_FLIGHTPLAN_TYPE                     (0)    ///< 0=ninguno, 1=taskFligthPlan 2=taskFlightPlan2 3=ambos
+#define SCH_NUM_CMDXXX                          (10)    //< Numero maximo de repositorios de comando que pueden ser agregados (min 3)
+#define SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE  (0)     ///< 1=Activo ( EPS montada ) 0= Inactivo ( EPS no montada SOC se lleva a MAX_SOC )
+#define SCH_TASKEXECUTER_INSIDE_TASKDISPATCHER  (1)     //< 0=taskExecuter como tarea separada 1=taskExecuter como parte de taskDispatcher
+#define SCH_FLIGHTPLAN_TYPE                     (0)     ///< 0=ninguno, 1=taskFligthPlan 2=taskFlightPlan2 3=ambos
 #define SCH_FLIGHTPLAN_RESOLUTION               (10)    ///< [MINUTES] Resolucion de tiempo del flight plan
 #define SCH_FLIGHTPLAN_N_CMD                    ((24 * 60) / SCH_FLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]
 #define SCH_FLIGHTPLAN_MEMORY                   (0)     ///< (0) buffer en  RAM, (1) en memoria SD
-#define SCH_USE_FLIGHTPLAN2                     (0) ///< 1 = usar, 0 = no usar
+#define SCH_USE_FLIGHTPLAN2                     (0)     ///< 1 = use it, 0 = do not use it
+#define SCH_USE_HOUSEKEEPING                    (0)     ///< 1 = use it, 0 = do not use it
 
 /**
  * @def SCH_DATAREPOSITORY_MAX_BUFF_TELECMD

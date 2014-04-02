@@ -278,9 +278,9 @@ int dep_launch_tasks(void *param)
     xTaskCreate(taskConsole, (signed char *)"CON", 1.5*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * Creating taskHousekeeping\r\n");
+//        printf("    * Creating taskHousekeeping\r\n");
     #endif
-    xTaskCreate(taskHouskeeping, (signed char *)"HKP", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskHouskeepingHandle);
+//    xTaskCreate(taskHouskeeping, (signed char *)"HKP", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskHouskeepingHandle);
     
     #if (SCH_TRX_ONBOARD == 1)
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)

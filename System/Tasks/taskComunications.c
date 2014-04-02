@@ -29,6 +29,7 @@ extern xQueueHandle i2cRxQueue;
 
 static void com_RxI2C(xQueueHandle i2c_rx_queue);
 static void com_receive_tc(csp_packet_t *packet);
+static void com_receive_cmd(csp_packet_t *packet);
 
 void taskComunications(void *param)
 {
@@ -101,6 +102,12 @@ void taskComunications(void *param)
                     printf((char *)(packet->data));
                     csp_buffer_free(packet);
                     break;
+
+                case SCH_TRX_PORT_CONSOLE:
+                    /* Debug port, executes console commands */
+                    com_receive_cmd(packet);
+                    csp_buffer_free(packet);
+                    break;
                     
                 default:
                     /* Let the service handler reply pings, buffer use, etc. */
@@ -148,6 +155,24 @@ static void com_receive_tc(csp_packet_t *packet)
 #if SCH_TASKCOMUNICATIONS_VERBOSE
     printf("\n");
 #endif
+}
+
+/**
+ * Parse tc frame as console commands
+ *
+ * @param packet TC Buffer
+ */
+static void com_receive_cmd(csp_packet_t *packet)
+{
+    /* Read each TC from data repo in format [ID,ARG] */
+    int i;
+    for(i=0; i < (packet->length); i++)
+    {
+        con_char_handler(packet->data[i]);
+    }
+
+    if(packet->data[i-1] != '\n')
+        con_char_handler('\n');
 }
 
 /**

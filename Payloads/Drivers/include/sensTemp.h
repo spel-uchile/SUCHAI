@@ -24,12 +24,16 @@
 #define STx_REG_TLOW            0b00000010
 #define STx_REG_THIGH           0b00000011
 
-int sensTemp_init(unsigned char sens_x);
+
+unsigned char sensTemp_read_reg(char dir, char reg);
+BOOL sensTemp_isAlive(unsigned char sens_x);
+
+BOOL sensTemp_init(unsigned char sens_x);
 int sensTemp_take(unsigned char sens_x, BOOL verb);
 void sensTemp_stop(unsigned char sens_x);
 
 
-void writeSensTemp(unsigned char sens_x, unsigned char address, unsigned char data);
+void sensTemp_write_reg(unsigned char sens_x, unsigned char address, unsigned char data);
 unsigned char readSensTemp(unsigned char sens_x, unsigned char address);
 
 #endif

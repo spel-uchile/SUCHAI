@@ -617,20 +617,21 @@ int pay_stop_test2(void *param){
 }
 //******************************************************************************
 int pay_debug_gyro(void *param){
-    //config gyro
-    BOOL st = dig_isAlive();
-    printf("dig_isAlive() = %d\n", (int)st);
 
-    gyr_init_config();
+//    BOOL st = gyr_isAlive();
+//    printf("dig_isAlive() = %d\n", (int)st);
+
+    BOOL verb = *((int *)param);
+    BOOL st = gyr_init_config();
     GYR_DATA res_data;
-    gyr_take_samples(TRUE, &res_data);
+    gyr_take_samples(verb, &res_data);
     printf("pay_debug_gyro\r\n");
     printf("X axis : %d\n", (res_data).a_x );
     printf("Y axis : %d\n", (res_data).a_y );
     printf("Z axis : %d\n", (res_data).a_z );
     printf("************************\n");
 
-    return 1;
+    return (int)st;
 }
 int pay_init_gyro(void *param){
     con_printf("pay_init_gyro\r\n");
@@ -643,7 +644,7 @@ int pay_init_gyro(void *param){
     //config gyro
     gyr_init_config();
 
-    return (int)dig_isAlive();
+    return (int)gyr_isAlive();
 }
 int pay_take_gyro(void *param){
     con_printf("pay_take_gyro()..\r\n");
@@ -967,16 +968,15 @@ int pay_send_to_lagimur(void *param)
 //******************************************************************************
 int pay_debug_sensTemp(void *param){
     int res;
-    con_printf("dat_pay_sensTemp 1\r\n");
     sensTemp_init(ST1_ADDRESS);
     res = sensTemp_take(ST1_ADDRESS, TRUE);
-    con_printf("dat_pay_sensTemp 2\r\n");
+
     sensTemp_init(ST2_ADDRESS);
     res = sensTemp_take(ST2_ADDRESS, TRUE);
-    con_printf("dat_pay_sensTemp 3\r\n");
+
     sensTemp_init(ST3_ADDRESS);
     res = sensTemp_take(ST3_ADDRESS, TRUE);
-    con_printf("dat_pay_sensTemp 4\r\n");
+
     sensTemp_init(ST4_ADDRESS);
     res = sensTemp_take(ST4_ADDRESS, TRUE);
 

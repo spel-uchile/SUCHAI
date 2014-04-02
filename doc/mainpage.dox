@@ -1,0 +1,52 @@
+/**
+@mainpage Documentación de comandos para el satélite SUCHAI
+Navegue por los distintos archivos y secciones para encontrar el código y
+documentación correspondiente a todos los comandos disponibles en el sistema
+de vuelo. También puede utilizar el buscador integrados.
+
+Cada comando se representa a través de un código en hexadecimal y recibe un
+argumento entero.
+
+Los comandos incluidos pueden ser ejecutados por consola a través de la orden
+@code
+    exe_cmd <comando> <argumento>
+@endcode
+o a través de telecomandos desde la estación terrena, enviando frames en formato
+hexadecimal, bigendian donde cada comando y argumento corresponde a 16bits. Se
+usa la señal de termino especial 0xFFFE para marcar el final del frame.
+@code
+    <cmd><arg><cmd><arg> ······ <stop>
+@endcode
+
+@section Comandos Comandos disponibles
+
+<div class="contents">
+<ul>
+<li>Comandos de consola
+: <a class="el" href="cmd_console_8h.html#a71edcf7829d2fd76dc994d5b46f5975d">CON_CmdIndx</a>
+</li>
+<li>Comandos para repositorio de datos
+: <a class="el" href="cmd_d_r_p_8h.html#a1793b3133b3f4a88c0c4232b59e016f2">DRP_CmdIndx</a>
+</li>
+<li>Comandos para sistema de energía
+: <a class="el" href="cmd_e_p_s_8h.html#a22f5d1c3659a389e6d5c53b33ca52584">EPS_CmdIndx</a>
+</li>
+<li>Comandos para payloads
+: <a class="el" href="cmd_payload_8h.html#aacb0d113d084b7cf943b93c6061cd485">PAY_CmdIndx</a>
+</li>
+<li>Comandos para PIC-PC104
+: <a class="el" href="cmd_p_p_c_8h.html#ad2283d6f7971c06212fc590b8b545f3f">PPC_CmdIndx</a>
+</li>
+<li>Comandos para RTC
+: <a class="el" href="cmd_r_t_c_8h.html#a29150b76e72a6e1fbaeceea823d64910">RTC_CmdIndx</a>
+</li>
+<li>Comandos para telemetría y telecomandos
+: <a class="el" href="cmd_t_c_m_8h.html#aa422f627b903fa358e6e54dd476d1173">TCM_CmdIndx</a>
+</li>
+<li>Comandos para TRX
+: <a class="el" href="cmd_t_r_x_8h.html#a57b9d7c470326a3a2ff26f4014e97b14">TRX_CmdIndx</a>
+</li>
+</ul>
+</div><!-- contents -->
+
+*/

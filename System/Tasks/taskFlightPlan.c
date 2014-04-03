@@ -64,7 +64,7 @@ void taskFlightPlan(void *param)
         {
             /* Get the next command from flight plan */
             last_index = index;
-            NewCmd = dat_getFlightPlan(index);
+            NewCmd = dat_get_FlightPlan(index);
 
             /* Check if valid cmd */
             if(NewCmd.cmdId == CMD_CMDNULL) continue;

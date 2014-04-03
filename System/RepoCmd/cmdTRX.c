@@ -396,8 +396,8 @@ int trx_parsetcframe(void *param)
             if((cmdid != CMD_STOP) && (cmdarg != CMD_STOP))
             {
                 /* Save TC and ARG into repo_telecmd */
-                dat_setTelecmdBuff(parserindex++,cmdid);
-                dat_setTelecmdBuff(parserindex++,cmdarg);
+                dat_set_TeleCmdBuff(parserindex++,cmdid);
+                dat_set_TeleCmdBuff(parserindex++,cmdarg);
                 result++;
             }
             /* Stop bytes detected, end parsing */
@@ -410,7 +410,7 @@ int trx_parsetcframe(void *param)
         /* Fill remaining buffer space */
         while(parserindex < SCH_DATAREPOSITORY_MAX_BUFF_TELECMD)
         {
-            dat_setTelecmdBuff(parserindex++, CMD_CMDNULL);
+            dat_set_TeleCmdBuff(parserindex++, CMD_CMDNULL);
         }
     }
 

@@ -78,7 +78,7 @@ void pay_onResetCmdPAY(void){
 
 //****************************************************************
 int pay_debugPay(void *param){
-    DAT_Payload pay_i = *((DAT_Payload*)param);
+    DAT_PayloadBuff pay_i = *((DAT_PayloadBuff*)param);
     int res;
 
     con_printf("debugPay:\r\n");
@@ -210,23 +210,23 @@ int pay_debugPay(void *param){
 }
 int pay_test_dataRepo(void *param){
 
-    DAT_Payload pay_i=0;
+    DAT_PayloadBuff pay_i=0;
     con_printf("=>FIFO buffer check:\r\n");
     unsigned int i, indx; int value=0xAA00, val; BOOL stat; char ret[10];
     for(i=0;i<0x000F;i++){
-        indx = dat_getNextPayIndx(pay_i);
+        indx = dat_get_NextPayIndx(pay_i);
         con_printf("indx = dat_getNextPayIndx(pay_i);\r\nindx = ");
         sprintf (ret, "0x%X", (unsigned int)indx);
         con_printf(ret); con_printf("\r\n");
 
         //escribo
-        stat = dat_setPayloadVar( pay_i, value);
+        stat = dat_set_PayloadBuff( pay_i, value);
         con_printf("stat = dat_setPayloadVar( pay_i, value);\r\nstat =  ");
         if(stat==TRUE){ con_printf("TRUE\r\n"); }
         else{ con_printf("FALSE\nFin del test\r\n"); break; }
 
         //leo
-        stat = dat_getPayloadVar( pay_i, indx, &val);
+        stat = dat_get_PayloadBuff( pay_i, indx, &val);
         con_printf("stat = dat_getPayloadVar( pay_i, indx, &val);\r\nstat = ");
         if(stat==TRUE){ con_printf("TRUE\r\n"); }
         else{ con_printf("FALSE\nFin del test\r\n"); break; }
@@ -252,7 +252,7 @@ int pay_test_dataRepo(void *param){
  * @return 1 success, 0 fail
  */
 int pay_FSM_default(void *param){
-    DAT_Payload pay_i = *((DAT_Payload*)param);
+    DAT_PayloadBuff pay_i = *((DAT_PayloadBuff*)param);
 
     static PAY_State pay_current_state_buff[dat_pay_last_one];
     static PAY_State pay_current_state;
@@ -320,7 +320,7 @@ static int gpb_indx;
 int pay_init_expFis(void *param){
     con_printf("pay_init_expFis\r\n");
 
-    DAT_Payload pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int maxIndx;
     pay_i = dat_pay_expFis;
 
     static unsigned int ADC_period[] = {10000, 5000, 1000, 500, 100, 50, 10};
@@ -329,7 +329,7 @@ int pay_init_expFis(void *param){
     int buff_len = fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
 
     maxIndx = (buff_len*len*rounds_per_ADC_period) -1;
-    dat_resetPayloadBuffer(pay_i, maxIndx, 0);
+    dat_reset_PayloadBuff(pay_i, maxIndx, 0);
 
     //Reset vars
     gpb_indx = 0;
@@ -343,7 +343,7 @@ int pay_take_expFis(void *param){
         int ind;
         for(ind=0;ind<FIS_SENS_BUFF_LEN;ind++){
             //Set DAT_GnrlPurpBuff
-            dat_setGPB(dat_gpb_expFis_f0, gpb_indx, fis_get_sens_buff_i(ind) );
+            //dat_setGPB(dat_auxBuff_0, gpb_indx, fis_get_sens_buff_i(ind) );
             gpb_indx++;
         }
     }
@@ -358,14 +358,14 @@ int pay_stop_expFis(void *param){
     }
     #if (_VERBOSE_>=2)
         char ret[10];
-        DAT_GnrlPurpBuff gpb_frec_i;
+        DAT_GnrlPurpBuff aux_i;
         int j, val;
         unsigned int max=(FIS_REPEAT_PER_ROUND*FIS_SENS_BUFF_LEN);
 
-        for(gpb_frec_i=dat_gpb_expFis_f0; gpb_frec_i<=dat_gpb_expFis_f9; gpb_frec_i++){
+        for(aux_i=dat_auxBuff_0; aux_i<=dat_auxBuff_9; aux_i++){
 
-            con_printf("  gpb_frec_i=");
-            sprintf (ret, "%d", (unsigned int)gpb_frec_i);
+            con_printf("  aux_i=");
+            sprintf (ret, "%d", (unsigned int)aux_i);
             con_printf(ret); con_printf("\r\n");
 
             for(j=0;j<max;j++){
@@ -373,7 +373,7 @@ int pay_stop_expFis(void *param){
                 con_printf("  dat_get_GPB[");
                 sprintf (ret, "%d", (unsigned int)j);
                 con_printf(ret); con_printf("]");
-                val = dat_getGPB(gpb_frec_i, j);
+                val = dat_getGPB(aux_i, j);
                 sprintf (ret, "%d", (unsigned int)val);
                 con_printf(" = "); con_printf(ret); con_printf("\r\n");
             }
@@ -399,7 +399,7 @@ int pay_stop_expFis(void *param){
 //int pay_take_expFis(void *param){
 //    char ret[10];
 //    static unsigned int pay_round_cnt, pay_ADCperiod;
-//    static DAT_GnrlPurpBuff pay_gpb_frec_i;
+//    static DAT_GnrlPurpBuff pay_aux_i;
 //    int rst_gbp_indx;
 //
 //    con_printf("  pay_take_expFis:\r\n");
@@ -407,13 +407,13 @@ int pay_stop_expFis(void *param){
 //    //inicializacion de variables
 //    if(expFis_fr==0){
 //        expFis_fr++;
-//        pay_gpb_frec_i=dat_gpb_expFis_f0;
+//        pay_aux_i=dat_auxBuff_0;
 //        pay_round_cnt=0;
 //        pay_ADCperiod=0;
 //        rst_gbp_indx=0;
 //    }
 //
-//    //si la frecuencia pay_gpb_frec_i debe parar y pasar a la sgte
+//    //si la frecuencia pay_aux_i debe parar y pasar a la sgte
 //    if(pay_round_cnt == FIS_REPEAT_PER_ROUND){
 //
 //        #if (_VERBOSE_>=2)
@@ -422,7 +422,7 @@ int pay_stop_expFis(void *param){
 //                con_printf("  dat_get_GPB[");
 //                sprintf (ret, "%d", (unsigned int)j);
 //                con_printf(ret); con_printf("]");
-//                val = dat_getGPB(pay_gpb_frec_i, j);
+//                val = dat_getGPB(pay_aux_i, j);
 //                sprintf (ret, "%d", (unsigned int)val);
 //                con_printf(" = "); con_printf(ret); con_printf("\r\n");
 //            }
@@ -430,10 +430,10 @@ int pay_stop_expFis(void *param){
 //
 //        pay_round_cnt=0;
 //        rst_gbp_indx=1;
-//        pay_gpb_frec_i++;
+//        pay_aux_i++;
 //
 //        //si el ciclo debe terminar
-//        if(pay_gpb_frec_i == (dat_gpb_expFis_f9+1) ){
+//        if(pay_aux_i == (dat_auxBuff_9+1) ){
 //            //lleno buffer para terminar el ciclo de pay_take_expFis()..
 //            dat_setPayloadVar( dat_pay_expFis, 0xA00);
 //            dat_setPayloadVar( dat_pay_expFis, 0xAA01);
@@ -446,16 +446,16 @@ int pay_stop_expFis(void *param){
 //        sprintf (ret, "%d", (unsigned int)pay_round_cnt);
 //        con_printf(ret); con_printf("\r\n");
 //
-//        con_printf("  pay_gpb_frec_i=");
-//        sprintf (ret, "%d", (unsigned int)pay_gpb_frec_i);
+//        con_printf("  pay_aux_i=");
+//        sprintf (ret, "%d", (unsigned int)pay_aux_i);
 //        con_printf(ret); con_printf("\r\n");
 //    #endif
 //
-//    pay_ADCperiod = fis_frec_i_to_ADC_period( pay_gpb_frec_i);
+//    pay_ADCperiod = fis_frec_i_to_ADC_period( pay_aux_i);
 //    fis_start_expFis(pay_ADCperiod); //DAC is always 3*(pay_ADCperiod)
-//    fis_save_sens_buff_to_GPB(pay_gpb_frec_i, rst_gbp_indx );
+//    fis_save_sens_buff_to_GPB(pay_aux_i, rst_gbp_indx );
 //
-//    //prepara la prox iteracion de la pay_gpb_frec_i
+//    //prepara la prox iteracion de la pay_aux_i
 //    pay_round_cnt++;
 //    rst_gbp_indx=0;
 //
@@ -466,14 +466,14 @@ int pay_stop_expFis(void *param){
 //
 //    #if (_VERBOSE_>=2)
 //        char ret[10];
-//        DAT_GnrlPurpBuff gpb_frec_i;
+//        DAT_GnrlPurpBuff aux_i;
 //        int j, val;
 //        unsigned int max=(FIS_REPEAT_PER_ROUND*FIS_SENS_BUFF_LEN);
 //
-//        for(gpb_frec_i=dat_gpb_expFis_f0; gpb_frec_i<=dat_gpb_expFis_f9; gpb_frec_i++){
+//        for(aux_i=dat_auxBuff_0; aux_i<=dat_auxBuff_9; aux_i++){
 //
-//            con_printf("  gpb_frec_i=");
-//            sprintf (ret, "%d", (unsigned int)gpb_frec_i);
+//            con_printf("  aux_i=");
+//            sprintf (ret, "%d", (unsigned int)aux_i);
 //            con_printf(ret); con_printf("\r\n");
 //
 //            for(j=0;j<max;j++){
@@ -481,7 +481,7 @@ int pay_stop_expFis(void *param){
 //                con_printf("  dat_get_GPB[");
 //                sprintf (ret, "%d", (unsigned int)j);
 //                con_printf(ret); con_printf("]");
-//                val = dat_getGPB(gpb_frec_i, j);
+//                val = dat_getGPB(aux_i, j);
 //                sprintf (ret, "%d", (unsigned int)val);
 //                con_printf(" = "); con_printf(ret); con_printf("\r\n");
 //            }
@@ -495,10 +495,10 @@ static int test1_ind;
 int pay_init_test1(void *param){
     con_printf("pay_init_test1\r\n");
 
-    DAT_Payload pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int maxIndx;
     pay_i = dat_pay_test1;
     maxIndx = (unsigned int)( (500*4) -1);   //desde 0x00 a 0xFF
-    dat_resetPayloadBuffer(pay_i, maxIndx, 1);
+    dat_reset_PayloadBuff(pay_i, maxIndx, 1);
 
     //Reiniciar test1
     test1_ind=0;
@@ -510,7 +510,7 @@ int pay_take_test1(void *param){
 
     int i;
     for(i=0;i<50;i++){
-        dat_setPayloadVar(dat_pay_test1, test1_ind);
+        dat_set_PayloadBuff(dat_pay_test1, test1_ind);
         test1_ind++;
     }
 
@@ -524,10 +524,10 @@ int pay_stop_test1(void *param){
 int pay_init_test2(void *param){
     con_printf("pay_init_test2\r\n");
 
-    DAT_Payload pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int maxIndx;
     pay_i = dat_pay_test2;
     maxIndx = (unsigned int)(500 -1);    //payload en etapa experimental aun
-    dat_resetPayloadBuffer(pay_i, maxIndx, 0);
+    dat_reset_PayloadBuff(pay_i, maxIndx, 0);
 
     return 1;
 }
@@ -535,8 +535,8 @@ int pay_take_test2(void *param){
     con_printf("pay_take_test2()..\r\n");
 
     //
-    dat_setPayloadVar(dat_pay_test2, 0x01);
-    dat_setPayloadVar(dat_pay_test2, 0x02);
+    dat_set_PayloadBuff(dat_pay_test2, 0x01);
+    dat_set_PayloadBuff(dat_pay_test2, 0x02);
     return 1;
 
     /*
@@ -595,12 +595,12 @@ int pay_stop_test2(void *param){
         con_printf("dat_pay_test2\r\n");
 
         char buffer[10];
-        DAT_Payload pay_i=dat_pay_test2;
+        DAT_PayloadBuff pay_i=dat_pay_test2;
 
         unsigned int indx; unsigned int max = dat_getMaxPayIndx(pay_i); int val;
         for(indx=0; indx<=max; indx++)
         {
-            dat_getPayloadVar(pay_i, indx, &val);
+            dat_get_PayloadBuff(pay_i, indx, &val);
 
             con_printf("dat_getPayloadVar[");
             sprintf (buffer, "%d", (unsigned int)indx);
@@ -636,10 +636,10 @@ int pay_debug_gyro(void *param){
 int pay_init_gyro(void *param){
     con_printf("pay_init_gyro\r\n");
 
-    DAT_Payload pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int maxIndx;
     pay_i = dat_pay_gyro;
     maxIndx = (unsigned int)( (500*3) -1);  //(1440*3)      //numero de 10-minutos en un dia
-    dat_resetPayloadBuffer(pay_i, maxIndx, 1);
+    dat_reset_PayloadBuff(pay_i, maxIndx, 1);
 
     //config gyro
     gyr_init_config();
@@ -651,9 +651,9 @@ int pay_take_gyro(void *param){
 
     GYR_DATA res_data;
     gyr_take_samples(FALSE, &res_data);
-    dat_setPayloadVar(dat_pay_gyro, res_data.a_x);
-    dat_setPayloadVar(dat_pay_gyro, res_data.a_y);
-    dat_setPayloadVar(dat_pay_gyro, res_data.a_z);
+    dat_set_PayloadBuff(dat_pay_gyro, res_data.a_x);
+    dat_set_PayloadBuff(dat_pay_gyro, res_data.a_y);
+    dat_set_PayloadBuff(dat_pay_gyro, res_data.a_z);
     
     return 1;
 }
@@ -665,10 +665,10 @@ int pay_stop_gyro(void *param){
 int pay_init_tmEstado(void *param){
     con_printf("pay_init_tmEstado\r\n");
 
-    DAT_Payload pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int maxIndx;
     pay_i = dat_pay_tmEstado;
     maxIndx = (unsigned int)( (40*sta_cubesatVar_last_one) -1);  //(4*60/5=48)      //numero de 5-minutos en una orbita (4 horas)
-    dat_resetPayloadBuffer(pay_i, maxIndx, 1);
+    dat_reset_PayloadBuff(pay_i, maxIndx, 1);
 
     return 1;
 }
@@ -678,7 +678,7 @@ int pay_take_tmEstado(void *param){
     STA_CubesatVar indxVar; int var;
     for(indxVar=0; indxVar<sta_cubesatVar_last_one; indxVar++){
         var = sta_getCubesatVar(indxVar);
-        dat_setPayloadVar(dat_pay_tmEstado, var);
+        dat_set_PayloadBuff(dat_pay_tmEstado, var);
         #if (_VERBOSE_>=2)
             char buffer[10];
             con_printf("dat_CubesatVar[");
@@ -766,12 +766,12 @@ int pay_take_camera(void *param){
     if(issync!=0x0000){
         con_printf("issync!=0x0000()\r\n");
 
-        DAT_Payload pay_i; unsigned int maxIndx;
+        DAT_PayloadBuff pay_i; unsigned int maxIndx;
         pay_i = dat_pay_camera;
         maxIndx = (unsigned int)(2 -1);
-        dat_resetPayloadBuffer(pay_i, maxIndx, 0);
-        dat_setPayloadVar(pay_i, 0xFA10);
-        dat_setPayloadVar(pay_i, 0xFA10);
+        dat_reset_PayloadBuff(pay_i, maxIndx, 0);
+        dat_set_PayloadBuff(pay_i, 0xFA10);
+        dat_set_PayloadBuff(pay_i, 0xFA10);
 
         return 1;
     }
@@ -806,18 +806,18 @@ int pay_stop_camera(void *param){
 int pay_init_gps(void *param){
     con_printf("pay_init_gps\r\n");
 
-    DAT_Payload pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int maxIndx;
     pay_i = dat_pay_gps;
     maxIndx = (unsigned int)( (200) -1);   //(1440)  //numero de 10-minutos en un dia
-    dat_resetPayloadBuffer(pay_i, maxIndx, 1);
+    dat_reset_PayloadBuff(pay_i, maxIndx, 1);
 
     return 1;
 }
 int pay_take_gps(void *param){
     con_printf("pay_take_gps\r\n");
 
-    dat_setPayloadVar(dat_pay_gps, 0x01);
-    dat_setPayloadVar(dat_pay_gps, 0x01);
+    dat_set_PayloadBuff(dat_pay_gps, 0x01);
+    dat_set_PayloadBuff(dat_pay_gps, 0x01);
 
     return 1;
 }
@@ -830,16 +830,16 @@ int pay_init_lagmuirProbe(void *param){
     con_printf("pay_init_lagmuirProbe\r\n");
 
     #if (SCH_PAY_LAGMUIR_ONBOARD==0)
-        DAT_Payload pay_i; unsigned int maxIndx;
+        DAT_PayloadBuff pay_i; unsigned int maxIndx;
         pay_i = dat_pay_lagmuirProbe;
         maxIndx = (unsigned int)( (200) -1);   //(1440)  //numero de 10-minutos en un dia
-        dat_resetPayloadBuffer(pay_i, maxIndx, 1);
+        dat_reset_PayloadBuff(pay_i, maxIndx, 1);
     #else
 
-    DAT_Payload pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int maxIndx;
     pay_i = dat_pay_lagmuirProbe;
     maxIndx = (unsigned int)( (20*1) -1); /*TODO: SET VALUE*/ //(1440)      //numero de 10-minutos en un dia
-    dat_resetPayloadBuffer(pay_i, maxIndx, 1);
+    dat_reset_PayloadBuff(pay_i, maxIndx, 1);
 
     lag_erase_buffer();
     #endif
@@ -853,8 +853,8 @@ int pay_take_lagmuirProbe(void *param){
     con_printf("pay_take_lagmuirProbe\r\n");
 
     #if (SCH_PAY_LAGMUIR_ONBOARD==0)
-        dat_setPayloadVar(dat_pay_lagmuirProbe, 0x01);
-        dat_setPayloadVar(dat_pay_lagmuirProbe, 0x02);
+        dat_set_PayloadBuff(dat_pay_lagmuirProbe, 0x01);
+        dat_set_PayloadBuff(dat_pay_lagmuirProbe, 0x02);
     #else
 
 //    int verbose = *(int *)param;
@@ -867,7 +867,7 @@ int pay_take_lagmuirProbe(void *param){
         /* Guardar datos a la SD (40) */
         for(i=0; i<40; i++)
         {
-            dat_setPayloadVar(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
+            dat_set_PayloadBuff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
         }
 //        if(verbose) SendRS232(langmuir_buffer, 40, RS2_M_UART1);
     }
@@ -879,7 +879,7 @@ int pay_take_lagmuirProbe(void *param){
         /* Guardar datos a la SD (10) */
         for(i=0; i<10; i++)
         {
-            dat_setPayloadVar(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
+            dat_set_PayloadBuff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
         }
 //        if(verbose) SendRS232(langmuir_buffer, 10, RS2_M_UART1);
     }
@@ -891,7 +891,7 @@ int pay_take_lagmuirProbe(void *param){
         /* Guardar datos a la SD (1096) */
         for(i=0; i<1096; i++)
         {
-            dat_setPayloadVar(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
+            dat_set_PayloadBuff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
         }
 //        if(verbose) SendRS232(langmuir_buffer, 1096, RS2_M_UART1);
     }
@@ -985,10 +985,10 @@ int pay_debug_sensTemp(void *param){
 int pay_init_sensTemp(void *param){
     con_printf("pay_init_sensTemp\r\n");
    
-    DAT_Payload pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int maxIndx;
     pay_i = dat_pay_sensTemp;
     maxIndx = (unsigned int)( (500*4) -1);   //(1440)      //numero de 10-minutos en un dia
-    dat_resetPayloadBuffer(pay_i, maxIndx, 1);
+    dat_reset_PayloadBuff(pay_i, maxIndx, 1);
 
     sensTemp_init(ST1_ADDRESS);
     sensTemp_init(ST2_ADDRESS);
@@ -1001,13 +1001,13 @@ int pay_take_sensTemp(void *param){
     con_printf("pay_take_sensTemp\r\n");
     int val;
     val=sensTemp_take(ST1_ADDRESS, FALSE);
-    dat_setPayloadVar(dat_pay_sensTemp, val);
+    dat_set_PayloadBuff(dat_pay_sensTemp, val);
     val=sensTemp_take(ST2_ADDRESS, FALSE);
-    dat_setPayloadVar(dat_pay_sensTemp, val);
+    dat_set_PayloadBuff(dat_pay_sensTemp, val);
     val=sensTemp_take(ST3_ADDRESS, FALSE);
-    dat_setPayloadVar(dat_pay_sensTemp, val);
+    dat_set_PayloadBuff(dat_pay_sensTemp, val);
     val=sensTemp_take(ST4_ADDRESS, FALSE);
-    dat_setPayloadVar(dat_pay_sensTemp, val);
+    dat_set_PayloadBuff(dat_pay_sensTemp, val);
 
     return 1;
 }
@@ -1016,13 +1016,13 @@ int pay_stop_sensTemp(void *param){
     return 1;
 }
 //******************************************************************************
-PAY_State pay_nextStateLogic(PAY_State pay_sem, DAT_Payload pay_i){    
+PAY_State pay_nextStateLogic(PAY_State pay_sem, DAT_PayloadBuff pay_i){
     STA_CubesatVar dat_pay_xxx_perform;
 
     //logica del cambio de estados
     switch(pay_sem){
         case pay_state_pre_init:
-            dat_pay_xxx_perform = dat_pay_i_to_performVar(pay_i);
+            dat_pay_xxx_perform = sta_pay_i_to_performVar(pay_i);
             if( sta_getCubesatVar(dat_pay_xxx_perform)==0x0001 ){
                 pay_sem=pay_state_init;
             }
@@ -1034,7 +1034,7 @@ PAY_State pay_nextStateLogic(PAY_State pay_sem, DAT_Payload pay_i){
             pay_sem=pay_state_take;
         break;
         case pay_state_take:
-            if(dat_isFullPayloadBuffer(pay_i)==TRUE){
+            if(dat_isFull_PayloadBuff(pay_i)==TRUE){
                 pay_sem=pay_state_stop;
             }
             else{
@@ -1050,7 +1050,7 @@ PAY_State pay_nextStateLogic(PAY_State pay_sem, DAT_Payload pay_i){
     }
     return pay_sem;
 }
-void pay_currentStateLogic(PAY_State pay_sem_state, DAT_Payload pay_i){
+void pay_currentStateLogic(PAY_State pay_sem_state, DAT_PayloadBuff pay_i){
     int arg=0; //DAT_Payload arg_pay_i; /* WARNING, Revisar */
     //logica del estado
     switch(pay_sem_state){
@@ -1163,7 +1163,7 @@ void pay_currentStateLogic(PAY_State pay_sem_state, DAT_Payload pay_i){
                 break;
             }
             //parar ciclo de Payload
-            STA_CubesatVar dat_perfVar=dat_pay_i_to_performVar(pay_i);
+            STA_CubesatVar dat_perfVar=sta_pay_i_to_performVar(pay_i);
             sta_setCubesatVar(dat_perfVar, 0x0000 );
 
             //debug

@@ -370,6 +370,11 @@ typedef struct
  *----------------------------------------------------------------------------------------*/
 #define EPS_ArrminuZCurr(ADC) (-0.4966*(double)(ADC)+512.6627)
 
+// toopazo: debe haber una funcioncion de init, aunque sea vacia, debe al menos
+// decir si la EPS responde (isALive)
+int eps_initialize(void);
+int eps_isAlive(void);
+
 void setStateFlagEPS(unsigned char value);
 
 void SendCommandEPS(unsigned char CMDName, char CMDVal);

@@ -41,11 +41,26 @@
  */
 typedef enum{
     sta_mep_testVal=0,   //just to make sure MemEEPROM is working r/w values
-    //External hw satus
+    // Bus Hw status (connected trough the PC/104 to the OBC -PIC24-)
     sta_RTC_isAlive,
     sta_TRX_isAlive,
+    sta_EPS_isAlive,
     sta_MemEEPROM_isAlive,
     sta_MemSD_isAlive,
+
+    // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
+    sta_pay_lagmuirProbe_isAlive,
+    sta_pay_sensTemp_isAlive,
+    sta_pay_gps_isAlive,
+    sta_pay_expFis_isAlive,
+    sta_pay_camera_isAlive,
+    sta_pay_gyro_isAlive,
+    sta_pay_tmEstado_isAlive,
+    sta_pay_test1_isAlive,
+    sta_pay_test2_isAlive,
+
+    /* State Variables */
+
     //PPC => (C&DH subsystem)
     sta_ppc_opMode,
     sta_ppc_lastResetSource,
@@ -138,8 +153,11 @@ int sta_getCubesatVar(STA_CubesatVar indxVar);
 void sta_onResetStatRepo(void);
 
 int sta_get_ppc_lastResetSource(BOOL verb);
+
+
 //STA_CubesatVar dat_pay_i_to_performVar(DAT_Payload pay_i);
-STA_CubesatVar dat_pay_i_to_performVar(int pay_i);
+STA_CubesatVar sta_pay_i_to_performVar(int pay_i);
+void sta_reset_pay_i_performVar(void);
 
 #endif // STATUS_REPO_H
 

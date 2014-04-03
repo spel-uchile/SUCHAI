@@ -50,8 +50,8 @@ int fis_iterate_config(const unsigned int _ADC_period[], int _len, int _rounds_p
  */
 BOOL fis_iterate(void);
 
-void fis_save_sens_buff_to_GPB(DAT_GnrlPurpBuff frec_i, int rst_gbp_indx);
-unsigned int fis_frec_i_to_ADC_period(DAT_GnrlPurpBuff pay_frec_i);
+//void fis_save_sens_buff_to_GPB(DAT_GnrlPurpBuff frec_i, int rst_gbp_indx);
+//unsigned int fis_frec_i_to_ADC_period(DAT_GnrlPurpBuff pay_frec_i);
 
 void fis_start_expFis(unsigned int period);
 void fis_stop_expFis(void);

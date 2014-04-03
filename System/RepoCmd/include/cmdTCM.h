@@ -62,7 +62,7 @@ int tcm_update_beacon(void *param);
 int tcm_set_sysreq(void *param);
 
 //funciones aux
-int tcm_sendTM_PayloadVar(int mode, DAT_Payload pay_i);
+int tcm_sendTM_PayloadVar(int mode, DAT_PayloadBuff pay_i);
 
 #endif
 

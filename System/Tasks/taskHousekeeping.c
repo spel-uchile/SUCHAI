@@ -59,7 +59,7 @@ void taskHouskeeping(void *param)
 
     portTickType xLastWakeTime = xTaskGetTickCount();
 
-    drp_updateAll_sta_CubesatVar(NULL); //TODO: Why?
+    srp_updateAll_sta_CubesatVar(NULL); //TODO: Why?
     
     while(1)
     {
@@ -79,7 +79,7 @@ void taskHouskeeping(void *param)
                 con_printf("[Houskeeping] 20[s] actions\r\n");
             #endif
 
-            NewCmd.cmdId = drp_id_updateAll_sta_CubesatVar;
+            NewCmd.cmdId = srp_id_updateAll_sta_CubesatVar;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
@@ -102,7 +102,7 @@ void taskHouskeeping(void *param)
             #endif
 
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                NewCmd.cmdId = drp_id_print_sta_CubesatVar;
+                NewCmd.cmdId = srp_id_print_sta_CubesatVar;
                 NewCmd.param = 0;
                 xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
             #endif
@@ -132,11 +132,11 @@ void taskHouskeeping(void *param)
                 con_printf("[Houskeeping] 1[hr] actions\r\n");
             #endif
 
-            NewCmd.cmdId = drp_id_update_sta_CubesatVar_hoursWithoutReset;
+            NewCmd.cmdId = srp_id_update_sta_CubesatVar_hoursWithoutReset;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
-            NewCmd.cmdId = drp_id_update_sta_CubesatVar_hoursAlive;
+            NewCmd.cmdId = srp_id_update_sta_CubesatVar_hoursAlive;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 

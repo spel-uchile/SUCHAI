@@ -25,7 +25,7 @@
 #define SCH_DATAREPOSITORY_VERBOSEMEMSD_ 0
 
 //semaforo para sincronizar accceso a las variables de estado
-extern xSemaphoreHandle dataRepositorySem; /*WARNING esto estaba asi: extern dataRepositorySem;*/
+extern xSemaphoreHandle dataRepositorySem;
 
 #if !SCH_SYSBUS_ONBOARD
     int STA_CUBESAT_VAR_BUFF[sta_cubesatVar_last_one];
@@ -85,6 +85,7 @@ void sta_onResetStatRepo(void)
     //External hw satus were already set
     //sta_RTC_isAlive,
     //sta_TRX_isAlive,
+    //sta_EPS_isAlive,
     //sta_MemEEPROM_isAlive,
     //sta_MemSD_isAlive,
 
@@ -206,7 +207,7 @@ int sta_get_ppc_lastResetSource(BOOL verb){
  * @return DAT_CubesatVar dat_pay_xxx_perform
  */
 //STA_CubesatVar dat_pay_i_to_performVar(DAT_Payload pay_i){
-STA_CubesatVar dat_pay_i_to_performVar(int pay_i){
+STA_CubesatVar sta_pay_i_to_performVar(int pay_i){
     STA_CubesatVar dat_pay_xxx_perform;
 
     switch(pay_i){
@@ -243,4 +244,63 @@ STA_CubesatVar dat_pay_i_to_performVar(int pay_i){
     }
 
     return dat_pay_xxx_perform;
+}
+/**
+ * Setea la variable dat_pay_xxx_perform a su correspondiente valor segun
+ * los defines de @ref SUCHAI_config.h
+ */
+void sta_reset_pay_i_performVar(void){
+    #if (SCH_PAY_LAGMUIR_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_lagmuirProbe_perform, 0x0001 );
+    #else
+        sta_setCubesatVar(sta_pay_lagmuirProbe_perform, 0x0000 );
+    #endif
+
+    #if (SCH_PAY_SENSTEMP_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_sensTemp_perform, 0x0001 );
+    #else
+        sta_setCubesatVar(sta_pay_sensTemp_perform, 0x0000 );
+    #endif
+
+    #if (SCH_PAY_GPS_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_gps_perform, 0x0001);
+    #else
+        sta_setCubesatVar(sta_pay_gps_perform, 0x0000);
+    #endif
+
+    #if (SCH_PAY_FIS_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_expFis_perform, 0x0001 );
+    #else
+        sta_setCubesatVar(sta_pay_expFis_perform, 0x0000 );
+    #endif
+
+    #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_camera_perform, 0x0001 );
+    #else
+        sta_setCubesatVar(sta_pay_camera_perform, 0x0000 );
+    #endif
+
+    #if (SCH_PAY_GYRO_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_gyro_perform, 0x0001 );
+    #else
+        sta_setCubesatVar(sta_pay_gyro_perform, 0x0000 );
+    #endif
+
+    #if (SCH_PAY_TMESTADO_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_tmEstado_perform, 0x0001 );
+    #else
+        sta_setCubesatVar(sta_pay_tmEstado_perform, 0x0000 );
+    #endif
+
+    #if (SCH_PAY_TEST1_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_test1_perform, 0x0001 );
+    #else
+        sta_setCubesatVar(sta_pay_test1_perform, 0x0000 );
+    #endif
+
+    #if (SCH_PAY_TEST2_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_test2_perform, 0x0001 );
+    #else
+        sta_setCubesatVar(sta_pay_test2_perform, 0x0000 );
+    #endif
 }

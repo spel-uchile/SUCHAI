@@ -95,7 +95,7 @@ void fp2_pay_i_multiplexing(xQueueHandle dispatcherQueue){
     NewCmd.idOrig = CMD_IDORIG_TFLIGHTPLAN2;
     NewCmd.param = 0;
 
-    static DAT_Payload current_pay_i;
+    static DAT_PayloadBuff current_pay_i;
     
     //multiplexo pay_i por turnos
     #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
@@ -140,8 +140,8 @@ void fp2_pay_i_simultaneous(xQueueHandle dispatcherQueue)
     NewCmd.param = 0;
 
     //ejecuto payloads, "simultaneamente" osea, todos en cada ciclo
-    STA_CubesatVar dat_pay_xxx_perform = dat_pay_i_to_performVar(dat_pay_tmEstado);
-    DAT_Payload pay_i;
+    STA_CubesatVar dat_pay_xxx_perform = sta_pay_i_to_performVar(dat_pay_tmEstado);
+    DAT_PayloadBuff pay_i;
 
     for(pay_i = 0; pay_i < dat_pay_last_one; pay_i++)
     {

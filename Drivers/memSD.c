@@ -79,13 +79,13 @@ BOOL msd_getVar_256BlockExtMem(unsigned long block_i, unsigned int indx, int *va
     return resp;
 }
 BOOL msd_setVar_1BlockExtMem(MSD_ARG block, unsigned char  indx, int value){
-    //SendStrRS232("msd_setVar_1BlockExtMem\n", RS2_M_UART1);
+    //printf("msd_setVar_1BlockExtMem\n");
     unsigned char buff[512], resp;
 
     resp = Single_Block_Read(block, buff);
     if ( resp!=MSD_START_BLOCK_TOKEN ){
         #if SCH_MEMSD_VERBOSE
-            SendStrRS232("SingBlockRead !=0xFE\n", RS2_M_UART1);
+            printf("SingBlockRead !=0xFE\n");
         #endif
         return FALSE;
     }
@@ -96,7 +96,7 @@ BOOL msd_setVar_1BlockExtMem(MSD_ARG block, unsigned char  indx, int value){
     resp = Single_Block_Write(block, buff);
     if(resp!=MSD_DATA_ACCEPTED_TOKEN){
         #if SCH_MEMSD_VERBOSE
-            SendStrRS232("SingBlockWrite !=0x05\n", RS2_M_UART1);
+            printf("SingBlockWrite !=0x05\n");
         #endif
         return FALSE;
     }
@@ -105,12 +105,12 @@ BOOL msd_setVar_1BlockExtMem(MSD_ARG block, unsigned char  indx, int value){
     }
 }
 BOOL msd_getVar_1BlockExtMem(unsigned long block, unsigned char indx, int *value){
-    //SendStrRS232("msd_getVar_1BlockExtMem\n", RS2_M_UART1);
+    //printf("msd_getVar_1BlockExtMem\n");
     unsigned char buff[512]; int val=0;
 
     if ( Single_Block_Read(block, buff)!=MSD_START_BLOCK_TOKEN ){
         #if SCH_MEMSD_VERBOSE
-            SendStrRS232("SingBlockRead !=0xFE\n", RS2_M_UART1);
+            printf("SingBlockRead !=0xFE\n");
         #endif
         return FALSE;
     }
@@ -187,8 +187,8 @@ unsigned char SD_init2(void){
     SPI_nSS_2=1;					//~SS=1
 
     #if (SCH_MEMSD_VERBOSE>=2)
-        SendStrRS232("SD_init2()\r\n", RS2_M_UART1);
-        Hex8ToAscii( r, ret); SendStrRS232("R1_response(CMD0)="); SendStrRS232(ret); SendStrRS232("\n", RS2_M_UART1);
+        printf("SD_init2()\r\n");
+        Hex8ToAscii( r, ret); printf("R1_response(CMD0)="); printf(ret); printf("\n");
     #endif
     if(r!=0x01){return r;} 	// r=0x01=> command received, card in "idle" after "reset". Si la SD no paso a "idle"
     MSD_ARG r7=0;
@@ -198,7 +198,7 @@ unsigned char SD_init2(void){
                                             //Si falla devuelve un tipo ARG con un unsigned char R1 en su byte inferior
 
     #if (SCH_MEMSD_VERBOSE>=2)
-        Hex8ToAscii( r7, ret); SendStrRS232("R7_response(CMD8)="); SendStrRS232(ret); SendStrRS232("\n", RS2_M_UART1);
+        Hex8ToAscii( r7, ret); printf("R7_response(CMD8)="); printf(ret); printf("\n");
     #endif
     if(r7!=MSD_VOLTAGE_OK){return r=(unsigned char)r7;}
 
@@ -244,7 +244,7 @@ unsigned char SD_init(void){
 	SPI_nSS_2=1;			//~SS=1
 
         #if (SCH_MEMSD_VERBOSE>=2)
-            Hex8ToAscii( r, ret); SendStrRS232("R1_response(CMD0)="); SendStrRS232(ret); SendStrRS232("\n", RS2_M_UART1);
+            Hex8ToAscii( r, ret); printf("R1_response(CMD0)="); printf(ret); printf("\n");
         #endif
 	if(r!=0x01) return r; 	// r=0x01=> command received, card in "idle" after "reset". Si la SD no paso a "idle"
 	
@@ -257,7 +257,7 @@ unsigned char SD_init(void){
 	}while(--i>0);			//intenta 10.000 que la SD pase de estado "idle" al "ready" (luego de salir del "reset")
 
         #if (SCH_MEMSD_VERBOSE>=2)
-            Hex8ToAscii( r, ret); SendStrRS232("R1_response(CMD1)="); SendStrRS232(ret); SendStrRS232("\n", RS2_M_UART1);
+            Hex8ToAscii( r, ret); printf("R1_response(CMD1)="); printf(ret); printf("\n");
         #endif
 	if(r!=0x00) return r; 	//SD time-out
 
@@ -317,19 +317,19 @@ MSD_ARG send_CMD8(void){
 	SPI_nSS_2=1;			//~SS=1
 
         #if (SCH_MEMSD_VERBOSE>=2)
-        SendStrRS232("Resp a CMD8 es:\n", RS2_M_UART1);
+        printf("Resp a CMD8 es:\n");
             char ret[6];
-            Hex8ToAscii( r1, ret); SendStrRS232("r1="); SendStrRS232(ret); SendStrRS232("\n", RS2_M_UART1);
-            Hex8ToAscii( r[0], ret); SendStrRS232("r[0]="); SendStrRS232(ret); SendStrRS232("\n", RS2_M_UART1);
-            Hex8ToAscii( r[1], ret); SendStrRS232("r[1]="); SendStrRS232(ret); SendStrRS232("\n", RS2_M_UART1);
-            Hex8ToAscii( r[2], ret); SendStrRS232("r[2]="); SendStrRS232(ret); SendStrRS232("\n", RS2_M_UART1);
-            Hex8ToAscii( r[3], ret); SendStrRS232("r[3]="); SendStrRS232(ret); SendStrRS232("\n", RS2_M_UART1);
+            Hex8ToAscii( r1, ret); printf("r1="); printf(ret); printf("\n");
+            Hex8ToAscii( r[0], ret); printf("r[0]="); printf(ret); printf("\n");
+            Hex8ToAscii( r[1], ret); printf("r[1]="); printf(ret); printf("\n");
+            Hex8ToAscii( r[2], ret); printf("r[2]="); printf(ret); printf("\n");
+            Hex8ToAscii( r[3], ret); printf("r[3]="); printf(ret); printf("\n");
         #endif
 
 	resp=resp&0x00000FFF;		//resp deberia ser: xxxxxxxx xxxxxxxx xxxx0001 10101010	=> resp deberia ser: 0x000001AA
 	if( (resp!=0x000001AA) | (r1!=0x01) ){
             #if (SCH_MEMSD_VERBOSE>=2)
-                SendStrRS232("resp a CMD8 es r1\n", RS2_M_UART1);
+                printf("resp a CMD8 es r1\n");
             #endif
             return (resp=r1);}	//si hay errores devuelve r1
 	else return resp;
@@ -520,7 +520,7 @@ unsigned char Single_Block_Read(MSD_ARG addr, unsigned char* buff){
 	r=get_R1_response();
 
         #if (SCH_MEMSD_VERBOSE>=2)
-            char ret[6]; Hex8ToAscii( r, ret); SendStrRS232("R1 Resp="); SendStrRS232(ret); SendStrRS232("\n", RS2_M_UART1);
+            char ret[6]; Hex8ToAscii( r, ret); printf("R1 Resp="); printf(ret); printf("\n");
         #endif
 	if(r==0x00){						// Si r=0x00=>command accepted
 		r=get_CMD17_Response_Token();
@@ -536,7 +536,7 @@ unsigned char Single_Block_Read(MSD_ARG addr, unsigned char* buff){
 	MSD_disableSD();					// ~SS=1 y 8 pulsos por SCK
 
         #if (SCH_MEMSD_VERBOSE>=2)
-            Hex8ToAscii( r, ret); SendStrRS232("SingSectRead Resp="); SendStrRS232(ret); SendStrRS232("\n", RS2_M_UART1);
+            Hex8ToAscii( r, ret); printf("SingSectRead Resp="); printf(ret); printf("\n");
         #endif
 	return r;						// START_BLOCK_TOKEN byte si funciono, DATA_ERROR_TOKEN byte si hay errores
 }
@@ -599,7 +599,7 @@ unsigned char Single_Block_Write(MSD_ARG addr, unsigned char* buff){
         if( ri!=0x0000 ){
 
             #if (SCH_MEMSD_VERBOSE>=2)
-                char ret[6]; Hex16ToAscii( ri, ret); SendStrRS232("R2 Resp="); SendStrRS232(ret); SendStrRS232("\n", RS2_M_UART1);
+                char ret[6]; Hex16ToAscii( ri, ret); printf("R2 Resp="); printf(ret); printf("\n");
             #endif
             return 0xFF;
         }

@@ -35,7 +35,7 @@ void taskDeployment(void *param)
     #endif
 
     /* Perifericos*/
-    dep_init_hw(NULL);
+    dep_init_bus_hw(NULL);
 
     /* Repositorios */
     dep_init_Repos(NULL);
@@ -66,6 +66,7 @@ extern cmdFunction ppcFunction[];
 extern cmdFunction conFunction[];
 extern cmdFunction epsFunction[];
 extern cmdFunction drpFunction[];
+extern cmdFunction srpFunction[];
 extern cmdFunction payFunction[];
 extern cmdFunction rtcFunction[];
 extern cmdFunction tcmFunction[];
@@ -74,6 +75,7 @@ extern int ppc_sysReq[];
 extern int con_sysReq[];
 extern int eps_sysReq[];
 extern int drp_sysReq[];
+extern int srp_sysReq[];
 extern int pay_sysReq[];
 extern int rtc_sysReq[];
 extern int tcm_sysReq[];
@@ -148,6 +150,17 @@ int dep_init_Repos(void *param)
     repo_set_cmdXXX_hanlder(cmdEPS_handler);
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * Attaching cmdSRP..\r\n");
+    #endif
+    CmdRepo_cmdXXX_handler cmdSRP_handler;
+    cmdSRP_handler.cmdOwn = SCH_CMD_SRP;
+    cmdSRP_handler.nCmd = SRP_NCMD;
+    cmdSRP_handler.p_xxxFunction = srpFunction;
+    cmdSRP_handler.p_xxxSysReq = srp_sysReq;
+    cmdSRP_handler.xxx_onReset = srp_onResetCmdSRP;
+    repo_set_cmdXXX_hanlder(cmdSRP_handler);
+
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         printf("    * Attaching cmdDRP..\r\n");
     #endif
     CmdRepo_cmdXXX_handler cmdDRP_handler;
@@ -208,12 +221,12 @@ int dep_init_Repos(void *param)
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         printf("    * Telecommands buffer\r\n");
     #endif
-    dat_onResetTelecmdBuff();
+    dat_onReset_TeleCmdBuff();
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         printf("    * Payloads data rep.\r\n");
     #endif
-    dat_onResetPayloadVar();
+    dat_onReset_PayloadBuff();
 
     return 1;
 }
@@ -397,7 +410,7 @@ int dep_deploy_antenna(void *param)
                         printf("    ANTENNA DEPLOYED SUCCESSFULLY [%d TRIES]\r\n", tries_indx);
                     #endif
 
-                    drp_dep_write_deployed(1, tries_indx);
+                    srp_dep_write_deployed(1, tries_indx);
                     return 1;
                 }
             }
@@ -409,7 +422,7 @@ int dep_deploy_antenna(void *param)
         printf("    ANTENNA DEPLOY FAIL [%d TRIES]\r\n", TDP_TRY_DEPLOY);
     #endif
 
-    drp_dep_write_deployed(0, tries_indx);
+    srp_dep_write_deployed(0, tries_indx);
 
     return 0;
 }
@@ -419,13 +432,13 @@ int dep_deploy_antenna(void *param)
  * @param param Not used.
  * @return 1 success, 0 fail.
  */
-int dep_init_hw(void *param)
+int dep_init_bus_hw(void *param)
 {
     int resp;
     STA_CubesatVar hw_isAlive;
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        printf("\n[dep_init_hw] Initializig external hardware...\r\n");
+        printf("\n[dep_init_bus_hw] Initializig external hardware...\r\n");
     #endif
 
     #if (SCH_SYSBUS_ONBOARD==1)
@@ -489,6 +502,25 @@ int dep_init_hw(void *param)
     }
     #endif
 
+    #if (SCH_EPS_ONBOARD==1)
+    {
+        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            printf("    * External EPS .. ");
+        #endif
+        resp  = eps_initialize();
+        hw_isAlive = sta_EPS_isAlive;
+        sta_setCubesatVar(hw_isAlive, resp);
+        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            if(resp == 0x01){
+                printf("Ok\r\n");
+            }
+            else{
+                printf("Fail\r\n");
+            }
+        #endif
+    }
+    #endif
+
     #if (SCH_MEMSD_ONBOARD==1)
     {
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
@@ -522,7 +554,7 @@ int dat_sd_init(void){
     PPC_MB_nON_SD=0;
     unsigned char r = SD_init();
     if(r == 0){
-        dat_onReset_memSD(FALSE);
+        dat_onReset_dataRepo(FALSE);
         return 1;
     }
     else{

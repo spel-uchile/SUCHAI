@@ -25,30 +25,51 @@
 #include "semphr.h"
 
 #include "memSD.h"
-#include "memEEPROM.h"
+//#include "memEEPROM.h"
 
 #include "cmdIncludes.h"
 
-#include "statusRepository.h"
+//#include "statusRepository.h"
 
 
-//***STATUS REPOSITORY**********************************************************
+//******************************************************************************
+/**
+ * Defines que contienen los General Purpose Buffers (max indx = 2^16 = 65536 )
+ * del SUCHAI, estos son usados por otros buffer (Payloads buffers, TC buffer,
+ * Flight Plan Buffer ). Estos usan wrappers para accederlos mas comodamente
+ */
+#define DAT_GPB_FIRST_BLOCK 31
+#define DAT_GPB_0       ( DAT_GPB_FIRST_BLOCK + 256*0 )
+#define DAT_GPB_1       ( DAT_GPB_FIRST_BLOCK + 256*1 )
+#define DAT_GPB_2       ( DAT_GPB_FIRST_BLOCK + 256*2 )
+#define DAT_GPB_3       ( DAT_GPB_FIRST_BLOCK + 256*3 )
+#define DAT_GPB_4       ( DAT_GPB_FIRST_BLOCK + 256*4 )
+//#define DAT_GPB_5       ( DAT_GPB_FIRST_BLOCK + 256*5 )
+//#define DAT_GPB_6       ( DAT_GPB_FIRST_BLOCK + 256*6 )
+//#define DAT_GPB_7       ( DAT_GPB_FIRST_BLOCK + 256*7 )
+//#define DAT_GPB_8       ( DAT_GPB_FIRST_BLOCK + 256*8 )
+//#define DAT_GPB_9       ( DAT_GPB_FIRST_BLOCK + 256*9 )
+//#define DAT_GPB_10      ( DAT_GPB_FIRST_BLOCK + 256*10 )
+//#define DAT_GPB_11      ( DAT_GPB_FIRST_BLOCK + 256*11 )
+//#define DAT_GPB_12      ( DAT_GPB_FIRST_BLOCK + 256*12 )
+//#define DAT_GPB_13      ( DAT_GPB_FIRST_BLOCK + 256*13 )
+//#define DAT_GPB_14      ( DAT_GPB_FIRST_BLOCK + 256*14 )
+//#define DAT_GPB_15      ( DAT_GPB_FIRST_BLOCK + 256*15 )
+//#define DAT_GPB_16      ( DAT_GPB_FIRST_BLOCK + 256*16 )
+//#define DAT_GPB_17      ( DAT_GPB_FIRST_BLOCK + 256*17 )
+//#define DAT_GPB_18      ( DAT_GPB_FIRST_BLOCK + 256*18 )
+//#define DAT_GPB_19      ( DAT_GPB_FIRST_BLOCK + 256*19 )
+//#define DAT_GPB_20      ( DAT_GPB_FIRST_BLOCK + 256*20 )
 
-int dat_init_memEEPROM(void);
-int dat_memEEPROM_isAlive(void);
-
-
-void dat_init_ppc_lastResetSource(void);
-void dat_reset_pay_i_performVar(void);
-
-//***************************************************************************************************************
 
 /**
  * This function assigns the Memory Map of the external memSD
  */
-void dat_onReset_memSD(BOOL verbose);
-//***************************************************************************************************************
-//The following is an API to interface with the dataRepository cubesat telecomand buffer
+void dat_onReset_dataRepo(BOOL verbose);
+
+//******************************************************************************
+// DAT_TeleCmdBuff
+//******************************************************************************
 
 typedef enum _DAT_TeleCmdBuff{
     //*************
@@ -60,26 +81,36 @@ typedef enum _DAT_TeleCmdBuff{
  * commands max, that means 40 bytes or 10cmd + 10 param */
 #define DAT_MAX_BUFF_TELECMD SCH_DATAREPOSITORY_MAX_BUFF_TELECMD
 
-int dat_getTelecmdBuff(int indx);
-void dat_setTelecmdBuff(int indx, int data);
-int dat_onResetTelecmdBuff(void);
+//Get
+int dat_get_TeleCmdBuff(int indx);
+//Set
+void dat_set_TeleCmdBuff(int indx, int data);
+//onReset
+int dat_onReset_TeleCmdBuff(void);
+//Erase
 void dat_erase_TeleCmdBuff(void);
-//***************************************************************************************************************
-//The following is an API to interface with the dataRepository cubesat fligthPlan
 
+//******************************************************************************
+// DAT_FligthPlanBuff
+//******************************************************************************
 typedef enum _DAT_FligthPlanBuff{
     //*************
     dat_fpb_last_one    //Se utiliza para marcar el largo del arreglo.
 }DAT_FligthPlanBuff;
 
-DispCmd dat_getFlightPlan(unsigned int index);
-int dat_setFlightPlan_cmd(unsigned int index, unsigned int cmdID);
-int dat_setFlightPlan_param(unsigned int index, int param);
-int dat_onResetFlightPlan(void);
+//Get
+DispCmd dat_get_FlightPlan(unsigned int index);
+//Set
+int dat_set_FlightPlan_cmd(unsigned int index, unsigned int cmdID);
+int dat_set_FlightPlan_param(unsigned int index, int param);
+//onReset
+int dat_onReset_FlightPlan(void);
+//Erase
 void dat_erase_FlightPlanBuff(void);
-//***************************************************************************************************************
-//The following is an API to interface with the dataRepository cubesat Payload buffer/data
 
+//******************************************************************************
+// DAT_PayloadBuff
+//******************************************************************************
 /**
  * Enum que contiene los Payloads en el SUCHAI. Para agregar uno, se debe:
  * 1) Agergar el dat_pay_xxx a #DAT_Payload
@@ -102,61 +133,62 @@ typedef enum _DAT_Payload{
     //*************
     dat_pay_last_one    //Se utiliza para marcar el largo del arreglo.
                         //Y para indicar el ID de TM de CUbesatVar
-}DAT_Payload;
+}DAT_PayloadBuff;
 
-//Retorna FALSE si el buffer se llena, TRUE si todo OK
-BOOL dat_setPayloadVar(DAT_Payload pay_i, int value);
-//Retorna FALSE si el indiex es invalido, TRUE si todo OK
-BOOL dat_getPayloadVar(DAT_Payload pay_i, unsigned int indx, int *value);
-//Inicializa la estructura de data payload
-void dat_onResetPayloadVar(void);
-//Inicializa la estructura de data payload
-void dat_resetPayloadBuffer(DAT_Payload pay_i, unsigned int maxIndx, int mode);
-//Inicializa la estructura de data payload
-BOOL dat_isFullPayloadBuffer(DAT_Payload pay_i);
+//Get
+BOOL dat_get_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int indx, int *value);
+unsigned int dat_get_MaxPayIndx(DAT_PayloadBuff pay_i);
+unsigned int dat_get_NextPayIndx(DAT_PayloadBuff pay_i);
 
-//Funciones Auxiliares
-//Setea el valor del ultimo/maximo indice del buffer de cierto payload
-void dat_setMaxPayIndx(DAT_Payload pay_i, unsigned int lastIndx);
-//Obtiene el valor del ultimo/maximo indice del buffer de cierto payload
-unsigned int dat_getMaxPayIndx(DAT_Payload pay_i);
-//Setea el valor del indice actual del buffer de cierto payload
-void dat_setNextPayIndx(DAT_Payload pay_i, unsigned int nextIndx);
-//Obtiene el valor del indice actual del buffer de cierto payload
-unsigned int dat_getNextPayIndx(DAT_Payload pay_i);
-void msd_blockErase(unsigned long block_address);
-void dat_erase_pay_i_buff(DAT_Payload pay_i);
-unsigned long dat_pay_i_to_block(DAT_Payload pay_i);
-//*************************************************************************************************
-
-/**
- * Enum que contiene los General Purpose Buffers del SUCHAI.
- */
-typedef enum _DAT_GnrlPurpBuff{
-    dat_gpb_expFis_f0=0,
-    dat_gpb_expFis_f1,
-    dat_gpb_expFis_f2,
-    dat_gpb_expFis_f3,
-    dat_gpb_expFis_f4,
-    dat_gpb_expFis_f5,
-    dat_gpb_expFis_f6,
-    dat_gpb_expFis_f7,
-    dat_gpb_expFis_f8,
-    dat_gpb_expFis_f9,
-    dat_gpb_expFis_hist,
-
-    dat_gpb_test1,
-    dat_gpb_test2,
-    //*************
-    dat_gpb_last_one    //Se utiliza para marcar el largo del arreglo.
-                        //Y para indicar el ID de TM de CUbesatVar
-}DAT_GnrlPurpBuff;
-
-unsigned long dat_gpb_i_to_block(DAT_GnrlPurpBuff gpb_i);
 //Set
-void dat_setGPB(DAT_GnrlPurpBuff gpb_i, unsigned int indx, int value);
-//Get 
-int dat_getGPB(DAT_GnrlPurpBuff gpb_i, unsigned int indx);
+BOOL dat_set_PayloadBuff(DAT_PayloadBuff pay_i, int value);
+void dat_set_MaxPayIndx(DAT_PayloadBuff pay_i, unsigned int lastIndx);
+void dat_set_NextPayIndx(DAT_PayloadBuff pay_i, unsigned int nextIndx);
+
+//onReset
+void dat_onReset_PayloadBuff(void);
+void dat_reset_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int maxIndx, int mode);
+
+//Erase
+void dat_erase_PayloadBuff(DAT_PayloadBuff pay_i);
+
+//Auxiliary functions
+unsigned long dat_pay_i_to_block(DAT_PayloadBuff pay_i);
+BOOL dat_isFull_PayloadBuff(DAT_PayloadBuff pay_i);
+
+//******************************************************************************
+// DAT_AuxBuff
+//******************************************************************************
+typedef enum _DAT_GnrlPurpBuff{
+    dat_auxBuff_0,
+    dat_auxBuff_1,
+    dat_auxBuff_2,
+    dat_auxBuff_3,
+    dat_auxBuff_4,
+    dat_auxBuff_5,
+    dat_auxBuff_6,
+    dat_auxBuff_7,
+    dat_auxBuff_8,
+    dat_auxBuff_9,
+    dat_auxBuff_10,
+    dat_auxBuff_11,
+    dat_auxBuff_12,
+    //*************
+    dat_aux_last_one    //Se utiliza para marcar el largo del arreglo.
+                        //Y para indicar el ID de TM de CUbesatVar
+}DAT_AuxBuff;
+
+//Get
+int dat_get_AuxBuff(DAT_AuxBuff  aux_i, unsigned int indx);
+//Set
+void dat_set_AuxBuff(DAT_AuxBuff  aux_i, unsigned int indx, int value);
+//onReset
+int dat_onReset_AuxBuff(void);
+//Erase
+int dat_erase_AuxBuff(DAT_AuxBuff aux_i);
+//Auxiliary functions
+unsigned long dat_gpb_i_to_block(DAT_AuxBuff aux_i);
+
 
 #endif // DATA_REPO_H
 

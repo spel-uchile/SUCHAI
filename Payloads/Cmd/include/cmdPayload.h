@@ -96,8 +96,8 @@ typedef enum{
                             ///< configuraciones de termino y post procesamiento
 }PAY_State;
 
-PAY_State pay_nextStateLogic(PAY_State pay_sem, DAT_Payload pay_i);
-void pay_currentStateLogic(PAY_State pay_sem_state, DAT_Payload pay_i);
+PAY_State pay_nextStateLogic(PAY_State pay_sem, DAT_PayloadBuff pay_i);
+void pay_currentStateLogic(PAY_State pay_sem_state, DAT_PayloadBuff pay_i);
 
 //Comandos
 //Debug

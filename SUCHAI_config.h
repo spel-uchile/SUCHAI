@@ -33,11 +33,11 @@
 /* Bus Onboard */
 #define SCH_SYSBUS_ONBOARD                  (1)  //< Onboard => I2C1 en uso
 #define SCH_PAYBUS_ONBOARD                  (1)  ///< Onboard => I2C3 en uso
-#define SCH_ANTENNA_ONBOARD                 (0) ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
-#define SCH_TRX_ONBOARD                     (0) ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
+#define SCH_ANTENNA_ONBOARD                 (1) ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
+#define SCH_TRX_ONBOARD                     (1) ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
 #define SCH_RTC_ONBOARD                     (1) ///< 1 = Onboard 0 = Not Onboard
 #define SCH_MEMEEPROM_ONBOARD               (1) ///< 1 = Onboard 0 = Not Onboard
-#define SCH_EPS_ONBOARD                     (0) ///< Onboard => I2C1 en uso
+#define SCH_EPS_ONBOARD                     (1) ///< Onboard => I2C1 en uso
 #define SCH_MEMSD_ONBOARD                   (1) ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_MGN_ONBOARD                     (0)  ///< Onboard => 1 pin(es) en modo Switch
 
@@ -61,6 +61,7 @@
 #define SCH_CMD_PAY         (0x60)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
 #define SCH_CMD_RTC         (0x70)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
 #define SCH_CMD_TCM         (0x80)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_SRP         (0x90)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
 
 /* TRX and COMM configs */
 #define SCH_TRX_BEACON_PERIOD              (4*60)   ///< [s] Periodo del beacon en segundos (UINT16)
@@ -83,7 +84,7 @@
 #define SCH_FLIGHTPLAN_TYPE                     (0)     ///< 0=ninguno, 1=taskFligthPlan 2=taskFlightPlan2 3=ambos
 #define SCH_FLIGHTPLAN_RESOLUTION               (10)    ///< [MINUTES] Resolucion de tiempo del flight plan
 #define SCH_FLIGHTPLAN_N_CMD                    ((24 * 60) / SCH_FLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]
-#define SCH_FLIGHTPLAN_MEMORY                   (0)     ///< (0) buffer en  RAM, (1) en memoria SD
+#define SCH_FLIGHTPLAN_MEMORY                   (1)     ///< (0) buffer en  RAM, (1) en memoria SD
 #define SCH_USE_FLIGHTPLAN2                     (0)     ///< 1 = use it, 0 = do not use it
 #define SCH_USE_HOUSEKEEPING                    (0)     ///< 1 = use it, 0 = do not use it
 
@@ -95,7 +96,7 @@
  * So 15 commands plus 15 args, that means 62 bytes (15 cmd + 15 param + 1 stop)
  */
 #define SCH_DATAREPOSITORY_MAX_BUFF_TELECMD (10*2)
-#define SCH_DAT_TC_BUFF_MEMSD               (0)   ///< 1=buffer en la memSD 0=buff en mem RAM
+#define SCH_DAT_TC_BUFF_MEMSD               (1)   ///< 1=buffer en la memSD 0=buff en mem RAM
 #define SCH_TCM_SYS_REQ                     (3)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de telemetria
 #define SCH_BCN_SYS_REQ                     (2)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de beacon
 

@@ -101,7 +101,7 @@ int tcm_resend(void *param)
 int tcm_sendTM_all_pay_i(void *param){
 
     //envio TM de payload
-    DAT_Payload pay_i;
+    DAT_PayloadBuff pay_i;
     for(pay_i=0; pay_i<dat_pay_last_one; pay_i++)
     {
         tcm_sendTM_pay_i( (void *)(&pay_i) );
@@ -120,9 +120,9 @@ int tcm_sendTM_all_pay_i(void *param){
 int tcm_sendTM_pay_i(void *param){
     con_printf("tcm_sendTM_pay_i\r\n");
     
-    DAT_Payload pay_i = *((DAT_Payload*)param);
+    DAT_PayloadBuff pay_i = *((DAT_PayloadBuff*)param);
     int mode=2;
-    STA_CubesatVar dat_pay_xxx_perform=dat_pay_i_to_performVar(pay_i);
+    STA_CubesatVar dat_pay_xxx_perform=sta_pay_i_to_performVar(pay_i);
 
     int res = tcm_sendTM_PayloadVar(mode, pay_i);
     if(res!=0x0000){
@@ -375,7 +375,7 @@ int tcm_set_sysreq(void *param)
  * @param pay_i Payload id
  * @return 0 (Tx fail) - 1 (Tx OK)
  */
-int tcm_sendTM_PayloadVar(int mode, DAT_Payload pay_i){
+int tcm_sendTM_PayloadVar(int mode, DAT_PayloadBuff pay_i){
     con_printf("tcm_sendTM_PayloadVar...\r\n");
 
     int tm_id, nfrm;
@@ -387,8 +387,8 @@ int tcm_sendTM_PayloadVar(int mode, DAT_Payload pay_i){
 
     /* Read info and append to the frame */
     //Add Payload Indxs info
-    unsigned int maxIndx = dat_getMaxPayIndx( pay_i);
-    unsigned int nextIndx = dat_getNextPayIndx( pay_i);
+    unsigned int maxIndx = dat_get_MaxPayIndx( pay_i);
+    unsigned int nextIndx = dat_get_NextPayIndx( pay_i);
 
     nfrm = trx_tm_addtoframe( (int *)&maxIndx, 1, CMD_ADDFRAME_ADD);
     nfrm = trx_tm_addtoframe( (int *)&nextIndx, 1, CMD_ADDFRAME_ADD);
@@ -405,7 +405,7 @@ int tcm_sendTM_PayloadVar(int mode, DAT_Payload pay_i){
     unsigned int indx; int val;
     for(indx=0; indx<=maxIndx; indx++)
     {
-        dat_getPayloadVar(pay_i, indx, &val);
+        dat_get_PayloadBuff(pay_i, indx, &val);
         nfrm = trx_tm_addtoframe(&val, 1, CMD_ADDFRAME_ADD);
 
         #if (SCH_CMDTCM_VERBOSE>=2)

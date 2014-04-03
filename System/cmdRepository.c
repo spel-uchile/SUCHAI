@@ -131,7 +131,8 @@ void repo_set_cmdXXX_hanlder(CmdRepo_cmdXXX_handler cmdXXX_handler){
         cmdXXX_handler.xxx_onReset();
     }
     else{
-        printf("repo_set_cmdXXX_hanlder\n ERROR: maximo valor de len_buff_cmdXXX_handler alcanzado!!! \n");
+        printf("repo_set_cmdXXX_hanlder\n ERROR: maximo valor de len_buff_cmdXXX_handler alcanzado !!! \n");
+        printf("La presente incorporacion de cmdXXX_hanlder ya no tendra efecto (ni las posteriores)\n");
     }
 }
 cmdFunction repo_getFunction(int cmdID)

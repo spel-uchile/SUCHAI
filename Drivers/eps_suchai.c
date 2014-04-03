@@ -121,6 +121,24 @@ const int EPS_CSOC[EPS_Cvsocdim] = {889,876,837,798,759,720,681,642,602,524};
 /*valor ADC de t? 40,20,15,10,5,0(enverdad -1? para evitar saltos),-20*/
 const int EPS_TSOC[EPS_Tvsocdim] = {432,555,585,616,647,684,800};
 
+
+int eps_initialize(void){
+    //nothing to do
+
+    return eps_isAlive();
+}
+int eps_isAlive(void){
+    
+    unsigned int ver = VersionReadEPS();
+    printf("eps_isAlive, ver = %d \n", ver);
+    if( ver==0x0000 ){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
 /*------------------------------------------------------------------------------
  *				Initializate EPS
  *------------------------------------------------------------------------------

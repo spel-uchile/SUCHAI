@@ -43,21 +43,12 @@ void taskDeployment(void *param)
     /* Otras estructuras */
     dep_init_GnrlStrct(NULL);
 
-    /* Toopazo: Ahora deberia ser un comando (el rpimero) llamado en taskFligthPlan o equivalente */
+    /* Toopazo: Ahora deberia ser un comando (el primero) llamado en taskFligthPlan o equivalente */
 //    /* Antena */
 //    #if (SCH_ANTENNA_ONBOARD==1)
 //        int realTime2 = SCH_TASKDEPLOYMENT_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
 //        dep_deploy_antenna( (void *)&realTime2 );
 //    #endif
-
-
-    /* Initializing Transceiver */
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * Setting TRX config\r\n");
-    #endif
-    #if (SCH_TRX_ONBOARD==1)
-        trx_initialize(NULL);
-    #endif
 }
 
 //------------------------------------------------------------------------------
@@ -204,27 +195,30 @@ int dep_init_Repos(void *param)
     cmdTCM_handler.xxx_onReset = tcm_onResetCmdTCM;
     repo_set_cmdXXX_hanlder(cmdTCM_handler);
    
-
 //------------------------------------------------------------------------------
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
         printf("\n[dep_init_Repos] Initializing data repositories...\r\n");
     #endif
 
-    #if (SCH_USE_FLIGHTPLAN == 1 )
-        /* Initializing dataRepository */
-        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            printf("    * FlighPlan\r\n");
-        #endif
-        dat_onResetFlightPlan();
-    #endif
-
+    /* Initializing dataRepository*/
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * Telecommands buffer\r\n");
+        printf("    * onReset data Repository..\r\n");
+    #endif
+    dat_onReset_dataRepo(TRUE);
+
+    /* Initializing dataRepository Structures */
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * onReset Fligh Plan..\r\n");
+    #endif
+    dat_onReset_FlightPlan();
+    
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * onReset Telecommand Buffer..\r\n");
     #endif
     dat_onReset_TeleCmdBuff();
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * Payloads data rep.\r\n");
+        printf("    * onReset Payloads..\r\n");
     #endif
     dat_onReset_PayloadBuff();
 
@@ -441,25 +435,21 @@ int dep_init_bus_hw(void *param)
         printf("\n[dep_init_bus_hw] Initializig external hardware...\r\n");
     #endif
 
-    #if (SCH_SYSBUS_ONBOARD==1)
+    #if (SCH_SYSBUS_ONBOARD==1 && SCH_MEMEEPROM_ONBOARD==1 )
     {
-        #if (SCH_MEMEEPROM_ONBOARD==1)
-        {
-            #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                printf("    * External MemEEPROM .. ");
-            #endif
-            resp = init_memEEPROM();
-            hw_isAlive = sta_MemEEPROM_isAlive;
-            sta_setCubesatVar(hw_isAlive, resp);
-            #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                if(resp == 0x01){
-                    printf("Ok\r\n");
-                }
-                else{
-                    printf("Fail\r\n");
-                }
-            #endif
-        }
+        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            printf("    * External MemEEPROM .. ");
+        #endif
+        resp = init_memEEPROM();
+        hw_isAlive = sta_MemEEPROM_isAlive;
+        sta_setCubesatVar(hw_isAlive, resp);
+        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            if(resp == 0x01){
+                printf("Ok\r\n");
+            }
+            else{
+                printf("Fail\r\n");
+            }
         #endif
     }
     #endif

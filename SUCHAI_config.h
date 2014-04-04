@@ -32,21 +32,21 @@
 
 /* Bus Onboard */
 #define SCH_SYSBUS_ONBOARD                  (1)  //< Onboard => I2C1 en uso
-#define SCH_PAYBUS_ONBOARD                  (1)  ///< Onboard => I2C3 en uso
-#define SCH_ANTENNA_ONBOARD                 (1) ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
-#define SCH_TRX_ONBOARD                     (1) ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
+#define SCH_PAYBUS_ONBOARD                  (0)  ///< Onboard => I2C3 en uso
+#define SCH_ANTENNA_ONBOARD                 (0) ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
+#define SCH_TRX_ONBOARD                     (0) ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
 #define SCH_RTC_ONBOARD                     (1) ///< 1 = Onboard 0 = Not Onboard
-#define SCH_MEMEEPROM_ONBOARD               (1) ///< 1 = Onboard 0 = Not Onboard
-#define SCH_EPS_ONBOARD                     (1) ///< Onboard => I2C1 en uso
+#define SCH_MEMEEPROM_ONBOARD               (0) ///< 1 = Onboard 0 = Not Onboard
+#define SCH_EPS_ONBOARD                     (0) ///< Onboard => I2C1 en uso
 #define SCH_MEMSD_ONBOARD                   (1) ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_MGN_ONBOARD                     (0)  ///< Onboard => 1 pin(es) en modo Switch
 
 /* Payloads Onboard */
 //#define SCH_PAYLOADS_ONBOARD                (0) ///< 0 = no payloads is onboard
 #define SCH_PAY_LAGMUIR_ONBOARD             (0) ///< Ocupa UART3_en_H1.19_y_H1.20
-#define SCH_PAY_FIS_ONBOARD                 (1)  ///<
-#define SCH_PAY_GYRO_ONBOARD                (1)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
-#define SCH_PAY_SENSTEMP_ONBOARD            (1)  ///<
+#define SCH_PAY_FIS_ONBOARD                 (0)  ///<
+#define SCH_PAY_GYRO_ONBOARD                (0)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
+#define SCH_PAY_SENSTEMP_ONBOARD            (0)  ///<
 #define SCH_PAY_GPS_ONBOARD                 (0)  ///< Onboard => UART4 en uso, 1 pin(es) en modo Switch
 #define SCH_PAYCAM_nMEMFLASH_ONBOARD        (0)  ///< Onboard => SPI-1 asignado a la Camara. Offboard => SPI-1 asignado a memFlash
 #define SCH_PAY_TEST1_ONBOARD               (0)  ///< Onboard =>
@@ -84,7 +84,7 @@
 #define SCH_FLIGHTPLAN_TYPE                     (0)     ///< 0=ninguno, 1=taskFligthPlan 2=taskFlightPlan2 3=ambos
 #define SCH_FLIGHTPLAN_RESOLUTION               (10)    ///< [MINUTES] Resolucion de tiempo del flight plan
 #define SCH_FLIGHTPLAN_N_CMD                    ((24 * 60) / SCH_FLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]
-#define SCH_FLIGHTPLAN_MEMORY                   (1)     ///< (0) buffer en  RAM, (1) en memoria SD
+#define SCH_FLIGHTPLAN_EXTMEMORY                   (1)     ///< (0) buffer en  RAM, (1) en memoria SD
 #define SCH_USE_FLIGHTPLAN2                     (0)     ///< 1 = use it, 0 = do not use it
 #define SCH_USE_HOUSEKEEPING                    (0)     ///< 1 = use it, 0 = do not use it
 
@@ -96,7 +96,7 @@
  * So 15 commands plus 15 args, that means 62 bytes (15 cmd + 15 param + 1 stop)
  */
 #define SCH_DATAREPOSITORY_MAX_BUFF_TELECMD (10*2)
-#define SCH_DAT_TC_BUFF_MEMSD               (1)   ///< 1=buffer en la memSD 0=buff en mem RAM
+#define SCH_TC_BUFF_EXTMEMORY               (1)   ///< 1=buffer en la memSD 0=buff en mem RAM
 #define SCH_TCM_SYS_REQ                     (3)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de telemetria
 #define SCH_BCN_SYS_REQ                     (2)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de beacon
 

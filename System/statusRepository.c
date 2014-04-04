@@ -27,7 +27,7 @@
 //semaforo para sincronizar accceso a las variables de estado
 extern xSemaphoreHandle dataRepositorySem;
 
-#if !SCH_SYSBUS_ONBOARD
+#if (SCH_MEMEEPROM_ONBOARD==0)
     int STA_CUBESAT_VAR_BUFF[sta_cubesatVar_last_one];
 #endif
 
@@ -40,7 +40,7 @@ extern xSemaphoreHandle dataRepositorySem;
 void sta_setCubesatVar(STA_CubesatVar indxVar, int value){
     portBASE_TYPE semStatus = xSemaphoreTake( dataRepositorySem, portMAX_DELAY );
 
-    #if !SCH_SYSBUS_ONBOARD
+    #if (SCH_MEMEEPROM_ONBOARD==0)
         //Para el caso de guardar las variables en memoria interna
         STA_CUBESAT_VAR_BUFF[indxVar] = value;
     #else
@@ -59,7 +59,7 @@ int sta_getCubesatVar(STA_CubesatVar indxVar){
     portBASE_TYPE semStatus = xSemaphoreTake( dataRepositorySem, portMAX_DELAY );
     
     int value;
-    #if !SCH_SYSBUS_ONBOARD
+    #if (SCH_MEMEEPROM_ONBOARD==0)
         //Para el caso de obtener las variables de la memoria interna
         value = STA_CUBESAT_VAR_BUFF[indxVar];
     #else

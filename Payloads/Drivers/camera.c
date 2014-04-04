@@ -395,7 +395,7 @@ unsigned int cam_receivePhoto(unsigned int length, int mode)
     
     //Inicializa la estructura de data payload
     DAT_PayloadBuff pay_i=dat_pay_camera;
-    dat_reset_PayloadBuff(pay_i, ml-1, 0);
+    dat_reset_PayloadBuff(pay_i, ml, 0);
 
     unsigned char respuesta; char ret[10];
     unsigned int resp;

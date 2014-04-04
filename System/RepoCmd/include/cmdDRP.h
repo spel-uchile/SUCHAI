@@ -101,7 +101,7 @@ void drp_memEEPROM_erase(void);
 void drp_debug1(void);
 void drp_debug2(void);
 void drp_debug3(void);
-
+void drp_debug4(void);
 
 
 #endif /* CMD_DRP_H */

@@ -72,7 +72,7 @@ int dat_get_TeleCmdBuff(int indx){
         #if (SCH_TC_BUFF_EXTMEMORY==0)
             data = DAT_CMD_BUFF[indx];
         #else
-            msd_getVar_1BlockExtMem(dat_gpb_TeleCmd_256Block, indx, &data);
+            msd_getVar_256BlockExtMem(dat_gpb_TeleCmd_256Block, indx, &data);
         #endif
         return data;
     }
@@ -91,7 +91,7 @@ void dat_set_TeleCmdBuff(int indx, int data)
         #if (SCH_TC_BUFF_EXTMEMORY==0)
             DAT_CMD_BUFF[indx] = data;
         #else
-            msd_setVar_1BlockExtMem(dat_gpb_TeleCmd_256Block, indx, data);
+            msd_setVar_256BlockExtMem(dat_gpb_TeleCmd_256Block, indx, data);
         #endif
     }
 }
@@ -266,25 +266,25 @@ unsigned long dat_pay_i_to_block(DAT_PayloadBuff pay_i){
 
 //Setea el valor del ultimo/maximo indice del buffer de cierto payload
 void dat_set_MaxPayIndx(DAT_PayloadBuff pay_i, unsigned int maxIndx){
-    msd_setVar_1BlockExtMem(dat_gpb_Pay_maxIndx_256Block, (unsigned char)pay_i, maxIndx);
+    msd_setVar_256BlockExtMem(dat_gpb_Pay_maxIndx_256Block, (unsigned char)pay_i, maxIndx);
 }
 
 //Obtiene el valor del ultimo/maximo indice del buffer de cierto payload
 unsigned int dat_get_MaxPayIndx(DAT_PayloadBuff pay_i){
     unsigned int maxIndx;
-    msd_getVar_1BlockExtMem(dat_gpb_Pay_maxIndx_256Block, (unsigned char)pay_i, (int *)&maxIndx);
+    msd_getVar_256BlockExtMem(dat_gpb_Pay_maxIndx_256Block, (unsigned char)pay_i, (int *)&maxIndx);
     return maxIndx;
 }
 
 //Setea el valor del indice actual del buffer de cierto payload
 void dat_set_NextPayIndx(DAT_PayloadBuff pay_i, unsigned int nextIndx){
-    msd_setVar_1BlockExtMem(dat_gpb_Pay_nextIndx_256Block, (unsigned char)pay_i, nextIndx);
+    msd_setVar_256BlockExtMem(dat_gpb_Pay_nextIndx_256Block, (unsigned char)pay_i, nextIndx);
 }
 
 //Obtiene el valor del indice actual del buffer de cierto payload
 unsigned int dat_get_NextPayIndx(DAT_PayloadBuff pay_i){
     unsigned int nextIndx;
-    msd_getVar_1BlockExtMem(dat_gpb_Pay_nextIndx_256Block, (unsigned char)pay_i, (int *)&nextIndx);
+    msd_getVar_256BlockExtMem(dat_gpb_Pay_nextIndx_256Block, (unsigned char)pay_i, (int *)&nextIndx);
     return nextIndx;
 }
 
@@ -294,9 +294,9 @@ BOOL dat_set_PayloadBuff(DAT_PayloadBuff pay_i, int value){
     // y retorna si lo logro o no (buffer lleno, payload invalido)
     unsigned int nextIndx;
 
-    if( dat_isFull_PayloadBuff(pay_i)==TRUE){
-        return FALSE;    //buffer lleno
-    }
+//    if( dat_isFull_PayloadBuff(pay_i)==TRUE){
+//        return FALSE;    //buffer lleno
+//    }
     nextIndx = dat_get_NextPayIndx(pay_i);
 
     #if (SCH_DATAREPOSITORY_VERBOSE>=2)
@@ -426,7 +426,7 @@ void dat_onReset_PayloadBuff(void){
     */
 }
 
-void dat_reset_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int maxIndx, int mode){
+void dat_reset_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int lenBuff, int mode){
     #if (SCH_DATAREPOSITORY_VERBOSE>=1)
         printf("Borrando buffer de pay_i = %u\n", (unsigned int)pay_i );
         printf("Usando mode = ");
@@ -439,7 +439,7 @@ void dat_reset_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int maxIndx, int mode
     #endif
 
     //Seteo limites del Buffer
-    dat_set_MaxPayIndx(pay_i, maxIndx);
+    dat_set_MaxPayIndx(pay_i, lenBuff-1);
     dat_set_NextPayIndx(pay_i, 0);
 
     if(mode==1){
@@ -459,14 +459,14 @@ void dat_reset_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int maxIndx, int mode
 //Get 
 int dat_get_AuxBuff(DAT_AuxBuff aux_i, unsigned int indx){
     int val;
-    unsigned long block = dat_gpb_i_to_block(aux_i);
+    unsigned long block = dat_aux_i_to_block(aux_i);
     msd_getVar_256BlockExtMem(block, indx, &val);
 
     return val;
 }
 //Set
 void dat_set_AuxBuff(DAT_AuxBuff aux_i, unsigned int indx, int value){
-    unsigned long block = dat_gpb_i_to_block(aux_i);
+    unsigned long block = dat_aux_i_to_block(aux_i);
     msd_setVar_256BlockExtMem(block, indx, value);
 
 }
@@ -484,7 +484,7 @@ int dat_erase_AuxBuff(DAT_AuxBuff aux_i){
  * @param gpb_i del que quiero obtener el 256block
  * @return block de la memSD correspondiente
  */
-unsigned long dat_gpb_i_to_block(DAT_AuxBuff aux_i){
+unsigned long dat_aux_i_to_block(DAT_AuxBuff aux_i){
     unsigned long block;
     block = dat_gpb_Aux_i_256Block[aux_i];
     return block;

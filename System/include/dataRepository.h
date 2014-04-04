@@ -147,7 +147,7 @@ void dat_set_NextPayIndx(DAT_PayloadBuff pay_i, unsigned int nextIndx);
 
 //onReset
 void dat_onReset_PayloadBuff(void);
-void dat_reset_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int maxIndx, int mode);
+void dat_reset_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int lenBuff, int mode);
 
 //Erase
 void dat_erase_PayloadBuff(DAT_PayloadBuff pay_i);
@@ -187,7 +187,7 @@ int dat_onReset_AuxBuff(void);
 //Erase
 int dat_erase_AuxBuff(DAT_AuxBuff aux_i);
 //Auxiliary functions
-unsigned long dat_gpb_i_to_block(DAT_AuxBuff aux_i);
+unsigned long dat_aux_i_to_block(DAT_AuxBuff aux_i);
 
 
 #endif // DATA_REPO_H

@@ -320,7 +320,7 @@ static int gpb_indx;
 int pay_init_expFis(void *param){
     con_printf("pay_init_expFis\r\n");
 
-    DAT_PayloadBuff pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_expFis;
 
     static unsigned int ADC_period[] = {10000, 5000, 1000, 500, 100, 50, 10};
@@ -328,8 +328,8 @@ int pay_init_expFis(void *param){
     int rounds_per_ADC_period = 3;
     int buff_len = fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
 
-    maxIndx = (buff_len*len*rounds_per_ADC_period) -1;
-    dat_reset_PayloadBuff(pay_i, maxIndx, 0);
+    lenBuff = (buff_len*len*rounds_per_ADC_period);
+    dat_reset_PayloadBuff(pay_i, lenBuff, 0);
 
     //Reset vars
     gpb_indx = 0;
@@ -388,8 +388,8 @@ int pay_stop_expFis(void *param){
 //
 //    DAT_Payload pay_i; unsigned int maxIndx;
 //    pay_i = dat_pay_expFis;
-//    maxIndx = (unsigned int)(2 -1); //valor exacto sera seteado en pay_take, o pay_stop
-//    dat_resetPayloadBuffer(pay_i, maxIndx, 1);
+//    lenBuff = (unsigned int)(2); //valor exacto sera seteado en pay_take, o pay_stop
+//    dat_resetPayloadBuffer(pay_i, lenBuff, 1);
 //
 //    //Reset expFis
 //    expFis_fr=0;
@@ -495,10 +495,10 @@ static int test1_ind;
 int pay_init_test1(void *param){
     con_printf("pay_init_test1\r\n");
 
-    DAT_PayloadBuff pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_test1;
-    maxIndx = (unsigned int)( (500*4) -1);   //desde 0x00 a 0xFF
-    dat_reset_PayloadBuff(pay_i, maxIndx, 1);
+    lenBuff = (unsigned int)(500*4);   //desde 0x00 a 0xFF
+    dat_reset_PayloadBuff(pay_i, lenBuff, 1);
 
     //Reiniciar test1
     test1_ind=0;
@@ -524,10 +524,10 @@ int pay_stop_test1(void *param){
 int pay_init_test2(void *param){
     con_printf("pay_init_test2\r\n");
 
-    DAT_PayloadBuff pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_test2;
-    maxIndx = (unsigned int)(500 -1);    //payload en etapa experimental aun
-    dat_reset_PayloadBuff(pay_i, maxIndx, 0);
+    lenBuff = (unsigned int)(500);    //payload en etapa experimental aun
+    dat_reset_PayloadBuff(pay_i, lenBuff, 0);
 
     return 1;
 }
@@ -561,8 +561,8 @@ int pay_take_test2(void *param){
         con_printf("tot_len = ");
         sprintf (ret, "%d", (unsigned int)tot_len);
         con_printf(ret);con_printf("\r\n");
-        maxIndx = (unsigned int)(tot_len -1);
-        dat_resetPayloadBuffer(pay_i, maxIndx, 0);
+        lenBuff = (unsigned int)(tot_len);
+        dat_resetPayloadBuffer(pay_i, lenBuff, 0);
         
         //guarda msj1
         for(ind=0;ind<len1;ind++){
@@ -580,8 +580,8 @@ int pay_take_test2(void *param){
         con_printf("tot_len = ");
         sprintf (ret, "%d", (unsigned int)tot_len);
         con_printf(ret);con_printf("\r\n");
-        maxIndx = (unsigned int)(tot_len -1);
-        dat_resetPayloadBuffer(pay_i, maxIndx, 0);
+        lenBuff = (unsigned int)(tot_len);
+        dat_resetPayloadBuffer(pay_i, lenBuff, 0);
     #endif
     */
 
@@ -636,10 +636,10 @@ int pay_debug_gyro(void *param){
 int pay_init_gyro(void *param){
     con_printf("pay_init_gyro\r\n");
 
-    DAT_PayloadBuff pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_gyro;
-    maxIndx = (unsigned int)( (500*3) -1);  //(1440*3)      //numero de 10-minutos en un dia
-    dat_reset_PayloadBuff(pay_i, maxIndx, 1);
+    lenBuff = (unsigned int)(500*3);  //(1440*3)      //numero de 10-minutos en un dia
+    dat_reset_PayloadBuff(pay_i, lenBuff, 1);
 
     //config gyro
     gyr_init_config();
@@ -665,10 +665,10 @@ int pay_stop_gyro(void *param){
 int pay_init_tmEstado(void *param){
     con_printf("pay_init_tmEstado\r\n");
 
-    DAT_PayloadBuff pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_tmEstado;
-    maxIndx = (unsigned int)( (40*sta_cubesatVar_last_one) -1);  //(4*60/5=48)      //numero de 5-minutos en una orbita (4 horas)
-    dat_reset_PayloadBuff(pay_i, maxIndx, 1);
+    lenBuff = (unsigned int)(40*sta_cubesatVar_last_one);  //(4*60/5=48)      //numero de 5-minutos en una orbita (4 horas)
+    dat_reset_PayloadBuff(pay_i, lenBuff, 1);
 
     return 1;
 }
@@ -766,10 +766,10 @@ int pay_take_camera(void *param){
     if(issync!=0x0000){
         con_printf("issync!=0x0000()\r\n");
 
-        DAT_PayloadBuff pay_i; unsigned int maxIndx;
+        DAT_PayloadBuff pay_i; unsigned int lenBuff;
         pay_i = dat_pay_camera;
-        maxIndx = (unsigned int)(2 -1);
-        dat_reset_PayloadBuff(pay_i, maxIndx, 0);
+        lenBuff = (unsigned int)(2);
+        dat_reset_PayloadBuff(pay_i, lenBuff, 0);
         dat_set_PayloadBuff(pay_i, 0xFA10);
         dat_set_PayloadBuff(pay_i, 0xFA10);
 
@@ -806,10 +806,10 @@ int pay_stop_camera(void *param){
 int pay_init_gps(void *param){
     con_printf("pay_init_gps\r\n");
 
-    DAT_PayloadBuff pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_gps;
-    maxIndx = (unsigned int)( (200) -1);   //(1440)  //numero de 10-minutos en un dia
-    dat_reset_PayloadBuff(pay_i, maxIndx, 1);
+    lenBuff = (unsigned int)(200);   //(1440)  //numero de 10-minutos en un dia
+    dat_reset_PayloadBuff(pay_i, lenBuff, 1);
 
     return 1;
 }
@@ -830,18 +830,17 @@ int pay_init_lagmuirProbe(void *param){
     con_printf("pay_init_lagmuirProbe\r\n");
 
     #if (SCH_PAY_LAGMUIR_ONBOARD==0)
-        DAT_PayloadBuff pay_i; unsigned int maxIndx;
+        DAT_PayloadBuff pay_i; unsigned int lenBuff;
         pay_i = dat_pay_lagmuirProbe;
-        maxIndx = (unsigned int)( (200) -1);   //(1440)  //numero de 10-minutos en un dia
-        dat_reset_PayloadBuff(pay_i, maxIndx, 1);
+        lenBuff = (unsigned int)(200);   //(1440)  //numero de 10-minutos en un dia
+        dat_reset_PayloadBuff(pay_i, lenBuff, 1);
     #else
+        DAT_PayloadBuff pay_i; unsigned int lenBuff;
+        pay_i = dat_pay_lagmuirProbe;
+        lenBuff = (unsigned int)(20*1); /*TODO: SET VALUE*/ //(1440)      //numero de 10-minutos en un dia
+        dat_reset_PayloadBuff(pay_i, lenBuff, 1);
 
-    DAT_PayloadBuff pay_i; unsigned int maxIndx;
-    pay_i = dat_pay_lagmuirProbe;
-    maxIndx = (unsigned int)( (20*1) -1); /*TODO: SET VALUE*/ //(1440)      //numero de 10-minutos en un dia
-    dat_reset_PayloadBuff(pay_i, maxIndx, 1);
-
-    lag_erase_buffer();
+        lag_erase_buffer();
     #endif
 
     return 1;
@@ -985,10 +984,10 @@ int pay_debug_sensTemp(void *param){
 int pay_init_sensTemp(void *param){
     con_printf("pay_init_sensTemp\r\n");
    
-    DAT_PayloadBuff pay_i; unsigned int maxIndx;
+    DAT_PayloadBuff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_sensTemp;
-    maxIndx = (unsigned int)( (500*4) -1);   //(1440)      //numero de 10-minutos en un dia
-    dat_reset_PayloadBuff(pay_i, maxIndx, 1);
+    lenBuff = (unsigned int)(500*4);   //(1440)      //numero de 10-minutos en un dia
+    dat_reset_PayloadBuff(pay_i, lenBuff, 1);
 
     sensTemp_init(ST1_ADDRESS);
     sensTemp_init(ST2_ADDRESS);

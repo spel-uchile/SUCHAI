@@ -27,11 +27,11 @@
 //semaforo para sincronizar accceso a las variables de estado
 extern xSemaphoreHandle dataRepositorySem; /*WARNING esto estaba asi: extern dataRepositorySem;*/
 
-#if (SCH_TC_BUFF_EXTMEMORY==0)
+#if (SCH_TC_BUFF_EXTMEMORY==0 || SCH_SYSBUS_ONBOARD==0)
     int DAT_CMD_BUFF[DAT_MAX_BUFF_TELECMD];
 #endif
 
-#if (SCH_FLIGHTPLAN_EXTMEMORY == 0)
+#if (SCH_FLIGHTPLAN_EXTMEMORY == 0 || SCH_SYSBUS_ONBOARD==0)
     int DAT_FPLAN_BUFF[SCH_FLIGHTPLAN_N_CMD*2];
 #endif
 
@@ -52,11 +52,18 @@ static unsigned int dat_gpb_Aux_i_256Block[dat_aux_last_one];
  */
 void dat_erase_TeleCmdBuff(void){
 
-    #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-        printf("  dat_erase_TeleCmdBuff()..\n");
-        printf("    starting at block= %u\n", (unsigned int)dat_gpb_TeleCmd_256Block);
-    #endif
-    msd_blockErase(dat_gpb_TeleCmd_256Block);
+//    #if (SCH_DATAREPOSITORY_VERBOSE>=1)
+//        printf("  dat_erase_TeleCmdBuff()..\n");
+//        printf("    starting at block= %u\n", (unsigned int)dat_gpb_TeleCmd_256Block);
+//    #endif
+//
+//    msd_blockErase(dat_gpb_TeleCmd_256Block);
+
+    int indx;
+    for(indx=0; indx<DAT_MAX_BUFF_TELECMD; indx++)
+    {
+        dat_set_TeleCmdBuff(indx, CMD_CMDNULL);
+    }
 }
 /**
  * Obtiene el i-esima valor del buffer de Telecomandos
@@ -69,7 +76,7 @@ int dat_get_TeleCmdBuff(int indx){
         return 0;
     }
     else{
-        #if (SCH_TC_BUFF_EXTMEMORY==0)
+        #if (SCH_FLIGHTPLAN_EXTMEMORY == 0 || SCH_SYSBUS_ONBOARD==0)
             data = DAT_CMD_BUFF[indx];
         #else
             msd_getVar_256BlockExtMem(dat_gpb_TeleCmd_256Block, indx, &data);
@@ -88,7 +95,7 @@ void dat_set_TeleCmdBuff(int indx, int data)
         return;
     }
     else{
-        #if (SCH_TC_BUFF_EXTMEMORY==0)
+        #if (SCH_FLIGHTPLAN_EXTMEMORY == 0 || SCH_SYSBUS_ONBOARD==0)
             DAT_CMD_BUFF[indx] = data;
         #else
             msd_setVar_256BlockExtMem(dat_gpb_TeleCmd_256Block, indx, data);

@@ -28,32 +28,40 @@ void srp_onResetCmdSRP(){
     printf("        srp_onResetCmdSRP\n");
 
     //De display
-    srpFunction[(unsigned char)srp_id_print_sta_CubesatVar] = srp_print_sta_CubesatVar;
-    srp_sysReq[(unsigned char)srp_id_print_sta_CubesatVar]  = CMD_SYSREQ_MIN;
+    srpFunction[(unsigned char)srp_id_print_STA_CubesatVar] = srp_print_STA_CubesatVar;
+    srp_sysReq[(unsigned char)srp_id_print_STA_CubesatVar]  = CMD_SYSREQ_MIN;
     //De update en general en sta_CubesatVar
-    srpFunction[(unsigned char)srp_id_updateAll_sta_CubesatVar] = srp_updateAll_sta_CubesatVar;
-    srp_sysReq[(unsigned char)srp_id_updateAll_sta_CubesatVar]  = CMD_SYSREQ_MIN;
-    srpFunction[(unsigned char)srp_id_update_sta_CubesatVar_hoursAlive] = srp_update_sta_CubesatVar_hoursAlive;
-    srp_sysReq[(unsigned char)srp_id_update_sta_CubesatVar_hoursAlive]  = CMD_SYSREQ_MIN;
-    srpFunction[(unsigned char)srp_id_update_sta_CubesatVar_hoursWithoutReset] = srp_update_sta_CubesatVar_hoursWithoutReset;
-    srp_sysReq[(unsigned char)srp_id_update_sta_CubesatVar_hoursWithoutReset]  = CMD_SYSREQ_MIN;
-    srpFunction[(unsigned char)srp_id_update_sta_CubesatVar_nSended_tm] = srp_update_sta_CubesatVar_nSended_tm;
-    srp_sysReq[(unsigned char)srp_id_update_sta_CubesatVar_nSended_tm]  = CMD_SYSREQ_MIN;
-    srpFunction[(unsigned char)srp_id_update_sta_CubesatVar_nReceived_tc] = srp_update_sta_CubesatVar_nReceived_tc;
-    srp_sysReq[(unsigned char)srp_id_update_sta_CubesatVar_nReceived_tc]  = CMD_SYSREQ_MIN;
-    srpFunction[(unsigned char)srp_id_update_sta_CubesatVar_opMode] = srp_update_sta_CubesatVar_opMode;
-    srp_sysReq[(unsigned char)srp_id_update_sta_CubesatVar_opMode]  = CMD_SYSREQ_MIN;
-    srpFunction[(unsigned char)srp_id_update_sta_CubesatVar_trx_rssi] = srp_update_sta_CubesatVar_trx_rssi;
-    srp_sysReq[(unsigned char)srp_id_update_sta_CubesatVar_trx_rssi]  = CMD_SYSREQ_MIN;
-    srpFunction[(unsigned char)srp_id_update_sta_CubesatVar_trx_rssi_mean] = srp_update_sta_CubesatVar_trx_rssi_mean;
-    srp_sysReq[(unsigned char)srp_id_update_sta_CubesatVar_trx_rssi_mean]  = CMD_SYSREQ_MIN;
+    srpFunction[(unsigned char)srp_id_periodicUpdate_STA_CubesatVar] = srp_periodicUpdate_STA_CubesatVar;
+    srp_sysReq[(unsigned char)srp_id_periodicUpdate_STA_CubesatVar]  = CMD_SYSREQ_MIN;
+    srpFunction[(unsigned char)srp_id_update_STA_CubesatVar_hoursAlive] = srp_update_STA_CubesatVar_hoursAlive;
+    srp_sysReq[(unsigned char)srp_id_update_STA_CubesatVar_hoursAlive]  = CMD_SYSREQ_MIN;
+    srpFunction[(unsigned char)srp_id_update_STA_CubesatVar_hoursWithoutReset] = srp_update_STA_CubesatVar_hoursWithoutReset;
+    srp_sysReq[(unsigned char)srp_id_update_STA_CubesatVar_hoursWithoutReset]  = CMD_SYSREQ_MIN;
+    srpFunction[(unsigned char)srp_id_update_STA_CubesatVar_nSended_tm] = srp_update_STA_CubesatVar_nSended_tm;
+    srp_sysReq[(unsigned char)srp_id_update_STA_CubesatVar_nSended_tm]  = CMD_SYSREQ_MIN;
+    srpFunction[(unsigned char)srp_id_update_STA_CubesatVar_nReceived_tc] = srp_update_STA_CubesatVar_nReceived_tc;
+    srp_sysReq[(unsigned char)srp_id_update_STA_CubesatVar_nReceived_tc]  = CMD_SYSREQ_MIN;
+    srpFunction[(unsigned char)srp_id_update_STA_CubesatVar_opMode] = srp_update_sta_CubesatVar_opMode;
+    srp_sysReq[(unsigned char)srp_id_update_STA_CubesatVar_opMode]  = CMD_SYSREQ_MIN;
+    srpFunction[(unsigned char)srp_id_update_STA_CubesatVar_trx_rssi] = srp_update_STA_CubesatVar_trx_rssi;
+    srp_sysReq[(unsigned char)srp_id_update_STA_CubesatVar_trx_rssi]  = CMD_SYSREQ_MIN;
+    srpFunction[(unsigned char)srp_id_update_STA_CubesatVar_trx_rssi_mean] = srp_update_STA_CubesatVar_trx_rssi_mean;
+    srp_sysReq[(unsigned char)srp_id_update_STA_CubesatVar_trx_rssi_mean]  = CMD_SYSREQ_MIN;
 
+    srpFunction[(unsigned char)srp_id_trx_newTcFrame] = srp_trx_newTcFrame;
+    srp_sysReq[(unsigned char)srp_id_trx_newTcFrame]  = CMD_SYSREQ_MIN;
+    srpFunction[(unsigned char)srp_id_trx_newCmdBuff] = srp_trx_newCmdBuff;
+    srp_sysReq[(unsigned char)srp_id_trx_newCmdBuff]  = CMD_SYSREQ_MIN;
+
+    srpFunction[(unsigned char)srp_id_executeBeforeFlight] = srp_executeBeforeFlight;
+    srp_sysReq[(unsigned char)srp_id_executeBeforeFlight]  = CMD_SYSREQ_MIN;
 }
 
+//------------------------------------------------------------------------------
 // comands to update Cubestat. They may take one, or no arguments
-int srp_updateAll_sta_CubesatVar(void *param){
+int srp_periodicUpdate_STA_CubesatVar(void *param){
     #if (SCH_CMDDRP_VERBOSE>=1)
-        con_printf("srp_updateAll_sta_CubesatVar()..\r\n");
+        printf("srp_periodicUpdate_STA_CubesatVar()..\r\n");
     #endif
 
     #if (SCH_EPS_ONBOARD==1)
@@ -63,14 +71,167 @@ int srp_updateAll_sta_CubesatVar(void *param){
         sta_setCubesatVar(sta_eps_soc, CMD_SYSREQ_MAX);
     #endif
 
+    int res, nVarUpdt=0;
     STA_CubesatVar indxVar;
     for(indxVar=0;indxVar<sta_cubesatVar_last_one;indxVar++){
-        srp_CubesatVar_update(indxVar);
+        res = srp_CubesatVar_update(indxVar);
+        if(res == 1){ nVarUpdt++; }
     }
+    printf("  updated state variables (STA_CubesatVar) = %d/%d\r\n", nVarUpdt, sta_cubesatVar_last_one);
 
     return 1;
 }
+int srp_CubesatVar_update(int indxVar){
+    int res;
 
+    /* Aquellas variables que no se actualicen aca son aquellas que:
+    * 1) Se actualizan solo en la inicializacion del sistema (taskDeployment o en algun onReset anidado)
+    * 2) Son actualizadas por alguna tarea (taskComunication, taskHousekeeping, taskFlightPlan..)
+    */
+
+    switch(indxVar){
+        //PPC => (C&DH subsystem)
+        case sta_ppc_enwdt: // 1=WDT Active, 0=WDT Inactive
+            srp_ppc_enwdt();
+            res = 1;
+            break;
+        case sta_ppc_osc: // holds Current Oscillator
+            srp_ppc_osc();
+            res = 1;
+            break;
+        case sta_ppc_MB_nOE_USB_nINT_stat:
+            srp_ppc_MB_nOE_USB_nINT_stat();
+            res = 1;
+            break;
+        case sta_ppc_MB_nOE_MHX_stat:
+            srp_ppc_MB_nOE_MHX_stat();
+            res = 1;
+            break;
+        case sta_ppc_MB_nON_MHX_stat:
+            srp_ppc_MB_nON_MHX_stat();
+            res = 1;
+            break;
+        case sta_ppc_MB_nON_SD_stat:
+            srp_ppc_MB_nON_SD_stat();
+            res = 1;
+            break;
+
+        //RTC => (C&DH subsystem)
+        case sta_rtc_year:
+            srp_rtc_year();
+            res = 1;
+            break;
+        case sta_rtc_month:
+            srp_rtc_month();
+            res = 1;
+            break;
+        case sta_rtc_week_day:
+            srp_rtc_week_day();
+            res = 1;
+            break;
+        case sta_rtc_day_number:
+            srp_rtc_day_number();
+            res = 1;
+            break;
+        case sta_rtc_hours:
+            srp_rtc_hours();
+            res = 1;
+            break;
+        case sta_rtc_minutes:
+            srp_rtc_minutes();
+            res = 1;
+            break;
+        case sta_rtc_seconds:
+            srp_rtc_seconds();
+            res = 1;
+            break;
+
+        //EPS => (Energy subsystem)
+    #if SCH_EPS_ONBOARD==1            
+        case sta_eps_bat0_voltage:
+            srp_eps_bat0_voltage();
+            res = 1;
+            break;
+        case sta_eps_bat0_current:
+            srp_eps_bat0_current();
+            res = 1;
+            break;
+        case sta_eps_bus5V_current:
+            srp_eps_bus5V_current();
+            res = 1;
+            break;
+        case sta_eps_bus3V_current:
+            srp_eps_bus3V_current();
+            res = 1;
+            break;
+        case sta_eps_bus_battery_current:
+            srp_eps_bus_battery_current();
+            res = 1;
+            break;
+        case sta_eps_bat0_temp:
+            srp_eps_bat0_temp();
+            res = 1;
+            break;
+        case sta_eps_panel_pwr:
+            srp_eps_panel_pwr();
+            res = 1;
+            break;
+        case sta_eps_status:
+            srp_eps_status();
+            res = 1;
+            break;
+        case sta_eps_soc:
+            srp_eps_soc();
+            res = 1;
+            break;
+        case sta_eps_socss:
+            srp_eps_socss();
+            res = 1;
+            break;
+        case sta_eps_state_flag:
+            srp_eps_state_flag();
+            res = 1;
+            break;
+        case sta_eps_charging:
+            srp_eps_charging();
+            res = 1;
+            break;
+    #endif
+
+    #if (SCH_TRX_ONBOARD==1)
+        //TRX => (Communication subsystem)
+        case sta_trx_opmode:
+            srp_trx_opmode();
+            res = 1;
+            break;           // Operation mode
+        case sta_trx_temp_hpa:
+            srp_trx_temp_hpa();
+            res = 1;
+            break;         // Temp of HPA
+        case sta_trx_temp_mcu:
+            srp_trx_temp_mcu();
+            res = 1;
+            break;         // Temp of MCU
+        case sta_trx_rssi:
+            srp_trx_rssi();
+            res = 1;
+            break;             // RSSI Signal level
+        case sta_trx_status_tc:
+            srp_trx_status_tc();
+            res = 1;
+            break;        // Status Register of TC
+    #endif
+
+        //On default (para aquellos que no tienen un periodicUpdate asociado)
+        default:
+            //do nothing on default
+            res = 0;
+            break;
+    }
+
+    return res;
+}
+//------------------------------------------------------------------------------
 int srp_update_sta_CubesatVar_opMode(void *param){
 
     int arg = *((int *)param);
@@ -79,7 +240,7 @@ int srp_update_sta_CubesatVar_opMode(void *param){
     return 1;
 }
 
-int srp_update_sta_CubesatVar_hoursWithoutReset(void *param)
+int srp_update_STA_CubesatVar_hoursWithoutReset(void *param)
 {
     /* En el futro esta funcion deberia ser llamada desde alguna interrupcion periodica del RTCC.
      * O leer del RTCC y comparar con su valor actual (get_ppc_hoursWithoutReset) y decidir
@@ -93,28 +254,28 @@ int srp_update_sta_CubesatVar_hoursWithoutReset(void *param)
     return 1;
 }
 
-int srp_update_sta_CubesatVar_hoursAlive(void *param){
+int srp_update_STA_CubesatVar_hoursAlive(void *param){
     //solo debe ser llamada cada 1hora
     int arg = sta_getCubesatVar(sta_ppc_hoursAlive)+1;
     sta_setCubesatVar(sta_ppc_hoursAlive, arg);
     return 1;
 }
 
-int srp_update_sta_CubesatVar_nSended_tm(void *param){
+int srp_update_STA_CubesatVar_nSended_tm(void *param){
     //solo debe ser llamada cada 1hora
     int arg = sta_getCubesatVar(sta_trx_count_tm)+1;
     sta_setCubesatVar(sta_trx_count_tm, arg);
     return 1;
 }
 
-int srp_update_sta_CubesatVar_nReceived_tc(void *param){
+int srp_update_STA_CubesatVar_nReceived_tc(void *param){
     //solo debe ser llamada cada 1hora
     int arg = sta_getCubesatVar(sta_trx_count_tc)+1;
     sta_setCubesatVar(sta_trx_count_tc, arg);
     return 1;
 }
 
-int srp_update_sta_CubesatVar_trx_rssi_mean(void *param)
+int srp_update_STA_CubesatVar_trx_rssi_mean(void *param)
 {
     int new_value=*((int *)param);
     int res = srp_trx_rssi_mean(new_value);
@@ -132,7 +293,7 @@ int srp_update_sta_CubesatVar_trx_rssi_mean(void *param)
  * Arguments          : none
  * Return Value       : int: 1=Always successfull
  *----------------------------------------------------------------------------*/
-int srp_update_sta_CubesatVar_trx_rssi(void *param)
+int srp_update_STA_CubesatVar_trx_rssi(void *param)
 {
     //Actualizar periodicamente el rssi, para modo sin telecomandos
     srp_trx_rssi();
@@ -186,6 +347,39 @@ int srp_trx_newCmdBuff(void *param)
     return 1;
 }
 
+int srp_executeBeforeFlight(void *param){
+    con_printf("srp_executeBeforeFlight()..\n");
+
+    int mode=*((int *)param);
+    if(mode==1){
+        drp_executeBeforeFlight(NULL);
+    }
+
+    srp_STA_CubesatVar_EBF();
+
+    printf("****************************************************\r\n");
+    printf("srp_executeBeforeFlight(%d) finalizo\r\n", mode);
+    printf("Para quedar en config de vuelo, se\r\n");
+    printf("DEBE apagar el SUCHAI, hagalo ANTES de:\r\n");
+    printf("****************************************************\r\n");
+
+    int i;
+    for(i=10;i>=1;i--){
+        __delay_ms(1000);
+        printf("%d segundos..\r\n", i);
+    }
+
+    return 1;
+}
+void srp_STA_CubesatVar_EBF(void){
+    sta_onResetStatRepo();
+
+    sta_setCubesatVar(sta_SUCHAI_isDeployed, 0);  //First time on!
+    /* Es la unica variable que debe gatillar las acciones de despliegue
+     * como quemar antenas, sacar fotos lenzamiento, quemar langmuir, etc.
+     */
+}
+//------------------------------------------------------------------------------
 // functions to "read" Cubestat
 /*------------------------------------------------------------------------------
  *                                  DRP READALL DAT CUBESAT
@@ -195,7 +389,7 @@ int srp_trx_newCmdBuff(void *param)
  * Return Value       : int
  * ID                 : 0x501D
  *----------------------------------------------------------------------------*/
-int srp_print_sta_CubesatVar(void *param)
+int srp_print_STA_CubesatVar(void *param)
 {
     char buffer[10];
     int arg=*((int *)param);
@@ -312,10 +506,6 @@ int srp_print_sta_CubesatVar(void *param)
         con_printf("-----------------------------------\r\n");
 
         /* Get mTRX */
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_frec_tx), 10);
-        con_printf("trx_frec_tx= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_frec_rx), 10);
-        con_printf("trx_frec_rx= "); con_printf(buffer); con_printf("\r\n");
         itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_opmode), 10);
         con_printf("trx_opmode= "); con_printf(buffer); con_printf("\r\n");
         itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_temp_hpa), 10);
@@ -324,10 +514,6 @@ int srp_print_sta_CubesatVar(void *param)
         con_printf("trx_temp_mcu= "); con_printf(buffer); con_printf("\r\n");
         itoa(buffer, (unsigned int)sta_getCubesatVar(sta_trx_rssi), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_rssi), 10);
         con_printf("trx_rssi= "); con_printf(buffer); con_printf(" dBm\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_beacon_pwr), 10);
-        con_printf("trx_beacon_pwr= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_telemetry_pwr), 10);
-        con_printf("trx_telemetry_pwr= "); con_printf(buffer); con_printf("\r\n");
         itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_status_tc), 10);
         con_printf("trx_status_tc= "); con_printf(buffer); con_printf("\r\n");
         itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_count_tm), 10);
@@ -371,238 +557,20 @@ int srp_debug(void *param){
     return 1;
 }
 
-void srp_memEEPROM_erase(void){
+void srp_eraseAll_CubesatVar(void){
     #if (SCH_CMDDRP_VERBOSE>=1)
         con_printf("    Erasing memEEPROM\n");
     #endif
 
-    unsigned int address=0;
-    unsigned int data=0xFFFF;
+    unsigned int indxVar;
+    int data = -1;  //oxFFFF
 
-    for(address=MEP_FIRST_ADDR;address<=MEP_LAST_ADDR;address++){
-        writeIntEEPROM1(address, data);
+    for(indxVar=0; indxVar<sta_cubesatVar_last_one; indxVar++){
+        sta_setCubesatVar(indxVar, data);
     }
 }
 
 
-void srp_CubesatVar_update(int indxVar){
-    
-    #if (SCH_CMDDRP_VERBOSE >=2)
-        con_printf("srp_CubesatVar_update(");
-        utoa(ret, (unsigned int)indxVar, 10);
-        //sprintf (buffer, "%d", (unsigned int)indx)Var;
-        con_printf(ret); con_printf(")\r\n");
-    #endif
-
-    switch(indxVar){
-        case sta_ppc_lastResetSource:
-            //srp_ppc_lastResetSource();
-            //Variables modificada solamente en sta_onResetCubesatVar
-            break;
-        case sta_ppc_hoursAlive:
-            //srp_ppc_hoursAlive();
-            //Solo ee llama (actualiza) por taskHousekeeping cada 1hora
-            break;
-        case sta_ppc_hoursWithoutReset:
-            //srp_ppc_hoursWithoutReset();
-            //Solo ee llama (actualiza) por taskHousekeeping cada 1hora
-            break;
-        case sta_ppc_resetCounter:
-            //srp_ppc_resetCounter();
-            // resetCounter no se actualiza durante la marcha, solo en sta_init_Cubestat
-            break;
-        case sta_ppc_enwdt: // 1=WDT Active, 0=WDT Inactive
-            srp_ppc_enwdt();
-            break;
-        case sta_ppc_osc: // holds Current Oscillator
-            srp_ppc_osc();
-            break;
-        case sta_ppc_MB_nOE_USB_nINT_stat:
-            srp_ppc_MB_nOE_USB_nINT_stat();
-            break;
-        case sta_ppc_MB_nOE_MHX_stat:
-            srp_ppc_MB_nOE_MHX_stat();
-            break;
-        case sta_ppc_MB_nON_MHX_stat:
-            srp_ppc_MB_nON_MHX_stat();
-            break;
-        case sta_ppc_MB_nON_SD_stat:
-            srp_ppc_MB_nON_SD_stat();
-            break;
-
-    //DEP => (C&DH subsystem)
-        case sta_dep_ant_deployed: // 1=already deployed, 0=not deployed yet
-            /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
-            * comandos para actualizarlo */
-            break;
-        case sta_dep_ant_tries: // Number of tries to deploy antenna
-            /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
-            * comandos para actualizarlo */
-            break;
-        case sta_dep_year:
-            /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
-            * comandos para actualizarlo */
-            break;
-        case sta_dep_month:
-            /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
-            * comandos para actualizarlo */
-            break;
-        case sta_dep_week_day:
-            /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
-            * comandos para actualizarlo */
-            break;
-        case sta_dep_day_number:
-            /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
-            * comandos para actualizarlo */
-            break;
-        case sta_dep_hours:
-            /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
-            * comandos para actualizarlo */
-            break;
-        case sta_dep_minutes:
-            /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
-            * comandos para actualizarlo */
-            break;
-        case sta_dep_seconds:
-            /* Ya que solo se seteara una vez taskDeployment no tiene sentido crear
-            * comandos para actualizarlo */
-            break;
-
-    //RTC => (C&DH subsystem)
-        case sta_rtc_year:
-            srp_rtc_year();
-            break;
-        case sta_rtc_month:
-            srp_rtc_month();
-            break;
-        case sta_rtc_week_day:
-            srp_rtc_week_day();
-            break;
-        case sta_rtc_day_number:
-            srp_rtc_day_number();
-            break;
-        case sta_rtc_hours:
-            srp_rtc_hours();
-            break;
-        case sta_rtc_minutes:
-            srp_rtc_minutes();
-            break;
-        case sta_rtc_seconds:
-            srp_rtc_seconds();
-            break;
-
-    //EPS => (Energy subsystem)
-
-    #if SCH_EPS_ONBOARD==1            
-        case sta_eps_bat0_voltage:
-            srp_eps_bat0_voltage();
-            break;
-        case sta_eps_bat0_current:
-            srp_eps_bat0_current();
-            break;
-        case sta_eps_bus5V_current:
-            srp_eps_bus5V_current();
-            break;
-        case sta_eps_bus3V_current:
-            srp_eps_bus3V_current();
-            break;
-        case sta_eps_bus_battery_current:
-            srp_eps_bus_battery_current();
-            break;
-        case sta_eps_bat0_temp:
-            srp_eps_bat0_temp();
-            break;
-        case sta_eps_panel_pwr:
-            srp_eps_panel_pwr();
-            break;
-        case sta_eps_status:
-            srp_eps_status();
-            break;
-        case sta_eps_soc:
-            srp_eps_soc();
-            break;
-        case sta_eps_socss:
-            srp_eps_socss();
-            break;
-        case sta_eps_state_flag:
-            srp_eps_state_flag();
-            break;
-        case sta_eps_charging:
-            srp_eps_charging();
-            break;
-    #endif
-
-    #if (SCH_TRX_ONBOARD==1)
-        //TRX => (Communication subsystem)
-        case sta_trx_frec_tx:
-            srp_trx_frec_tx();
-            break;          // TX Freq
-        case sta_trx_frec_rx:
-            srp_trx_frec_rx();
-            break;          // RX Freq
-        case sta_trx_opmode:
-            srp_trx_opmode();
-            break;           // Operation mode
-        case sta_trx_temp_hpa:
-            srp_trx_temp_hpa();
-            break;         // Temp of HPA
-        case sta_trx_temp_mcu:
-            srp_trx_temp_mcu();
-            break;         // Temp of MCU
-        case sta_trx_rssi:
-            srp_trx_rssi();
-            break;             // RSSI        case :             break; Signal level
-        case sta_trx_rssi_mean:
-            //srp_trx_rssi_mean();
-            //lo hace taskCommunication
-            break;
-        case sta_trx_beacon_pwr:
-            srp_trx_beacon_pwr();
-            break;       // Beacon power
-        case sta_trx_telemetry_pwr:
-            srp_trx_telemetry_pwr();
-            break;    // Telemetry Power
-        case sta_trx_status_tc:
-            srp_trx_status_tc();
-            break;        // Status Register of TC
-        case sta_trx_lastcmd_day:
-            /* Se actualiza cuando se reciben TC */
-            break;
-        case sta_trx_count_tc:
-            /* Se actualiza cuando se reciben TC */
-            break;
-        case sta_trx_count_tm:
-            /* Se actualiza cuando se envia TM */
-            break;
-    #endif
-    // Cmd buffer control
-        case sta_trx_newTcFrame:
-            //Variables modificada solamente en taskComunications
-            break;       // Exist any unprocessed TcFrame
-        case sta_trx_newCmdBuff:
-            //Variables modificada solamente en taskComunications
-            break;       // Exist unprocessed CMD in the internal buffer
-
-    //FLIGHT PLAN
-        case sta_fpl_index:
-            //Solo se modifica no se actualiza
-            break;            // Indice del flight plan que sera editado
-
-
-    //On default (para aquellos que no tienen un update asociado)
-        default:
-            //do nothing on default
-            #if (SCH_CMDDRP_VERBOSE >=2)
-                con_printf("default  => srp_CubesatVar_update(");
-                utoa(ret, (unsigned int)indxVar, 10);
-                // (buffer, "%d", (unsigned int)indxVar);
-                con_printf(ret); con_printf(")\r\n");
-            #endif
-            break;
-    }
-
-    
-}
 
 
 /*
@@ -970,45 +938,6 @@ void srp_eps_charging(void)
 }
 
 /*------------------------------------------------------------------------------
- *		 	DRP TRX FREC TX
- *------------------------------------------------------------------------------
- * Description        : Update TRX FTX status in data repository
- * Arguments          : void
- * Return Value       : 1 - OK, 0 - FAIL
- * ID                 : 0x5011
- * NOTE               : DEPRECATED
- *----------------------------------------------------------------------------*/
-void srp_trx_frec_tx(void)
-{
-    /* Reading FTX */
-    long long_value = -1;
-//    long_value = (long)TRX_ReadRegister(TRX_FTX_H)<<16 ;
-//    long_value = long_value | (long) TRX_ReadRegister(TRX_FTX_M)<<8;
-//    long_value = long_value | (long) TRX_ReadRegister(TRX_FTX_L);
-    /* Writing TRX_FTX to repo */
-    sta_setCubesatVar(sta_trx_frec_tx, (int)long_value);
-}
-
-/*------------------------------------------------------------------------------
- *		 	DRP TRX FREC RX
- *------------------------------------------------------------------------------
- * Description        : Update TRX FRX status in data repository
- * Arguments          : void
- * Return Value       : 1 - OK, 0 - FAIL
- * ID                 : 0x5012
- *----------------------------------------------------------------------------*/
-void srp_trx_frec_rx(void)
-{
-    /* Reading FRX */
-    long long_value = -1;
-//    long_value = (long)TRX_ReadRegister(TRX_FRX_H)<<16 ;
-//    long_value = long_value | (long) TRX_ReadRegister(TRX_FRX_M)<<8;
-//    long_value = long_value | (long) TRX_ReadRegister(TRX_FRX_L);
-    /* Writing TRX_FRX to repo */
-    sta_setCubesatVar(sta_trx_frec_rx, (int)long_value);
-}
-
-/*------------------------------------------------------------------------------
  *		 	DRP TRX OPMODE
  *------------------------------------------------------------------------------
  * Description        : Update TRX Operation Mode status in data repository
@@ -1153,42 +1082,6 @@ void srp_trx_rssi(void)
 }
 
 /*------------------------------------------------------------------------------
- *		 	DRP TRX BEACON PWR
- *------------------------------------------------------------------------------
- * Description        : Update TRX BEACON PWR status in data repository
- * Arguments          : void
- * Return Value       : 1 - OK, 0 - FAIL
- * ID                 : 0x5016
- * NOTE               : DEPRECATED
- *----------------------------------------------------------------------------*/
-void srp_trx_beacon_pwr(void)
-{
-    /* Reading BEACON_PWR */
-    char char_value = 0;
-//    char_value = TRX_ReadRegister(TRX_BEACONPOWER);
-    /* Writing BEACON_PWR to repo */
-    sta_setCubesatVar(sta_trx_beacon_pwr, (int)char_value);
-}
-
-/*------------------------------------------------------------------------------
- *		 	DRP TRX TM PWR
- *------------------------------------------------------------------------------
- * Description        : Update TRX TM PWR status in data repository
- * Arguments          : void
- * Return Value       : 1 - OK, 0 - FAIL
- * ID                 : 0x5017
- * NOTE               : DEPRECATED
- *----------------------------------------------------------------------------*/
-void srp_trx_telemetry_pwr(void)
-{
-    char char_value = 0;
-    /* Reading TELEMETRY_PWR */
-//    char_value = TRX_ReadRegister(TRX_TMPOWER);
-    /* Writing BEACON_PWR to repo */
-    sta_setCubesatVar(sta_trx_telemetry_pwr, (int)char_value);
-}
-
-/*------------------------------------------------------------------------------
  *		 	DRP TRX STATUS TC
  *------------------------------------------------------------------------------
  * Description        : Update TRX FRX status in data repository
@@ -1254,7 +1147,7 @@ void srp_debug4(void){
         else{ con_printf("fail"); }
         con_printf("\n");
     }
-    srp_memEEPROM_erase();
+    srp_eraseAll_CubesatVar();
 
 }
 

@@ -4,7 +4,7 @@
 #include <stdio.h>  //para sprintf
 #include <stdlib.h>  //para itoa
 #define FCY 16000000UL      //FOSC = 32MHz => FCY = FOSC/2
-#include <libpic30.h>     //to use __delay_ms(..)
+#include <libpic30.h>       //to use __delay_ms(..)
 
 #include "rs232_suchai.h"
 

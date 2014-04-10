@@ -45,13 +45,16 @@
 
 void taskDeployment(void *param);
 
-int dep_init_Repos(void *param);
+int dep_init_dataRepo(void *param);
+int dep_init_cmdRepo(void *param);
+int dep_init_statusRepo(void *param);
 int dep_init_GnrlStrct(void *param);
 int dep_suicide(void *param);
 int dep_launch_tasks(void *param);
 int dep_init_bus_hw(void *param);
 int dat_sd_init(void);
 int dep_deploy_antenna(void *param);
+void dep_silent_time_and_pictures(int rt);
 void dep_csp_initialization(void);
 
 #endif //_DEPLOYMENT_H

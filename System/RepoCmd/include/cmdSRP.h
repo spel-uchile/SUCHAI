@@ -35,6 +35,7 @@
 #include "cmdTRX.h"
 #include "cmdEPS.h"
 #include "cmdRTC.h"
+#include "cmdDRP.h"
 
 
 /**
@@ -45,17 +46,24 @@ typedef enum{
     srp_id_debug=((unsigned int)SCH_CMD_SRP*0x100), ///< @cmd_first
 
     //De update en general de dat_CubesatVar
-    srp_id_updateAll_sta_CubesatVar, ///< @cmd
-    srp_id_update_sta_CubesatVar_hoursWithoutReset, ///< @cmd
-    srp_id_update_sta_CubesatVar_opMode, ///< @cmd
-    srp_id_update_sta_CubesatVar_hoursAlive, ///< @cmd
-    srp_id_update_sta_CubesatVar_nSended_tm, ///< @cmd
-    srp_id_update_sta_CubesatVar_nReceived_tc, ///< @cmd
-    srp_id_update_sta_CubesatVar_trx_rssi, ///< @cmd
-    srp_id_update_sta_CubesatVar_trx_rssi_mean, ///< @cmd
+    srp_id_periodicUpdate_STA_CubesatVar, ///< @cmd
+    srp_id_update_STA_CubesatVar_hoursWithoutReset, ///< @cmd
+    srp_id_update_STA_CubesatVar_opMode, ///< @cmd
+    srp_id_update_STA_CubesatVar_hoursAlive, ///< @cmd
+    srp_id_update_STA_CubesatVar_nSended_tm, ///< @cmd
+    srp_id_update_STA_CubesatVar_nReceived_tc, ///< @cmd
+    srp_id_update_STA_CubesatVar_trx_rssi, ///< @cmd
+    srp_id_update_STA_CubesatVar_trx_rssi_mean, ///< @cmd
 
     //De display
-    srp_id_print_sta_CubesatVar, ///< @cmd
+    srp_id_print_STA_CubesatVar, ///< @cmd
+
+    //de 
+    srp_id_trx_newTcFrame, ///< @cmd
+    srp_id_trx_newCmdBuff, ///< @cmd
+
+    //de EBF
+    srp_id_executeBeforeFlight, ///< @cmd
 
    //*************
     srp_id_last_one    //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
@@ -65,33 +73,35 @@ typedef enum{
 void srp_onResetCmdSRP();
 
 
+
+//Comandos
+//****************************************************
 //de debug
 int srp_debug(void *param);
-
 // command's to print dat_CubesatVar
-int srp_print_sta_CubesatVar(void *param);
-
+int srp_print_STA_CubesatVar(void *param);
 // command's to update dat_CubesatVar
-int srp_updateAll_sta_CubesatVar(void *param);
-int srp_update_sta_CubesatVar_hoursWithoutReset(void *param);
+int srp_periodicUpdate_STA_CubesatVar(void *param);
+int srp_update_STA_CubesatVar_hoursWithoutReset(void *param);
 int srp_update_sta_CubesatVar_opMode(void *param);
-int srp_update_sta_CubesatVar_hoursAlive(void *param);
-int srp_update_sta_CubesatVar_nSended_tm(void *param);
-int srp_update_sta_CubesatVar_nReceived_tc(void *param);
-int srp_update_sta_CubesatVar_trx_rssi(void *param);
-int srp_update_sta_CubesatVar_trx_rssi_mean(void *param);
+int srp_update_STA_CubesatVar_hoursAlive(void *param);
+int srp_update_STA_CubesatVar_nSended_tm(void *param);
+int srp_update_STA_CubesatVar_nReceived_tc(void *param);
+int srp_update_STA_CubesatVar_trx_rssi(void *param);
+int srp_update_STA_CubesatVar_trx_rssi_mean(void *param);
 
+int srp_trx_newTcFrame(void *param);
+int srp_trx_newCmdBuff(void *param);
 
-//****************************************************
+int srp_executeBeforeFlight(void *param);
 //funciones auxiliares
-void srp_sta_CubesatVar_EBF(void);
-void srp_dat_FlightPlan_EBF(void);
-void srp_dat_TelecmdBuffer_EBF(void);
-void srp_memEEPROM_erase(void);
+//****************************************************
+void srp_STA_CubesatVar_EBF(void);
+void srp_eraseAll_CubesatVar(void);
 
 void srp_debug4(void);
 
-void srp_CubesatVar_update(int indxVar);
+int srp_CubesatVar_update(int indxVar);
 //PPC
 //void srp_ppc_hoursAlive(void); => no existen, pues no se actualizan en updateAll
 //void srp_ppc_hoursWithoutReset(void);
@@ -138,15 +148,11 @@ void srp_eps_state_flag(void);
 void srp_eps_charging(void);
 
 //TRX
-void srp_trx_frec_tx(void);
-void srp_trx_frec_rx(void);
 void srp_trx_opmode(void);
 void srp_trx_temp_hpa(void);
 void srp_trx_temp_mcu(void);
 void srp_trx_rssi(void);
 int srp_trx_rssi_mean(int arg);
-void srp_trx_beacon_pwr(void);
-void srp_trx_telemetry_pwr(void);
 void srp_trx_status_tc(void);
 
 

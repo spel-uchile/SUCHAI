@@ -38,19 +38,35 @@ void taskDeployment(void *param)
     dep_init_bus_hw(NULL);
 
     /* Repositorios */
-    dep_init_Repos(NULL);
+    dep_init_statusRepo(NULL);
+    dep_init_cmdRepo(NULL);
+    dep_init_dataRepo(NULL);
 
     /* Otras estructuras */
     dep_init_GnrlStrct(NULL);
 
-    /* Toopazo: Ahora deberia ser un comando (el primero) llamado en taskFligthPlan o equivalente */
-//    /* Antena */
-//    #if (SCH_ANTENNA_ONBOARD==1)
-//        int realTime2 = SCH_TASKDEPLOYMENT_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
-//        dep_deploy_antenna( (void *)&realTime2 );
-//    #endif
 }
 
+//------------------------------------------------------------------------------
+/**
+ * Initializes status  repository
+ *
+ * @param param Not used
+ * @return 1
+ */
+int dep_init_statusRepo(void *param)
+{
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
+        printf("\n[dep_init_statusRepo] Initializing status repository...\r\n");
+    #endif
+
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * Status rep.\r\n");
+    #endif
+    sta_onResetStatRepo();
+
+    return 1;
+}
 //------------------------------------------------------------------------------
 extern cmdFunction trxFunction[];
 extern cmdFunction ppcFunction[];
@@ -71,24 +87,15 @@ extern int pay_sysReq[];
 extern int rtc_sysReq[];
 extern int tcm_sysReq[];
 /**
- * Initializes all data repositories
+ * Initializes command repository
  *
  * @param param Not used
  * @return 1
  */
-int dep_init_Repos(void *param)
+int dep_init_cmdRepo(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        printf("\n[dep_init_Repos] Initializing status repositories...\r\n");
-    #endif
-
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * Status rep.\r\n");
-    #endif
-    sta_onResetStatRepo();
-//------------------------------------------------------------------------------
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        printf("\n[dep_init_Repos] Initializing command repositories...\r\n");
+        printf("\n[dep_init_cmdRepo] Initializing command repository...\r\n");
     #endif
 
 //    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
@@ -194,8 +201,18 @@ int dep_init_Repos(void *param)
     cmdTCM_handler.p_xxxSysReq = tcm_sysReq;
     cmdTCM_handler.xxx_onReset = tcm_onResetCmdTCM;
     repo_set_cmdXXX_hanlder(cmdTCM_handler);
-   
+
+    return 1;
+}
 //------------------------------------------------------------------------------
+/**
+ * Initializes data repository
+ *
+ * @param param Not used
+ * @return 1
+ */
+int dep_init_dataRepo(void *param)
+{
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
         printf("\n[dep_init_Repos] Initializing data repositories...\r\n");
     #endif
@@ -284,7 +301,7 @@ int dep_launch_tasks(void *param)
     #endif
     xTaskCreate(taskConsole, (signed char *)"CON", 1.5*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
 
-    #if (SCH_USE_HOUSEKEEPING==1)
+    #if (SCH_USE_HOUSEKEEPING == 1)
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             printf("    * Creating taskHousekeeping\r\n");
         #endif
@@ -300,17 +317,13 @@ int dep_launch_tasks(void *param)
 
     if( sta_getCubesatVar(sta_MemSD_isAlive) == 1 )
     {
-        #if (SCH_USE_FLIGHTPLAN==0)
-            //launch nothing..
-        #elif (SCH_USE_FLIGHTPLAN==1)
+        #if (SCH_USE_FLIGHTPLAN == 1)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
                     printf("    * Creating taskFlightPlan\r\n");
             #endif
             xTaskCreate(taskFlightPlan, (signed char *)"flightplan", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlanHandle);
         #endif
-        #if (SCH_USE_FLIGHTPLAN2==0)
-            //launch nothing..
-        #elif (SCH_USE_FLIGHTPLAN2==1)
+        #if (SCH_USE_FLIGHTPLAN2 == 1)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
                     printf("    * Creating taskFlightPlan2\r\n");
             #endif
@@ -321,6 +334,8 @@ int dep_launch_tasks(void *param)
     return 1;
 }
 
+void dep_silent_time_and_pictures(int rt){
+}
 /**
  * Deploys satellite antennas
  * @param param 1 realime, 0 debug time

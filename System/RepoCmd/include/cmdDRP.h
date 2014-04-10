@@ -69,34 +69,30 @@ typedef enum{
 #define DRP_NCMD ((unsigned char)drp_id_last_one)
 void drp_onResetCmdDRP();
 
-
+//Comandos
+//****************************************************
 // command's to print dat_CubesatVar
 int drp_print_dat_TelecmdBuff(void *param);
 int drp_print_dat_FlightPlan(void *param);
 int drp_print_dat_PayloadIndxs(void *param);
 int drp_print_dat_PayloadVar(void *param);
-
-
 //comandos para mem ext (SD y EEPROM)
 int drp_executeBeforeFlight(void *param);
-
 //de debug
 int drp_debug(void *param);
-
 //Comandos para Flight plan
 int drp_fpl_set_index(void *param);
 int drp_fpl_set_cmd(void *param);
 int drp_fpl_set_param(void *param);
-
 //de TRX
 int drp_trx_newTcFrame(void *param);
 int drp_trx_newCmdBuff(void *param);
 
-//****************************************************
 //funciones auxiliares
-void drp_dat_FlightPlan_EBF(void);
-void drp_dat_TelecmdBuffer_EBF(void);
-void drp_memEEPROM_erase(void);
+//****************************************************
+void drp_DAT_FlightPlanBuff_EBF(void);
+void drp_DAT_TeleCmdBuff_EBF(void);
+void drp_DAT_PayloadBuff_EBF(void);
 
 void drp_debug1(void);
 void drp_debug2(void);

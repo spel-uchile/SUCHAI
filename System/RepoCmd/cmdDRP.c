@@ -447,28 +447,35 @@ void drp_debug4(void){
 }
 
 int drp_executeBeforeFlight(void *param){
-    drp_dat_FlightPlan_EBF();
-    drp_dat_TelecmdBuffer_EBF();
+    #if (SCH_CMDDRP_VERBOSE>=1)
+        con_printf("drp_executeBeforeFlight()..\n");
+    #endif
 
-    int mode=*((int *)param);
-    if(mode==1){return 1;}
+    drp_DAT_FlightPlanBuff_EBF();
+    drp_DAT_TeleCmdBuff_EBF();
+    drp_DAT_PayloadBuff_EBF();
 
-    con_printf("****************************************************\r\n");
-    con_printf("drp_executeBeforeFlight finalizo\r\n");
-    con_printf("Para quedar en config de vuelo, se\r\n");
-    con_printf("DEBE apagar el SUCHAI, hagalo ANTES de:\r\n");
-    con_printf("****************************************************\r\n");
-    
-    int i;
-    for(i=20;i>=1;i--){
-        __delay_ms(1000);
-        printf("%d segundos..\r\n", i);
-    }
+//    int mode=*((int *)param);
+//    if(mode==1){return 1;}
+//
+//    con_printf("****************************************************\r\n");
+//    con_printf("drp_executeBeforeFlight finalizo\r\n");
+//    con_printf("Para quedar en config de vuelo, se\r\n");
+//    con_printf("DEBE apagar el SUCHAI, hagalo ANTES de:\r\n");
+//    con_printf("****************************************************\r\n");
+//
+//    int i;
+//    for(i=20;i>=1;i--){
+//        __delay_ms(1000);
+//        printf("%d segundos..\r\n", i);
+//    }
 
     return 1;
 }
-
-void drp_dat_FlightPlan_EBF(void){
+void drp_DAT_PayloadBuff_EBF(void){
+    //nothing to do..
+}
+void drp_DAT_FlightPlanBuff_EBF(void){
     #if (SCH_CMDDRP_VERBOSE>=1)
         con_printf("Setting FligthPlan in launch configuration..\n");
     #endif
@@ -489,7 +496,7 @@ void drp_dat_FlightPlan_EBF(void){
     }
 }
 
-void drp_dat_TelecmdBuffer_EBF(void){
+void drp_DAT_TeleCmdBuff_EBF(void){
     #if (SCH_CMDDRP_VERBOSE>=1)
         con_printf("Setting TelecmdBuffer in launch configuration..\n");
     #endif

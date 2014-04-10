@@ -96,7 +96,7 @@ void sta_onResetStatRepo(void)
     sta_setCubesatVar(sta_ppc_hoursWithoutReset, 0x0000);
     //resetCounter No debe inicializarse luego de un reset
     //Su valor debe ser traido de la memEEPROM y modificado
-    if( sta_getCubesatVar(sta_ppc_resetCounter) == 0xFFFF ){
+    if( sta_getCubesatVar(sta_SUCHAI_isDeployed) == 0 ){
         sta_setCubesatVar(sta_ppc_resetCounter, 0);
         #if (SCH_DATAREPOSITORY_VERBOSE>=1)
             printf("        - First time on! Setting resetCounter to 0\r\n");

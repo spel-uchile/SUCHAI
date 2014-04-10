@@ -122,12 +122,13 @@
 
 
 static CmdRepo_cmdXXX_handler buff_cmdXXX_handler[CMD_BUFF_CMDXX_LEN];
-static int len_buff_cmdXXX_handler;
+static int buff_cmdXXX_handler_indx;
 void repo_set_cmdXXX_hanlder(CmdRepo_cmdXXX_handler cmdXXX_handler){
-    if(len_buff_cmdXXX_handler<CMD_BUFF_CMDXX_LEN){
-        buff_cmdXXX_handler[len_buff_cmdXXX_handler] = cmdXXX_handler;
-        len_buff_cmdXXX_handler++;
+    if(buff_cmdXXX_handler_indx<CMD_BUFF_CMDXX_LEN){
+        buff_cmdXXX_handler[buff_cmdXXX_handler_indx] = cmdXXX_handler;
+        buff_cmdXXX_handler_indx++;
 
+        //ejecuta onReset del cmdXX añadido
         cmdXXX_handler.xxx_onReset();
     }
     else{
@@ -146,7 +147,7 @@ cmdFunction repo_getFunction(int cmdID)
     printf("[repo_getFunction] cmdOwn: 0x%X | cmdNum: 0x%X\n", cmdOwn, cmdNum );
 
     int i,j;
-    for(i=0;i<len_buff_cmdXXX_handler;i++){
+    for(i=0;i<buff_cmdXXX_handler_indx;i++){
         if( buff_cmdXXX_handler[i].cmdOwn == cmdOwn ){
             for(j=0; j<buff_cmdXXX_handler[i].nCmd; j++){
                 if(j==cmdNum){
@@ -169,7 +170,7 @@ int repo_getsysReq(int cmdID)
     cmdOwn = (unsigned char)(cmdID>>8);
 
     int i,j;
-    for(i=0;i<len_buff_cmdXXX_handler;i++){
+    for(i=0;i<buff_cmdXXX_handler_indx;i++){
         if( buff_cmdXXX_handler[i].cmdOwn == cmdOwn ){
             for(j=0; j<buff_cmdXXX_handler[i].nCmd; j++){
                 if(j==cmdNum){

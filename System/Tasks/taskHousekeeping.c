@@ -59,8 +59,26 @@ void taskHouskeeping(void *param)
 
     portTickType xLastWakeTime = xTaskGetTickCount();
 
-    srp_updateAll_sta_CubesatVar(NULL); //TODO: Why?
+    srp_periodicUpdate_STA_CubesatVar(NULL); //TODO: Why?
     
+    if( sta_getCubesatVar(sta_SUCHAI_isDeployed) == 0 ){
+        //wait 30mins, meanwhile take pictures
+        dep_silent_time_and_pictures(SCH_TASKDEPLOYMENT_SILENT_REALTIME);
+        
+        /* Deploy Antena */
+        #if (SCH_ANTENNA_ONBOARD==1)
+            int realTime2 = SCH_TASKDEPLOYMENT_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
+            dep_deploy_antenna( (void *)&realTime2 );
+        #endif
+
+        //deploy langmuir
+        //..
+        //other "only once"-tasks
+        //..
+            
+        sta_setCubesatVar(sta_SUCHAI_isDeployed, 1);
+    }
+
     while(1)
     {
         vTaskDelayUntil(&xLastWakeTime, delay_ticks); //Suspend task
@@ -76,10 +94,10 @@ void taskHouskeeping(void *param)
         if((elapsed_sec % _20sec_check) == 0)
         {
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 20[s] actions\r\n");
+                con_printf("[Houskeeping] 20[s] actions..\r\n");
             #endif
 
-            NewCmd.cmdId = srp_id_updateAll_sta_CubesatVar;
+            NewCmd.cmdId = srp_id_periodicUpdate_STA_CubesatVar;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
@@ -98,11 +116,11 @@ void taskHouskeeping(void *param)
         if((elapsed_sec % _1min_check) == 0)
         {
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 1[min] actions\r\n");
+                con_printf("[Houskeeping] 1[min] actions..\r\n");
             #endif
 
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                NewCmd.cmdId = srp_id_print_sta_CubesatVar;
+                NewCmd.cmdId = srp_id_print_STA_CubesatVar;
                 NewCmd.param = 0;
                 xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
             #endif
@@ -112,13 +130,15 @@ void taskHouskeeping(void *param)
         if((elapsed_sec % _5min_check) == 0)
         {
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 5[min] actions\r\n");
+                con_printf("[Houskeeping] 5[min] actions..\r\n");
             #endif
 
-            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                NewCmd.cmdId = eps_id_print_all_reg;
-                NewCmd.param = 0;
-                xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+            #if (SCH_EPS_ONBOARD == 1)
+                #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
+                    NewCmd.cmdId = eps_id_print_all_reg;
+                    NewCmd.param = 0;
+                    xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+                #endif
             #endif
         }
 
@@ -129,14 +149,14 @@ void taskHouskeeping(void *param)
             elapsed_sec = 0; //Reset prevent overflow
 
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 1[hr] actions\r\n");
+                con_printf("[Houskeeping] 1[hr] actions..\r\n");
             #endif
 
-            NewCmd.cmdId = srp_id_update_sta_CubesatVar_hoursWithoutReset;
+            NewCmd.cmdId = srp_id_update_STA_CubesatVar_hoursWithoutReset;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
-            NewCmd.cmdId = srp_id_update_sta_CubesatVar_hoursAlive;
+            NewCmd.cmdId = srp_id_update_STA_CubesatVar_hoursAlive;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
@@ -146,7 +166,7 @@ void taskHouskeeping(void *param)
         if((elapsed_hrs % _1day_check) == 0)
         {
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 1[day] actions\r\n");
+                con_printf("[Houskeeping] 1[day] actions..\r\n");
             #endif
             elapsed_hrs = 1;  //Reset prevent overflow
 

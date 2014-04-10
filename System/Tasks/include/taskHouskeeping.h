@@ -16,9 +16,11 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 
-#include "pic_pc104_config.h"
+//#include "pic_pc104_config.h"
 #include "cmdIncludes.h"
-#include "cmdRepository.h"
+#include "cmdSRP.h"
+#include "taskDeployment.h"
+//#include "cmdRepository.h"
 
 void taskHouskeeping(void *param);
 

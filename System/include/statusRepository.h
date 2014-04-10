@@ -40,13 +40,16 @@
  * Cubesat's State Variables
  */
 typedef enum{
-    sta_mep_testVal=0,   //just to make sure MemEEPROM is working r/w values
+    //address 0 is ALWAYS used to make sure MemEEPROM is working r/w values (isAlive)
+    sta_MemEEPROM_testVal=0,
+            
     // Bus Hw status (connected trough the PC/104 to the OBC -PIC24-)
     sta_RTC_isAlive,
     sta_TRX_isAlive,
     sta_EPS_isAlive,
     sta_MemEEPROM_isAlive,
     sta_MemSD_isAlive,
+    sta_SUCHAI_isDeployed,
 
     // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
     sta_pay_lagmuirProbe_isAlive,
@@ -58,8 +61,6 @@ typedef enum{
     sta_pay_tmEstado_isAlive,
     sta_pay_test1_isAlive,
     sta_pay_test2_isAlive,
-
-    /* State Variables */
 
     //PPC => (C&DH subsystem)
     sta_ppc_opMode,
@@ -111,15 +112,11 @@ typedef enum{
     /* Revisar de aqui hacia abajo si aun son necesarios !!! */
 
     //TRX => (Communication subsystem)
-    sta_trx_frec_tx,          // TX Freq
-    sta_trx_frec_rx,          // RX Freq
     sta_trx_opmode,           // Operation mode
     sta_trx_temp_hpa,         // Temp of HPA
     sta_trx_temp_mcu,         // Temp of MCU
     sta_trx_rssi,             // RSSI, Signal level
     sta_trx_rssi_mean,        // RSSI_MEAN
-    sta_trx_beacon_pwr,       // Beacon power
-    sta_trx_telemetry_pwr,    // Telemetry Power
     sta_trx_status_tc,        // Status Register of TC
     sta_trx_count_tm,         // number of sended TM
     sta_trx_count_tc,         // number of received TC

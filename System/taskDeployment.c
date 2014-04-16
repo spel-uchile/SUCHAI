@@ -313,12 +313,14 @@ int dep_launch_tasks(void *param)
         printf("    * Creating taskConsole\r\n");
     #endif
     xTaskCreate(taskConsole, (signed char *)"CON", 1.5*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
+    __delay_ms(300);
 
     #if (SCH_USE_HOUSEKEEPING == 1)
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             printf("    * Creating taskHousekeeping\r\n");
         #endif
         xTaskCreate(taskHouskeeping, (signed char *)"HKP", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskHouskeepingHandle);
+        __delay_ms(300);
     #endif
     
     #if (SCH_TRX_ONBOARD == 1)
@@ -326,6 +328,7 @@ int dep_launch_tasks(void *param)
             printf("    * Creating taskCommunications\r\n");
         #endif
         xTaskCreate(taskComunications, (signed char *)"COM", 3*configMINIMAL_STACK_SIZE, NULL, 2, &taskComunicationsHandle);
+        __delay_ms(300);
     #endif
 
     if( sta_getCubesatVar(sta_MemSD_isAlive) == 1 )
@@ -335,12 +338,14 @@ int dep_launch_tasks(void *param)
                     printf("    * Creating taskFlightPlan\r\n");
             #endif
             xTaskCreate(taskFlightPlan, (signed char *)"flightplan", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlanHandle);
+            __delay_ms(300);
         #endif
         #if (SCH_USE_FLIGHTPLAN2 == 1)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
                     printf("    * Creating taskFlightPlan2\r\n");
             #endif
             xTaskCreate(taskFlightPlan2, (signed char *)"flightplan2", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlan2Handle);
+            __delay_ms(300);
         #endif
     }
         

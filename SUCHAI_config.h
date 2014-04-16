@@ -26,14 +26,14 @@
 /* Realtime config */
 #define SCH_THK_SILENT_REALTIME             (0)  ///< 1=Realtime 0=Debugtime
 #define SCH_THK_ANTENNA_REALTIME            (0)  ///< 1=Realtime 0=Debugtime
-#define SCH_TASKHOUSEKEEPING_REALTIME       (0)  ///< 1=Realtime 0=Debugtime
+#define SCH_TASKHOUSEKEEPING_REALTIME       (1)  ///< 1=Realtime 0=Debugtime
 #define SCH_TASKFLIGHTPLAN_REALTIME         (0)  ///< 1=Realtime 0=Debugtime
 #define SCH_FLIGHTPLAN2_REALTIME            (1)  ///< 1=Realtime 0=Debugtime
 
 /* Bus Onboard */
 #define SCH_SYSBUS_ONBOARD                  (1)  //< Onboard => I2C1 en uso
 #define SCH_PAYBUS_ONBOARD                  (1)  ///< Onboard => I2C3 en uso
-#define SCH_ANTENNA_ONBOARD                 (1) ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
+#define SCH_ANTENNA_ONBOARD                 (0) ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
 #define SCH_TRX_ONBOARD                     (0) ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
 #define SCH_RTC_ONBOARD                     (1) ///< 1 = Onboard 0 = Not Onboard
 #define SCH_MEMEEPROM_ONBOARD               (0) ///< 1 = Onboard 0 = Not Onboard
@@ -85,9 +85,9 @@
 #define SCH_FLIGHTPLAN_TYPE                     (0)     ///< 0=ninguno, 1=taskFligthPlan 2=taskFlightPlan2 3=ambos
 #define SCH_FLIGHTPLAN_RESOLUTION               (10)    ///< [MINUTES] Resolucion de tiempo del flight plan
 #define SCH_FLIGHTPLAN_N_CMD                    ((24 * 60) / SCH_FLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]
-#define SCH_FLIGHTPLAN_EXTMEMORY                   (1)     ///< (0) buffer en  RAM, (1) en memoria SD
+#define SCH_FLIGHTPLAN_EXTMEMORY                (1)     ///< (0) buffer en  RAM, (1) en memoria SD
 #define SCH_USE_FLIGHTPLAN2                     (0)     ///< 1 = use it, 0 = do not use it
-#define SCH_USE_HOUSEKEEPING                    (0)     ///< 1 = use it, 0 = do not use it
+#define SCH_USE_HOUSEKEEPING                    (1)     ///< 1 = use it, 0 = do not use it
 
 /**
  * @def SCH_DATAREPOSITORY_MAX_BUFF_TELECMD

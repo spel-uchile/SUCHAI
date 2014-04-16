@@ -394,11 +394,7 @@ int tcm_sendTM_PayloadVar(int mode, DAT_PayloadBuff pay_i){
     nfrm = trx_tm_addtoframe( (int *)&nextIndx, 1, CMD_ADDFRAME_ADD);
 
     #if (SCH_CMDTCM_VERBOSE>=1)
-        char buffer[50];
-        sprintf( buffer, "pay_i=%d\r\n", (unsigned int)pay_i );
-        con_printf(buffer); 
-        sprintf( buffer, "maxIndx=%d, nextIndx=%d\r\n", maxIndx, nextIndx );
-        con_printf(buffer);
+        printf("pay_i = %d  state:  %d/%d, [nextIndx/maxIndx] \r\n", (unsigned int)pay_i, nextIndx, maxIndx );
     #endif
 
     //Add Payload Data

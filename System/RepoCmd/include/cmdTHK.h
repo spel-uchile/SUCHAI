@@ -37,6 +37,7 @@
 #include "cmdRTC.h"
 #include "cmdDRP.h"
 #include "cmdSRP.h"
+#include "cmdPayload.h"
 
 
 /**
@@ -54,6 +55,7 @@ typedef enum{
     thk_id_periodicUpdate_STA_CubesatVar, ///< @cmd
     
     //de EBF
+    thk_id_state_hw, ///< @cmd
     thk_id_executeBeforeFlight, ///< @cmd
 
    //*************
@@ -70,6 +72,7 @@ void thk_onResetCmdTHK();
 int thk_debug(void *param);
 int thk_periodicUpdate_STA_CubesatVar(void *param);
 int thk_executeBeforeFlight(void *param);
+int thk_state_hw(void *param);
 /**
  * Deploys satellite antennas
  * @param param 1 realime, 0 debug time

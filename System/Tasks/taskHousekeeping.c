@@ -60,16 +60,21 @@ void taskHouskeeping(void *param)
     portTickType xLastWakeTime = xTaskGetTickCount();
   
 
+    vTaskDelayUntil(&xLastWakeTime, delay_ticks); //Suspend task
+    vTaskDelayUntil(&xLastWakeTime, delay_ticks); //Suspend task
+    int rt_mode;
     if( sta_getCubesatVar(sta_SUCHAI_isDeployed) == 0 ){
         //wait 30mins, meanwhile take pictures
+        rt_mode = SCH_THK_SILENT_REALTIME; /* 1=Real Time, 0=Debug Time */
         NewCmd.cmdId = thk_id_silent_time_and_pictures;
-        NewCmd.param = SCH_THK_SILENT_REALTIME; /* 1=Real Time, 0=Debug Time */
+        NewCmd.param = rt_mode;
         xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
         
         /* Deploy Antena */
         #if (SCH_ANTENNA_ONBOARD==1)
+            rt_mode = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
             NewCmd.cmdId = thk_id_deploy_antenna;
-            NewCmd.param = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
+            NewCmd.param = rt_mode;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
         #endif
 
@@ -123,7 +128,7 @@ void taskHouskeeping(void *param)
                 con_printf("[Houskeeping] 1[min] actions..\r\n");
             #endif
 
-            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
+            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=2)
                 NewCmd.cmdId = srp_id_print_STA_CubesatVar;
                 NewCmd.param = 0;
                 xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);

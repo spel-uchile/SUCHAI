@@ -197,10 +197,57 @@ int srp_executeBeforeFlight(void * param){
 
     sta_onResetStatRepo();
 
+    // Bus Hw status (connected trough the PC/104 to the OBC -PIC24-)
+    sta_setCubesatVar(sta_RTC_isAlive, 0);
+    sta_setCubesatVar(sta_TRX_isAlive, 0);
+    sta_setCubesatVar(sta_EPS_isAlive, 0);
+    sta_setCubesatVar(sta_MemEEPROM_isAlive, 0);
+    sta_setCubesatVar(sta_MemSD_isAlive, 0);
+    sta_setCubesatVar(sta_SUCHAI_isDeployed, 0);
+
+    // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
+    sta_setCubesatVar(sta_pay_lagmuirProbe_isAlive, 0);
+    sta_setCubesatVar(sta_pay_sensTemp_isAlive, 0);
+    sta_setCubesatVar(sta_pay_gps_isAlive, 0);
+    sta_setCubesatVar(sta_pay_expFis_isAlive, 0);
+    sta_setCubesatVar(sta_pay_camera_isAlive, 0);
+    sta_setCubesatVar(sta_pay_gyro_isAlive, 0);
+    sta_setCubesatVar(sta_pay_tmEstado_isAlive, 0);
+    sta_setCubesatVar(sta_pay_test1_isAlive, 0);
+    sta_setCubesatVar(sta_pay_test2_isAlive, 0);
+
+    //PPC => (C&DH subsystem)
+    sta_setCubesatVar(sta_ppc_opMode, STA_PPC_OPMODE_NORMAL);
+    sta_setCubesatVar(sta_ppc_lastResetSource, -1);
+    sta_setCubesatVar(sta_ppc_hoursAlive, 0);
+    sta_setCubesatVar(sta_ppc_hoursWithoutReset, 0);
+    sta_setCubesatVar(sta_ppc_resetCounter, 0);
+    sta_setCubesatVar(sta_ppc_enwdt, PPC_INITIAL_WDT_STATE);	// 1=WDT Active, 0=WDT Inactive
+
+    //DEP => (C&DH subsystem)
+    sta_setCubesatVar(sta_dep_ant_deployed, 0);            // 1=already deployed, 0=not deployed yet
+    sta_setCubesatVar(sta_dep_ant_tries, 0);               // Number of tries to deploy antenna
+    sta_setCubesatVar(sta_dep_year, 0);
+    sta_setCubesatVar(sta_dep_month, 0);
+    sta_setCubesatVar(sta_dep_week_day, 0);
+    sta_setCubesatVar(sta_dep_day_number, 0);
+    sta_setCubesatVar(sta_dep_hours, 0);
+    sta_setCubesatVar(sta_dep_minutes, 0);
+    sta_setCubesatVar(sta_dep_seconds, 0);
+
+    //PAYLOAD
+    sta_setCubesatVar(sta_pay_lagmuirProbe_perform, 1);
+    sta_setCubesatVar(sta_pay_sensTemp_perform, 1);
+    sta_setCubesatVar(sta_pay_gps_perform, 1);
+    sta_setCubesatVar(sta_pay_expFis_perform, 1);
+    sta_setCubesatVar(sta_pay_camera_perform, 1);
+    sta_setCubesatVar(sta_pay_gyro_perform, 1);
+    sta_setCubesatVar(sta_pay_tmEstado_perform, 1);
+    sta_setCubesatVar(sta_pay_test1_perform, 1);
+    sta_setCubesatVar(sta_pay_test2_perform, 1);
+
     sta_setCubesatVar(sta_SUCHAI_isDeployed, 0);  //First time on!
-    /* Es la unica variable que debe gatillar las acciones de despliegue
-     * como quemar antenas, sacar fotos lenzamiento, quemar langmuir, etc.
-     */
+    /* Es la unica variable que atilla las acciones de despliegue en THK */
     return 1;
 }
 //------------------------------------------------------------------------------

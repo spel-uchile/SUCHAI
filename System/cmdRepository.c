@@ -144,7 +144,7 @@ cmdFunction repo_getFunction(int cmdID)
     cmdNum = (unsigned char)cmdID;
     cmdOwn = (unsigned char)(cmdID>>8);
 
-    printf("[repo_getFunction] cmdOwn: 0x%X | cmdNum: 0x%X\n", cmdOwn, cmdNum );
+    //printf("[repo_getFunction] cmdOwn: 0x%X | cmdNum: 0x%X\n", cmdOwn, cmdNum );
 
     int i,j;
     for(i=0;i<buff_cmdXXX_handler_indx;i++){

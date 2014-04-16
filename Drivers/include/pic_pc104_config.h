@@ -95,6 +95,8 @@ void GPIO_PC104_init(void);
     #define PPC_ANT1_SWITCH     _LATE9
     #define PPC_ANT2_SWITCH     _LATE8
     #define PPC_ANT12_CHECK     _RF0
+#else
+    #define PPC_ANT12_CHECK     (-1)
 #endif
 #if (SCH_PAY_GYRO_ONBOARD==1)
     #define PPC_GYRO_INT2_CHECK   _RF1

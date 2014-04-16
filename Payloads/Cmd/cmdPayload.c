@@ -772,12 +772,12 @@ int pay_init_camera(void *param){
     printf("cam_sync() = %d\r\n", issync);
     if(issync!=0x0000){
         sta_setCubesatVar(sta_pay_camera_isAlive, 0);
+        return 0;
     }
     else{
         sta_setCubesatVar(sta_pay_camera_isAlive, 1);
+        return 1;
     }
-    
-    return 1;
 }
 int pay_take_camera(void *param){
     printf("pay_take_camera()\r\n");
@@ -1081,7 +1081,7 @@ int pay_init_sensTemp(void *param){
    
     DAT_PayloadBuff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_sensTemp;
-    lenBuff = (unsigned int)(500*4) + 4;   //(1440)      //numero de 10-minutos en un dia + estado de isAlive cada sensor
+    lenBuff = (unsigned int)(500*4) + 4;    //numero de muestras*4 + estado de isAlive cada sensor
     dat_reset_PayloadBuff(pay_i, lenBuff, 1);
 
     BOOL s1, s2, s3, s4;
@@ -1100,12 +1100,12 @@ int pay_init_sensTemp(void *param){
     //solo si todos fallan se reporta como perdido el payload
     if( s1==FALSE && s2==FALSE && s3==FALSE && s4==FALSE ){
         sta_setCubesatVar(sta_pay_sensTemp_isAlive, 0);
+        return 0;
     }
     else{
         sta_setCubesatVar(sta_pay_sensTemp_isAlive, 1);
+        return 1;
     }
-
-    return 1;
 }
 int pay_take_sensTemp(void *param){
     printf("pay_take_sensTemp\r\n");

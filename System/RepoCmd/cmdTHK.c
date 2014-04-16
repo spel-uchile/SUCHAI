@@ -34,6 +34,8 @@ void thk_onResetCmdTHK(){
 
     thkFunction[(unsigned char)thk_id_executeBeforeFlight] = thk_executeBeforeFlight;
     thk_sysReq[(unsigned char)thk_id_executeBeforeFlight]  = CMD_SYSREQ_MIN;
+    thkFunction[(unsigned char)thk_id_state_hw] = thk_state_hw;
+    thk_sysReq[(unsigned char)thk_id_state_hw]  = CMD_SYSREQ_MIN;
 
     thkFunction[(unsigned char)thk_id_deploy_antenna] = thk_deploy_antenna;
     thk_sysReq[(unsigned char)thk_id_deploy_antenna]  = CMD_SYSREQ_MIN + SCH_DEP_SYS_REQ;
@@ -231,6 +233,68 @@ int thk_silent_time_and_pictures(void *param){
         con_printf("    FINISHING SILENT TIME\r\n");
     #endif
 
+    return 1;
+}
+//------------------------------------------------------------------------------
+int thk_state_hw(void *param){
+
+    printf("Bus Hardware (initialized in dep_init_bus_hw)..\r\n");
+    /* this info is updated at start-up vy dep_init_bus_hw()..*/
+    printf("PPC_MB_nOE_USB_nINT_CHECK = %d \r\n", PPC_MB_nOE_USB_nINT_CHECK );
+    printf("PPC_MB_nOE_MHX_CHECK = %d \r\n", PPC_MB_nOE_MHX_CHECK );
+    printf("PPC_MB_nON_MHX_CHECK = %d \r\n", PPC_MB_nON_MHX_CHECK );
+    printf("PPC_MB_nON_SD_CHECK = %d \r\n", PPC_MB_nON_SD_CHECK );
+    printf("sta_RTC_isAlive = %d \r\n", sta_getCubesatVar(sta_RTC_isAlive) );
+    printf("sta_TRX_isAlive = %d \r\n", sta_getCubesatVar(sta_TRX_isAlive) );
+    printf("sta_EPS_isAlive = %d \r\n", sta_getCubesatVar(sta_EPS_isAlive) );
+    printf("sta_MemEEPROM_isAlive = %d \r\n", sta_getCubesatVar(sta_MemEEPROM_isAlive) );
+    printf("sta_MemSD_isAlive = %d \r\n", sta_getCubesatVar(sta_MemSD_isAlive) );
+    printf("sta_SUCHAI_isDeployed = %d \r\n", sta_getCubesatVar(sta_SUCHAI_isDeployed) );
+    int ant12 = PPC_ANT12_CHECK;
+    printf("PPC_ANT12_CHECK = %d \r\n", ant12 );
+    printf("******************************************\r\n");
+
+    printf("Payload Hardware (initialized by each pay_init_xxx)..\r\n");
+    /* this info is updated at start-up by dep_init_bus_hw()..*/
+    #if (SCH_PAY_SENSTEMP_ONBOARD==1)
+        pay_init_sensTemp(NULL);
+        printf("  sta_pay_sensTemp_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_sensTemp_isAlive) );
+    #endif
+    #if (SCH_PAY_GYRO_ONBOARD==1)
+        pay_init_gyro(NULL);
+        printf("  sta_pay_gyro_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_gyro_isAlive) );
+        printf("  PPC_GYRO_INT2_CHECK = %d \r\n", PPC_GYRO_INT2_CHECK );
+    #endif
+    #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
+        pay_init_camera(NULL);
+        printf("  sta_pay_camera_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_camera_isAlive) );
+        printf("  PPC_CAM_HOLD_CHECK = %d \r\n", PPC_CAM_HOLD_CHECK );
+    #endif
+    #if (SCH_PAY_GPS_ONBOARD==1)
+        pay_init_gps(NULL);
+        printf("  sta_pay_gps_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_gps_isAlive) );
+    #endif
+    #if (SCH_PAY_FIS_ONBOARD==1)
+        pay_init_expFis(NULL);
+        printf("  sta_pay_expFis_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_expFis_isAlive) );
+    #endif
+    #if (SCH_PAY_TEST1_ONBOARD==1)
+        pay_init_test1(NULL);
+        printf("  sta_pay_test1_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_test1_isAlive) );
+    #endif
+    #if (SCH_PAY_TEST2_ONBOARD==1)
+        pay_init_test2(NULL);
+        printf("  sta_pay_test2_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_test2_isAlive) );
+    #endif
+    #if (SCH_PAY_LAGMUIR_ONBOARD==1)
+        pay_init_lagmuirProbe(NULL);
+        printf("  sta_pay_lagmuirProbe_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_lagmuirProbe_isAlive) );
+    #endif
+    pay_init_tmEstado(NULL);
+    printf("  sta_pay_tmEstado_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_tmEstado_isAlive) );
+    printf("******************************************\r\n");
+
+    thk_executeBeforeFlight(NULL);
     return 1;
 }
 //------------------------------------------------------------------------------

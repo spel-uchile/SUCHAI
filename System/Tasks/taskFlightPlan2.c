@@ -100,7 +100,7 @@ void fp2_pay_i_multiplexing(xQueueHandle dispatcherQueue){
     //multiplexo pay_i por turnos
     #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
         char ret[50];
-        sprintf (ret, "fp2_pay_i_multiplexing => pay_i=%d\r\n", (unsigned int)current_pay_i);
+        sprintf (ret, "fp2_pay_i_multiplexing => pay_i = %d\r\n", (unsigned int)current_pay_i);
         con_printf(ret);
     #endif
 

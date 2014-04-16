@@ -200,17 +200,17 @@ int dat_set_FlightPlan_param(unsigned int index, int param)
 int dat_onReset_FlightPlan(void)
 {
     //Do nothing onReset
-    unsigned long i; 
-    int cmdid, param;
-
-    for(i=0; i < SCH_FLIGHTPLAN_N_CMD; i++)
-    {
-        cmdid = CMD_CMDNULL;
-        param = 0;
-
-        dat_set_FlightPlan_cmd(i, cmdid);
-        dat_set_FlightPlan_param(i, param);
-    }
+//    unsigned long i;
+//    int cmdid, param;
+//
+//    for(i=0; i < SCH_FLIGHTPLAN_N_CMD; i++)
+//    {
+//        cmdid = CMD_CMDNULL;
+//        param = 0;
+//
+//        dat_set_FlightPlan_cmd(i, cmdid);
+//        dat_set_FlightPlan_param(i, param);
+//    }
 
     return 1;
 }
@@ -223,13 +223,17 @@ void dat_erase_FlightPlanBuff(void){
 #if (SCH_FLIGHTPLAN_EXTMEMORY == 1)
     #if (SCH_DATAREPOSITORY_VERBOSE>=1)
         printf("  dat_erase_FlightPlanBuff()..\n");
-        printf("    starting at block = %d\n", (unsigned int)dat_gpb_FlightPlan_256Block);
     #endif
 
-    unsigned int i;
-    for(i=0;i<256;i++){
-        msd_blockErase(dat_gpb_FlightPlan_256Block+i);
-        ClrWdt();
+    unsigned long i;
+    int cmdid, param;
+    for(i=0; i < SCH_FLIGHTPLAN_N_CMD; i++)
+    {
+        cmdid = CMD_CMDNULL;
+        param = 0;
+
+        dat_set_FlightPlan_cmd(i, cmdid);
+        dat_set_FlightPlan_param(i, param);
     }
 #elif (SCH_FLIGHTPLAN_EXTMEMORY == 0)
     int i=0;
@@ -301,9 +305,9 @@ BOOL dat_set_PayloadBuff(DAT_PayloadBuff pay_i, int value){
     // y retorna si lo logro o no (buffer lleno, payload invalido)
     unsigned int nextIndx;
 
-//    if( dat_isFull_PayloadBuff(pay_i)==TRUE){
-//        return FALSE;    //buffer lleno
-//    }
+    if( dat_isFull_PayloadBuff(pay_i)==TRUE){
+        return FALSE;    //buffer lleno
+    }
     nextIndx = dat_get_NextPayIndx(pay_i);
 
     #if (SCH_DATAREPOSITORY_VERBOSE>=2)
@@ -434,7 +438,7 @@ void dat_onReset_PayloadBuff(void){
 }
 
 void dat_reset_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int lenBuff, int mode){
-    #if (SCH_DATAREPOSITORY_VERBOSE>=1)
+    #if (SCH_DATAREPOSITORY_VERBOSE>=2)
         printf("Borrando buffer de pay_i = %u\n", (unsigned int)pay_i );
         printf("Usando mode = ");
         if(mode==1){
@@ -451,11 +455,11 @@ void dat_reset_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int lenBuff, int mode
 
     if(mode==1){
         //borro el conteido del buffer
-        dat_erase_PayloadBuff(pay_i);
+        //dat_erase_PayloadBuff(pay_i);
     }
     //Reinicio el Buffer
     dat_set_NextPayIndx(pay_i, 0);
-    #if (SCH_DATAREPOSITORY_VERBOSE>=1)
+    #if (SCH_DATAREPOSITORY_VERBOSE>=2)
         printf("reseteo de payload completo\n");
     #endif
 }

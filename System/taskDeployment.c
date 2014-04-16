@@ -77,6 +77,7 @@ extern cmdFunction srpFunction[];
 extern cmdFunction payFunction[];
 extern cmdFunction rtcFunction[];
 extern cmdFunction tcmFunction[];
+extern cmdFunction thkFunction[];
 extern int trx_sysReq[];
 extern int ppc_sysReq[];
 extern int con_sysReq[];
@@ -86,6 +87,7 @@ extern int srp_sysReq[];
 extern int pay_sysReq[];
 extern int rtc_sysReq[];
 extern int tcm_sysReq[];
+extern int thk_sysReq[];
 /**
  * Initializes command repository
  *
@@ -201,6 +203,17 @@ int dep_init_cmdRepo(void *param)
     cmdTCM_handler.p_xxxSysReq = tcm_sysReq;
     cmdTCM_handler.xxx_onReset = tcm_onResetCmdTCM;
     repo_set_cmdXXX_hanlder(cmdTCM_handler);
+
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * Attaching cmdTHK..\r\n");
+    #endif
+    CmdRepo_cmdXXX_handler cmdTHK_handler;
+    cmdTHK_handler.cmdOwn = SCH_CMD_THK;
+    cmdTHK_handler.nCmd = THK_NCMD;
+    cmdTHK_handler.p_xxxFunction = thkFunction;
+    cmdTHK_handler.p_xxxSysReq = thk_sysReq;
+    cmdTHK_handler.xxx_onReset = thk_onResetCmdTHK;
+    repo_set_cmdXXX_hanlder(cmdTHK_handler);
 
     return 1;
 }
@@ -333,109 +346,6 @@ int dep_launch_tasks(void *param)
         
     return 1;
 }
-
-void dep_silent_time_and_pictures(int rt){
-}
-/**
- * Deploys satellite antennas
- * @param param 1 realime, 0 debug time
- * @return 1 success, 0 fails
- */
-int dep_deploy_antenna(void *param)
-{
-
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        printf("\n[dep_deploy_antenna] Deploying TRX Antenna... \r\n");
-    #endif
-
-    if( sta_getCubesatVar(sta_dep_ant_deployed) == 0x0001 )
-    {
-        #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-            printf("    * Antenna is already deployed\r\n");
-        #endif
-        return 1;
-    }
-
-    //Realtime=1 DebugTime=0
-    unsigned int delay_dep_time, delay_rest_dep_time, delay_recheck_dep_time;
-    int mode= *( (int *)param );
-    if(mode)
-    {
-        delay_dep_time = (TDP_DEPLOY_TIME) / portTICK_RATE_MS;
-        delay_rest_dep_time = (TDP_REST_DEPLOY_TIME) / portTICK_RATE_MS;
-        delay_recheck_dep_time = (TDP_RECHECK_TIME) / portTICK_RATE_MS;
-    }
-    else
-    {
-        delay_dep_time = (600) / portTICK_RATE_MS;
-        delay_rest_dep_time = (400) / portTICK_RATE_MS;
-        delay_recheck_dep_time = (200) / portTICK_RATE_MS;
-    }
-
-    //Quemado del nylon
-    int tries_indx = 0;
-
-    #if(SCH_ANTENNA_ONBOARD == 1)
-    {
-        for(tries_indx=1; tries_indx<=TDP_TRY_DEPLOY; tries_indx++)
-        {
-            #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                printf("    [Deploying] Attempt #%d\r\n", tries_indx);
-            #endif
-
-            PPC_ANT12_SWITCH=1;
-            PPC_ANT1_SWITCH=1;
-            PPC_ANT2_SWITCH=0;
-            //PPC_ANT1_SWITCH=0;
-            //PPC_ANT2_SWITCH=1;
-            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT1 */
-            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT1 */
-
-            PPC_ANT12_SWITCH=0;
-            PPC_ANT1_SWITCH=0;
-            PPC_ANT2_SWITCH=0;
-            vTaskDelay(delay_rest_dep_time);   /* tiempo de descanso */
-
-            PPC_ANT12_SWITCH=1;
-            PPC_ANT1_SWITCH=0;
-            PPC_ANT2_SWITCH=1;
-            //PPC_ANT1_SWITCH=1;
-            //PPC_ANT2_SWITCH=0;
-            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT2 */
-            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT2 */
-
-            PPC_ANT12_SWITCH=0;
-            PPC_ANT1_SWITCH=0;
-            PPC_ANT2_SWITCH=0;
-            vTaskDelay(delay_rest_dep_time);   /* tiempo de descanso */
-
-
-            if(PPC_ANT12_CHECK==0)   /* reviso */
-            {
-                vTaskDelay(delay_recheck_dep_time);   /* tiempo de RE-chequeo */
-                if(PPC_ANT12_CHECK==0)   /* RE-reviso */
-                {
-                    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-                        printf("    ANTENNA DEPLOYED SUCCESSFULLY [%d TRIES]\r\n", tries_indx);
-                    #endif
-
-                    srp_dep_write_deployed(1, tries_indx);
-                    return 1;
-                }
-            }
-        }
-    }
-    #endif
-
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    ANTENNA DEPLOY FAIL [%d TRIES]\r\n", TDP_TRY_DEPLOY);
-    #endif
-
-    srp_dep_write_deployed(0, tries_indx);
-
-    return 0;
-}
-
 /**
  * Initializes all peripherals and subsystems.
  * @param param Not used.

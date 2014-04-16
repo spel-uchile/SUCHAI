@@ -147,6 +147,8 @@ int pay_take_gps(void *param);
 int pay_init_gps(void *param);
 int pay_stop_gps(void *param);
 
+//aux functions
+BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type, int mode);
 
 #endif	/* CMDPAYLOAD_H */
 

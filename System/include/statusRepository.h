@@ -42,7 +42,7 @@
 typedef enum{
     //address 0 is ALWAYS used to make sure MemEEPROM is working r/w values (isAlive)
     sta_MemEEPROM_testVal=0,
-            
+
     // Bus Hw status (connected trough the PC/104 to the OBC -PIC24-)
     sta_RTC_isAlive,
     sta_TRX_isAlive,
@@ -123,7 +123,7 @@ typedef enum{
     sta_trx_lastcmd_day,      // day of the last received tc (since 1/1/00)
     // Cmd buffer control
     sta_trx_newTcFrame,       // Exist any unprocessed TcFram?
-    sta_trx_newCmdBuff,       // Exist unprocessed CMD in the ernal buffer
+    sta_trx_newCmdBuff,       // Exist unprocessed CMD in the external buffer
     //trx_repo_telecmd[STA_MAX_BUFF_TELECMD],   // Assuming that each Telecommand is of the form: [cmdId | param]
 
     //FLIGHT PLAN

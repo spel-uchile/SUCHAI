@@ -147,7 +147,8 @@ int sync(BOOL verb){
 
 
 int cam_sync(BOOL verb){
-    con_printf("cam_sync..\r\n");
+    //printf("cam_sync..\r\n");
+    
     unsigned int i,j,k;		// Variables for indexes
     unsigned char recev[8];	// Received data temp buffer
     unsigned int rsync = 1;	// Rsync status flag 1 (Fail by default)

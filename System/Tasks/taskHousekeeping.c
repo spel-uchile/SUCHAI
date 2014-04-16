@@ -58,17 +58,19 @@ void taskHouskeeping(void *param)
     NewCmd.param = 0;
 
     portTickType xLastWakeTime = xTaskGetTickCount();
+  
 
-    srp_periodicUpdate_STA_CubesatVar(NULL); //TODO: Why?
-    
     if( sta_getCubesatVar(sta_SUCHAI_isDeployed) == 0 ){
         //wait 30mins, meanwhile take pictures
-        dep_silent_time_and_pictures(SCH_TASKDEPLOYMENT_SILENT_REALTIME);
+        NewCmd.cmdId = thk_id_silent_time_and_pictures;
+        NewCmd.param = SCH_THK_SILENT_REALTIME; /* 1=Real Time, 0=Debug Time */
+        xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
         
         /* Deploy Antena */
         #if (SCH_ANTENNA_ONBOARD==1)
-            int realTime2 = SCH_TASKDEPLOYMENT_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
-            dep_deploy_antenna( (void *)&realTime2 );
+            NewCmd.cmdId = thk_id_deploy_antenna;
+            NewCmd.param = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
+            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
         #endif
 
         //deploy langmuir
@@ -79,6 +81,8 @@ void taskHouskeeping(void *param)
         sta_setCubesatVar(sta_SUCHAI_isDeployed, 1);
     }
 
+    //thk_periodicUpdate_STA_CubesatVar(NULL); //TODO: Why?
+    
     while(1)
     {
         vTaskDelayUntil(&xLastWakeTime, delay_ticks); //Suspend task
@@ -97,7 +101,7 @@ void taskHouskeeping(void *param)
                 con_printf("[Houskeeping] 20[s] actions..\r\n");
             #endif
 
-            NewCmd.cmdId = srp_id_periodicUpdate_STA_CubesatVar;
+            NewCmd.cmdId = thk_id_periodicUpdate_STA_CubesatVar;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
@@ -152,11 +156,11 @@ void taskHouskeeping(void *param)
                 con_printf("[Houskeeping] 1[hr] actions..\r\n");
             #endif
 
-            NewCmd.cmdId = srp_id_update_STA_CubesatVar_hoursWithoutReset;
+            NewCmd.cmdId = srp_id_increment_STA_CubesatVar_hoursWithoutReset;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
-            NewCmd.cmdId = srp_id_update_STA_CubesatVar_hoursAlive;
+            NewCmd.cmdId = srp_id_increment_STA_CubesatVar_hoursAlive;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 

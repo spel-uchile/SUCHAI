@@ -24,16 +24,16 @@
 #define SCH_I2C3_ADDR           (0xF4) ///< I2C 3 Slave address
 
 /* Realtime config */
-#define SCH_TASKDEPLOYMENT_SILENT_REALTIME  (0)  ///< 1=Realtime 0=Debugtime
-#define SCH_TASKDEPLOYMENT_ANTENNA_REALTIME (0)  ///< 1=Realtime 0=Debugtime
+#define SCH_THK_SILENT_REALTIME             (0)  ///< 1=Realtime 0=Debugtime
+#define SCH_THK_ANTENNA_REALTIME            (0)  ///< 1=Realtime 0=Debugtime
 #define SCH_TASKHOUSEKEEPING_REALTIME       (0)  ///< 1=Realtime 0=Debugtime
 #define SCH_TASKFLIGHTPLAN_REALTIME         (0)  ///< 1=Realtime 0=Debugtime
-#define SCH_FLIGHTPLAN2_REALTIME            (0)  ///< 1=Realtime 0=Debugtime
+#define SCH_FLIGHTPLAN2_REALTIME            (1)  ///< 1=Realtime 0=Debugtime
 
 /* Bus Onboard */
 #define SCH_SYSBUS_ONBOARD                  (1)  //< Onboard => I2C1 en uso
-#define SCH_PAYBUS_ONBOARD                  (0)  ///< Onboard => I2C3 en uso
-#define SCH_ANTENNA_ONBOARD                 (0) ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
+#define SCH_PAYBUS_ONBOARD                  (1)  ///< Onboard => I2C3 en uso
+#define SCH_ANTENNA_ONBOARD                 (1) ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
 #define SCH_TRX_ONBOARD                     (0) ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
 #define SCH_RTC_ONBOARD                     (1) ///< 1 = Onboard 0 = Not Onboard
 #define SCH_MEMEEPROM_ONBOARD               (0) ///< 1 = Onboard 0 = Not Onboard
@@ -62,6 +62,7 @@
 #define SCH_CMD_RTC         (0x70)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
 #define SCH_CMD_TCM         (0x80)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
 #define SCH_CMD_SRP         (0x90)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_THK         (0xA0)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
 
 /* TRX and COMM configs */
 #define SCH_TRX_BEACON_PERIOD              (4*60)   ///< [s] Periodo del beacon en segundos (UINT16)
@@ -99,6 +100,7 @@
 #define SCH_TC_BUFF_EXTMEMORY               (1)   ///< 1=buffer en la memSD 0=buff en mem RAM
 #define SCH_TCM_SYS_REQ                     (3)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de telemetria
 #define SCH_BCN_SYS_REQ                     (2)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de beacon
+#define SCH_DEP_SYS_REQ                     (2)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de antenna deployment
 
 /* Drivers config VERBOSE */
 #define SCH_CONSOLE_VERBOSE                 (1)   ///< 1=verboso 0=austero

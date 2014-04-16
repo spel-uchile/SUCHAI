@@ -50,7 +50,7 @@ typedef enum{
     drp_id_print_dat_PayloadIndxs, ///< @cmd
     drp_id_print_dat_PayloadVar, ///< @cmd
 
-    //De mem ext (EEPROM y SD)
+    //De EBF
     drp_id_executeBeforeFlight, ///< @cmd
     
     //Flight Plan
@@ -98,6 +98,7 @@ void drp_debug1(void);
 void drp_debug2(void);
 void drp_debug3(void);
 void drp_debug4(void);
+void drp_debug5(void);
 
 
 #endif /* CMD_DRP_H */

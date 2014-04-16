@@ -239,6 +239,9 @@ int drp_debug(void *param){
         case 4:
             drp_debug4();
             break;
+        case 5:
+            drp_debug5();
+            break;
         default:
             //
             break;
@@ -445,10 +448,66 @@ void drp_debug4(void){
     }
     printf("End of drp_debug4\n");
 }
+void drp_debug5(void){
+    int value=0, res=0;
+    unsigned int index;
+
+    printf("dat_reset_PayloadBuff()..\n");
+    int pay_i; int lenBuff=10, r_nextIndx, r_MaxIndx;
+    for(pay_i=0; pay_i<dat_pay_last_one; pay_i++, lenBuff=lenBuff+1){
+        printf("  writing: ");
+        dat_reset_PayloadBuff(pay_i, lenBuff, 0);
+        printf("    dat_reset_PayloadBuff(%d, %d)\r\n", pay_i, lenBuff);
+
+        printf("  reading: ");
+        r_nextIndx = dat_get_NextPayIndx(pay_i);
+        printf("    dat_get_NextPayIndx(%u) = %d    |    ", pay_i, r_nextIndx);
+        r_MaxIndx = dat_get_MaxPayIndx(pay_i);
+        printf("    dat_get_MaxPayIndx(%u) = %d    |    \n", pay_i, r_MaxIndx);
+
+        printf("  comparing: ");
+        if( r_nextIndx==0 && r_MaxIndx==(lenBuff-1) ){ printf("ok\n"); }
+        else{ printf("fail\n"); return; }
+
+        ClrWdt();
+    }
+
+    printf("DAT_PayloadBuff..\n");
+    int maxind; BOOL st;
+    for(pay_i=0; pay_i<dat_pay_last_one; pay_i++){
+        value=20000;
+        st = TRUE;
+        maxind = dat_get_MaxPayIndx(pay_i);
+        for(index=0; st==TRUE; index++, value++){
+
+            printf("  writing: ");
+            dat_set_PayloadBuff(pay_i, value);
+            printf("    DAT_PayloadBuff[%u][%u] = %d    |    ",pay_i, index, value);
+            printf("%d/%d [NextIndx/MaxIndx]   |    \n", dat_get_NextPayIndx(pay_i), dat_get_MaxPayIndx(pay_i) );
+
+            printf("  reading: ");
+            dat_get_PayloadBuff(pay_i, index, &res);
+            printf("    DAT_PayloadBuff[%u][%u] = %d    |    \n",pay_i,  index, res);
+
+            printf("  comparing: ");
+            if( value==res ){ printf("ok\n"); }
+            else{ printf("fail\n"); return; }
+
+            if( dat_isFull_PayloadBuff(pay_i)==TRUE){
+                printf("    DAT_PayloadBuff[%u] esta lleno\r\n", pay_i);
+                st = FALSE;
+            }
+
+            ClrWdt();
+        }
+        printf("*******************************************\n");
+    }
+    printf("End of drp_debug5\n");
+}
 
 int drp_executeBeforeFlight(void *param){
     #if (SCH_CMDDRP_VERBOSE>=1)
-        con_printf("drp_executeBeforeFlight()..\n");
+        printf("  drp_executeBeforeFlight()..\n");
     #endif
 
     drp_DAT_FlightPlanBuff_EBF();
@@ -473,17 +532,20 @@ int drp_executeBeforeFlight(void *param){
     return 1;
 }
 void drp_DAT_PayloadBuff_EBF(void){
+    #if (SCH_CMDDRP_VERBOSE>=1)
+        printf("    Setting PayloadBuff in launch configuration..\n");
+    #endif
     //nothing to do..
 }
 void drp_DAT_FlightPlanBuff_EBF(void){
     #if (SCH_CMDDRP_VERBOSE>=1)
-        con_printf("Setting FligthPlan in launch configuration..\n");
+        printf("    Setting FligthPlan in launch configuration..\n");
     #endif
 
     dat_erase_FlightPlanBuff();
     
     #if (SCH_CMDDRP_VERBOSE>=1)
-        con_printf("Setting initial commands in FligthPlan..\n");
+        printf("    Setting initial commands in FligthPlan..\n");
     #endif
     //aca debe ir la configuracion inicial del FligthPlan
     //esta es la configuracion a cargar antes del lanzamiento
@@ -498,7 +560,7 @@ void drp_DAT_FlightPlanBuff_EBF(void){
 
 void drp_DAT_TeleCmdBuff_EBF(void){
     #if (SCH_CMDDRP_VERBOSE>=1)
-        con_printf("Setting TelecmdBuffer in launch configuration..\n");
+        printf("    Setting TeleCmdBuff in launch configuration..\n");
     #endif
 
     dat_erase_TeleCmdBuff();

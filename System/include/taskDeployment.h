@@ -25,6 +25,17 @@
 #include "cmdIncludes.h"
 #include "cmdRepository.h"
 #include "dataRepository.h"
+/* Add ommands definitions*/
+#include "cmdTCM.h"
+#include "cmdCON.h"
+#include "cmdPPC.h"
+#include "cmdTRX.h"
+#include "cmdEPS.h"
+#include "cmdRTC.h"
+#include "cmdDRP.h"
+#include "cmdSRP.h"
+#include "cmdTHK.h"
+#include "cmdPayload.h"
 
 #include "taskConsole.h"
 #include "taskHouskeeping.h"
@@ -36,13 +47,6 @@
 #include "csp_if_i2c.h"
 #include "taskTest.h"
 
-#define TDP_SILENT_TIME_MIN 30          ///< cuantos "minutos" (65,535[s]) estara en inactividad antes de iniciarse
-#define TDP_TRY_DEPLOY 10               ///< cuantas veces tratara desplegar la antena antes de anunciar fracaso
-#define TDP_DEPLOY_TIME 0xB0FF          ///< 2*TDP_DEPLOY_TIME/1000 indica cuantos "s" estara activo el bus de 3.3V quemando el nilon
-#define TDP_REST_DEPLOY_TIME 5000       ///< cuantos "ms" estara inactivo el bus de 3.3V descanzando de tratar de quemar el nilon
-#define TDP_RECHECK_TIME 2000           ///< despues de cuantos "ms" RE-chequeara que efectivamente se desplego la antena
-
-
 void taskDeployment(void *param);
 
 int dep_init_dataRepo(void *param);
@@ -53,8 +57,7 @@ int dep_suicide(void *param);
 int dep_launch_tasks(void *param);
 int dep_init_bus_hw(void *param);
 int dat_sd_init(void);
-int dep_deploy_antenna(void *param);
-void dep_silent_time_and_pictures(int rt);
+
 void dep_csp_initialization(void);
 
 #endif //_DEPLOYMENT_H

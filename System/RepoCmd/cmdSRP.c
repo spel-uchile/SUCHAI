@@ -237,18 +237,54 @@ int srp_executeBeforeFlight(void * param){
     sta_setCubesatVar(sta_dep_seconds, 0);
 
     //PAYLOAD
-    sta_setCubesatVar(sta_pay_lagmuirProbe_perform, 1);
-    sta_setCubesatVar(sta_pay_sensTemp_perform, 1);
-    sta_setCubesatVar(sta_pay_gps_perform, 1);
-    sta_setCubesatVar(sta_pay_expFis_perform, 1);
-    sta_setCubesatVar(sta_pay_camera_perform, 1);
-    sta_setCubesatVar(sta_pay_gyro_perform, 1);
-    sta_setCubesatVar(sta_pay_tmEstado_perform, 1);
-    sta_setCubesatVar(sta_pay_test1_perform, 1);
-    sta_setCubesatVar(sta_pay_test2_perform, 1);
+    #if (SCH_PAY_LANGMUIR_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_lagmuirProbe_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+    #else
+        sta_setCubesatVar(sta_pay_lagmuirProbe_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+    #endif
+    #if (SCH_PAY_SENSTEMP_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_sensTemp_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+    #else
+        sta_setCubesatVar(sta_pay_sensTemp_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+    #endif
+    #if (SCH_PAY_GPS_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_gps_perform, SRP_PAY_XXX_PERFORM_ACTIVE);
+    #else
+        sta_setCubesatVar(sta_pay_gps_perform, SRP_PAY_XXX_PERFORM_INACTIVE);
+    #endif
+    #if (SCH_PAY_FIS_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_expFis_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+    #else
+        sta_setCubesatVar(sta_pay_expFis_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+    #endif
+    #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_camera_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+    #else
+        sta_setCubesatVar(sta_pay_camera_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+    #endif
+    #if (SCH_PAY_GYRO_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_gyro_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+    #else
+        sta_setCubesatVar(sta_pay_gyro_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+    #endif
+    #if (SCH_PAY_TMESTADO_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_tmEstado_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+    #else
+        sta_setCubesatVar(sta_pay_tmEstado_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+    #endif
+    #if (SCH_PAY_TEST1_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_test1_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+    #else
+        sta_setCubesatVar(sta_pay_test1_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+    #endif
+    #if (SCH_PAY_TEST2_ONBOARD==1)
+        sta_setCubesatVar(sta_pay_test2_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+    #else
+        sta_setCubesatVar(sta_pay_test2_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+    #endif
 
     sta_setCubesatVar(sta_SUCHAI_isDeployed, 0);  //First time on!
-    /* Es la unica variable que atilla las acciones de despliegue en THK */
+    /* Es la unica variable que gatilla las acciones de despliegue en THK */
     return 1;
 }
 //------------------------------------------------------------------------------

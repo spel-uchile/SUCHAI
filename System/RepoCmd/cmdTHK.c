@@ -64,14 +64,20 @@ int thk_debug(void *param){
         if(data==res){ printf("ok\r\n"); }
         else{ printf("fail\r\n"); }
     }
-    thk_eraseAll_CubesatVar();
+
+    unsigned int indxVar;
+    data = -1;  //oxFFFF
+
+    for(indxVar=0; indxVar<sta_cubesatVar_last_one; indxVar++){
+        sta_setCubesatVar(indxVar, data);
+    }
 
     return 1;
 }
 //------------------------------------------------------------------------------
 #define THK_SILENT_TIME_MIN 30          ///< cuantos "minutos" (65,535[s]) estara en inactividad antes de iniciarse
 #define THK_TRY_DEPLOY 10               ///< cuantas veces tratara desplegar la antena antes de anunciar fracaso
-#define THK_DEPLOY_TIME 0xB0FF          ///< 2*THK_DEPLOY_TIME/1000 indica cuantos "s" estara activo el bus de 3.3V quemando el nilon
+#define THK_DEPLOY_TIME 45311          ///< 2*THK_DEPLOY_TIME/1000 indica cuantos "s" estara activo el bus de 3.3V quemando el nilon
 #define THK_REST_DEPLOY_TIME 5000       ///< cuantos "ms" estara inactivo el bus de 3.3V descanzando de tratar de quemar el nilon
 #define THK_RECHECK_TIME 2000           ///< despues de cuantos "ms" RE-chequeara que efectivamente se desplego la antena
 /**
@@ -83,6 +89,7 @@ int thk_deploy_antenna(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
         printf("\n[thk_deploy_antenna] Deploying TRX Antenna... \r\n");
+        rtc_print(NULL);
     #endif
 
     //Realtime=1 DebugTime=0
@@ -90,15 +97,21 @@ int thk_deploy_antenna(void *param)
     int mode= *( (int *)param );
     if(mode)
     {
-        delay_dep_time = (THK_DEPLOY_TIME) / portTICK_RATE_MS;
-        delay_rest_dep_time = (THK_REST_DEPLOY_TIME) / portTICK_RATE_MS;
-        delay_recheck_dep_time = (THK_RECHECK_TIME) / portTICK_RATE_MS;
+//        delay_dep_time = (THK_DEPLOY_TIME) / portTICK_RATE_MS;
+//        delay_rest_dep_time = (THK_REST_DEPLOY_TIME) / portTICK_RATE_MS;
+//        delay_recheck_dep_time = (THK_RECHECK_TIME) / portTICK_RATE_MS;
+        delay_dep_time = (THK_DEPLOY_TIME);
+        delay_rest_dep_time = (THK_REST_DEPLOY_TIME);
+        delay_recheck_dep_time = (THK_RECHECK_TIME);
     }
     else
     {
-        delay_dep_time = (600) / portTICK_RATE_MS;
-        delay_rest_dep_time = (400) / portTICK_RATE_MS;
-        delay_recheck_dep_time = (200) / portTICK_RATE_MS;
+//        delay_dep_time = (600) / portTICK_RATE_MS;
+//        delay_rest_dep_time = (400) / portTICK_RATE_MS;
+//        delay_recheck_dep_time = (200) / portTICK_RATE_MS;
+        delay_dep_time = (600);
+        delay_rest_dep_time = (400);
+        delay_recheck_dep_time = (200);
     }
 
 
@@ -126,54 +139,67 @@ int thk_deploy_antenna(void *param)
             PPC_ANT2_SWITCH=0;
             //PPC_ANT1_SWITCH=0;
             //PPC_ANT2_SWITCH=1;
-            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT1 */
-            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT1 */
+//            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT1 */
+//            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT1 */
+            __delay_ms(delay_dep_time);
+            ClrWdt();
+            __delay_ms(delay_dep_time);
 
             PPC_ANT12_SWITCH=0;
             PPC_ANT1_SWITCH=0;
             PPC_ANT2_SWITCH=0;
-            vTaskDelay(delay_rest_dep_time);   /* tiempo de descanso */
+//            vTaskDelay(delay_rest_dep_time);   /* tiempo de descanso */
+            __delay_ms(delay_rest_dep_time);
+            ClrWdt();
 
             PPC_ANT12_SWITCH=1;
             PPC_ANT1_SWITCH=0;
             PPC_ANT2_SWITCH=1;
             //PPC_ANT1_SWITCH=1;
             //PPC_ANT2_SWITCH=0;
-            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT2 */
-            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT2 */
+//            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT2 */
+//            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT2 */
+            __delay_ms(delay_dep_time);
+            ClrWdt();
+            __delay_ms(delay_dep_time);
 
             PPC_ANT12_SWITCH=0;
             PPC_ANT1_SWITCH=0;
             PPC_ANT2_SWITCH=0;
-            vTaskDelay(delay_rest_dep_time);   /* tiempo de descanso */
-
+//            vTaskDelay(delay_rest_dep_time);   /* tiempo de descanso */
+            __delay_ms(delay_rest_dep_time);
+            ClrWdt();
 
             if( thk_check_antenna_isDeployed(delay_recheck_dep_time)==TRUE )
             {
+                srp_deployment_registration(&tries_indx);
+
                 #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
                     printf("    ANTENNA DEPLOYED SUCCESSFULLY [%d TRIES]\r\n", tries_indx);
+                    rtc_print(NULL);
                 #endif
-
-                srp_deployment_registration(&tries_indx);
                 return 1;
             }
         }
     }
     #endif
 
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    ANTENNA DEPLOY FAIL [%d TRIES]\r\n", THK_TRY_DEPLOY);
-    #endif
-
     tries_indx = -tries_indx;
     srp_deployment_registration(&tries_indx);
+
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    ANTENNA DEPLOY FAIL [%d TRIES]\r\n", THK_TRY_DEPLOY);
+        rtc_print(NULL);
+    #endif
 
     return 0;
 }
 BOOL thk_check_antenna_isDeployed(unsigned int delay_recheck_dep_time){
     if(PPC_ANT12_CHECK==0)   /* reviso */
     {
-        vTaskDelay(delay_recheck_dep_time);   /* tiempo de RE-chequeo */
+//        vTaskDelay(delay_recheck_dep_time);   /* tiempo de RE-chequeo */
+        __delay_ms(delay_recheck_dep_time);
+        ClrWdt();
         if(PPC_ANT12_CHECK==0)   /* RE-reviso */
         {
             return TRUE;
@@ -185,6 +211,7 @@ BOOL thk_check_antenna_isDeployed(unsigned int delay_recheck_dep_time){
 int thk_silent_time_and_pictures(void *param){
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
         con_printf("\n[thk_silent_time_and_pictures] Mandatory inactivity time...\r\n");
+        rtc_print(NULL);
     #endif
 
     //1) Silencio el TRX
@@ -199,9 +226,12 @@ int thk_silent_time_and_pictures(void *param){
 
     //2) tomo foto
     pay_init_camera(NULL);
-    int arg = CAM_MODE_VERBOSE;
+    //int arg = CAM_MODE_VERBOSE;
+    int arg = CAM_MODE_BOTH;
     pay_take_camera(&arg);
     pay_stop_camera(NULL);
+   //parar ciclo de Payload
+    sta_setCubesatVar(sta_pay_camera_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
 
     //3) duermo el SUCHAI por 30min
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
@@ -212,21 +242,30 @@ int thk_silent_time_and_pictures(void *param){
     int mode= *( (int *)param );
     if(mode)    /* RealTIme */
     {
-        const unsigned int time_out = (0xFFFF) / portTICK_RATE_MS; /* 65,535[s]*/
+//        const unsigned int time_out = (0xFFFF) / portTICK_RATE_MS; /* 65,535[s]*/
+        const unsigned int time_out = (0xFFFF); /* 65,535[s]*/
 
         unsigned int indx2;
         for(indx2=0; indx2<THK_SILENT_TIME_MIN-1; indx2++)
         {
-            vTaskDelay(time_out);
+            //vTaskDelay(time_out);
+            __delay_ms(time_out);
+            ClrWdt()
         }
 
         con_printf("    * 65[s] remaining ...\r\n");
-        vTaskDelay(time_out);
+        //vTaskDelay(time_out);
+        __delay_ms(time_out);
+        ClrWdt()
     }
     else    /* NO RealTIme */
     {
-        const unsigned int time_out = (10000) / portTICK_RATE_MS; /* 10[s]*/
-        vTaskDelay(time_out);
+//        const unsigned int time_out = (10000) / portTICK_RATE_MS; /* 10[s]*/
+        const unsigned int time_out = (10000); /* 10[s]*/
+        
+        //vTaskDelay(time_out);
+        __delay_ms(time_out);
+        ClrWdt()
     }
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
@@ -265,7 +304,7 @@ int thk_state_hw(void *param){
     printf("sta_SUCHAI_isDeployed = %d \r\n", sta_getCubesatVar(sta_SUCHAI_isDeployed) );
     #if (SCH_ANTENNA_ONBOARD==1)
         int ant12 = PPC_ANT12_CHECK;
-        printf("PPC_ANT12_CHECK = %d =>", ant12 );
+        printf("PPC_ANT12_CHECK = %d => ", ant12 );
         if(ant12==1){
             printf("Antenna NOT deployed \r\n");
         }
@@ -337,27 +376,9 @@ int thk_executeBeforeFlight(void *param){
         printf("%d segundos..\r\n", i);
     }
 
+    ppc_reset(NULL);
+
     return 1;
-}
-void thk_STA_CubesatVar_EBF(void){
-    sta_onResetStatRepo();
-
-    sta_setCubesatVar(sta_SUCHAI_isDeployed, 0);  //First time on!
-    /* Es la unica variable que debe gatillar las acciones de despliegue
-     * como quemar antenas, sacar fotos lenzamiento, quemar langmuir, etc.
-     */
-}
-void thk_eraseAll_CubesatVar(void){
-    #if (SCH_CMDDRP_VERBOSE>=1)
-        con_printf("    Erasing memEEPROM\n");
-    #endif
-
-    unsigned int indxVar;
-    int data = -1;  //oxFFFF
-
-    for(indxVar=0; indxVar<sta_cubesatVar_last_one; indxVar++){
-        sta_setCubesatVar(indxVar, data);
-    }
 }
 //------------------------------------------------------------------------------
 int thk_periodicUpdate_STA_CubesatVar(void *param){

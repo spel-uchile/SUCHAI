@@ -127,7 +127,7 @@ int tcm_sendTM_pay_i(void *param){
     int res = tcm_sendTM_PayloadVar(mode, pay_i);
     if(res!=0x0000){
         //inicia nuevamente el ciclo del Payload
-        sta_setCubesatVar(dat_pay_xxx_perform, 0x0001 );
+        sta_setCubesatVar(dat_pay_xxx_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
     }
     return res;
 }

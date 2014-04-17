@@ -155,7 +155,9 @@ int sta_get_ppc_lastResetSource(BOOL verb);
 
 //STA_CubesatVar dat_pay_i_to_performVar(DAT_Payload pay_i);
 STA_CubesatVar sta_pay_i_to_performVar(int pay_i);
-void sta_reset_pay_i_performVar(void);
+
+#define SRP_PAY_XXX_PERFORM_INACTIVE    0x0000
+#define SRP_PAY_XXX_PERFORM_ACTIVE      0x0001
 
 #endif // STATUS_REPO_H
 

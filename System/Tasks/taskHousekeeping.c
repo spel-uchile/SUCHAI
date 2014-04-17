@@ -74,10 +74,10 @@ void taskHouskeeping(void *param)
         
         /* Deploy Antena */
         #if (SCH_ANTENNA_ONBOARD==1)
-//            rt_mode = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
-//            NewCmd.cmdId = thk_id_deploy_antenna;
-//            NewCmd.param = rt_mode;
-//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+            rt_mode = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
+            NewCmd.cmdId = thk_id_deploy_antenna;
+            NewCmd.param = rt_mode;
+            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
         #endif
 
         //deploy langmuir
@@ -86,6 +86,7 @@ void taskHouskeeping(void *param)
         //..
             
         sta_setCubesatVar(sta_SUCHAI_isDeployed, 1);
+        ppc_reset(NULL);
     }
 
     //thk_periodicUpdate_STA_CubesatVar(NULL); //TODO: Why?
@@ -108,10 +109,10 @@ void taskHouskeeping(void *param)
                 con_printf("[Houskeeping] 20[s] actions..\r\n");
             #endif
 
-            NewCmd.cmdId = thk_id_periodicUpdate_STA_CubesatVar;
-            NewCmd.param = 0;
-            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-
+//            NewCmd.cmdId = thk_id_periodicUpdate_STA_CubesatVar;
+//            NewCmd.param = 0;
+//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+//
 //            NewCmd.cmdId = ppc_id_reactToSOC;
 //            NewCmd.param = 0;
 //            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);

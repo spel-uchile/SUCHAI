@@ -36,6 +36,10 @@ void pay_onResetCmdPAY(void){
 
     payFunction[(unsigned char)pay_id_FSM_default] = pay_FSM_default;
 
+    payFunction[(unsigned char)pay_id_init_tmEstado] = pay_init_tmEstado;
+    payFunction[(unsigned char)pay_id_take_tmEstado] = pay_take_tmEstado;
+    payFunction[(unsigned char)pay_id_stop_tmEstado] = pay_stop_tmEstado;
+
     payFunction[(unsigned char)pay_id_debug_sensTemp] = pay_debug_sensTemp;
     payFunction[(unsigned char)pay_id_init_sensTemp] = pay_init_sensTemp;
     payFunction[(unsigned char)pay_id_take_sensTemp] = pay_take_sensTemp;
@@ -265,6 +269,12 @@ int pay_FSM_default(void *param){
         }
         pay_current_state=0;
     }
+
+    #if (_VERBOSE_>=1)
+        printf("  FSM_default => pay_i = ");
+        dat_print_pay_i_name(pay_i); printf("\r\n");
+        printf("    ");
+    #endif
 
     //asigna el estado actual al pay_i correspondiente
     pay_current_state = pay_current_state_buff[pay_i];
@@ -825,10 +835,9 @@ int pay_take_camera(void *param){
     }
 
     int mode = *( (int*)param );
-    //int mode=CAM_MODE_BOTH;
-    //int mode=CAM_MODE_VERBOSE;
-    //int mode=CAM_MODE_SAVE_SD;
-    BOOL st = pay_cam_takeAndSave_photo(0x07, 0x00, 0x05, mode);
+    //BOOL st = pay_cam_takeAndSave_photo(0x07, 0x00, 0x05, mode);
+    //BOOL st = pay_cam_takeAndSave_photo(0x02, 0x00, 0x05, mode);
+    BOOL st = pay_cam_takeAndSave_photo(0x02, 0x00, 0x05, mode);
 
     return st;
 }
@@ -848,17 +857,25 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type, int mode)
     printf(" taking photo..\r\n");
     unsigned int length= cam_photo(resolution, qual, pic_type);
     #if (_VERBOSE_>=1)
-        printf("    photo length = %ud\r\n", length);
+        printf("    photo length = %u\r\n", length);
     #endif
 
+    if(length==0){
+        unsigned int lenBuff;
+        lenBuff = (unsigned int)(3);
+        dat_reset_PayloadBuff(dat_pay_camera, lenBuff, 0);
+        dat_set_PayloadBuff(dat_pay_camera ,0xFAFA);
+        dat_set_PayloadBuff(dat_pay_camera, 0xFAFA);
+        dat_set_PayloadBuff(dat_pay_camera, 0xFAFA);
+        return FALSE;
+    }
 
     printf("  saving photo..\r\n");
     static int cnt; BOOL stat;
     int ml=length/2;    //se guardan 2byten en 1int
 
     //Inicializa la estructura de data payload
-    DAT_PayloadBuff pay_i=dat_pay_camera;
-    dat_reset_PayloadBuff(pay_i, ml, 0);
+    dat_reset_PayloadBuff(dat_pay_camera, ml, 0);
 
     unsigned char respuesta; char ret[10];
     unsigned int resp;
@@ -888,7 +905,7 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type, int mode)
             con_printf(ret);
         }
         if( (mode==CAM_MODE_SAVE_SD) || (mode==CAM_MODE_BOTH) ){
-            stat = dat_set_PayloadBuff( pay_i, (int)resp );
+            stat = dat_set_PayloadBuff( dat_pay_camera, (int)resp );
             //__delay_ms(12);
             #if (SCH_CAMERA_VERBOSE>=2)
                 cnt++;
@@ -903,11 +920,11 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type, int mode)
         ClrWdt();
     }
 
-    //Si sale esta linea tengo un error
+    //Si entro a este if es q tengo un error
     if( (mode==CAM_MODE_SAVE_SD) || (mode==CAM_MODE_BOTH) ){
-        while(stat==FALSE){
-            stat = dat_set_PayloadBuff( pay_i, (int)0xFF00 );
-            con_printf("rellenando\r\n");
+        while(stat==TRUE){
+            stat = dat_set_PayloadBuff( dat_pay_camera, (int)0x0000 );
+            printf("rellenando\r\n");
             //__delay_ms(12);
         }
     }
@@ -971,15 +988,23 @@ int pay_stop_gps(void *param){
 }
 //******************************************************************************
 BOOL pay_deploy_langmuirProbe(void){
+    printf("******************************\r\n");
+    printf("Deployng LangmuirProbe\r\n");
     printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );
     PPC_LANGMUIR_DEP_SWITCH = 1;
     __delay_ms(50); //wait while port write takes effect
     printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );
+
+    __delay_ms(30000); //wait 30sec to burn nylon
+    __delay_ms(30000); //wait 30sec to burn nylon
+    ClrWdt();
+    __delay_ms(30000); //wait 30sec to burn nylon
+
     PPC_LANGMUIR_DEP_SWITCH = 0;
     __delay_ms(50); //wait while port write takes effect
     printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );
 
-    return FALSE;
+    return TRUE;
 }
 int pay_init_lagmuirProbe(void *param){
     printf("pay_init_lagmuirProbe\r\n");
@@ -1013,50 +1038,53 @@ int pay_init_lagmuirProbe(void *param){
 int pay_take_lagmuirProbe(void *param){
     printf("pay_take_lagmuirProbe\r\n");
 
-    #if (SCH_PAY_LANGMUIR_ONBOARD==0)
-        dat_set_PayloadBuff(dat_pay_lagmuirProbe, 0x01);
-        dat_set_PayloadBuff(dat_pay_lagmuirProbe, 0x02);
-    #else
+    dat_set_PayloadBuff(dat_pay_lagmuirProbe, 0x01);
+    dat_set_PayloadBuff(dat_pay_lagmuirProbe, 0x02);
 
-//    int verbose = *(int *)param;
-    int ok = 0;
-    int i = 0;
-    /* Tomar datos de calibracion */
-    ok = lag_read_cal_packet(FALSE);
-    if(ok)
-    {
-        /* Guardar datos a la SD (40) */
-        for(i=0; i<40; i++)
-        {
-            dat_set_PayloadBuff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
-        }
-//        if(verbose) SendRS232(langmuir_buffer, 40, RS2_M_UART1);
-    }
-
-    /* Tomar datos de plasma */
-    ok = lag_read_plasma_packet(FALSE);
-    if(ok)
-    {
-        /* Guardar datos a la SD (10) */
-        for(i=0; i<10; i++)
-        {
-            dat_set_PayloadBuff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
-        }
-//        if(verbose) SendRS232(langmuir_buffer, 10, RS2_M_UART1);
-    }
-
-    /* Tomar datos de sweep */
-    ok = lag_read_sweep_packet(FALSE);
-    if(ok)
-    {
-        /* Guardar datos a la SD (1096) */
-        for(i=0; i<1096; i++)
-        {
-            dat_set_PayloadBuff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
-        }
-//        if(verbose) SendRS232(langmuir_buffer, 1096, RS2_M_UART1);
-    }
-    #endif
+//    #if (SCH_PAY_LANGMUIR_ONBOARD==0)
+//        dat_set_PayloadBuff(dat_pay_lagmuirProbe, 0x01);
+//        dat_set_PayloadBuff(dat_pay_lagmuirProbe, 0x02);
+//    #else
+//
+////    int verbose = *(int *)param;
+//    int ok = 0;
+//    int i = 0;
+//    /* Tomar datos de calibracion */
+//    ok = lag_read_cal_packet(FALSE);
+//    if(ok)
+//    {
+//        /* Guardar datos a la SD (40) */
+//        for(i=0; i<40; i++)
+//        {
+//            dat_set_PayloadBuff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
+//        }
+////        if(verbose) SendRS232(langmuir_buffer, 40, RS2_M_UART1);
+//    }
+//
+//    /* Tomar datos de plasma */
+//    ok = lag_read_plasma_packet(FALSE);
+//    if(ok)
+//    {
+//        /* Guardar datos a la SD (10) */
+//        for(i=0; i<10; i++)
+//        {
+//            dat_set_PayloadBuff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
+//        }
+////        if(verbose) SendRS232(langmuir_buffer, 10, RS2_M_UART1);
+//    }
+//
+//    /* Tomar datos de sweep */
+//    ok = lag_read_sweep_packet(FALSE);
+//    if(ok)
+//    {
+//        /* Guardar datos a la SD (1096) */
+//        for(i=0; i<1096; i++)
+//        {
+//            dat_set_PayloadBuff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
+//        }
+////        if(verbose) SendRS232(langmuir_buffer, 1096, RS2_M_UART1);
+//    }
+//    #endif
 
 
     return 1;
@@ -1151,16 +1179,16 @@ int pay_init_sensTemp(void *param){
     //configure Payload
     BOOL s1, s2, s3, s4;
     s1 = sensTemp_init(ST1_ADDRESS);
-    dat_set_PayloadBuff(dat_pay_sensTemp ,(int)s1);
+    dat_set_PayloadBuff(dat_pay_sensTemp, (int)s1);
 
     s2 = sensTemp_init(ST2_ADDRESS);
-    dat_set_PayloadBuff(dat_pay_sensTemp ,(int)s2);
+    dat_set_PayloadBuff(dat_pay_sensTemp, (int)s2);
 
     s3 = sensTemp_init(ST3_ADDRESS);
-    dat_set_PayloadBuff(dat_pay_sensTemp ,(int)s3);
+    dat_set_PayloadBuff(dat_pay_sensTemp, (int)s3);
 
     s4 = sensTemp_init(ST4_ADDRESS);
-    dat_set_PayloadBuff(dat_pay_sensTemp ,(int)s4);
+    dat_set_PayloadBuff(dat_pay_sensTemp, (int)s4);
 
     //report isAlive status  (solo si todos fallan se reporta como perdido el payload)
     int res;
@@ -1210,11 +1238,12 @@ int pay_stop_sensTemp(void *param){
 PAY_State pay_nextStateLogic(PAY_State pay_sem, DAT_PayloadBuff pay_i){
     STA_CubesatVar dat_pay_xxx_perform;
 
+    dat_pay_xxx_perform = sta_pay_i_to_performVar(pay_i);
+
     //logica del cambio de estados
     switch(pay_sem){
         case pay_state_pre_init:
-            dat_pay_xxx_perform = sta_pay_i_to_performVar(pay_i);
-            if( sta_getCubesatVar(dat_pay_xxx_perform)==0x0001 ){
+            if( sta_getCubesatVar(dat_pay_xxx_perform)==SRP_PAY_XXX_PERFORM_ACTIVE ){
                 pay_sem = pay_state_init;
             }
             else{
@@ -1243,6 +1272,7 @@ PAY_State pay_nextStateLogic(PAY_State pay_sem, DAT_PayloadBuff pay_i){
 }
 void pay_currentStateLogic(PAY_State pay_sem_state, DAT_PayloadBuff pay_i){
     int arg=0; //DAT_Payload arg_pay_i; /* WARNING, Revisar */
+
     //logica del estado
     switch(pay_sem_state){
         case pay_state_pre_init:
@@ -1355,15 +1385,11 @@ void pay_currentStateLogic(PAY_State pay_sem_state, DAT_PayloadBuff pay_i){
             }
             //parar ciclo de Payload
             STA_CubesatVar dat_perfVar=sta_pay_i_to_performVar(pay_i);
-            sta_setCubesatVar(dat_perfVar, 0x0000 );
+            sta_setCubesatVar(dat_perfVar, SRP_PAY_XXX_PERFORM_INACTIVE );
 
             //debug
             #if (_VERBOSE_>=1)
-                char ret[6];
-                printf("pay_= ");
-                sprintf (ret, "%d", (int)(pay_i));
-                printf(ret);
-                printf(" ha pasado a estado: pay_state_stop\r\n");
+                printf("pay_= %d ha pasado a estado: pay_state_stop\r\n", (int)(pay_i) );
             #endif
             #if (_VERBOSE_>=2)
                 arg_pay_i=pay_i;

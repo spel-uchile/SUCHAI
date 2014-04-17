@@ -121,15 +121,15 @@ void dat_erase_FlightPlanBuff(void);
  *
  */
 typedef enum _DAT_Payload{
-    dat_pay_lagmuirProbe=0,
-    dat_pay_test2,
-    dat_pay_gps,
-    dat_pay_camera,     //pay_i=3
-    dat_pay_sensTemp,   
-    dat_pay_gyro,       //pay_i=5
-    dat_pay_tmEstado,
+    dat_pay_tmEstado=0,
     dat_pay_test1,
-    dat_pay_expFis,     //pay_i=8
+    dat_pay_test2,
+    dat_pay_lagmuirProbe,   //pay_i=3
+    dat_pay_gps,
+    dat_pay_camera,         //pay_i=5
+    dat_pay_sensTemp,   
+    dat_pay_gyro,           //pay_i=8
+    dat_pay_expFis,     
     //*************
     dat_pay_last_one    //Se utiliza para marcar el largo del arreglo.
                         //Y para indicar el ID de TM de CUbesatVar
@@ -155,6 +155,7 @@ void dat_erase_PayloadBuff(DAT_PayloadBuff pay_i);
 //Auxiliary functions
 unsigned long dat_pay_i_to_block(DAT_PayloadBuff pay_i);
 BOOL dat_isFull_PayloadBuff(DAT_PayloadBuff pay_i);
+void dat_print_pay_i_name(DAT_PayloadBuff pay_i);
 
 //******************************************************************************
 // DAT_AuxBuff

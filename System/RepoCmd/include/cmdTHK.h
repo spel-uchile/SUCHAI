@@ -84,9 +84,6 @@ int thk_silent_time_and_pictures(void *param);
 //funciones auxiliares
 //****************************************************
 BOOL thk_check_antenna_isDeployed(unsigned int delay_recheck_dep_time);
-void thk_STA_CubesatVar_EBF(void);
-void thk_eraseAll_CubesatVar(void);
-
 int thk_CubesatVar_update(int indxVar);
 //PPC
 //void thk_ppc_hoursAlive(void); => no existen, pues no se actualizan en updateAll

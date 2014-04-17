@@ -40,6 +40,10 @@ typedef enum{
 
     pay_id_FSM_default, ///< @cmd
 
+    pay_id_init_tmEstado, ///< @cmd
+    pay_id_take_tmEstado, ///< @cmd
+    pay_id_stop_tmEstado, ///< @cmd
+
     pay_id_debug_sensTemp, ///< @cmd
     pay_id_init_sensTemp, ///< @cmd
     pay_id_take_sensTemp, ///< @cmd

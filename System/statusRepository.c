@@ -250,7 +250,7 @@ STA_CubesatVar sta_pay_i_to_performVar(int pay_i){
  * los defines de @ref SUCHAI_config.h
  */
 void sta_reset_pay_i_performVar(void){
-    #if (SCH_PAY_LAGMUIR_ONBOARD==1)
+    #if (SCH_PAY_LANGMUIR_ONBOARD==1)
         sta_setCubesatVar(sta_pay_lagmuirProbe_perform, 0x0001 );
     #else
         sta_setCubesatVar(sta_pay_lagmuirProbe_perform, 0x0000 );

@@ -215,6 +215,7 @@ int srp_executeBeforeFlight(void * param){
     sta_setCubesatVar(sta_pay_tmEstado_isAlive, 0);
     sta_setCubesatVar(sta_pay_test1_isAlive, 0);
     sta_setCubesatVar(sta_pay_test2_isAlive, 0);
+    sta_setCubesatVar(sta_pay_lagmuirProbe_isDeployed, 0);
 
     //PPC => (C&DH subsystem)
     sta_setCubesatVar(sta_ppc_opMode, STA_PPC_OPMODE_NORMAL);

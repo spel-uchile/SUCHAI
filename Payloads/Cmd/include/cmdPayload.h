@@ -128,6 +128,7 @@ int pay_init_lagmuirProbe(void *param);
 int pay_stop_lagmuirProbe(void *param);
 int pay_send_to_lagimur(void *param);
 int pay_debug_langmuir(void *param);
+BOOL pay_deploy_langmuirProbe(void);
 //Gyro
 int pay_debug_gyro(void *param);
 int pay_take_gyro(void *param);

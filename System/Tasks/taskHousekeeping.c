@@ -64,6 +64,8 @@ void taskHouskeeping(void *param)
     vTaskDelayUntil(&xLastWakeTime, delay_ticks); //Suspend task
     int rt_mode;
     if( sta_getCubesatVar(sta_SUCHAI_isDeployed) == 0 ){
+        printf("[Houskeeping] sta_SUCHAI_isDeployed = 0..\r\n");
+
         //wait 30mins, meanwhile take pictures
         rt_mode = SCH_THK_SILENT_REALTIME; /* 1=Real Time, 0=Debug Time */
         NewCmd.cmdId = thk_id_silent_time_and_pictures;
@@ -72,10 +74,10 @@ void taskHouskeeping(void *param)
         
         /* Deploy Antena */
         #if (SCH_ANTENNA_ONBOARD==1)
-            rt_mode = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
-            NewCmd.cmdId = thk_id_deploy_antenna;
-            NewCmd.param = rt_mode;
-            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+//            rt_mode = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
+//            NewCmd.cmdId = thk_id_deploy_antenna;
+//            NewCmd.param = rt_mode;
+//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
         #endif
 
         //deploy langmuir
@@ -143,7 +145,7 @@ void taskHouskeeping(void *param)
             #endif
 
             #if (SCH_EPS_ONBOARD == 1)
-                #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
+                #if (SCH_TASKHOUSEKEEPING_VERBOSE>=2)
                     NewCmd.cmdId = eps_id_print_all_reg;
                     NewCmd.param = 0;
                     xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);

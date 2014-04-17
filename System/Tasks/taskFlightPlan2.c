@@ -104,22 +104,15 @@ void fp2_pay_i_multiplexing(xQueueHandle dispatcherQueue){
         con_printf(ret);
     #endif
 
-    //DAT_CubesatVar pay_i_perfVar;
     switch(current_pay_i){
         //excluyo casos particulares
         case dat_pay_tmEstado:
             //do nothing
         break;
         default:
-            //pay_i_perfVar = dat_pay_i_to_performVar(current_pay_i);
-            //if( dat_getCubesatVar(pay_i_perfVar)==0x0001 ){
-                NewCmd.cmdId = pay_id_FSM_default;
-                NewCmd.param = current_pay_i;
-                xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
-            //}
-            //else{
-            //    con_printf("pay_i_perfVar=0..\r\n");
-            //}
+            NewCmd.cmdId = pay_id_FSM_default;
+            NewCmd.param = current_pay_i;
+            xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
         break;
     }
 

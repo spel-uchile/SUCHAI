@@ -550,9 +550,17 @@ void GPIO_PC104_init(void)
     _TRISF12=0; 		//pin 0-output 1-input.
     _LATF12=0;			//parte en 0
 
+//------------------------------------------------------------------------------
     // H1.10	RP31/CN76/RF13 (Pin 39) => pin es RF13
-    _TRISF13=0;		//pin 0-output 1-input.
-    _LATF13=0;			//parte en 0.
+    #if (SCH_PAY_LANGMUIR_ONBOARD==1)
+        _TRISF13=0;		//pin 0-output 1-input.
+        PPC_LANGMUIR_DEP_SWITCH=0;       	//parte en 0
+        //pin es LANGMUIR_switch
+    #else
+        _TRISF13=0;		//pin 0-output 1-input.
+        _LATF13=0;			//parte en 0.
+    #endif
+//------------------------------------------------------------------------------
 
     // H1.11	RPI43/CN20/RD14 (Pin 47) => pin es RD14
     _TRISD14=0;			//pin 0-output 1-input.
@@ -623,7 +631,7 @@ void GPIO_PC104_init(void)
     SetPriorityIntU1RX(5);
 
 //------------------------------------------------------------------------------
-    #if (SCH_PAY_LAGMUIR_ONBOARD == 1)
+    #if (SCH_PAY_LANGMUIR_ONBOARD == 1)
         // UART3 para la Langmiur
         // H1.19	RP30/CN70/RF2 (Pin 52) => (URX3) para el PAY_LANGMUIR
         iPPSInput(IN_FN_PPS_U3RX,IN_PIN_PPS_RP30);

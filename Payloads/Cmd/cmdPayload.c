@@ -320,6 +320,7 @@ static int gpb_indx;
 int pay_init_expFis(void *param){
     printf("pay_init_expFis\r\n");
 
+    //configure PayloadBuff
     DAT_PayloadBuff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_expFis;
 
@@ -331,13 +332,17 @@ int pay_init_expFis(void *param){
     lenBuff = (buff_len*len*rounds_per_ADC_period);
     dat_reset_PayloadBuff(pay_i, lenBuff, 0);
 
-    //Reset vars
-    gpb_indx = 0;
+    //configure Payload
+    gpb_indx = 0;    //Reset vars
+    int res = 1;    //always alive
 
-    //always alive
-    sta_setCubesatVar(sta_pay_expFis_isAlive, 1);
+    //report isAlive status
+    sta_setCubesatVar(sta_pay_expFis_isAlive, res);
 
-    return 1;
+    //debug Info
+    printf("  sta_pay_expFis_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_expFis_isAlive) );
+
+    return res;
 }
 int pay_take_expFis(void *param){
     if( fis_iterate() ){
@@ -357,7 +362,7 @@ int pay_stop_expFis(void *param){
     printf("pay_stop_expFis\r\n");
 
     if( fis_iterate_isComplete() ){
-        printf("fis_iterate_isComplete() return TRUE\n");
+        printf("fis_iterate_isComplete() returned TRUE\n");
     }
     #if (_VERBOSE_>=2)
         char ret[10];
@@ -639,21 +644,30 @@ int pay_debug_gyro(void *param){
 int pay_init_gyro(void *param){
     printf("pay_init_gyro\r\n");
 
+    //configure PayloadBuff
     DAT_PayloadBuff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_gyro;
     lenBuff = (unsigned int)(500*3);  //(1440*3)      //numero de 10-minutos en un dia
     dat_reset_PayloadBuff(pay_i, lenBuff, 1);
 
-    //config gyro
-    gyr_init_config();
-
+    //configure Payload
+    int res;
     if( gyr_isAlive()==TRUE ){
-        sta_setCubesatVar(sta_pay_gyro_isAlive, 1);
+        res = 1;
+        gyr_init_config();
     }
     else{
-        sta_setCubesatVar(sta_pay_gyro_isAlive, 0);
+        res = 0;
     }
-    return 1;
+
+    //report isAlive status
+    sta_setCubesatVar(sta_pay_gyro_isAlive, res);
+
+    //debug info
+    printf("  sta_pay_gyro_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_gyro_isAlive) );
+    printf("  PPC_GYRO_INT2_CHECK = %d \r\n", PPC_GYRO_INT2_CHECK );
+
+    return res;
 }
 int pay_take_gyro(void *param){
     printf("pay_take_gyro()..\r\n");
@@ -686,15 +700,23 @@ int pay_stop_gyro(void *param){
 int pay_init_tmEstado(void *param){
     printf("pay_init_tmEstado\r\n");
 
+    //configure PaylaodBuff
     DAT_PayloadBuff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_tmEstado;
     lenBuff = (unsigned int)(40*sta_cubesatVar_last_one);  //(4*60/5=48)      //numero de 5-minutos en una orbita (4 horas)
     dat_reset_PayloadBuff(pay_i, lenBuff, 1);
 
-    //always alive
-    sta_setCubesatVar(sta_pay_tmEstado_isAlive, 1);
+    //configure Paylaod
+    //nothing to do..
+    int res = 1;
 
-    return 1;
+    //report isAlive status
+    sta_setCubesatVar(sta_pay_tmEstado_isAlive, res);
+
+    //debug info
+    printf("  sta_pay_tmEstado_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_tmEstado_isAlive) );
+
+    return res;
 }
 int pay_take_tmEstado(void *param){
     printf("pay_take_tmEstado()..\r\n");
@@ -757,27 +779,33 @@ int pay_debug_camera(void *param){
 int pay_init_camera(void *param){
     printf("pay_init_camera\r\n");
 
+    //configure PayloadBuff
+    //nothing to do..
+
+    //switch camera on
+    printf("  PPC_CAM_SWITCH = %d\r\n", PPC_CAM_SWITCH_CHECK);
     PPC_CAM_SWITCH=1;
-    printf("PPC_CAM_SWITCH = %d\r\n", (unsigned int)PPC_CAM_SWITCH_CHECK);
+    __delay_ms(50); //wait while port write takes effect
+    printf("  PPC_CAM_SWITCH = %d\r\n", PPC_CAM_SWITCH_CHECK);
+    printf("  PPC_CAM_HOLD_CHECK = %d\r\n", PPC_CAM_HOLD_CHECK);
 
     // Wait for the camera to be ready
-    unsigned int cnt=0;
-    while(PPC_CAM_HOLD_CHECK==1){
-        cnt++;
-        if(cnt==0x0001){break;}
-        printf("PPC_CAM_HOLD_CHECK==1\r\n");
-    }
-    //initialize camera
+    __delay_ms(3000);
+    
+    //configure Payload
+    int res;
     int issync = cam_sync(FALSE);
-    printf("cam_sync() = %d\r\n", issync);
-    if(issync!=0x0000){
-        sta_setCubesatVar(sta_pay_camera_isAlive, 0);
-        return 0;
-    }
-    else{
-        sta_setCubesatVar(sta_pay_camera_isAlive, 1);
-        return 1;
-    }
+    if(issync == 0x0000){ res = 1; }
+    else{ res = 0; }
+
+    //report isAlive status
+    sta_setCubesatVar(sta_pay_camera_isAlive, res);
+
+    //debug info
+    printf("  PPC_CAM_HOLD_CHECK = %d\r\n", PPC_CAM_HOLD_CHECK);
+    printf("  sta_pay_camera_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_camera_isAlive) );
+
+    return res;
 }
 int pay_take_camera(void *param){
     printf("pay_take_camera()\r\n");
@@ -796,18 +824,21 @@ int pay_take_camera(void *param){
         return 1;
     }
 
+    int mode = *( (int*)param );
     //int mode=CAM_MODE_BOTH;
     //int mode=CAM_MODE_VERBOSE;
-    int mode=CAM_MODE_SAVE_SD;
-    BOOL st = pay_cam_takeAndSave_photo(0x01, 0x00, 0x05, mode);
+    //int mode=CAM_MODE_SAVE_SD;
+    BOOL st = pay_cam_takeAndSave_photo(0x07, 0x00, 0x05, mode);
 
     return st;
 }
 int pay_stop_camera(void *param){
     printf("pay_stop_camera()\r\n");
 
+    printf("  PPC_CAM_SWITCH = %d\r\n", PPC_CAM_SWITCH_CHECK);
     PPC_CAM_SWITCH=0;
-    printf("PPC_CAM_SWITCH = %d\r\n",(unsigned int)(PPC_CAM_SWITCH_CHECK));
+    __delay_ms(50); //wait while port write takes effect
+    printf("  PPC_CAM_SWITCH = %d\r\n", PPC_CAM_SWITCH_CHECK);
 
     return 1;
 }
@@ -817,7 +848,7 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type, int mode)
     printf(" taking photo..\r\n");
     unsigned int length= cam_photo(resolution, qual, pic_type);
     #if (_VERBOSE_>=1)
-        printf("    photo length = %d\r\n", length);
+        printf("    photo length = %ud\r\n", length);
     #endif
 
 
@@ -859,7 +890,7 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type, int mode)
         if( (mode==CAM_MODE_SAVE_SD) || (mode==CAM_MODE_BOTH) ){
             stat = dat_set_PayloadBuff( pay_i, (int)resp );
             //__delay_ms(12);
-            #if (SCH_CAMERA_VERBOSE>=1)
+            #if (SCH_CAMERA_VERBOSE>=2)
                 cnt++;
                 if(cnt%200==0){
                     con_printf("still writing memSD .. cnt=");
@@ -887,13 +918,25 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type, int mode)
 int pay_init_gps(void *param){
     printf("pay_init_gps\r\n");
 
+    //configure PayloadBuff
     DAT_PayloadBuff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_gps;
     lenBuff = (unsigned int)(200);   //(1440)  //numero de 10-minutos en un dia
     dat_reset_PayloadBuff(pay_i, lenBuff, 1);
 
-    //always dead
-    sta_setCubesatVar(sta_pay_gps_isAlive, 0);
+    //configure Payload
+    int res;
+    res = 0;    //not implemented yet => always dead ..
+
+    //report isAlive status
+    sta_setCubesatVar(sta_pay_gps_isAlive, res);
+
+    //check SW and CHECK pins (not definitive)
+    printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
+    PPC_GPS_SWITCH = 1;
+    __delay_ms(50); //wait while port write takes effect
+    printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
+    printf("  sta_pay_gps_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_gps_isAlive) );
 
     return 1;
 }
@@ -911,42 +954,66 @@ int pay_take_gps(void *param){
         dat_set_PayloadBuff(dat_pay_gps, 0xFAFA);
         dat_set_PayloadBuff(dat_pay_gps, 0xFAFA);
 
-        return 1;
+        return 0;
     }
 
     return 1;
 }
 int pay_stop_gps(void *param){
     printf("pay_stop_gps\r\n");
+
+    printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
+    PPC_GPS_SWITCH = 0;
+    __delay_ms(50); //wait while port write takes effect
+    printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
+
     return 1;
 }
 //******************************************************************************
+BOOL pay_deploy_langmuirProbe(void){
+    printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );
+    PPC_LANGMUIR_DEP_SWITCH = 1;
+    __delay_ms(50); //wait while port write takes effect
+    printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );
+    PPC_LANGMUIR_DEP_SWITCH = 0;
+    __delay_ms(50); //wait while port write takes effect
+    printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );
+
+    return FALSE;
+}
 int pay_init_lagmuirProbe(void *param){
     printf("pay_init_lagmuirProbe\r\n");
 
-    #if (SCH_PAY_LAGMUIR_ONBOARD==0)
-        DAT_PayloadBuff pay_i; unsigned int lenBuff;
-        pay_i = dat_pay_lagmuirProbe;
-        lenBuff = (unsigned int)(200);   //(1440)  //numero de 10-minutos en un dia
-        dat_reset_PayloadBuff(pay_i, lenBuff, 1);
-    #else
-        DAT_PayloadBuff pay_i; unsigned int lenBuff;
-        pay_i = dat_pay_lagmuirProbe;
-        lenBuff = (unsigned int)(20*1); /*TODO: SET VALUE*/ //(1440)      //numero de 10-minutos en un dia
-        dat_reset_PayloadBuff(pay_i, lenBuff, 1);
+    //configure PayloadBuff
+    DAT_PayloadBuff pay_i; unsigned int lenBuff;
+    pay_i = dat_pay_lagmuirProbe;
+    lenBuff = (unsigned int)(20*1); /*TODO: SET VALUE*/ //(1440)      //numero de 10-minutos en un dia
+    dat_reset_PayloadBuff(pay_i, lenBuff, 1);
 
-        lag_erase_buffer();
-    #endif
+    //configure Payload
+    if( sta_getCubesatVar(sta_pay_lagmuirProbe_isDeployed)==0 ){
+        BOOL st = pay_deploy_langmuirProbe();
+        if( st==1 ){    //deploy succedded
+            sta_setCubesatVar(sta_pay_lagmuirProbe_isDeployed, 1);
+        }
+    }
+    int res = 0; //not fully implemented yet => always dead
+    lag_erase_buffer();
 
-    return 1;
+    //report isAlive status
+    sta_setCubesatVar(sta_pay_lagmuirProbe_isAlive, res);
+
+    //debug info
+    printf("  sta_pay_lagmuirProbe_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_lagmuirProbe_isAlive) );
+    printf("  sta_pay_lagmuirProbe_isDeployed = %d \r\n", sta_getCubesatVar(sta_pay_lagmuirProbe_isDeployed) );
+
+    return res;
 }
 
 int pay_take_lagmuirProbe(void *param){
-    
-    
     printf("pay_take_lagmuirProbe\r\n");
 
-    #if (SCH_PAY_LAGMUIR_ONBOARD==0)
+    #if (SCH_PAY_LANGMUIR_ONBOARD==0)
         dat_set_PayloadBuff(dat_pay_lagmuirProbe, 0x01);
         dat_set_PayloadBuff(dat_pay_lagmuirProbe, 0x02);
     #else
@@ -1040,11 +1107,7 @@ int pay_debug_langmuir(void *param)
 int pay_stop_lagmuirProbe(void *param){
     printf("pay_stop_lagmuirProbe()..\r\n");
     
-    #if (SCH_PAY_LAGMUIR_ONBOARD==0)
-        //
-    #else
-        lag_erase_buffer();
-    #endif
+    lag_erase_buffer();
 
     return 1;
 }
@@ -1078,12 +1141,14 @@ int pay_debug_sensTemp(void *param){
 }
 int pay_init_sensTemp(void *param){
     printf("pay_init_sensTemp\r\n");
-   
+
+    //configure PayloadBuff
     DAT_PayloadBuff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_sensTemp;
     lenBuff = (unsigned int)(500*4) + 4;    //numero de muestras*4 + estado de isAlive cada sensor
     dat_reset_PayloadBuff(pay_i, lenBuff, 1);
 
+    //configure Payload
     BOOL s1, s2, s3, s4;
     s1 = sensTemp_init(ST1_ADDRESS);
     dat_set_PayloadBuff(dat_pay_sensTemp ,(int)s1);
@@ -1097,15 +1162,16 @@ int pay_init_sensTemp(void *param){
     s4 = sensTemp_init(ST4_ADDRESS);
     dat_set_PayloadBuff(dat_pay_sensTemp ,(int)s4);
 
-    //solo si todos fallan se reporta como perdido el payload
-    if( s1==FALSE && s2==FALSE && s3==FALSE && s4==FALSE ){
-        sta_setCubesatVar(sta_pay_sensTemp_isAlive, 0);
-        return 0;
-    }
-    else{
-        sta_setCubesatVar(sta_pay_sensTemp_isAlive, 1);
-        return 1;
-    }
+    //report isAlive status  (solo si todos fallan se reporta como perdido el payload)
+    int res;
+    if( s1==FALSE && s2==FALSE && s3==FALSE && s4==FALSE ){ res = 0; }
+    else{ res = 1; }
+    sta_setCubesatVar(sta_pay_sensTemp_isAlive, res);
+
+    //debug info
+    printf("  sta_pay_sensTemp_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_sensTemp_isAlive) );
+
+    return res;
 }
 int pay_take_sensTemp(void *param){
     printf("pay_take_sensTemp\r\n");

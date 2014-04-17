@@ -129,11 +129,12 @@ int eps_initialize(void){
 }
 int eps_isAlive(void){
     
-    unsigned int ver = VersionReadEPS();
-    printf("*********************************\n");
-    printf("eps_isAlive, version = %d \n", ver);
-    printf("*********************************\n");
-    if( ver==0x0000 ){
+    int ver = VersionReadEPS();
+//    printf("\r\n*********************************\n");
+//    printf("eps_isAlive, version = %d \n", ver);
+//    printf("*********************************\n");
+    int version = (258);
+    if( ver==version ){
         return 1;
     }
     else{

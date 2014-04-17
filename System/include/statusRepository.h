@@ -61,6 +61,7 @@ typedef enum{
     sta_pay_tmEstado_isAlive,
     sta_pay_test1_isAlive,
     sta_pay_test2_isAlive,
+    sta_pay_lagmuirProbe_isDeployed,
 
     //PPC => (C&DH subsystem)
     sta_ppc_opMode,

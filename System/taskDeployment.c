@@ -35,67 +35,69 @@ void taskDeployment(void *param)
     #endif
 
     /* Perifericos*/
-    dep_init_hw(NULL);
+    dep_init_bus_hw(NULL);
 
     /* Repositorios */
-    dep_init_Repos(NULL);
+    dep_init_statusRepo(NULL);
+    dep_init_cmdRepo(NULL);
+    dep_init_dataRepo(NULL);
 
     /* Otras estructuras */
     dep_init_GnrlStrct(NULL);
 
-    /* Toopazo: Ahora deberia ser un comando (el rpimero) llamado en taskFligthPlan o equivalente */
-//    /* Antena */
-//    #if (SCH_ANTENNA_ONBOARD==1)
-//        int realTime2 = SCH_TASKDEPLOYMENT_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
-//        dep_deploy_antenna( (void *)&realTime2 );
-//    #endif
-
-
-    /* Initializing Transceiver */
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * Setting TRX config\r\n");
-    #endif
-    #if (SCH_TRX_ONBOARD==1)
-        trx_initialize(NULL);
-    #endif
 }
 
 //------------------------------------------------------------------------------
-extern cmdFunction trxFunction[];
-extern cmdFunction ppcFunction[];
-extern cmdFunction conFunction[];
-extern cmdFunction epsFunction[];
-extern cmdFunction drpFunction[];
-extern cmdFunction payFunction[];
-extern cmdFunction rtcFunction[];
-extern cmdFunction tcmFunction[];
-extern int trx_sysReq[];
-extern int ppc_sysReq[];
-extern int con_sysReq[];
-extern int eps_sysReq[];
-extern int drp_sysReq[];
-extern int pay_sysReq[];
-extern int rtc_sysReq[];
-extern int tcm_sysReq[];
 /**
- * Initializes all data repositories
+ * Initializes status  repository
  *
  * @param param Not used
  * @return 1
  */
-int dep_init_Repos(void *param)
+int dep_init_statusRepo(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        printf("\n[dep_init_Repos] Initializing status repositories...\r\n");
+        printf("\n[dep_init_statusRepo] Initializing status repository...\r\n");
     #endif
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         printf("    * Status rep.\r\n");
     #endif
     sta_onResetStatRepo();
+
+    return 1;
+}
 //------------------------------------------------------------------------------
+extern cmdFunction trxFunction[];
+extern cmdFunction ppcFunction[];
+extern cmdFunction conFunction[];
+extern cmdFunction epsFunction[];
+extern cmdFunction drpFunction[];
+extern cmdFunction srpFunction[];
+extern cmdFunction payFunction[];
+extern cmdFunction rtcFunction[];
+extern cmdFunction tcmFunction[];
+extern cmdFunction thkFunction[];
+extern int trx_sysReq[];
+extern int ppc_sysReq[];
+extern int con_sysReq[];
+extern int eps_sysReq[];
+extern int drp_sysReq[];
+extern int srp_sysReq[];
+extern int pay_sysReq[];
+extern int rtc_sysReq[];
+extern int tcm_sysReq[];
+extern int thk_sysReq[];
+/**
+ * Initializes command repository
+ *
+ * @param param Not used
+ * @return 1
+ */
+int dep_init_cmdRepo(void *param)
+{
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        printf("\n[dep_init_Repos] Initializing command repositories...\r\n");
+        printf("\n[dep_init_cmdRepo] Initializing command repository...\r\n");
     #endif
 
 //    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
@@ -148,6 +150,17 @@ int dep_init_Repos(void *param)
     repo_set_cmdXXX_hanlder(cmdEPS_handler);
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * Attaching cmdSRP..\r\n");
+    #endif
+    CmdRepo_cmdXXX_handler cmdSRP_handler;
+    cmdSRP_handler.cmdOwn = SCH_CMD_SRP;
+    cmdSRP_handler.nCmd = SRP_NCMD;
+    cmdSRP_handler.p_xxxFunction = srpFunction;
+    cmdSRP_handler.p_xxxSysReq = srp_sysReq;
+    cmdSRP_handler.xxx_onReset = srp_onResetCmdSRP;
+    repo_set_cmdXXX_hanlder(cmdSRP_handler);
+
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         printf("    * Attaching cmdDRP..\r\n");
     #endif
     CmdRepo_cmdXXX_handler cmdDRP_handler;
@@ -190,30 +203,54 @@ int dep_init_Repos(void *param)
     cmdTCM_handler.p_xxxSysReq = tcm_sysReq;
     cmdTCM_handler.xxx_onReset = tcm_onResetCmdTCM;
     repo_set_cmdXXX_hanlder(cmdTCM_handler);
-   
 
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * Attaching cmdTHK..\r\n");
+    #endif
+    CmdRepo_cmdXXX_handler cmdTHK_handler;
+    cmdTHK_handler.cmdOwn = SCH_CMD_THK;
+    cmdTHK_handler.nCmd = THK_NCMD;
+    cmdTHK_handler.p_xxxFunction = thkFunction;
+    cmdTHK_handler.p_xxxSysReq = thk_sysReq;
+    cmdTHK_handler.xxx_onReset = thk_onResetCmdTHK;
+    repo_set_cmdXXX_hanlder(cmdTHK_handler);
+
+    return 1;
+}
 //------------------------------------------------------------------------------
+/**
+ * Initializes data repository
+ *
+ * @param param Not used
+ * @return 1
+ */
+int dep_init_dataRepo(void *param)
+{
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
         printf("\n[dep_init_Repos] Initializing data repositories...\r\n");
     #endif
 
-    #if (SCH_USE_FLIGHTPLAN == 1 )
-        /* Initializing dataRepository */
-        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-            printf("    * FlighPlan\r\n");
-        #endif
-        dat_onResetFlightPlan();
+    /* Initializing dataRepository*/
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * onReset data Repository..\r\n");
     #endif
+    dat_onReset_dataRepo(TRUE);
+
+    /* Initializing dataRepository Structures */
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * onReset Fligh Plan..\r\n");
+    #endif
+    dat_onReset_FlightPlan();
+    
+    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        printf("    * onReset Telecommand Buffer..\r\n");
+    #endif
+    dat_onReset_TeleCmdBuff();
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * Telecommands buffer\r\n");
+        printf("    * onReset Payloads..\r\n");
     #endif
-    dat_onResetTelecmdBuff();
-
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * Payloads data rep.\r\n");
-    #endif
-    dat_onResetPayloadVar();
+    dat_onReset_PayloadBuff();
 
     return 1;
 }
@@ -276,12 +313,14 @@ int dep_launch_tasks(void *param)
         printf("    * Creating taskConsole\r\n");
     #endif
     xTaskCreate(taskConsole, (signed char *)"CON", 1.5*configMINIMAL_STACK_SIZE, NULL, 2, &taskConsoleHandle);
+    __delay_ms(300);
 
-    #if (SCH_USE_HOUSEKEEPING==1)
+    #if (SCH_USE_HOUSEKEEPING == 1)
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             printf("    * Creating taskHousekeeping\r\n");
         #endif
         xTaskCreate(taskHouskeeping, (signed char *)"HKP", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskHouskeepingHandle);
+        __delay_ms(300);
     #endif
     
     #if (SCH_TRX_ONBOARD == 1)
@@ -289,164 +328,58 @@ int dep_launch_tasks(void *param)
             printf("    * Creating taskCommunications\r\n");
         #endif
         xTaskCreate(taskComunications, (signed char *)"COM", 3*configMINIMAL_STACK_SIZE, NULL, 2, &taskComunicationsHandle);
+        __delay_ms(300);
     #endif
 
     if( sta_getCubesatVar(sta_MemSD_isAlive) == 1 )
     {
-        #if (SCH_USE_FLIGHTPLAN==0)
-            //launch nothing..
-        #elif (SCH_USE_FLIGHTPLAN==1)
+        #if (SCH_USE_FLIGHTPLAN == 1)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
                     printf("    * Creating taskFlightPlan\r\n");
             #endif
             xTaskCreate(taskFlightPlan, (signed char *)"flightplan", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlanHandle);
+            __delay_ms(300);
         #endif
-        #if (SCH_USE_FLIGHTPLAN2==0)
-            //launch nothing..
-        #elif (SCH_USE_FLIGHTPLAN2==1)
+        #if (SCH_USE_FLIGHTPLAN2 == 1)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
                     printf("    * Creating taskFlightPlan2\r\n");
             #endif
             xTaskCreate(taskFlightPlan2, (signed char *)"flightplan2", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlan2Handle);
+            __delay_ms(300);
         #endif
     }
         
     return 1;
 }
-
-/**
- * Deploys satellite antennas
- * @param param 1 realime, 0 debug time
- * @return 1 success, 0 fails
- */
-int dep_deploy_antenna(void *param)
-{
-
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        printf("\n[dep_deploy_antenna] Deploying TRX Antenna... \r\n");
-    #endif
-
-    if( sta_getCubesatVar(sta_dep_ant_deployed) == 0x0001 )
-    {
-        #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-            printf("    * Antenna is already deployed\r\n");
-        #endif
-        return 1;
-    }
-
-    //Realtime=1 DebugTime=0
-    unsigned int delay_dep_time, delay_rest_dep_time, delay_recheck_dep_time;
-    int mode= *( (int *)param );
-    if(mode)
-    {
-        delay_dep_time = (TDP_DEPLOY_TIME) / portTICK_RATE_MS;
-        delay_rest_dep_time = (TDP_REST_DEPLOY_TIME) / portTICK_RATE_MS;
-        delay_recheck_dep_time = (TDP_RECHECK_TIME) / portTICK_RATE_MS;
-    }
-    else
-    {
-        delay_dep_time = (600) / portTICK_RATE_MS;
-        delay_rest_dep_time = (400) / portTICK_RATE_MS;
-        delay_recheck_dep_time = (200) / portTICK_RATE_MS;
-    }
-
-    //Quemado del nylon
-    int tries_indx = 0;
-
-    #if(SCH_ANTENNA_ONBOARD == 1)
-    {
-        for(tries_indx=1; tries_indx<=TDP_TRY_DEPLOY; tries_indx++)
-        {
-            #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                printf("    [Deploying] Attempt #%d\r\n", tries_indx);
-            #endif
-
-            PPC_ANT12_SWITCH=1;
-            PPC_ANT1_SWITCH=1;
-            PPC_ANT2_SWITCH=0;
-            //PPC_ANT1_SWITCH=0;
-            //PPC_ANT2_SWITCH=1;
-            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT1 */
-            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT1 */
-
-            PPC_ANT12_SWITCH=0;
-            PPC_ANT1_SWITCH=0;
-            PPC_ANT2_SWITCH=0;
-            vTaskDelay(delay_rest_dep_time);   /* tiempo de descanso */
-
-            PPC_ANT12_SWITCH=1;
-            PPC_ANT1_SWITCH=0;
-            PPC_ANT2_SWITCH=1;
-            //PPC_ANT1_SWITCH=1;
-            //PPC_ANT2_SWITCH=0;
-            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT2 */
-            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT2 */
-
-            PPC_ANT12_SWITCH=0;
-            PPC_ANT1_SWITCH=0;
-            PPC_ANT2_SWITCH=0;
-            vTaskDelay(delay_rest_dep_time);   /* tiempo de descanso */
-
-
-            if(PPC_ANT12_CHECK==0)   /* reviso */
-            {
-                vTaskDelay(delay_recheck_dep_time);   /* tiempo de RE-chequeo */
-                if(PPC_ANT12_CHECK==0)   /* RE-reviso */
-                {
-                    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-                        printf("    ANTENNA DEPLOYED SUCCESSFULLY [%d TRIES]\r\n", tries_indx);
-                    #endif
-
-                    drp_dep_write_deployed(1, tries_indx);
-                    return 1;
-                }
-            }
-        }
-    }
-    #endif
-
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    ANTENNA DEPLOY FAIL [%d TRIES]\r\n", TDP_TRY_DEPLOY);
-    #endif
-
-    drp_dep_write_deployed(0, tries_indx);
-
-    return 0;
-}
-
 /**
  * Initializes all peripherals and subsystems.
  * @param param Not used.
  * @return 1 success, 0 fail.
  */
-int dep_init_hw(void *param)
+int dep_init_bus_hw(void *param)
 {
     int resp;
     STA_CubesatVar hw_isAlive;
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        printf("\n[dep_init_hw] Initializig external hardware...\r\n");
+        printf("\n[dep_init_bus_hw] Initializig external hardware...\r\n");
     #endif
 
-    #if (SCH_SYSBUS_ONBOARD==1)
+    #if (SCH_SYSBUS_ONBOARD==1 && SCH_MEMEEPROM_ONBOARD==1 )
     {
-        #if (SCH_MEMEEPROM_ONBOARD==1)
-        {
-            #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                printf("    * External MemEEPROM .. ");
-            #endif
-            resp = init_memEEPROM();
-            hw_isAlive = sta_MemEEPROM_isAlive;
-            sta_setCubesatVar(hw_isAlive, resp);
-            #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-                if(resp == 0x01){
-                    printf("Ok\r\n");
-                }
-                else{
-                    printf("Fail\r\n");
-                }
-            #endif
-        }
+        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            printf("    * External MemEEPROM .. ");
+        #endif
+        resp = init_memEEPROM();
+        hw_isAlive = sta_MemEEPROM_isAlive;
+        sta_setCubesatVar(hw_isAlive, resp);
+        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            if(resp == 0x01){
+                printf("Ok\r\n");
+            }
+            else{
+                printf("Fail\r\n");
+            }
         #endif
     }
     #endif
@@ -477,6 +410,25 @@ int dep_init_hw(void *param)
         #endif
         resp  = trx_initialize(NULL);
         hw_isAlive = sta_TRX_isAlive;
+        sta_setCubesatVar(hw_isAlive, resp);
+        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            if(resp == 0x01){
+                printf("Ok\r\n");
+            }
+            else{
+                printf("Fail\r\n");
+            }
+        #endif
+    }
+    #endif
+
+    #if (SCH_EPS_ONBOARD==1)
+    {
+        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            printf("    * External EPS .. ");
+        #endif
+        resp  = eps_initialize();
+        hw_isAlive = sta_EPS_isAlive;
         sta_setCubesatVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
@@ -522,7 +474,7 @@ int dat_sd_init(void){
     PPC_MB_nON_SD=0;
     unsigned char r = SD_init();
     if(r == 0){
-        dat_onReset_memSD(FALSE);
+        dat_onReset_dataRepo(FALSE);
         return 1;
     }
     else{

@@ -12,16 +12,20 @@
 #define CMD_REPO_H
 
 #include "cmdIncludes.h"
-/* Add files with commands */
-#include "cmdTCM.h"
-#include "cmdCON.h"
-#include "cmdPPC.h"
-#include "cmdTRX.h"
-#include "cmdEPS.h"
-#include "cmdRTC.h"
-#include "cmdDRP.h"
+#include "DebugIncludes.h"
+#include "SUCHAI_config.h"
 
-#include "cmdPayload.h"
+///* Add ommands definitions*/
+//#include "cmdTCM.h"
+//#include "cmdCON.h"
+//#include "cmdPPC.h"
+//#include "cmdTRX.h"
+//#include "cmdEPS.h"
+//#include "cmdRTC.h"
+//#include "cmdDRP.h"
+//#include "cmdSRP.h"
+//#include "cmdTHK.h"
+//#include "cmdPayload.h"
 
 /*
 extern cmdFunction tcmFunction[];

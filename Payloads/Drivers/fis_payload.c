@@ -146,105 +146,106 @@ void fis_testDAC(void){
     }
 }
 
-unsigned int fis_frec_i_to_ADC_period(DAT_GnrlPurpBuff pay_frec_i){
-    unsigned int ADC_period;
-    switch(pay_frec_i){
-        case dat_gpb_expFis_f0:
-            //              7654321076543210
-            ADC_period = (0b0000000010110100);
-            ADC_period = 20;
-        break;
-        case dat_gpb_expFis_f1:
-            //              7654321076543210
-            ADC_period = (0b0000000010110100);
-            ADC_period = 21;
-        break;
-        case dat_gpb_expFis_f2:
-            //              7654321076543210
-            ADC_period = (0b0000000010110100);
-            ADC_period = 22;
-        break;
-        case dat_gpb_expFis_f3:
-            //              7654321076543210
-            ADC_period = (0b0000000010110100);
-            ADC_period = 23;
-        break;
-        case dat_gpb_expFis_f4:
-            //              7654321076543210
-            ADC_period = (0b0000000010110100);
-            ADC_period = 24;
-        break;
-        case dat_gpb_expFis_f5:
-            //              7654321076543210
-            ADC_period = (0b0000000010110100);
-            ADC_period = 25;
-        break;
-        case dat_gpb_expFis_f6:
-            //              7654321076543210
-            ADC_period = (0b0000000010110100);
-            ADC_period = 26;
-        break;
-        case dat_gpb_expFis_f7:
-            //              7654321076543210
-            ADC_period = (0b0000000010110100);
-            ADC_period = 27;
-        break;
-        case dat_gpb_expFis_f8:
-            //              7654321076543210
-            ADC_period = (0b0000000010110100);
-            ADC_period = 28;
-        break;
-        case dat_gpb_expFis_f9:
-            //              7654321076543210
-            ADC_period = (0b0000000010110100);
-            ADC_period = 29;
-        break;
-        default:
-            ADC_period=0;
-        break;
-    }
+//unsigned int fis_frec_i_to_ADC_period(DAT_GnrlPurpBuff pay_frec_i){
+//    unsigned int ADC_period;
+//    switch(pay_frec_i){
+//        case dat_gpb_expFis_f0:
+//            //              7654321076543210
+//            ADC_period = (0b0000000010110100);
+//            ADC_period = 20;
+//        break;
+//        case dat_gpb_expFis_f1:
+//            //              7654321076543210
+//            ADC_period = (0b0000000010110100);
+//            ADC_period = 21;
+//        break;
+//        case dat_gpb_expFis_f2:
+//            //              7654321076543210
+//            ADC_period = (0b0000000010110100);
+//            ADC_period = 22;
+//        break;
+//        case dat_gpb_expFis_f3:
+//            //              7654321076543210
+//            ADC_period = (0b0000000010110100);
+//            ADC_period = 23;
+//        break;
+//        case dat_gpb_expFis_f4:
+//            //              7654321076543210
+//            ADC_period = (0b0000000010110100);
+//            ADC_period = 24;
+//        break;
+//        case dat_gpb_expFis_f5:
+//            //              7654321076543210
+//            ADC_period = (0b0000000010110100);
+//            ADC_period = 25;
+//        break;
+//        case dat_gpb_expFis_f6:
+//            //              7654321076543210
+//            ADC_period = (0b0000000010110100);
+//            ADC_period = 26;
+//        break;
+//        case dat_gpb_expFis_f7:
+//            //              7654321076543210
+//            ADC_period = (0b0000000010110100);
+//            ADC_period = 27;
+//        break;
+//        case dat_gpb_expFis_f8:
+//            //              7654321076543210
+//            ADC_period = (0b0000000010110100);
+//            ADC_period = 28;
+//        break;
+//        case dat_gpb_expFis_f9:
+//            //              7654321076543210
+//            ADC_period = (0b0000000010110100);
+//            ADC_period = 29;
+//        break;
+//        default:
+//            ADC_period=0;
+//        break;
+//    }
+//
+//    return ADC_period;
+//}
 
-    return ADC_period;
-}
-void fis_save_sens_buff_to_GPB(DAT_GnrlPurpBuff frec_i, int rst_gbp_indx){
-    unsigned int ind; unsigned long prom=0;
-
-    //esperar mientras se termina de llenar el sens_buff (buffer intermedio)
-    while( sens_buff_ind<(FIS_SENS_BUFF_LEN) ){
-        __delay_ms(1000);
-    }
-
-    //calculo promedio sens1
-    for(ind=0;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
-        prom=prom+sens_buff[ind];
-    }
-    prom=prom/FIS_SENS_BUFF_LEN;
-    //resto el promedio sens1
-    for(ind=0;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
-        sens_buff[ind]=sens_buff[ind]-prom;
-    }
-
-    //calculo promedio sens2
-    for(ind=1;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
-        prom=prom+sens_buff[ind];
-    }
-    prom=prom/FIS_SENS_BUFF_LEN;
-    //resto el promedio sens2
-    for(ind=1;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
-        sens_buff[ind]=sens_buff[ind]-prom;
-    }
-
-    //guardo en memSD
-    static unsigned int gpb_indx;
-    if( rst_gbp_indx==1 ){
-        gpb_indx=0;
-    }
-    for(ind=0;ind<FIS_SENS_BUFF_LEN;ind++){
-        //Set DAT_GnrlPurpBuff
-        dat_setGPB(frec_i, gpb_indx, sens_buff[ind] );
-        gpb_indx++;
-    }
-}
+//void fis_save_sens_buff_to_GPB(DAT_GnrlPurpBuff frec_i, int rst_gbp_indx){
+//    unsigned int ind; unsigned long prom=0;
+//
+//    //esperar mientras se termina de llenar el sens_buff (buffer intermedio)
+//    while( sens_buff_ind<(FIS_SENS_BUFF_LEN) ){
+//        __delay_ms(1000);
+//    }
+//
+//    //calculo promedio sens1
+//    for(ind=0;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
+//        prom=prom+sens_buff[ind];
+//    }
+//    prom=prom/FIS_SENS_BUFF_LEN;
+//    //resto el promedio sens1
+//    for(ind=0;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
+//        sens_buff[ind]=sens_buff[ind]-prom;
+//    }
+//
+//    //calculo promedio sens2
+//    for(ind=1;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
+//        prom=prom+sens_buff[ind];
+//    }
+//    prom=prom/FIS_SENS_BUFF_LEN;
+//    //resto el promedio sens2
+//    for(ind=1;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
+//        sens_buff[ind]=sens_buff[ind]-prom;
+//    }
+//
+//    //guardo en memSD
+//    static unsigned int gpb_indx;
+//    if( rst_gbp_indx==1 ){
+//        gpb_indx=0;
+//    }
+//    for(ind=0;ind<FIS_SENS_BUFF_LEN;ind++){
+//        //Set DAT_GnrlPurpBuff
+//        dat_set_GPB(frec_i, gpb_indx, sens_buff[ind] );
+//        gpb_indx++;
+//    }
+//}
 //******************************************************************************
 void fis_payload_writeDAC(unsigned int arg){
     unsigned char r,msb,lsb;
@@ -433,95 +434,95 @@ void _ISR _ADC1Interrupt(void){
 */
 
 
-void hist(void){
-
-    DAT_GnrlPurpBuff gpb_frec_i;
-    unsigned int i,j; unsigned int max; 
-    long v1, v2, mul, ran, prev; unsigned long v1u, v2u;
-
-    //realiza multiplicacion para cada frecuencia
-    max=(2*FIS_SENS_BUFF_LEN);//(FIS_REPEAT_PER_ROUND*FIS_SAMP_PER_ROUND);
-    for(gpb_frec_i=dat_gpb_expFis_f0; gpb_frec_i<=dat_gpb_expFis_f9; gpb_frec_i++){
-        for(i=0;i<max;i=i+2){
-            v1 = (long)dat_getGPB(gpb_frec_i, i);
-            v2 = (long)dat_getGPB(gpb_frec_i, i+1);
-            mul=v1*v2;
-            dat_setGPB(gpb_frec_i, i, (unsigned int)mul);
-            dat_setGPB(gpb_frec_i, i+1, (unsigned int)(mul>>16) );
-        }
-    }
-
-    //inicializa buffer del hist
-    for(i=0;i<(512*2*2);i++){
-        dat_setGPB(dat_gpb_expFis_hist, i, 0xFFFF);
-    }
-
-    //realiza histograma para cada frecuencia
-    max=(2*FIS_SENS_BUFF_LEN);//(FIS_REPEAT_PER_ROUND*FIS_SAMP_PER_ROUND);
-    for(gpb_frec_i=dat_gpb_expFis_f0; gpb_frec_i<=dat_gpb_expFis_f9; gpb_frec_i++){
-        
-        for(i=0;i<max;i=i+2){
-            v1u = (unsigned long)dat_getGPB(gpb_frec_i, i);
-            v2u = (unsigned long)dat_getGPB(gpb_frec_i, i+1);
-            mul = (long)( (v2u<<16)|v1u );
-
-            //esto da aca ya no sirve :/
-            for(j=0;TRUE;j++){
-
-                if(mul < 0 ){
-                    ran=mul/2;
-                    if( ran==0 || ran==(-1) ){
-                        //rango j-esimo negativo
-                        dat_setGPB(dat_gpb_expFis_hist, j, j);
-                        //tiene una frecuencia de
-                        prev = dat_getGPB(dat_gpb_expFis_hist, (10000)+j);
-                        prev++;
-                        dat_setGPB(dat_gpb_expFis_hist, (10000)+j, prev);
-                        break;
-                    }
-                }
-                else{
-                    ran=mul/2;
-                    if( ran==0 || ran==1 ){
-                        //rango j-esimo positivo
-                        dat_setGPB(dat_gpb_expFis_hist, (10000*2)+j, j);
-                        //tiene una frecuencia de
-                        prev = dat_getGPB(dat_gpb_expFis_hist, (10000*3)+j);
-                        prev++;
-                        dat_setGPB(dat_gpb_expFis_hist, (10000*3)+j, prev);
-                        break;
-                    }
-                }
-                
-            }
-        }
-    }
-
-    /*
-    int b_dat[50.000];
-    int b_cntn[512];
-    int b_cntp[512];
-    int i,j, ran;
-    for(i=0;i<50.000;i++){
-        
-        for(j=0;TRUE;j++){
-
-            if(b_dat[i] < 0 ){
-                ran=b_dat[i]/2;
-                if( ran==0 || ran==(-1) ){
-                    b_cntn[j]=b_cntn[j]+1;
-                    break;
-                }
-            }
-            else{
-                ran=b_dat[i]/2;
-                if( ran==0 || ran==1 ){
-                    b_cntp[j]=b_cntp[j]+1;
-                    break;
-                }
-            }
-        }
-    }
-    */
-}
+//void hist(void){
+//
+//    DAT_GnrlPurpBuff gpb_frec_i;
+//    unsigned int i,j; unsigned int max;
+//    long v1, v2, mul, ran, prev; unsigned long v1u, v2u;
+//
+//    //realiza multiplicacion para cada frecuencia
+//    max=(2*FIS_SENS_BUFF_LEN);//(FIS_REPEAT_PER_ROUND*FIS_SAMP_PER_ROUND);
+//    for(gpb_frec_i=dat_gpb_expFis_f0; gpb_frec_i<=dat_gpb_expFis_f9; gpb_frec_i++){
+//        for(i=0;i<max;i=i+2){
+//            v1 = (long)dat_getGPB(gpb_frec_i, i);
+//            v2 = (long)dat_getGPB(gpb_frec_i, i+1);
+//            mul=v1*v2;
+//            dat_setGPB(gpb_frec_i, i, (unsigned int)mul);
+//            dat_setGPB(gpb_frec_i, i+1, (unsigned int)(mul>>16) );
+//        }
+//    }
+//
+//    //inicializa buffer del hist
+//    for(i=0;i<(512*2*2);i++){
+//        dat_setGPB(dat_gpb_expFis_hist, i, 0xFFFF);
+//    }
+//
+//    //realiza histograma para cada frecuencia
+//    max=(2*FIS_SENS_BUFF_LEN);//(FIS_REPEAT_PER_ROUND*FIS_SAMP_PER_ROUND);
+//    for(gpb_frec_i=dat_gpb_expFis_f0; gpb_frec_i<=dat_gpb_expFis_f9; gpb_frec_i++){
+//
+//        for(i=0;i<max;i=i+2){
+//            v1u = (unsigned long)dat_getGPB(gpb_frec_i, i);
+//            v2u = (unsigned long)dat_getGPB(gpb_frec_i, i+1);
+//            mul = (long)( (v2u<<16)|v1u );
+//
+//            //esto da aca ya no sirve :/
+//            for(j=0;TRUE;j++){
+//
+//                if(mul < 0 ){
+//                    ran=mul/2;
+//                    if( ran==0 || ran==(-1) ){
+//                        //rango j-esimo negativo
+//                        dat_setGPB(dat_gpb_expFis_hist, j, j);
+//                        //tiene una frecuencia de
+//                        prev = dat_getGPB(dat_gpb_expFis_hist, (10000)+j);
+//                        prev++;
+//                        dat_setGPB(dat_gpb_expFis_hist, (10000)+j, prev);
+//                        break;
+//                    }
+//                }
+//                else{
+//                    ran=mul/2;
+//                    if( ran==0 || ran==1 ){
+//                        //rango j-esimo positivo
+//                        dat_setGPB(dat_gpb_expFis_hist, (10000*2)+j, j);
+//                        //tiene una frecuencia de
+//                        prev = dat_getGPB(dat_gpb_expFis_hist, (10000*3)+j);
+//                        prev++;
+//                        dat_setGPB(dat_gpb_expFis_hist, (10000*3)+j, prev);
+//                        break;
+//                    }
+//                }
+//
+//            }
+//        }
+//    }
+//
+//    /*
+//    int b_dat[50.000];
+//    int b_cntn[512];
+//    int b_cntp[512];
+//    int i,j, ran;
+//    for(i=0;i<50.000;i++){
+//
+//        for(j=0;TRUE;j++){
+//
+//            if(b_dat[i] < 0 ){
+//                ran=b_dat[i]/2;
+//                if( ran==0 || ran==(-1) ){
+//                    b_cntn[j]=b_cntn[j]+1;
+//                    break;
+//                }
+//            }
+//            else{
+//                ran=b_dat[i]/2;
+//                if( ran==0 || ran==1 ){
+//                    b_cntp[j]=b_cntp[j]+1;
+//                    break;
+//                }
+//            }
+//        }
+//    }
+//    */
+//}
 

@@ -7,7 +7,7 @@
 #include "pic_pc104_config.h"
 #include "rs232_suchai.h"
 
-#if(SCH_PAY_LAGMUIR_ONBOARD==1)
+#if(SCH_PAY_LANGMUIR_ONBOARD==1)
     #define LAG_BUFFER_LEN      (1096)
 #else
     #define LAG_BUFFER_LEN      (1)

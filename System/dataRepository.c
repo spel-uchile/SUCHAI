@@ -27,45 +27,102 @@
 //semaforo para sincronizar accceso a las variables de estado
 extern xSemaphoreHandle dataRepositorySem; /*WARNING esto estaba asi: extern dataRepositorySem;*/
 
-#if (SCH_DAT_TC_BUFF_MEMSD==0)
+#if (SCH_TC_BUFF_EXTMEMORY==0 || SCH_SYSBUS_ONBOARD==0)
     int DAT_CMD_BUFF[DAT_MAX_BUFF_TELECMD];
 #endif
 
-#if !SCH_SYSBUS_ONBOARD
-    int DAT_CUBESAT_VAR_BUFF[sta_cubesatVar_last_one];
-#endif
-
-#if (SCH_FLIGHTPLAN_MEMORY == 0)
+#if (SCH_FLIGHTPLAN_EXTMEMORY == 0 || SCH_SYSBUS_ONBOARD==0)
     int DAT_FPLAN_BUFF[SCH_FLIGHTPLAN_N_CMD*2];
 #endif
 
 //variables y buffers para almacenar los block de memoria de pada estructura a guardar en la memSD
-static unsigned int dat_first_1Block;
-static unsigned int dat_Trx_Tc_1Block;
-static unsigned int dat_FlightPlan_256Block;
-static unsigned int dat_nextIndx_1Block;
-static unsigned int dat_maxIndx_1Block;
-static unsigned int dat_pay_i_256Block_buff[dat_pay_last_one];
-static unsigned int dat_gpb_i_256Block_buff[dat_gpb_last_one];
+static unsigned int dat_gpb_TeleCmd_256Block;
+static unsigned int dat_gpb_FlightPlan_256Block;
+static unsigned int dat_gpb_Pay_nextIndx_256Block;
+static unsigned int dat_gpb_Pay_maxIndx_256Block;
+static unsigned int dat_gpb_Pay_i_256Block[dat_pay_last_one];
+static unsigned int dat_gpb_Aux_i_256Block[dat_aux_last_one];
 
 
+//******************************************************************************
+// DAT_TeleCmdBuff
+//******************************************************************************
 /**
  * Erase de TC internal (memSD) buffer
  */
 void dat_erase_TeleCmdBuff(void){
 
-    #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-        printf("  dat_erase_TeleCmdBuff()..\n");
-        printf("    starting at block= %u\n", (unsigned int)dat_Trx_Tc_1Block);
-    #endif
-    msd_blockErase(dat_Trx_Tc_1Block);
-}
+//    #if (SCH_DATAREPOSITORY_VERBOSE>=1)
+//        printf("  dat_erase_TeleCmdBuff()..\n");
+//        printf("    starting at block= %u\n", (unsigned int)dat_gpb_TeleCmd_256Block);
+//    #endif
+//
+//    msd_blockErase(dat_gpb_TeleCmd_256Block);
 
+    int indx;
+    for(indx=0; indx<DAT_MAX_BUFF_TELECMD; indx++)
+    {
+        dat_set_TeleCmdBuff(indx, CMD_CMDNULL);
+    }
+}
+/**
+ * Obtiene el i-esima valor del buffer de Telecomandos
+ * @param indx Posicion del buffer a recuperar
+ * @return indx-esima posicion del Buffer
+ */
+int dat_get_TeleCmdBuff(int indx){
+    int data;
+    if(indx>=DAT_MAX_BUFF_TELECMD){
+        return 0;
+    }
+    else{
+        #if (SCH_FLIGHTPLAN_EXTMEMORY == 0 || SCH_SYSBUS_ONBOARD==0)
+            data = DAT_CMD_BUFF[indx];
+        #else
+            msd_getVar_256BlockExtMem(dat_gpb_TeleCmd_256Block, indx, &data);
+        #endif
+        return data;
+    }
+}
+/**
+ * Modifica el i-esima valor del buffer de Telecomandos
+ * @param indx Posicion del buffer a recuperar
+ * @param data Valor de la indx-esima posicion del buffer
+ */
+void dat_set_TeleCmdBuff(int indx, int data)
+{
+    if(indx>=DAT_MAX_BUFF_TELECMD){
+        return;
+    }
+    else{
+        #if (SCH_FLIGHTPLAN_EXTMEMORY == 0 || SCH_SYSBUS_ONBOARD==0)
+            DAT_CMD_BUFF[indx] = data;
+        #else
+            msd_setVar_256BlockExtMem(dat_gpb_TeleCmd_256Block, indx, data);
+        #endif
+    }
+}
+/**
+ *
+ * @return
+ */
+int dat_onReset_TeleCmdBuff(void){
+    int indx1;
+    for(indx1=0; indx1<DAT_MAX_BUFF_TELECMD; indx1++)
+    {
+        dat_set_TeleCmdBuff(indx1, CMD_CMDNULL);
+    }
+
+    return 1;
+}
+//******************************************************************************
+// DAT_FligthPlanBuff
+//******************************************************************************
 /**
  * Esta funcion retorna un comando desde el fligh plan. Lee desde la SD el
  * i-esimo comando y su parametro.
  * @param index Index-esimo dato del fligh plan */
-DispCmd dat_getFlightPlan(unsigned int index)
+DispCmd dat_get_FlightPlan(unsigned int index)
 {
     DispCmd NewCmd;
     NewCmd.cmdId = CMD_CMDNULL;
@@ -79,10 +136,10 @@ DispCmd dat_getFlightPlan(unsigned int index)
         // La organizacion de los datos en la SD es
         // Primera mitad comandos, segunda mitad parametros
 
-#if (SCH_FLIGHTPLAN_MEMORY == 1)
-        msd_getVar_256BlockExtMem(dat_FlightPlan_256Block, index, &id);
-        msd_getVar_256BlockExtMem(dat_FlightPlan_256Block, 0xFFFF - index, &param);
-#elif (SCH_FLIGHTPLAN_MEMORY == 0)
+#if (SCH_FLIGHTPLAN_EXTMEMORY == 1)
+        msd_getVar_256BlockExtMem(dat_gpb_FlightPlan_256Block, index, &id);
+        msd_getVar_256BlockExtMem(dat_gpb_FlightPlan_256Block, 0xFFFF - index, &param);
+#elif (SCH_FLIGHTPLAN_EXTMEMORY == 0)
         id = DAT_FPLAN_BUFF[index];//Comandos
         param = DAT_FPLAN_BUFF[index+SCH_FLIGHTPLAN_N_CMD]; //Parametros
 #endif
@@ -100,13 +157,13 @@ DispCmd dat_getFlightPlan(unsigned int index)
  * @param cmdId Comando que sera escrito
  * @return 1, OK. 0, Fallo
  */
-int dat_setFlightPlan_cmd(unsigned int index, unsigned int cmdID)
+int dat_set_FlightPlan_cmd(unsigned int index, unsigned int cmdID)
 {
     if(index < SCH_FLIGHTPLAN_N_CMD)
     {
-        #if (SCH_FLIGHTPLAN_MEMORY == 1)
-            msd_setVar_256BlockExtMem( dat_FlightPlan_256Block, index, cmdID);
-        #elif (SCH_FLIGHTPLAN_MEMORY == 0)
+        #if (SCH_FLIGHTPLAN_EXTMEMORY == 1)
+            msd_setVar_256BlockExtMem( dat_gpb_FlightPlan_256Block, index, cmdID);
+        #elif (SCH_FLIGHTPLAN_EXTMEMORY == 0)
             DAT_FPLAN_BUFF[index] = cmdID;
         #endif
         return 1;
@@ -121,13 +178,13 @@ int dat_setFlightPlan_cmd(unsigned int index, unsigned int cmdID)
  * @param param Parametro que sera escrito
  * @return 1, OK. 0, Fallo
  */
-int dat_setFlightPlan_param(unsigned int index, int param)
+int dat_set_FlightPlan_param(unsigned int index, int param)
 {
     if(index < SCH_FLIGHTPLAN_N_CMD)
     {
-        #if (SCH_FLIGHTPLAN_MEMORY == 1)
-            msd_setVar_256BlockExtMem( dat_FlightPlan_256Block, 0xFFFF-index, param);
-        #elif (SCH_FLIGHTPLAN_MEMORY == 0)
+        #if (SCH_FLIGHTPLAN_EXTMEMORY == 1)
+            msd_setVar_256BlockExtMem( dat_gpb_FlightPlan_256Block, 0xFFFF-index, param);
+        #elif (SCH_FLIGHTPLAN_EXTMEMORY == 0)
             DAT_FPLAN_BUFF[index+SCH_FLIGHTPLAN_N_CMD] = param;
         #endif
         return 1;
@@ -140,20 +197,20 @@ int dat_setFlightPlan_param(unsigned int index, int param)
  * Funcion con acciones a seguri sobre el Fligth Plan, luego de un Reset del PIC.
  * @return 1 si OK, 0 si fallo
  */
-int dat_onResetFlightPlan(void)
+int dat_onReset_FlightPlan(void)
 {
     //Do nothing onReset
-    unsigned long i; 
-    int cmdid, param;
-
-    for(i=0; i < SCH_FLIGHTPLAN_N_CMD; i++)
-    {
-        cmdid = CMD_CMDNULL;
-        param = 0;
-
-        dat_setFlightPlan_cmd(i, cmdid);
-        dat_setFlightPlan_param(i, param);
-    }
+//    unsigned long i;
+//    int cmdid, param;
+//
+//    for(i=0; i < SCH_FLIGHTPLAN_N_CMD; i++)
+//    {
+//        cmdid = CMD_CMDNULL;
+//        param = 0;
+//
+//        dat_set_FlightPlan_cmd(i, cmdid);
+//        dat_set_FlightPlan_param(i, param);
+//    }
 
     return 1;
 }
@@ -163,18 +220,22 @@ int dat_onResetFlightPlan(void)
  */
 void dat_erase_FlightPlanBuff(void){
 
-#if (SCH_FLIGHTPLAN_MEMORY == 1)
+#if (SCH_FLIGHTPLAN_EXTMEMORY == 1)
     #if (SCH_DATAREPOSITORY_VERBOSE>=1)
         printf("  dat_erase_FlightPlanBuff()..\n");
-        printf("    starting at block = %d\n", (unsigned int)dat_FlightPlan_256Block);
     #endif
 
-    unsigned int i;
-    for(i=0;i<256;i++){
-        msd_blockErase(dat_FlightPlan_256Block+i);
-        ClrWdt();
+    unsigned long i;
+    int cmdid, param;
+    for(i=0; i < SCH_FLIGHTPLAN_N_CMD; i++)
+    {
+        cmdid = CMD_CMDNULL;
+        param = 0;
+
+        dat_set_FlightPlan_cmd(i, cmdid);
+        dat_set_FlightPlan_param(i, param);
     }
-#elif (SCH_FLIGHTPLAN_MEMORY == 0)
+#elif (SCH_FLIGHTPLAN_EXTMEMORY == 0)
     int i=0;
     for(i=0; i<SCH_FLIGHTPLAN_N_CMD; i++)
     {
@@ -183,121 +244,10 @@ void dat_erase_FlightPlanBuff(void){
     }
 #endif
 }
-
-/**
- * Obtiene el i-esima valor del buffer de Telecomandos
- * @param indx Posicion del buffer a recuperar
- * @return indx-esima posicion del Buffer
- */
-int dat_getTelecmdBuff(int indx){
-    int data;
-    if(indx>=DAT_MAX_BUFF_TELECMD){
-        return 0;
-    }
-    else{
-        #if (SCH_DAT_TC_BUFF_MEMSD==0)
-            data = DAT_CMD_BUFF[indx];
-        #else
-            msd_getVar_1BlockExtMem(dat_Trx_Tc_1Block, indx, &data);
-        #endif
-        return data;
-    }
-}
-/**
- * Modifica el i-esima valor del buffer de Telecomandos
- * @param indx Posicion del buffer a recuperar
- * @param data Valor de la indx-esima posicion del buffer
- */
-void dat_setTelecmdBuff(int indx, int data)
-{
-    if(indx>=DAT_MAX_BUFF_TELECMD){
-        return;
-    }
-    else{
-        #if (SCH_DAT_TC_BUFF_MEMSD==0)
-            DAT_CMD_BUFF[indx] = data;
-        #else
-            msd_setVar_1BlockExtMem(dat_Trx_Tc_1Block, indx, data);
-        #endif
-    }
-}
-/**
- * 
- * @return
- */
-int dat_onResetTelecmdBuff(void){
-    int indx1;
-    for(indx1=0; indx1<DAT_MAX_BUFF_TELECMD; indx1++)
-    {
-        dat_setTelecmdBuff(indx1, CMD_CMDNULL);
-    }
-
-    return 1;
-}
-
-
-/**
- * Setea la variable dat_pay_xxx_perform a su correspondiente valor segun
- * los defines de @ref SUCHAI_config.h
- */
-void dat_reset_pay_i_performVar(void){
-    #if (SCH_PAY_LAGMUIR_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_lagmuirProbe_perform, 0x0001 );
-    #else
-        sta_setCubesatVar(sta_pay_lagmuirProbe_perform, 0x0000 );
-    #endif
-
-    #if (SCH_PAY_SENSTEMP_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_sensTemp_perform, 0x0001 );
-    #else
-        sta_setCubesatVar(sta_pay_sensTemp_perform, 0x0000 );
-    #endif
-
-    #if (SCH_PAY_GPS_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_gps_perform, 0x0001);
-    #else
-        sta_setCubesatVar(sta_pay_gps_perform, 0x0000);
-    #endif
-
-    #if (SCH_PAY_FIS_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_expFis_perform, 0x0001 );
-    #else
-        sta_setCubesatVar(sta_pay_expFis_perform, 0x0000 );
-    #endif
-
-    #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_camera_perform, 0x0001 );
-    #else
-        sta_setCubesatVar(sta_pay_camera_perform, 0x0000 );
-    #endif
-
-    #if (SCH_PAY_GYRO_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_gyro_perform, 0x0001 );
-    #else
-        sta_setCubesatVar(sta_pay_gyro_perform, 0x0000 );
-    #endif
-
-    #if (SCH_PAY_TMESTADO_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_tmEstado_perform, 0x0001 );
-    #else
-        sta_setCubesatVar(sta_pay_tmEstado_perform, 0x0000 );
-    #endif
-
-    #if (SCH_PAY_TEST1_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_test1_perform, 0x0001 );
-    #else
-        sta_setCubesatVar(sta_pay_test1_perform, 0x0000 );
-    #endif
-
-    #if (SCH_PAY_TEST2_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_test2_perform, 0x0001 );
-    #else
-        sta_setCubesatVar(sta_pay_test2_perform, 0x0000 );
-    #endif
-}
-
-//Payload API
-void dat_erase_pay_i_buff(DAT_Payload pay_i){
+//******************************************************************************
+// DAT_PayloadBuff
+//******************************************************************************
+void dat_erase_PayloadBuff(DAT_PayloadBuff pay_i){
     unsigned long i, block;
     block = dat_pay_i_to_block(pay_i);
 
@@ -318,47 +268,47 @@ void dat_erase_pay_i_buff(DAT_Payload pay_i){
  * @param pay_i DAT_Payload del que quiero obtener el 256block
  * @return block de la memSD correspondiente
  */
-unsigned long dat_pay_i_to_block(DAT_Payload pay_i){
+unsigned long dat_pay_i_to_block(DAT_PayloadBuff pay_i){
     unsigned long block;
 
-    block = dat_pay_i_256Block_buff[pay_i];
+    block = dat_gpb_Pay_i_256Block[pay_i];
     return block;
 }
 
 //Setea el valor del ultimo/maximo indice del buffer de cierto payload
-void dat_setMaxPayIndx(DAT_Payload pay_i, unsigned int maxIndx){
-    msd_setVar_1BlockExtMem(dat_maxIndx_1Block, (unsigned char)pay_i, maxIndx);
+void dat_set_MaxPayIndx(DAT_PayloadBuff pay_i, unsigned int maxIndx){
+    msd_setVar_256BlockExtMem(dat_gpb_Pay_maxIndx_256Block, (unsigned char)pay_i, maxIndx);
 }
 
 //Obtiene el valor del ultimo/maximo indice del buffer de cierto payload
-unsigned int dat_getMaxPayIndx(DAT_Payload pay_i){
+unsigned int dat_get_MaxPayIndx(DAT_PayloadBuff pay_i){
     unsigned int maxIndx;
-    msd_getVar_1BlockExtMem(dat_maxIndx_1Block, (unsigned char)pay_i, (int *)&maxIndx);
+    msd_getVar_256BlockExtMem(dat_gpb_Pay_maxIndx_256Block, (unsigned char)pay_i, (int *)&maxIndx);
     return maxIndx;
 }
 
 //Setea el valor del indice actual del buffer de cierto payload
-void dat_setNextPayIndx(DAT_Payload pay_i, unsigned int nextIndx){
-    msd_setVar_1BlockExtMem(dat_nextIndx_1Block, (unsigned char)pay_i, nextIndx);
+void dat_set_NextPayIndx(DAT_PayloadBuff pay_i, unsigned int nextIndx){
+    msd_setVar_256BlockExtMem(dat_gpb_Pay_nextIndx_256Block, (unsigned char)pay_i, nextIndx);
 }
 
 //Obtiene el valor del indice actual del buffer de cierto payload
-unsigned int dat_getNextPayIndx(DAT_Payload pay_i){
+unsigned int dat_get_NextPayIndx(DAT_PayloadBuff pay_i){
     unsigned int nextIndx;
-    msd_getVar_1BlockExtMem(dat_nextIndx_1Block, (unsigned char)pay_i, (int *)&nextIndx);
+    msd_getVar_256BlockExtMem(dat_gpb_Pay_nextIndx_256Block, (unsigned char)pay_i, (int *)&nextIndx);
     return nextIndx;
 }
 
 //Retorna FALSE si el buffer se llena, TRUE si todo OK
-BOOL dat_setPayloadVar(DAT_Payload pay_i, int value){
+BOOL dat_set_PayloadBuff(DAT_PayloadBuff pay_i, int value){
     // guarda "value" en la sgte posicion libre del buffer,
     // y retorna si lo logro o no (buffer lleno, payload invalido)
     unsigned int nextIndx;
 
-    if( dat_isFullPayloadBuffer(pay_i)==TRUE){
+    if( dat_isFull_PayloadBuff(pay_i)==TRUE){
         return FALSE;    //buffer lleno
     }
-    nextIndx = dat_getNextPayIndx(pay_i);
+    nextIndx = dat_get_NextPayIndx(pay_i);
 
     #if (SCH_DATAREPOSITORY_VERBOSE>=2)
         printf("setPayloadVar [%04d] = %0x%X\n", nextIndx, value);
@@ -369,13 +319,13 @@ BOOL dat_setPayloadVar(DAT_Payload pay_i, int value){
     msd_setVar_256BlockExtMem(block, nextIndx, value);
     
     //actualizo nextIndx
-    dat_setNextPayIndx(pay_i, nextIndx+1);
+    dat_set_NextPayIndx(pay_i, nextIndx+1);
     
     return TRUE;
 }
 
 //Retorna FALSE si el indiex es invalido, TRUE si todo OK
-BOOL dat_getPayloadVar(DAT_Payload pay_i, unsigned int indx, int *value){
+BOOL dat_get_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int indx, int *value){
     unsigned int desiredIndx, maxIndx;
 
     if(pay_i>=dat_pay_last_one){
@@ -386,7 +336,7 @@ BOOL dat_getPayloadVar(DAT_Payload pay_i, unsigned int indx, int *value){
     }
 
     desiredIndx = indx;
-    maxIndx = dat_getMaxPayIndx(pay_i);
+    maxIndx = dat_get_MaxPayIndx(pay_i);
     if(desiredIndx>maxIndx){
         #if (SCH_DATAREPOSITORY_VERBOSE>=2)
             printf("getPayloadVar: buffer lleno, desiredIndx>maxIndx\n");
@@ -401,7 +351,7 @@ BOOL dat_getPayloadVar(DAT_Payload pay_i, unsigned int indx, int *value){
     return TRUE;
 }
 
-BOOL dat_isFullPayloadBuffer(DAT_Payload pay_i){
+BOOL dat_isFull_PayloadBuff(DAT_PayloadBuff pay_i){
     unsigned int nextIndx, maxIndx;
     
     if(pay_i>=dat_pay_last_one){
@@ -411,8 +361,8 @@ BOOL dat_isFullPayloadBuffer(DAT_Payload pay_i){
         return FALSE;   //payload invalido
     }
 
-    nextIndx = dat_getNextPayIndx(pay_i);
-    maxIndx = dat_getMaxPayIndx(pay_i);
+    nextIndx = dat_get_NextPayIndx(pay_i);
+    maxIndx = dat_get_MaxPayIndx(pay_i);
     if(nextIndx>maxIndx){
         #if (SCH_DATAREPOSITORY_VERBOSE>=2)
             printf("isFullPayloadBuffer: buffer lleno, desiredIndx>maxIndx\n");
@@ -422,66 +372,62 @@ BOOL dat_isFullPayloadBuffer(DAT_Payload pay_i){
     return FALSE;
 }
 
-void dat_onReset_memSD(BOOL verbose){   
-    if(verbose){
-        printf("  dat_onReset_memSD()..\n");
-    }
-    DAT_Payload pay_i; DAT_GnrlPurpBuff gpb_i;
+void dat_onReset_dataRepo(BOOL verbose){
+//    if(verbose){
+//        printf("        dat_onReset_dataRepo()..\n");
+//    }
+    DAT_PayloadBuff pay_i; DAT_AuxBuff aux_i;
 
     //calcula y ASIGNA los block para cada estructura
-    if(verbose){
-        printf("    Static structures..\n");
+    if(verbose>=2){
+        printf("        Map between DAT_xxxBuff structures and DAT_GPB addresses\n");
+        printf("        GPB: 256Block memSD => 2^16 [int] buffer\n");
     }
-    dat_first_1Block=31;
-    dat_Trx_Tc_1Block=dat_first_1Block;
-    dat_FlightPlan_256Block=dat_Trx_Tc_1Block+1;
-    dat_nextIndx_1Block=dat_FlightPlan_256Block+256;
-    dat_maxIndx_1Block=dat_nextIndx_1Block+1;
+
+    dat_gpb_TeleCmd_256Block = DAT_GPB_0;
+    dat_gpb_FlightPlan_256Block = DAT_GPB_1;
+    dat_gpb_Pay_nextIndx_256Block = DAT_GPB_2;
+    dat_gpb_Pay_maxIndx_256Block = DAT_GPB_3;
+    
     if(verbose){
-        printf("    dat_Trx_Tc_1Block = %u\n", (unsigned int)( dat_Trx_Tc_1Block ) );
-        printf("    dat_FlightPlan_256Block = %u\n", (unsigned int)( dat_FlightPlan_256Block ) );
-        printf("    dat_nextIndx_1Block = %u\n", (unsigned int)( dat_nextIndx_1Block ) );
-        printf("    dat_maxIndx_1Block = %u\n", (unsigned int)( dat_maxIndx_1Block ) );
+        printf("        DAT_TeleCmdBuff <=> %u\n", (unsigned int)( dat_gpb_TeleCmd_256Block ) );
+        printf("        DAT_FlightPlanBuff <=> %u\n", (unsigned int)( dat_gpb_FlightPlan_256Block ) );
+        printf("        DAT_nextIndxBuff <=> %u\n", (unsigned int)( dat_gpb_Pay_nextIndx_256Block ) );
+        printf("        DAT_maxIndxBuff <=> %u\n", (unsigned int)( dat_gpb_Pay_maxIndx_256Block ) );
     }
 
     //calcula y ASIGNA los block para cada pay_i
+    dat_gpb_Pay_i_256Block[0] = DAT_GPB_4;
+
     if(verbose){
-        printf("    DAT_Payload()..\n");
-    }
-    dat_pay_i_256Block_buff[0]=dat_maxIndx_1Block+256;
-    if(verbose){
-        printf("    pay_i=0 => 256Block = %u\n", (unsigned int)( dat_pay_i_256Block_buff[0] ) );
+        printf("        DAT_PayloadBuff[0] <=> %u | number of Payloads = %d\n", dat_gpb_Pay_i_256Block[0], dat_pay_last_one);
     }
 
     for(pay_i=1; pay_i<dat_pay_last_one; pay_i++){
-        dat_pay_i_256Block_buff[pay_i]=dat_pay_i_256Block_buff[(pay_i-1)] + 256;
+        dat_gpb_Pay_i_256Block[pay_i]=dat_gpb_Pay_i_256Block[(pay_i-1)] + 256;
 
-        if(verbose){
-            printf("    pay_i = %u  => 256Block = %u \n", (unsigned int)pay_i, (unsigned int)( dat_pay_i_256Block_buff[pay_i])  );
+        if(verbose>=2){
+            printf("          DAT_PayloadBuff[%d] <=> %u\n", (unsigned int)pay_i, (unsigned int)( dat_gpb_Pay_i_256Block[pay_i]) );
         }
     }
 
-    //calcula y ASIGNA los block para cada gpb_i
+    //calcula y ASIGNA los block para cada aux_i
+    dat_gpb_Aux_i_256Block[0] = dat_gpb_Pay_i_256Block[ (dat_pay_last_one-1) ] + 256;
+    
     if(verbose){
-        printf("    DAT_GnrlPurpBuff()..\n");
+        printf("        DAT_AuxBuff[0] <=> %u | number of Auxs = %d\n", dat_gpb_Aux_i_256Block[0], dat_aux_last_one);
     }
 
-    dat_gpb_i_256Block_buff[0]=dat_pay_i_256Block_buff[ (dat_pay_last_one-1) ] + 256;
-    if(verbose){
-        printf("    gpb_i = 0 => block = %u\n", (unsigned int)( dat_gpb_i_256Block_buff[0] ) );
-    }
+    for(aux_i=1; aux_i<dat_aux_last_one; aux_i++){
+        dat_gpb_Aux_i_256Block[aux_i]=dat_gpb_Aux_i_256Block[(aux_i-1)] + 256;
 
-    for(gpb_i=1; gpb_i<dat_gpb_last_one; gpb_i++){
-        dat_gpb_i_256Block_buff[gpb_i]=dat_gpb_i_256Block_buff[(gpb_i-1)] + 256;
-
-        if(verbose){
-            printf("    gpb_i = %u => block = %u\n", (unsigned int)gpb_i, (unsigned int)dat_gpb_i_256Block_buff[gpb_i] );
+        if(verbose>=2){
+            printf("          DAT_AuxBuff[%d] <=> %u\n", (unsigned int)aux_i, (unsigned int)dat_gpb_Aux_i_256Block[aux_i] );
         }
     }   
 }
 
-void dat_onResetPayloadVar(void){
-
+void dat_onReset_PayloadBuff(void){
     /* Erase nothing onReset
     DAT_Payload i;
     for(i=0;i<DAT_PAYLOADS_LENGTH;i++){
@@ -491,8 +437,8 @@ void dat_onResetPayloadVar(void){
     */
 }
 
-void dat_resetPayloadBuffer(DAT_Payload pay_i, unsigned int maxIndx, int mode){
-    #if (SCH_DATAREPOSITORY_VERBOSE>=1)
+void dat_reset_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int lenBuff, int mode){
+    #if (SCH_DATAREPOSITORY_VERBOSE>=2)
         printf("Borrando buffer de pay_i = %u\n", (unsigned int)pay_i );
         printf("Usando mode = ");
         if(mode==1){
@@ -504,50 +450,86 @@ void dat_resetPayloadBuffer(DAT_Payload pay_i, unsigned int maxIndx, int mode){
     #endif
 
     //Seteo limites del Buffer
-    dat_setMaxPayIndx(pay_i, maxIndx);
-    dat_setNextPayIndx(pay_i, 0);
+    dat_set_MaxPayIndx(pay_i, lenBuff-1);
+    dat_set_NextPayIndx(pay_i, 0);
 
     if(mode==1){
         //borro el conteido del buffer
-        dat_erase_pay_i_buff(pay_i);
+        //dat_erase_PayloadBuff(pay_i);
     }
     //Reinicio el Buffer
-    dat_setNextPayIndx(pay_i, 0);
-    #if (SCH_DATAREPOSITORY_VERBOSE>=1)
+    dat_set_NextPayIndx(pay_i, 0);
+    #if (SCH_DATAREPOSITORY_VERBOSE>=2)
         printf("reseteo de payload completo\n");
     #endif
 }
+void dat_print_pay_i_name(DAT_PayloadBuff pay_i){
+    switch(pay_i){
+        case dat_pay_lagmuirProbe:
+            printf("dat_pay_lagmuirProbe");
+        break;
+        case dat_pay_sensTemp:
+            printf("dat_pay_sensTemp");
+        break;
+        case dat_pay_gps:
+            printf("dat_pay_gps");
+        break;
+        case dat_pay_gyro:
+            printf("dat_pay_gyro");
+        break;
+        case dat_pay_expFis:
+            printf("dat_pay_expFis");
+        break;
+        case dat_pay_camera:
+            printf("dat_pay_camera");
+        break;
+        case dat_pay_tmEstado:
+            printf("dat_pay_tmEstado");
+        break;
+        case dat_pay_test1:
+            printf("dat_pay_test1");
+        break;
+        case dat_pay_test2:
+            printf("dat_pay_test2");
+        break;
+        default:
+            printf("No payload name %d", pay_i);
+        break;
+    }
+}
+//******************************************************************************
+// DAT_AuxBuff
+//******************************************************************************
+//Get 
+int dat_get_AuxBuff(DAT_AuxBuff aux_i, unsigned int indx){
+    int val;
+    unsigned long block = dat_aux_i_to_block(aux_i);
+    msd_getVar_256BlockExtMem(block, indx, &val);
 
+    return val;
+}
+//Set
+void dat_set_AuxBuff(DAT_AuxBuff aux_i, unsigned int indx, int value){
+    unsigned long block = dat_aux_i_to_block(aux_i);
+    msd_setVar_256BlockExtMem(block, indx, value);
+
+}
+//onReset
+int dat_onReset_AuxBuff(void){
+    return 1;
+}
+//erase
+int dat_erase_AuxBuff(DAT_AuxBuff aux_i){
+    return 1;
+}
+//aux functions
 /**
  * Asocia el DAT_GnrlPurpBuff gpb_i a un 256block de la msmSD
  * @param gpb_i del que quiero obtener el 256block
  * @return block de la memSD correspondiente
  */
-unsigned long dat_gpb_i_to_block(DAT_GnrlPurpBuff gpb_i){
+unsigned long dat_aux_i_to_block(DAT_AuxBuff aux_i){
     unsigned long block;
-
-    block = dat_gpb_i_256Block_buff[gpb_i];
+    block = dat_gpb_Aux_i_256Block[aux_i];
     return block;
 }
-
-//Set
-void dat_setGPB(DAT_GnrlPurpBuff gpb_i, unsigned int indx, int value){
-
-    //guardo el valor de value
-    unsigned long block = dat_gpb_i_to_block(gpb_i);
-    msd_setVar_256BlockExtMem(block, indx, value);
-
-}
-
-//Get 
-int dat_getGPB(DAT_GnrlPurpBuff gpb_i, unsigned int indx){
-    int val;
-
-    //obtengo el valor de value
-    unsigned long block = dat_gpb_i_to_block(gpb_i);
-    msd_getVar_256BlockExtMem(block, indx, &val);
-
-    return val;
-}
-
-

@@ -88,6 +88,8 @@
             <itemPath>../System/RepoCmd/include/cmdRTC.h</itemPath>
             <itemPath>../System/RepoCmd/include/cmdTCM.h</itemPath>
             <itemPath>../System/RepoCmd/include/cmdTRX.h</itemPath>
+            <itemPath>../System/RepoCmd/include/cmdSRP.h</itemPath>
+            <itemPath>../System/RepoCmd/include/cmdTHK.h</itemPath>
           </logicalFolder>
         </logicalFolder>
         <logicalFolder name="Tasks" displayName="Tasks" projectFiles="true">
@@ -217,6 +219,8 @@
           <itemPath>../System/RepoCmd/cmdTRX.c</itemPath>
           <itemPath>../System/RepoCmd/cmdTCM.c</itemPath>
           <itemPath>../System/RepoCmd/cmdCON.c</itemPath>
+          <itemPath>../System/RepoCmd/cmdSRP.c</itemPath>
+          <itemPath>../System/RepoCmd/cmdTHK.c</itemPath>
         </logicalFolder>
         <logicalFolder name="Tasks" displayName="Tasks" projectFiles="true">
           <itemPath>../System/Tasks/taskHousekeeping.c</itemPath>

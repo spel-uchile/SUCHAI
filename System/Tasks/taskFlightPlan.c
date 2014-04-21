@@ -36,6 +36,7 @@ void taskFlightPlan(void *param)
     /* Resolution = 10[s] */
     const unsigned int xDelayms = (10 * 1000) / portTICK_RATE_MS; 
 #endif
+    portTickType _10sec_check = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
 
     int index, current_hour, current_mins;
     int last_index = -1;
@@ -46,6 +47,16 @@ void taskFlightPlan(void *param)
     NewCmd.param = 0;
 
     portTickType xLastWakeTime = xTaskGetTickCount();
+
+    #if (SCH_USE_HOUSEKEEPING == 1)
+        /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
+        while( TRUE ){
+            if( sta_getCubesatVar(sta_SUCHAI_isDeployed)==1 ){
+                break;
+            }
+            vTaskDelayUntil(&xLastWakeTime, _10sec_check);
+        }
+    #endif
 
     while(1)
     {
@@ -64,7 +75,7 @@ void taskFlightPlan(void *param)
         {
             /* Get the next command from flight plan */
             last_index = index;
-            NewCmd = dat_getFlightPlan(index);
+            NewCmd = dat_get_FlightPlan(index);
 
             /* Check if valid cmd */
             if(NewCmd.cmdId == CMD_CMDNULL) continue;

@@ -268,11 +268,11 @@ int trx_initialize(void *param)
     TRX_CONFIG.tx_max_temp = 60;
 
     /* Save configuration to TRX */
-//    int beacon = 0; // Set suchai beacon
-//    int result = trx_set_beacon((void *)(&beacon)); //Also call trx_set_conf
+    int beacon = 0; // Set suchai beacon
+    int result = trx_set_beacon((void *)(&beacon)); //Also call trx_set_conf
 
     /* Toopazo: DEBE devolver 1 si tiene exito y avisar con 0 si falla */
-    return 1;
+    return result;
 }
 
 /**
@@ -396,8 +396,8 @@ int trx_parsetcframe(void *param)
             if((cmdid != CMD_STOP) && (cmdarg != CMD_STOP))
             {
                 /* Save TC and ARG into repo_telecmd */
-                dat_setTelecmdBuff(parserindex++,cmdid);
-                dat_setTelecmdBuff(parserindex++,cmdarg);
+                dat_set_TeleCmdBuff(parserindex++,cmdid);
+                dat_set_TeleCmdBuff(parserindex++,cmdarg);
                 result++;
             }
             /* Stop bytes detected, end parsing */
@@ -410,7 +410,7 @@ int trx_parsetcframe(void *param)
         /* Fill remaining buffer space */
         while(parserindex < SCH_DATAREPOSITORY_MAX_BUFF_TELECMD)
         {
-            dat_setTelecmdBuff(parserindex++, CMD_CMDNULL);
+            dat_set_TeleCmdBuff(parserindex++, CMD_CMDNULL);
         }
     }
 

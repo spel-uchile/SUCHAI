@@ -18,7 +18,17 @@
 #include "task.h"
 
 #include "cmdIncludes.h"
-#include "cmdRepository.h"
+/* Add commands definitions*/
+#include "cmdTCM.h"
+#include "cmdCON.h"
+#include "cmdPPC.h"
+#include "cmdTRX.h"
+#include "cmdEPS.h"
+#include "cmdRTC.h"
+#include "cmdDRP.h"
+#include "cmdSRP.h"
+#include "cmdTHK.h"
+#include "cmdPayload.h"
 
 void taskComunications(void *param);
 void com_doOnRSSI(xQueueHandle cmdQueue);

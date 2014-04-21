@@ -58,8 +58,38 @@ void taskHouskeeping(void *param)
     NewCmd.param = 0;
 
     portTickType xLastWakeTime = xTaskGetTickCount();
+  
 
-    drp_updateAll_sta_CubesatVar(NULL); //TODO: Why?
+    vTaskDelayUntil(&xLastWakeTime, delay_ticks); //Suspend task
+    vTaskDelayUntil(&xLastWakeTime, delay_ticks); //Suspend task
+    int rt_mode;
+    if( sta_getCubesatVar(sta_SUCHAI_isDeployed) == 0 ){
+        printf("[Houskeeping] sta_SUCHAI_isDeployed = 0..\r\n");
+
+        //wait 30mins, meanwhile take pictures
+        rt_mode = SCH_THK_SILENT_REALTIME; /* 1=Real Time, 0=Debug Time */
+        NewCmd.cmdId = thk_id_silent_time_and_pictures;
+        NewCmd.param = rt_mode;
+        xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+        
+        /* Deploy Antena */
+        #if (SCH_ANTENNA_ONBOARD==1)
+            rt_mode = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
+            NewCmd.cmdId = thk_id_deploy_antenna;
+            NewCmd.param = rt_mode;
+            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+        #endif
+
+        //deploy langmuir
+        //..
+        //other "only once"-tasks
+        //..
+            
+        sta_setCubesatVar(sta_SUCHAI_isDeployed, 1);
+        ppc_reset(NULL);
+    }
+
+    //thk_periodicUpdate_STA_CubesatVar(NULL); //TODO: Why?
     
     while(1)
     {
@@ -76,13 +106,13 @@ void taskHouskeeping(void *param)
         if((elapsed_sec % _20sec_check) == 0)
         {
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 20[s] actions\r\n");
+                con_printf("[Houskeeping] 20[s] actions..\r\n");
             #endif
 
-            NewCmd.cmdId = drp_id_updateAll_sta_CubesatVar;
-            NewCmd.param = 0;
-            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-
+//            NewCmd.cmdId = thk_id_periodicUpdate_STA_CubesatVar;
+//            NewCmd.param = 0;
+//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+//
 //            NewCmd.cmdId = ppc_id_reactToSOC;
 //            NewCmd.param = 0;
 //            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
@@ -98,11 +128,11 @@ void taskHouskeeping(void *param)
         if((elapsed_sec % _1min_check) == 0)
         {
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 1[min] actions\r\n");
+                con_printf("[Houskeeping] 1[min] actions..\r\n");
             #endif
 
-            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                NewCmd.cmdId = drp_id_print_sta_CubesatVar;
+            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=2)
+                NewCmd.cmdId = srp_id_print_STA_CubesatVar;
                 NewCmd.param = 0;
                 xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
             #endif
@@ -112,13 +142,15 @@ void taskHouskeeping(void *param)
         if((elapsed_sec % _5min_check) == 0)
         {
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 5[min] actions\r\n");
+                con_printf("[Houskeeping] 5[min] actions..\r\n");
             #endif
 
-            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                NewCmd.cmdId = eps_id_print_all_reg;
-                NewCmd.param = 0;
-                xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+            #if (SCH_EPS_ONBOARD == 1)
+                #if (SCH_TASKHOUSEKEEPING_VERBOSE>=2)
+                    NewCmd.cmdId = eps_id_print_all_reg;
+                    NewCmd.param = 0;
+                    xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+                #endif
             #endif
         }
 
@@ -129,14 +161,14 @@ void taskHouskeeping(void *param)
             elapsed_sec = 0; //Reset prevent overflow
 
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 1[hr] actions\r\n");
+                con_printf("[Houskeeping] 1[hr] actions..\r\n");
             #endif
 
-            NewCmd.cmdId = drp_id_update_sta_CubesatVar_hoursWithoutReset;
+            NewCmd.cmdId = srp_id_increment_STA_CubesatVar_hoursWithoutReset;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
-            NewCmd.cmdId = drp_id_update_sta_CubesatVar_hoursAlive;
+            NewCmd.cmdId = srp_id_increment_STA_CubesatVar_hoursAlive;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
@@ -146,7 +178,7 @@ void taskHouskeeping(void *param)
         if((elapsed_hrs % _1day_check) == 0)
         {
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 1[day] actions\r\n");
+                con_printf("[Houskeeping] 1[day] actions..\r\n");
             #endif
             elapsed_hrs = 1;  //Reset prevent overflow
 

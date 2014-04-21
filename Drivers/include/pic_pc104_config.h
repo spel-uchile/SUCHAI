@@ -82,24 +82,34 @@ void GPIO_PC104_init(void);
     #define PPC_CAM_HOLD_CHECK      _RD12
 #else
     #define PPC_CAM_SWITCH          _RA2
-    #define PPC_CAM_SWITCH_CHECK    0
-    #define PPC_CAM_HOLD_CHECK      0
+    #define PPC_CAM_SWITCH_CHECK    (-1)
+    #define PPC_CAM_HOLD_CHECK      (-1)
+#endif
+#if (SCH_PAY_LANGMUIR_ONBOARD==1)
+    #define PPC_LANGMUIR_DEP_SWITCH          _LATF13
+    #define PPC_LANGMUIR_DEP_SWITCH_CHECK    _RF13
+#else
+    #define PPC_LANGMUIR_DEP_SWITCH_CHECK    (-1)
 #endif
 #if (SCH_PAY_GPS_ONBOARD==1)
     #define PPC_GPS_SWITCH          _LATD15
     #define PPC_GPS_SWITCH_CHECK    _RD15
     #define PPC_GPS_nRESET          _LATD4
+#else
+    #define PPC_GPS_SWITCH_CHECK    (-1)
 #endif
 #if (SCH_ANTENNA_ONBOARD==1)
     #define PPC_ANT12_SWITCH    _LATG1
     #define PPC_ANT1_SWITCH     _LATE9
     #define PPC_ANT2_SWITCH     _LATE8
     #define PPC_ANT12_CHECK     _RF0
+#else
+    #define PPC_ANT12_CHECK     (-1)
 #endif
 #if (SCH_PAY_GYRO_ONBOARD==1)
     #define PPC_GYRO_INT2_CHECK   _RF1
 #else
-    #define PPC_GYRO_INT2_CHECK   0
+    #define PPC_GYRO_INT2_CHECK   (-1)
 #endif
 
 /**

@@ -40,12 +40,29 @@
  * Cubesat's State Variables
  */
 typedef enum{
-    sta_mep_testVal=0,   //just to make sure MemEEPROM is working r/w values
-    //External hw satus
+    //address 0 is ALWAYS used to make sure MemEEPROM is working r/w values (isAlive)
+    sta_MemEEPROM_testVal=0,
+
+    // Bus Hw status (connected trough the PC/104 to the OBC -PIC24-)
     sta_RTC_isAlive,
     sta_TRX_isAlive,
+    sta_EPS_isAlive,
     sta_MemEEPROM_isAlive,
     sta_MemSD_isAlive,
+    sta_SUCHAI_isDeployed,
+
+    // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
+    sta_pay_lagmuirProbe_isAlive,
+    sta_pay_sensTemp_isAlive,
+    sta_pay_gps_isAlive,
+    sta_pay_expFis_isAlive,
+    sta_pay_camera_isAlive,
+    sta_pay_gyro_isAlive,
+    sta_pay_tmEstado_isAlive,
+    sta_pay_test1_isAlive,
+    sta_pay_test2_isAlive,
+    sta_pay_lagmuirProbe_isDeployed,
+
     //PPC => (C&DH subsystem)
     sta_ppc_opMode,
     sta_ppc_lastResetSource,
@@ -96,22 +113,18 @@ typedef enum{
     /* Revisar de aqui hacia abajo si aun son necesarios !!! */
 
     //TRX => (Communication subsystem)
-    sta_trx_frec_tx,          // TX Freq
-    sta_trx_frec_rx,          // RX Freq
     sta_trx_opmode,           // Operation mode
     sta_trx_temp_hpa,         // Temp of HPA
     sta_trx_temp_mcu,         // Temp of MCU
     sta_trx_rssi,             // RSSI, Signal level
     sta_trx_rssi_mean,        // RSSI_MEAN
-    sta_trx_beacon_pwr,       // Beacon power
-    sta_trx_telemetry_pwr,    // Telemetry Power
     sta_trx_status_tc,        // Status Register of TC
     sta_trx_count_tm,         // number of sended TM
     sta_trx_count_tc,         // number of received TC
     sta_trx_lastcmd_day,      // day of the last received tc (since 1/1/00)
     // Cmd buffer control
     sta_trx_newTcFrame,       // Exist any unprocessed TcFram?
-    sta_trx_newCmdBuff,       // Exist unprocessed CMD in the ernal buffer
+    sta_trx_newCmdBuff,       // Exist unprocessed CMD in the external buffer
     //trx_repo_telecmd[STA_MAX_BUFF_TELECMD],   // Assuming that each Telecommand is of the form: [cmdId | param]
 
     //FLIGHT PLAN
@@ -138,8 +151,13 @@ int sta_getCubesatVar(STA_CubesatVar indxVar);
 void sta_onResetStatRepo(void);
 
 int sta_get_ppc_lastResetSource(BOOL verb);
+
+
 //STA_CubesatVar dat_pay_i_to_performVar(DAT_Payload pay_i);
-STA_CubesatVar dat_pay_i_to_performVar(int pay_i);
+STA_CubesatVar sta_pay_i_to_performVar(int pay_i);
+
+#define SRP_PAY_XXX_PERFORM_INACTIVE    0x0000
+#define SRP_PAY_XXX_PERFORM_ACTIVE      0x0001
 
 #endif // STATUS_REPO_H
 

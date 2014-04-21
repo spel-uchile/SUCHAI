@@ -30,13 +30,14 @@ void taskFlightPlan2(void *param)
 
 #if SCH_FLIGHTPLAN2_REALTIME
     portTickType _1sec_check = (1000) / portTICK_RATE_MS;      /* check every 1sec  */
+    portTickType _10sec_check = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
     unsigned int elapsed_sec = 0;
-    unsigned int _frst_check = (4);                /* check every 4 sec */
+    unsigned int _4sec_check = (8);                /* check every 4 sec */
     unsigned int _5min_check = (300);                /* check every 5min */
 #else
     portTickType _1sec_check = (250) / portTICK_RATE_MS;      /* check every 250ms  */
     unsigned int elapsed_sec = 0;
-    unsigned int _frst_check = (4);              /* check every 4*0,25 sec=1seg */
+    unsigned int _4sec_check = (4);              /* check every 4*0,25 sec=1seg */
     unsigned int _5min_check = (30);                /* check every 30 sec  */
 #endif
 
@@ -46,6 +47,16 @@ void taskFlightPlan2(void *param)
     NewCmd.param = 0;
 
     portTickType xLastWakeTime = xTaskGetTickCount();
+
+    #if (SCH_USE_HOUSEKEEPING == 1)
+        /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
+        while( TRUE ){
+            if( sta_getCubesatVar(sta_SUCHAI_isDeployed)==1 ){
+                break;
+            }
+            vTaskDelayUntil(&xLastWakeTime, _10sec_check);
+        }
+    #endif
 
     while(1)
     {
@@ -59,10 +70,10 @@ void taskFlightPlan2(void *param)
         }
 
         // codigo para _20sec_check 
-        if((elapsed_sec % _frst_check) == 0)
+        if((elapsed_sec % _4sec_check) == 0)
         {
             #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
-                con_printf("[FlightPlan2] _frst_check\r\n");
+                con_printf("[FlightPlan2] _4sec_check\r\n");
             #endif
 
             fp2_pay_i_multiplexing(dispatcherQueue);
@@ -78,12 +89,9 @@ void taskFlightPlan2(void *param)
             #endif
 
             //ejecuto payload TMestado
-            //DAT_CubesatVar pay_i_perfVar = dat_pay_i_to_performVar(dat_pay_tmEstado);
-            //if( dat_getCubesatVar(pay_i_perfVar)==0x0001 ){
-                NewCmd.cmdId = pay_id_FSM_default;
-                NewCmd.param = dat_pay_tmEstado;
-                xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
-            //}
+            NewCmd.cmdId = pay_id_FSM_default;
+            NewCmd.param = dat_pay_tmEstado;
+            xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
             
         }
     }
@@ -95,31 +103,23 @@ void fp2_pay_i_multiplexing(xQueueHandle dispatcherQueue){
     NewCmd.idOrig = CMD_IDORIG_TFLIGHTPLAN2;
     NewCmd.param = 0;
 
-    static DAT_Payload current_pay_i;
+    static DAT_PayloadBuff current_pay_i;
     
     //multiplexo pay_i por turnos
-    #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
-        char ret[50];
-        sprintf (ret, "fp2_pay_i_multiplexing => pay_i=%d\r\n", (unsigned int)current_pay_i);
-        con_printf(ret);
+    #if (SCH_FLIGHTPLAN2_VERBOSE>=2)
+        printf("fp2_pay_i_multiplexing => pay_i = %d\r\n", (unsigned int)current_pay_i);
     #endif
 
-    //DAT_CubesatVar pay_i_perfVar;
     switch(current_pay_i){
         //excluyo casos particulares
         case dat_pay_tmEstado:
             //do nothing
+            //printf("dat_pay_tmEstado does not use FSM_default..\r\n");
         break;
         default:
-            //pay_i_perfVar = dat_pay_i_to_performVar(current_pay_i);
-            //if( dat_getCubesatVar(pay_i_perfVar)==0x0001 ){
-                NewCmd.cmdId = pay_id_FSM_default;
-                NewCmd.param = current_pay_i;
-                xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
-            //}
-            //else{
-            //    con_printf("pay_i_perfVar=0..\r\n");
-            //}
+            NewCmd.cmdId = pay_id_FSM_default;
+            NewCmd.param = current_pay_i;
+            xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
         break;
     }
 
@@ -140,8 +140,8 @@ void fp2_pay_i_simultaneous(xQueueHandle dispatcherQueue)
     NewCmd.param = 0;
 
     //ejecuto payloads, "simultaneamente" osea, todos en cada ciclo
-    STA_CubesatVar dat_pay_xxx_perform = dat_pay_i_to_performVar(dat_pay_tmEstado);
-    DAT_Payload pay_i;
+    STA_CubesatVar dat_pay_xxx_perform = sta_pay_i_to_performVar(dat_pay_tmEstado);
+    DAT_PayloadBuff pay_i;
 
     for(pay_i = 0; pay_i < dat_pay_last_one; pay_i++)
     {

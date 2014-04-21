@@ -25,9 +25,9 @@
 #define SCH_DATAREPOSITORY_VERBOSEMEMSD_ 0
 
 //semaforo para sincronizar accceso a las variables de estado
-extern xSemaphoreHandle dataRepositorySem; /*WARNING esto estaba asi: extern dataRepositorySem;*/
+extern xSemaphoreHandle dataRepositorySem;
 
-#if !SCH_SYSBUS_ONBOARD
+#if (SCH_MEMEEPROM_ONBOARD==0)
     int STA_CUBESAT_VAR_BUFF[sta_cubesatVar_last_one];
 #endif
 
@@ -40,7 +40,7 @@ extern xSemaphoreHandle dataRepositorySem; /*WARNING esto estaba asi: extern dat
 void sta_setCubesatVar(STA_CubesatVar indxVar, int value){
     portBASE_TYPE semStatus = xSemaphoreTake( dataRepositorySem, portMAX_DELAY );
 
-    #if !SCH_SYSBUS_ONBOARD
+    #if (SCH_MEMEEPROM_ONBOARD==0)
         //Para el caso de guardar las variables en memoria interna
         STA_CUBESAT_VAR_BUFF[indxVar] = value;
     #else
@@ -59,7 +59,7 @@ int sta_getCubesatVar(STA_CubesatVar indxVar){
     portBASE_TYPE semStatus = xSemaphoreTake( dataRepositorySem, portMAX_DELAY );
     
     int value;
-    #if !SCH_SYSBUS_ONBOARD
+    #if (SCH_MEMEEPROM_ONBOARD==0)
         //Para el caso de obtener las variables de la memoria interna
         value = STA_CUBESAT_VAR_BUFF[indxVar];
     #else
@@ -85,6 +85,7 @@ void sta_onResetStatRepo(void)
     //External hw satus were already set
     //sta_RTC_isAlive,
     //sta_TRX_isAlive,
+    //sta_EPS_isAlive,
     //sta_MemEEPROM_isAlive,
     //sta_MemSD_isAlive,
 
@@ -95,7 +96,7 @@ void sta_onResetStatRepo(void)
     sta_setCubesatVar(sta_ppc_hoursWithoutReset, 0x0000);
     //resetCounter No debe inicializarse luego de un reset
     //Su valor debe ser traido de la memEEPROM y modificado
-    if( sta_getCubesatVar(sta_ppc_resetCounter) == 0xFFFF ){
+    if( sta_getCubesatVar(sta_SUCHAI_isDeployed) == 0 ){
         sta_setCubesatVar(sta_ppc_resetCounter, 0);
         #if (SCH_DATAREPOSITORY_VERBOSE>=1)
             printf("        - First time on! Setting resetCounter to 0\r\n");
@@ -206,7 +207,7 @@ int sta_get_ppc_lastResetSource(BOOL verb){
  * @return DAT_CubesatVar dat_pay_xxx_perform
  */
 //STA_CubesatVar dat_pay_i_to_performVar(DAT_Payload pay_i){
-STA_CubesatVar dat_pay_i_to_performVar(int pay_i){
+STA_CubesatVar sta_pay_i_to_performVar(int pay_i){
     STA_CubesatVar dat_pay_xxx_perform;
 
     switch(pay_i){

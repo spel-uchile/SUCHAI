@@ -147,7 +147,8 @@ int sync(BOOL verb){
 
 
 int cam_sync(BOOL verb){
-    con_printf("cam_sync..\r\n");
+    //printf("cam_sync..\r\n");
+    
     unsigned int i,j,k;		// Variables for indexes
     unsigned char recev[8];	// Received data temp buffer
     unsigned int rsync = 1;	// Rsync status flag 1 (Fail by default)
@@ -394,8 +395,8 @@ unsigned int cam_receivePhoto(unsigned int length, int mode)
     int ml=length/2;    //se guardan 2byten en 1int
     
     //Inicializa la estructura de data payload
-    DAT_Payload pay_i=dat_pay_camera;
-    dat_resetPayloadBuffer(pay_i, ml-1, 0);
+    DAT_PayloadBuff pay_i=dat_pay_camera;
+    dat_reset_PayloadBuff(pay_i, ml, 0);
 
     unsigned char respuesta; char ret[10];
     unsigned int resp;
@@ -425,7 +426,7 @@ unsigned int cam_receivePhoto(unsigned int length, int mode)
             con_printf(ret);
         }
         if( (mode==CAM_MODE_SAVE_SD) || (mode==CAM_MODE_BOTH) ){
-            stat = dat_setPayloadVar( pay_i, (int)resp );
+            stat = dat_set_PayloadBuff( pay_i, (int)resp );
             //__delay_ms(12);
             #if (SCH_CAMERA_VERBOSE>=1)
                 cnt++;
@@ -443,7 +444,7 @@ unsigned int cam_receivePhoto(unsigned int length, int mode)
     //Si sale esta linea tengo un error
     if( (mode==CAM_MODE_SAVE_SD) || (mode==CAM_MODE_BOTH) ){
         while(stat==FALSE){
-            stat = dat_setPayloadVar( pay_i, (int)0xFF00 );
+            stat = dat_set_PayloadBuff( pay_i, (int)0xFF00 );
             con_printf("rellenando\r\n");
             //__delay_ms(12);
         }

@@ -26,7 +26,18 @@
 #include "rs232_suchai.h"
 #include "DebugIncludes.h"  //para con_printf
 
-#include "cmdRepository.h"
+/* Add commands definitions*/
+#include "cmdTCM.h"
+#include "cmdCON.h"
+#include "cmdPPC.h"
+#include "cmdTRX.h"
+#include "cmdEPS.h"
+#include "cmdRTC.h"
+#include "cmdDRP.h"
+#include "cmdSRP.h"
+#include "cmdTHK.h"
+#include "cmdPayload.h"
+
 
 #define CON_BUF_WIDTH 32
 #define CON_ARG_WIDTH 8

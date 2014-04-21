@@ -51,7 +51,7 @@ BOOL sensTemp_isAlive(unsigned char sens_x){
     //        76543210
     r_reg = 0b01111111 & r_reg;     //erase and ignore OS/ALERT bit
     if(r_reg != w_reg){ 
-        printf("sensTemp_isAlive: SensTemp[%d] =FALSE !!\n", sens_x);
+        printf("sensTemp_isAlive: SensTemp[%d] = FALSE !!\n", sens_x);
         return FALSE;
     }
 
@@ -63,7 +63,7 @@ BOOL sensTemp_isAlive(unsigned char sens_x){
     //        76543210
     r_reg = 0b01111111 & r_reg;     //erase and ignore OS/ALERT bit
     if(r_reg != w_reg){ 
-        printf("sensTemp_isAlive: SensTemp[%d] =FALSE !!\n", sens_x);
+        printf("sensTemp_isAlive: SensTemp[%d] = FALSE !!\n", sens_x);
         return FALSE;
     }
 

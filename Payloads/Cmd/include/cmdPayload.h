@@ -40,6 +40,10 @@ typedef enum{
 
     pay_id_FSM_default, ///< @cmd
 
+    pay_id_init_tmEstado, ///< @cmd
+    pay_id_take_tmEstado, ///< @cmd
+    pay_id_stop_tmEstado, ///< @cmd
+
     pay_id_debug_sensTemp, ///< @cmd
     pay_id_init_sensTemp, ///< @cmd
     pay_id_take_sensTemp, ///< @cmd
@@ -96,8 +100,8 @@ typedef enum{
                             ///< configuraciones de termino y post procesamiento
 }PAY_State;
 
-PAY_State pay_nextStateLogic(PAY_State pay_sem, DAT_Payload pay_i);
-void pay_currentStateLogic(PAY_State pay_sem_state, DAT_Payload pay_i);
+PAY_State pay_nextStateLogic(PAY_State pay_sem, DAT_PayloadBuff pay_i);
+void pay_currentStateLogic(PAY_State pay_sem_state, DAT_PayloadBuff pay_i);
 
 //Comandos
 //Debug
@@ -128,6 +132,7 @@ int pay_init_lagmuirProbe(void *param);
 int pay_stop_lagmuirProbe(void *param);
 int pay_send_to_lagimur(void *param);
 int pay_debug_langmuir(void *param);
+BOOL pay_deploy_langmuirProbe(void);
 //Gyro
 int pay_debug_gyro(void *param);
 int pay_take_gyro(void *param);
@@ -147,6 +152,8 @@ int pay_take_gps(void *param);
 int pay_init_gps(void *param);
 int pay_stop_gps(void *param);
 
+//aux functions
+BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type, int mode);
 
 #endif	/* CMDPAYLOAD_H */
 

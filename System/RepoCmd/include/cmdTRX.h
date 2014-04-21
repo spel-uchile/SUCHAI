@@ -29,14 +29,29 @@
 #define CMD_ADDFRAME_SINGL      (5)
 #define CMD_ADDFRAME_EXIT       (-1)
 
+/** Start frame flag
+ */
 #define CMD_TMFRAME_TSTARTH     (0x01)
 #define CMD_TMFRAME_TSTARTL     (0x00)
+#define CMD_TMFRAME_TSTART      (0x0100)
+
+/** Stop frame flag
+ */
 #define CMD_TMFRAME_TSTOPH      (0x02)
 #define CMD_TMFRAME_TSTOPL      (0x00)
+#define CMD_TMFRAME_TSTOP       (0x0200)
+
+/** Continuation frame flag
+ */
 #define CMD_TMFRAME_TCONTH      (0x03)
 #define CMD_TMFRAME_TCONTL      (0x00)
+#define CMD_TMFRAME_TCONT       (0x0300)
+
+/** Single frame flag
+ */
 #define CMD_TMFRAME_TSINGLH     (0x04)
 #define CMD_TMFRAME_TSINGLL     (0x00)
+#define CMD_TMFRAME_TSINGL      (0x0400)
 
 /**
  * Lista de comandos disponibles.

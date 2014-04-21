@@ -26,7 +26,8 @@
 
 /** Fixed values*/
 #define COM_MORSE_LEN                   20 /* DO NOT CHANGE FROM 20 */
-#define TRX_TMFRAMELEN                  64 /** Max frame lenght */
+#define TRX_TMFRAMELEN8                 64 /** Max frame lenght in bytes */
+#define TRX_TMFRAMELEN16                (TRX_TMFRAMELEN8/2) /** Max frame lenght in int16*/
 
 /** Shared data-structures */
 typedef struct __attribute__((packed)) {

@@ -190,7 +190,7 @@ static void com_RxI2C(xQueueHandle i2c_rx_queue)
 
     if(frame_p == NULL)
     {
-        frame_p = (i2c_frame_t *) csp_buffer_get(TRX_TMFRAMELEN/2);
+        frame_p = (i2c_frame_t *) csp_buffer_get(TRX_TMFRAMELEN8);
         frame_p->len = 0;
         nrcv = 0;
         return;

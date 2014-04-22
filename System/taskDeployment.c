@@ -493,8 +493,8 @@ void dep_csp_initialization(void)
     csp_debug_set_level(CSP_ERROR, 1);
     csp_debug_set_level(CSP_WARN, 1);
 
-    /* Init buffer system with 3 packets of maximum I2C_MTU bytes each */
-    csp_buffer_init(5, TRX_TMFRAMELEN8+5);
+    /* Init buffer system with 3 packets of maximum N bytes each */
+    csp_buffer_init(5, TRX_TMFRAMELEN8+CSP_BUFFER_PACKET_OVERHEAD+1);
 
     /* Init CSP with address MY_ADDRESS */
     csp_init(MY_ADDRESS);

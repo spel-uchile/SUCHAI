@@ -296,6 +296,9 @@ int csp_send_direct(csp_id_t idout, csp_packet_t * packet, uint32_t timeout) {
 
 	ifout->interface->tx++;
 	ifout->interface->txbytes += bytes;
+
+        csp_buffer_free(packet); // ISSUE 4: Out of buffers
+
 	return CSP_ERR_NONE;
 
 tx_err:
@@ -357,7 +360,6 @@ int csp_transaction_persistent(csp_conn_t * conn, uint32_t timeout, void * outbu
 	/* If no reply is expected, return now */
 	if (inlen == 0)
         {
-                csp_buffer_free(packet); //ISSUE 4: Out of buffers
 		return 1;
         }
 

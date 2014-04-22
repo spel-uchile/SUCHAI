@@ -21,7 +21,7 @@
 #include "csp.h"
 #include "csp_port.h"
 
-static int trx_tm_send(unsigned char *data, int len);
+static int trx_tm_send(uint16_t *data, int len);
 
 /* Auxiliary variables */
 int16_t TRX_REG_VAL = -1; /*Current value to write in trx_write_reg*/
@@ -386,7 +386,7 @@ int trx_parsetcframe(void *param)
 
         /* Parsing the TCTF in SUCHAI's commands */
         //TODO: Check the frame lenght
-        for(count=0; count < TRX_TMFRAMELEN/2; count+=step)
+        for(count=0; count < TRX_TMFRAMELEN8/2; count+=step)
         {
             /* BIG ENDIAN [MSB]<<8 | [LSB] */
             int cmdid = tcframe[count];
@@ -578,17 +578,14 @@ int trx_set_reg_val(void *param)
  * @code
  *          |--- Control fields ---||----        Data fields        ---|
  *           __________________________________________________________
- *          | Type (2) | Frame# (2)|| TM-ID(2) |       DATA(122)      ||
- *          |__________|___________||__________||DH|DL|___...___|DH|DL||
+ *          | Type (2) | Frame# (2)|| TM-ID(2) |       DATA(LEN)      ||
+ *          |__________|___________||__________||INT16|___...___|INT16||
  * @endcode
  *
- * @warning Por problemas con el TNC cada vez que se crea un frame se transmite
- * inmediatamente. Esto evita el envio sucesivo de frames de telemetria, ya que
- * el TNC pierde datos ante una rafaga continua de frames de telemetria.
  *
  * @param data Pointer to data that will be append
  * @param len Lenght of the data array
- * @param mode Mode of append   CMD_ADDFRAME_START -> Start new frame
+ * @param mode Mode of append  CMD_ADDFRAME_START -> Start new frame
  *                              CMD_ADDFRAME_CONT  -> Inter frame
  *                              CMD_ADDFRAME_STOP  -> Stop frame
  *                              CMD_ADDFRAME_FIN   -> Finish current session
@@ -599,8 +596,8 @@ int trx_set_reg_val(void *param)
  */
 int trx_tm_addtoframe(int *data, int len, int mode)
 {
-    static unsigned char tmframe[TRX_TMFRAMELEN];
-    static int byte_counter = 0;
+    static uint16_t tmframe[TRX_TMFRAMELEN16];
+    static int int16_counter = 0;
     static int frame_counter = 0;
     static int tm_type = CMD_STOP;
     int send_stat = 2;
@@ -612,34 +609,30 @@ int trx_tm_addtoframe(int *data, int len, int mode)
             /* A single frame that contains max TRX_TMFRAMELEN bytes of data */
             case CMD_ADDFRAME_SINGL:
                 /* A new frame being configured */
-                byte_counter = 0;
+                int16_counter = 0;
                 /* Append control field  */
-                tmframe[byte_counter++] = CMD_TMFRAME_TSINGLH;   /* Type (1) */
-                tmframe[byte_counter++] = CMD_TMFRAME_TSINGLL;   /* Type (2) */
-                tmframe[byte_counter++] = (char)(frame_counter >> 8);/* Frame# (1) */
-                tmframe[byte_counter++] = (char)(frame_counter);     /* Frame# (2) */
+                tmframe[int16_counter++] = CMD_TMFRAME_TSINGL;   /* Type (1) */
+                tmframe[int16_counter++] = (uint16_t)(frame_counter);     /* Frame# (2) */
 
                 /* Adding data to the current frame. Max TRX_TMFRAMELEN bytes */
-                while((len > 0) && (byte_counter < TRX_TMFRAMELEN))
+                while((len > 0) && (int16_counter < TRX_TMFRAMELEN16))
                 {
-                    tmframe[byte_counter++] = (char)(*data >> 8);/* DataH */
-                    tmframe[byte_counter++] = (char)(*data);     /* DataL */
+                    tmframe[int16_counter++] = (uint16_t)(*data);     /* Data */
                     data++;
                     len--;
                 }
 
                 /* Loading frame to TRX and exiting */
-                for(;byte_counter<TRX_TMFRAMELEN;byte_counter++)
+                for(;int16_counter<TRX_TMFRAMELEN16;int16_counter++)
                 {
-                    tmframe[byte_counter++] = (char)((int)CMD_STOP>>8);
-                    tmframe[byte_counter] = (char)CMD_STOP;
+                    tmframe[int16_counter] = (uint16_t)CMD_STOP;
                 }
 
                 /* Load and transmit TM */
-                trx_tm_send(tmframe, TRX_TMFRAMELEN);
+                trx_tm_send(tmframe, TRX_TMFRAMELEN16);
                 
                 frame_counter++;
-                byte_counter = 0;
+                int16_counter = 0;
                 mode = CMD_ADDFRAME_EXIT;
                 break;
 
@@ -648,35 +641,29 @@ int trx_tm_addtoframe(int *data, int len, int mode)
             case CMD_ADDFRAME_START:
                 /* A new frame being configured */
                 /* Load all remaining frames before */
-                if(byte_counter > 0)
+                if(int16_counter > 0)
                 {
-                    for(;byte_counter<TRX_TMFRAMELEN;byte_counter++)
+                    for(;int16_counter<TRX_TMFRAMELEN16;int16_counter++)
                     {
-                        tmframe[byte_counter++] = (char)((int)CMD_STOP>>8);
-                        tmframe[byte_counter] = (char)CMD_STOP;
+                        tmframe[int16_counter] = (uint16_t)CMD_STOP;
                     }
                     
                     /* Load and transmit TM */
-                    trx_tm_send(tmframe, TRX_TMFRAMELEN);
+                    trx_tm_send(tmframe, TRX_TMFRAMELEN16);
                 }
 
-                byte_counter = 0;
+                int16_counter = 0;
                 /* Append control field  */
-                tmframe[byte_counter++] = CMD_TMFRAME_TSTARTH;   /* Type (1) */
-                tmframe[byte_counter++] = CMD_TMFRAME_TSTARTL;   /* Type (2) */
-                tmframe[byte_counter++] = (char)(frame_counter >> 8);/* Frame# (1) */
-                tmframe[byte_counter++] = (char)(frame_counter);     /* Frame# (2) */
+                tmframe[int16_counter++] = CMD_TMFRAME_TSTART;   /* Type (2) */
+                tmframe[int16_counter++] = (uint16_t)(frame_counter);     /* Frame# (2) */
 
-                /* Add data if needed */
-                //for(i=0;i<byte_counter;i++) printf("%X|",tmframe[i]); printf("\n");
                 frame_counter++;
                 
                 /* Adding current tm type */
                 if(len > 0)
                 {
                     tm_type = *data;
-                    tmframe[byte_counter++] = (char)(tm_type >> 8);/* DataH */
-                    tmframe[byte_counter++] = (char)(tm_type);     /* DataL */
+                    tmframe[int16_counter++] = (uint16_t)(tm_type);     /* DataL */
 
                     /* Update the remaining data counter */
                     data++;
@@ -688,16 +675,13 @@ int trx_tm_addtoframe(int *data, int len, int mode)
 
             case CMD_ADDFRAME_CONT:
                 /* A new frame being configured */
-                byte_counter = 0;
+                int16_counter = 0;
                 /* Append control field  */
-                tmframe[byte_counter++] = CMD_TMFRAME_TCONTH;   /* Type (1) */
-                tmframe[byte_counter++] = CMD_TMFRAME_TCONTL;   /* Type (2) */
-                tmframe[byte_counter++] = (char)(frame_counter >> 8);/* Frame# (1) */
-                tmframe[byte_counter++] = (char)(frame_counter);     /* Frame# (2) */
+                tmframe[int16_counter++] = CMD_TMFRAME_TCONT;   /* Type (2) */
+                tmframe[int16_counter++] = (char)(frame_counter);     /* Frame# (2) */
 
                 /* Add tm type */
-                tmframe[byte_counter++] = (char)(tm_type >> 8);/* DataH */
-                tmframe[byte_counter++] = (char)(tm_type);     /* DataL */
+                tmframe[int16_counter++] = (uint16_t)(tm_type);     /* DataL */
 
                 /* Add data if needed */
                 frame_counter++;
@@ -707,25 +691,22 @@ int trx_tm_addtoframe(int *data, int len, int mode)
             /* The last frame with the current telemetry */
             case CMD_ADDFRAME_STOP:
                 /* Load all remaining frames before */
-                if(byte_counter > 0)
+                if(int16_counter > 0)
                 {
-                    for(;byte_counter<TRX_TMFRAMELEN;byte_counter++)
+                    for(;int16_counter<TRX_TMFRAMELEN16;int16_counter++)
                     {
-                        tmframe[byte_counter++] = (char)((int)CMD_STOP>>8);
-                        tmframe[byte_counter] = (char)CMD_STOP;
+                        tmframe[int16_counter] = (uint16_t)CMD_STOP;
                     }
 
                     /* Load and transmit TM */
-                    trx_tm_send(tmframe, TRX_TMFRAMELEN);
+                    trx_tm_send(tmframe, TRX_TMFRAMELEN16);
                 }
 
                 /* A new frame stop being configured */
-                byte_counter = 0;
+                int16_counter = 0;
                 /* Append control field */
-                tmframe[byte_counter++] = CMD_TMFRAME_TSTOPH;   /* Type (1) */
-                tmframe[byte_counter++] = CMD_TMFRAME_TSTOPL;   /* Type (2) */
-                tmframe[byte_counter++] = (char)(frame_counter >> 8);/* Frame# (1) */
-                tmframe[byte_counter++] = (char)(frame_counter);     /* Frame# (2) */
+                tmframe[int16_counter++] = CMD_TMFRAME_TSTOP;   /* Type (2) */
+                tmframe[int16_counter++] = (uint16_t)(frame_counter);     /* Frame# (2) */
 
                 /* Add data to this frame */
                 frame_counter++;
@@ -736,19 +717,18 @@ int trx_tm_addtoframe(int *data, int len, int mode)
              * counters to start a new session. No new data will be append */
             case CMD_ADDFRAME_FIN:
                 /* Load to trx the remaining frames */
-                if(byte_counter > 0)
+                if(int16_counter > 0)
                 {
-                    for(;byte_counter<TRX_TMFRAMELEN;byte_counter++)
+                    for(;int16_counter<TRX_TMFRAMELEN16;int16_counter++)
                     {
-                        tmframe[byte_counter++] = (char)((int)CMD_STOP>>8);
-                        tmframe[byte_counter] = (char)CMD_STOP;
+                        tmframe[int16_counter] = (uint16_t)CMD_STOP;
                     }
 
                     /* Load and transmit TM */
-                    trx_tm_send(tmframe, TRX_TMFRAMELEN);
+                    trx_tm_send(tmframe, TRX_TMFRAMELEN16);
                 }
 
-                byte_counter = 0;
+                int16_counter = 0;
                 frame_counter = 0;
                 tm_type = CMD_STOP;
                 mode = CMD_ADDFRAME_EXIT;
@@ -760,16 +740,15 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                 if(len > 0)
                 {
                     /* Current frame is not initilized */
-                    if(byte_counter == 0 )
+                    if(int16_counter == 0 )
                     {
                         mode = CMD_ADDFRAME_EXIT;
                     }
                     /* Current frame is not full */
-                    else if(byte_counter < TRX_TMFRAMELEN)
+                    else if(int16_counter < TRX_TMFRAMELEN16)
                     {
                         /* Adding data to the current frame*/
-                        tmframe[byte_counter++] = (char)(*data >> 8);/* DataH */
-                        tmframe[byte_counter++] = (char)(*data);     /* DataL */
+                        tmframe[int16_counter++] = (uint16_t)(*data);     /* DataL */
                         /* Update the remaining data counter */
                         data++;
                         len--;
@@ -779,17 +758,16 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                     {
                         /* This frame is ready to be loaded into TRX buffer */
                         /* First fill tmframe's unused fields */
-                        for(;byte_counter<TRX_TMFRAMELEN;byte_counter++)
+                        for(;int16_counter<TRX_TMFRAMELEN16;int16_counter++)
                         {
-                            tmframe[byte_counter++] = (char)((int)CMD_STOP>>8);
-                            tmframe[byte_counter] = (char)CMD_STOP;
+                            tmframe[int16_counter] = (uint16_t)CMD_STOP;
                         }
 
                         /* Load and transmit TM */
-                        trx_tm_send(tmframe, TRX_TMFRAMELEN);
+                        trx_tm_send(tmframe, TRX_TMFRAMELEN16);
 
                         /* Keep adding data in a new frame */
-                        byte_counter = 0;
+                        int16_counter = 0;
                         mode = CMD_ADDFRAME_CONT;
                     }
                 }
@@ -814,11 +792,11 @@ int trx_tm_addtoframe(int *data, int len, int mode)
 /**
  * Auxiliary function. Send a frame by TRX
  * 
- * @param data Pointer to data buffer
- * @param len Number o bytes to transmit
+ * @param data Pointer to data buffer (**int16 buffer**)
+ * @param len Lenght of **int16** buffer to transmit
  * @return 1 Ok, 0 fail.
  */
-static int trx_tm_send(unsigned char *data, int len)
+static int trx_tm_send(uint16_t *data, int len)
 {
 #if SCH_CMDTRX_VERBOSE > 1
     printf("Sending TM frame...\n");
@@ -826,7 +804,7 @@ static int trx_tm_send(unsigned char *data, int len)
 
     int result;
     result = csp_transaction(CSP_PRIO_NORM, SCH_TRX_NODE_GND, SCH_TRX_PORT_TM,
-                             com_timeout, (void *)data, len, NULL, 0);
+                             com_timeout, (void *)data, len*2, NULL, 0);
 
     return result;
 }

@@ -14,6 +14,8 @@ f_name = sys.argv[1]
 f = open(f_name, 'r')
 cmd = 0
 
+log = open("cmd_log.txt", 'a')
+
 for line in f:
     if not cmd:
         if line.find('@cmd_first') != -1:
@@ -26,6 +28,7 @@ for line in f:
                     enum = enum.replace('_id_','_')
                     line = line[:-1] + ', referencia: @ref ' + enum + '\n'
                     cmd +=1
+                    log.write("{0},{1}\n".format(str(hex(cmd)), enum.strip()))
     else:        
         if line.find('@cmd') != -1:
             line = line.replace('@cmd', str(hex(cmd)))
@@ -34,7 +37,9 @@ for line in f:
             enum = enum.replace('_id_','_')
             line = line[:-1] + ', referencia: @ref ' + enum + '\n'
             cmd +=1
+            log.write("{0},{1}\n".format(str(hex(cmd)), enum.strip()))
     
     print line[:-1]
 
 f.close()
+log.close()

@@ -220,7 +220,7 @@ int thk_silent_time_and_pictures(void *param){
             con_printf("    * Turning off TX\r\b");
         #endif
 
-        int trx_mode = 1;
+        int trx_mode = 2; //TODO: Implement trx_setmode
         trx_setmode( (void *)&trx_mode );
     #endif
 
@@ -280,7 +280,7 @@ int thk_silent_time_and_pictures(void *param){
             con_printf("    * Turning on TX\r\b");
         #endif
 
-        trx_mode = 2;
+        trx_mode = 5; //TODO: Implement trx_setmode
         trx_setmode( (void *)&trx_mode );
     #endif
 

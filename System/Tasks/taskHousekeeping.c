@@ -109,9 +109,9 @@ void taskHouskeeping(void *param)
                 con_printf("[Houskeeping] 20[s] actions..\r\n");
             #endif
 
-//            NewCmd.cmdId = thk_id_periodicUpdate_STA_CubesatVar;
-//            NewCmd.param = 0;
-//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+            NewCmd.cmdId = thk_id_periodicUpdate_STA_CubesatVar;
+            NewCmd.param = 0;
+            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 //
 //            NewCmd.cmdId = ppc_id_reactToSOC;
 //            NewCmd.param = 0;

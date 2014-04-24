@@ -453,15 +453,15 @@ void dat_reset_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int lenBuff, int mode
     dat_set_MaxPayIndx(pay_i, lenBuff-1);
     dat_set_NextPayIndx(pay_i, 0);
 
-    if(mode==1){
-        //borro el conteido del buffer
-        //dat_erase_PayloadBuff(pay_i);
-    }
-    //Reinicio el Buffer
-    dat_set_NextPayIndx(pay_i, 0);
-    #if (SCH_DATAREPOSITORY_VERBOSE>=2)
-        printf("reseteo de payload completo\n");
-    #endif
+//    if(mode==1){
+//        //borro el conteido del buffer
+//        dat_erase_PayloadBuff(pay_i);
+//    }
+//    //Reinicio el Buffer
+//    dat_set_NextPayIndx(pay_i, 0);
+//    #if (SCH_DATAREPOSITORY_VERBOSE>=2)
+//        printf("reseteo de payload completo\n");
+//    #endif
 }
 void dat_print_pay_i_name(DAT_PayloadBuff pay_i){
     switch(pay_i){

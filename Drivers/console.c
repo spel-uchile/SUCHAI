@@ -78,12 +78,12 @@ DispCmd con_cmd_handler(void)
             return newCmd;
         }
         /* ------------ DRP COMMANDS ---------------*/
-        if(strcmp(con_cmd, "drp_EBF") == 0){
+        if(strcmp(con_cmd, "thk_EBF") == 0){
             int arg;
             switch(con_arg_count){
                 case 1:
                     arg=atoi(con_args[0]);
-                    newCmd.cmdId = drp_id_executeBeforeFlight;
+                    newCmd.cmdId = thk_id_executeBeforeFlight;
                     newCmd.param = arg;
                 break;
                 default:

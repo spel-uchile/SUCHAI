@@ -66,8 +66,8 @@ typedef enum{
     trx_id_setmode, ///< @cmd
     trx_id_asknewtc, ///< @cmd
     trx_id_parsetcframe, ///< @cmd
-    trx_id_set_tm_pwr, ///< @cmd
-    trx_id_set_bc_pwr, ///< @cmd
+    trx_id_set_tx_baud, ///< @cmd
+    trx_id_set_rx_baud, ///< @cmd
     trx_id_read_tcframe, ///< @cmd
     trx_id_tm_trxstatus, ///< @cmd
     trx_id_write_reg, ///< @cmd
@@ -95,8 +95,8 @@ int trx_initialize(void *param);
 int trx_setmode(void *param);
 int trx_asknewtc(void *param);
 int trx_parsetcframe(void *param);
-int trx_set_tm_pwr(void *param);
-int trx_set_bc_pwr(void *param);
+int trx_set_tx_baud(void *param);
+int trx_set_rx_baud(void *param);
 int trx_read_tcframe(void *param);
 int trx_tm_trxstatus(void *param);
 int trx_write_reg(void *param);

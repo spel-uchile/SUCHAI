@@ -52,10 +52,10 @@ void trx_onResetCmdTRX(void){
     trx_sysReq[(unsigned char)trx_id_asknewtc]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_parsetcframe] = trx_parsetcframe;
     trx_sysReq[(unsigned char)trx_id_parsetcframe]  = CMD_SYSREQ_MIN;
-    trxFunction[(unsigned char)trx_id_set_tm_pwr] = trx_set_tm_pwr;
-    trx_sysReq[(unsigned char)trx_id_set_tm_pwr]  = CMD_SYSREQ_MIN;
-    trxFunction[(unsigned char)trx_id_set_bc_pwr] = trx_set_bc_pwr;
-    trx_sysReq[(unsigned char)trx_id_set_bc_pwr]  = CMD_SYSREQ_MIN;
+    trxFunction[(unsigned char)trx_id_set_tx_baud] = trx_set_tx_baud;
+    trx_sysReq[(unsigned char)trx_id_set_tx_baud]  = CMD_SYSREQ_MIN;
+    trxFunction[(unsigned char)trx_id_set_rx_baud] = trx_set_rx_baud;
+    trx_sysReq[(unsigned char)trx_id_set_rx_baud]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_read_tcframe] = trx_read_tcframe;
     trx_sysReq[(unsigned char)trx_id_read_tcframe]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_tm_trxstatus] = trx_tm_trxstatus;
@@ -514,33 +514,52 @@ int trx_tm_trxstatus(void *param)
 }
 
 /**
- * Sets power level for telemetry
+ * Sets baudrate for telemetry
  *
- * @param param (0-24) Disired power level
+ * @param param RX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
  * @return 1 - OK; 0 - Fail
- * @deprecated
  */
-int trx_set_tm_pwr(void *param)
+int trx_set_tx_baud(void *param)
 {
-#if SCH_CMDTRX_VERBOSE
-    printf("[DEPRECATED]\n");
-#endif
-    return 0;
+    int result;
+    int baud = *((int *)param);
+
+    if(!((baud==12) || (baud==24) || (baud==48)))
+        return 0;
+
+    result = trx_read_conf(NULL);
+    if(!result)
+        return 0;
+
+    TRX_CONFIG.tx_baud = baud;
+
+    result = trx_set_conf(NULL);
+    return result;
+
 }
 
 /**
- * Sets power level for beacon
+ * Sets baudrate for telecomand reception
  *
- * @param param (0-24) Disired power level
+ * @param param RX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
  * @return 1 - OK; 0 - Fail
- * @deprecated
  */
-int trx_set_bc_pwr(void *param)
+int trx_set_rx_baud(void *param)
 {
-#if SCH_CMDTRX_VERBOSE
-    printf("[DEPRECATED]\n");
-#endif
-    return 0;
+    int result;
+    int baud = *((int *)param);
+
+    if(!((baud==12) || (baud==24) || (baud==48)))
+        return 0;
+
+    result = trx_read_conf(NULL);
+    if(!result)
+        return 0;
+
+    TRX_CONFIG.rx_baud = baud;
+
+    result = trx_set_conf(NULL);
+    return result;
 }
 
 /**

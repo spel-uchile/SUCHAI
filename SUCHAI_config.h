@@ -77,7 +77,7 @@
 #define SCH_TRX_PORT_TM                    (10)     /// Puerto correspondiente a telemetria (en la estacion terrena)
 #define SCH_TRX_PORT_TC                    (10)     /// Puerto correspondiente a telecomandos (en el software de vuelo)
 #define SCH_TRX_PORT_DEBUG                 (11)     /// Puerto debug en software de vuelo. Solo imprimie el paquete
-#define SCH_TRX_PORT_CONSOLE               (12)     /// Puerto debug en software de vuelo. Solo imprimie el paquete
+#define SCH_TRX_PORT_CONSOLE               (12)     /// Puerto consola en software de vuelo. Ejecuta comandos de consola
 
 /* Other Software configs */
 #define SCH_NUM_CMDXXX                          (10)    //< Numero maximo de repositorios de comando que pueden ser agregados (min 3)

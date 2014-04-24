@@ -494,7 +494,7 @@ void srp_trx_rssi(void)
     int result;
     int rssi_value;
 
-    result = com_get_log_rssi(rssi_data, &count, NODE_COM, 1000);
+    result = 0; //com_get_log_rssi(rssi_data, &count, NODE_COM, 1000);
     if(result)
     {
         rssi_value = rssi_data[count].rssi; //Get last RSSI measure

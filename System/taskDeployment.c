@@ -487,6 +487,7 @@ int dat_sd_init(void){
 #define MY_ADDRESS (0)
 void dep_csp_initialization(void)
 {
+    printf("\nInitializing libcsp\n");
     csp_debug_set_level(CSP_INFO, 1);
     csp_debug_set_level(CSP_PACKET, 0); /* Fails if activated */
     csp_debug_set_level(CSP_BUFFER, 0); /* Fails if activated */
@@ -513,12 +514,12 @@ void dep_csp_initialization(void)
     csp_listen(sock, 5);
 
     //DEBUG
-    printf("\n---- Conn table ----\n");
+    printf("\n    * Conn table:\n");
     csp_conn_print_table();
-    printf("---- Route table ----\n");
+    printf("\n    * Route table:\n");
     csp_route_print_table();
-    printf("---- Interfaces ----\n");
-    csp_route_print_interfaces();
+//    printf("---- Interfaces ----\n");
+//    csp_route_print_interfaces();
 
 //    xTaskCreate(taskServerCSP, (signed char *)"SRV", 2*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
 }

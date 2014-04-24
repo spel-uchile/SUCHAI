@@ -61,6 +61,9 @@ int main(void)
     /* NOTA: EL TIMER 1 Y SU INTERRUPCION ESTAN CONFIGURADOS POR EL S.0. (FreeRTOS) */
     default_PIC_config();
 
+    /* Initializing LibCSP*/
+    dep_csp_initialization(); //Issue #8: Initialize libcsp before trx
+
     /* System initialization */
     taskDeployment(NULL);
 
@@ -72,9 +75,6 @@ int main(void)
         xTaskCreate(taskExecuter, (signed char *)"EXE", 3*configMINIMAL_STACK_SIZE, NULL, 4, &taskExecuterHandle);
         xTaskCreate(taskDispatcher, (signed char *)"DIS", 1.5*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
     #endif
-
-    /* Initializing LibCSP*/
-    dep_csp_initialization();
 
     /* Creating other tasks*/
     dep_launch_tasks(NULL);

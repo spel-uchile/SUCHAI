@@ -360,7 +360,7 @@ DispCmd con_cmd_handler(void)
                 newCmd.cmdId = trx_id_set_beacon;
                 newCmd.param = 1;
            }
-           if(con_arg_count == 1)
+           else if(con_arg_count == 1)
            {
                 char* end;
                 newCmd.cmdId = trx_id_set_beacon;

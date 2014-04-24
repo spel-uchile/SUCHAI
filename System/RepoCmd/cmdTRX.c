@@ -77,7 +77,7 @@ void trx_onResetCmdTRX(void){
  */
 int trx_set_conf(void *param)
 {
-    #if SCH_CMDTRX_VERBOSE
+    #if SCH_CMDTRX_VERBOSE > 1
         printf("Uploading TRX configuration\n");
         com_print_conf(&TRX_CONFIG);
     #endif
@@ -112,28 +112,35 @@ int trx_read_conf(void *param)
  */
 int trx_set_beacon(void *param)
 {
-    char stdbeacon[] = "00SUCHAI00";
+    char stdbeacon[COM_MORSE_LEN] = "00SUCHAI00";
 
     switch (*(int *)param)
     {
+        case 0:
+            //USe default beacon
+            break;
         case 1:
-            strcpy(stdbeacon, "123456789\0");
+            strcpy(stdbeacon, "0123456789");
             break;
 
         case 2:
-            strcpy(stdbeacon, "000000000\0");
+            strcpy(stdbeacon, "0000000000");
             break;
 
         default:
-            strcpy(stdbeacon, "\0\0\0\0\0\0\0\0\0\0");
+            strcpy(stdbeacon, "");
             break;
     }
 
-    #if SCH_CMDTRX_VERBOSE
+    #if SCH_CMDTRX_VERBOSE > 2
         printf("Setting beacon: %s\n", stdbeacon);
     #endif
 
-    memcpy(TRX_CONFIG.morse_text, stdbeacon, COM_MORSE_LEN);
+    int len = strlen(stdbeacon) + 1;
+    if(len > COM_MORSE_LEN)
+        return 0;
+
+    memcpy(TRX_CONFIG.morse_text, stdbeacon, len);
     int result = trx_set_conf(NULL);
 
     return result;
@@ -268,11 +275,10 @@ int trx_initialize(void *param)
     TRX_CONFIG.tx_max_temp = 60;
 
     /* Save configuration to TRX */
-//    int beacon = 0; // Set suchai beacon
-//    int result = trx_set_beacon((void *)(&beacon)); //Also call trx_set_conf
+    int beacon = 0; // Set suchai beacon
+    int result = trx_set_beacon((void *)(&beacon)); //Also call trx_set_conf
 
-    /* Toopazo: DEBE devolver 1 si tiene exito y avisar con 0 si falla */
-    return 1;
+    return result;
 }
 
 /**

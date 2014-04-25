@@ -68,6 +68,8 @@ void trx_onResetCmdTRX(void){
     trx_sysReq[(unsigned char)trx_id_resend]  = CMD_SYSREQ_MIN+3; /* CMD_SYSREQ_MIN+3 */
     trxFunction[(unsigned char)trx_id_reset_tm_pointer] = trx_reset_tm_pointer;
     trx_sysReq[(unsigned char)trx_id_reset_tm_pointer]  = CMD_SYSREQ_MIN;
+    trxFunction[(unsigned char)trx_id_set_beacon_level] = trx_set_beacon_level;
+    trx_sysReq[(unsigned char)trx_id_set_beacon_level]  = CMD_SYSREQ_MIN;
 }
 
 /**
@@ -245,11 +247,17 @@ int trx_reset_tm_pointer(void *param)
 /**
  * Initializes TRX main parameters
  * 
- * @param param Not used
+ * @param param Is deployed?
  * @return 1 - OK; 0 - Fail
  */
 int trx_initialize(void *param)
 {
+    int deployed;
+    if(param)
+        deployed = *((int *)param);
+    else
+        deployed = 0;
+
     TRX_CONFIG.do_random = 1;
     TRX_CONFIG.do_rs = 1;
     TRX_CONFIG.do_viterbi = 1;
@@ -266,13 +274,18 @@ int trx_initialize(void *param)
     TRX_CONFIG.morse_enable = 1;
     TRX_CONFIG.morse_inter_delay = SCH_TRX_BEACON_PERIOD;
     TRX_CONFIG.morse_mode = SCH_TRX_BEACON_MODE;
-    TRX_CONFIG.morse_pospone = SCH_TRX_BEACON_POSPONE;
+    TRX_CONFIG.morse_pospone = SCH_TRX_BEACON_POSPONE_NOM;
 //    TRX_CONFIG.morse_text = "00SUCHAI00"; //Use command
     TRX_CONFIG.morse_wpm = SCH_TRX_BEACON_WPM;
     TRX_CONFIG.preamble_length = 75;
     TRX_CONFIG.rx_baud = SCH_TRX_RX_BAUD;
     TRX_CONFIG.tx_baud = SCH_TRX_TX_BAUD;
     TRX_CONFIG.tx_max_temp = 60;
+
+    if(!deployed)
+    {
+        TRX_CONFIG.morse_pospone = SCH_TRX_BEACON_POSPONE_PRE;
+    }
 
     /* Save configuration to TRX */
     int beacon = 0; // Set suchai beacon
@@ -595,6 +608,19 @@ int trx_set_reg_val(void *param)
 {
     TRX_REG_VAL = *((int *)param);
     return 1;
+}
+
+/**
+ * Sets beacon battery level. If battery is below this level, trx doesn't send
+ * beacons
+ * @param param *uint16_t Beacon battery level
+ * @return 1 Ok, 0 Fail
+ */
+int trx_set_beacon_level(void* param)
+{
+    uint16_t beacon_level = *((uint16_t *)param);
+    TRX_CONFIG.morse_bat_level = beacon_level;
+    return trx_set_conf(NULL);
 }
 
 /**

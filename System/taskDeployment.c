@@ -408,7 +408,11 @@ int dep_init_bus_hw(void *param)
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             printf("    * External TRX .. ");
         #endif
-        resp  = trx_initialize(NULL);
+        //Check if suchai is deployed to select correct trx configuration
+        hw_isAlive = sta_SUCHAI_isDeployed;
+        int deployed = sta_getCubesatVar(hw_isAlive);
+        //Initialize trx
+        resp  = trx_initialize(&deployed);
         hw_isAlive = sta_TRX_isAlive;
         sta_setCubesatVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)

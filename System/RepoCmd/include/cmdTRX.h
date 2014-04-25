@@ -74,6 +74,7 @@ typedef enum{
     trx_id_set_reg_val, ///< @cmd
     trx_id_resend, ///< @cmd
     trx_id_reset_tm_pointer, ///< @cmd
+    trx_id_set_beacon_level, ///< @cmd
 
     //*********************
     trx_id_last_one    //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
@@ -103,6 +104,7 @@ int trx_write_reg(void *param);
 int trx_set_reg_val(void *param);
 int trx_resend(void *param);
 int trx_reset_tm_pointer(void *param);
+int trx_set_beacon_level(void *param);
 
 int trx_tm_addtoframe(int *data, int len, int mode);
 

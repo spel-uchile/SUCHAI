@@ -68,9 +68,10 @@
 /* TRX and COMM configs */
 #define SCH_TRX_BEACON_PERIOD              (4*60)   ///< [s] Periodo del beacon en segundos (UINT16)
 #define SCH_TRX_BEACON_WPM                 (20)     ///< Velocidad del beacon en palabras por minuto 1-255
-#define SCH_TRX_BEACON_BAT_LVL             (900)    ///< Nivel de bateria minimo para transmitir beacon
+#define SCH_TRX_BEACON_BAT_LVL             (750)    ///< Nivel de bateria minimo para transmitir beacon
 #define SCH_TRX_BEACON_MODE                (2)      ///< Tipo de beacon 0=CW, 1=Cw+FM, 2=FM
-#define SCH_TRX_BEACON_POSPONE             (30*60)  ///< [s] Periodo de inactividad del beacon luego de cada encendido (UINT16)
+#define SCH_TRX_BEACON_POSPONE_PRE         (30*60)  ///< [s] Periodo de inactividad del beacon luego de cada encendido inicial (UINT16)
+#define SCH_TRX_BEACON_POSPONE_NOM         (1*60)   ///< [s] Periodo de inactividad del beacon luego de cada encendido inicial (UINT16)
 #define SCH_TRX_RX_BAUD                    (48)     /// RX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
 #define SCH_TRX_TX_BAUD                    (48)     /// TX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
 #define SCH_TRX_NODE_GND                   (10)     /// Nodo de la estacion terrena

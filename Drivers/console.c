@@ -377,6 +377,26 @@ DispCmd con_cmd_handler(void)
            return newCmd;
        }
 
+        /*TRX SET BEACON LEVEL*/
+       if(strcmp(con_cmd, "trx_set_beacon_lvl") == 0)
+       {
+           if(con_arg_count == 1)
+           {
+                char* end;
+                newCmd.cmdId = trx_id_set_beacon_level;
+                newCmd.param = (uint16_t)strtol(con_args[0], &end, 0);
+           }
+           else
+           {
+               newCmd.cmdId = con_id_error_count_arg;
+           }
+
+           con_arg_toolong = FALSE;
+           con_entry_flag = FALSE;
+
+           return newCmd;
+       }
+
        /*TRX INITIALIZE */
        if(strcmp(con_cmd, "trx_init") == 0)
        {

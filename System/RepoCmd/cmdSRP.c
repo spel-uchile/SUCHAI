@@ -490,11 +490,11 @@ void srp_eraseAll_CubesatVar(void){
  *----------------------------------------------------------------------------*/
 void srp_trx_rssi(void)
 {
-    uint8_t count;
-    int result;
-    int rssi_value;
+    uint8_t count = 0;
+    int result = 0;
+    int rssi_value = 0;
 
-    result = 0; //com_get_log_rssi(rssi_data, &count, NODE_COM, 1000);
+    //result = com_get_log_rssi(rssi_data, &count, NODE_COM, 1000);
     if(result)
     {
         rssi_value = rssi_data[count].rssi; //Get last RSSI measure

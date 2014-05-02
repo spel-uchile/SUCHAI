@@ -47,7 +47,6 @@ void taskDeployment(void *param)
 
 }
 
-//------------------------------------------------------------------------------
 /**
  * Initializes status  repository
  *
@@ -67,7 +66,7 @@ int dep_init_statusRepo(void *param)
 
     return 1;
 }
-//------------------------------------------------------------------------------
+
 extern cmdFunction trxFunction[];
 extern cmdFunction ppcFunction[];
 extern cmdFunction conFunction[];
@@ -217,7 +216,7 @@ int dep_init_cmdRepo(void *param)
 
     return 1;
 }
-//------------------------------------------------------------------------------
+
 /**
  * Initializes data repository
  *

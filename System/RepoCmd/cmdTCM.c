@@ -6,8 +6,8 @@
 cmdFunction tcmFunction[TCM_NCMD];
 int tcm_sysReq[TCM_NCMD];
 
-char beacon_buff[COM_MORSE_LEN] = "00SUCHAI00";
-char *p_beacon_buff = beacon_buff+10;//+strlen(beacon_buff);
+char beacon_buff[COM_MORSE_LEN] = "00SUCHAI0";
+char *p_beacon_buff = beacon_buff+9;//+strlen(beacon_buff);
 
 extern nanocom_conf_t TRX_CONFIG; /** Global configuration var from cmdTRX.c*/
 
@@ -66,6 +66,9 @@ int tcm_testframe(void *param)
  */
 int tcm_resend(void *param)
 {
+#if SCH_CMDTRX_VERBOSE
+    printf("[DEPRECATED]\n");
+#endif
     int result = 0;
 
 //    /* Get position of last sent data */
@@ -138,15 +141,14 @@ int tcm_sendTM_pay_i(void *param){
  * Envia telemetria instantanea (en ese momento) del estado del SUCHAI.
  * Envia por TM todas las variables de estado de cubesatVar
  *
- * TMID : 0x0000
+ * TMID : 0x0009
  *
  * @param param 0 - Only store, 1 - Only Send, 2 - Store and send @deprecated @sa trx_tm_addtoframe()
  * @return 0 (Tx fail) - 1 (Tx OK)
  */
 int tcm_sendTM_cubesatVar(void *param)
 {
-    int tm_id = 0x0000;
-//    int mode = *((int *)param);
+    int tm_id = 0x0009;
 
     /* Start a new session (Single or normal) */
     tm_id = dat_pay_last_one; /* TM ID */ /*Para distingur cubesatVar de los Paylaods*/
@@ -155,25 +157,13 @@ int tcm_sendTM_cubesatVar(void *param)
 
     /* Read info and append to the frame */
     STA_CubesatVar indxVar;
-    for(indxVar=0; indxVar<sta_cubesatVar_last_one; indxVar++){
+    for(indxVar=0; indxVar<sta_cubesatVar_last_one; indxVar++)
+    {
         tm_id = sta_getCubesatVar(indxVar);
         trx_tm_addtoframe(&tm_id, 1, CMD_ADDFRAME_ADD);
-
-        #if (SCH_CMDTCM_VERBOSE>=2)
-            char buffer[10];
-            con_printf("dat_CubesatVar[");
-            //itoa(buffer, (unsigned int)indxVar, 10);
-            sprintf( buffer, "%d", (unsigned int)indxVar );
-            con_printf(buffer); con_printf("]=");
-            //itoa(buffer,(unsigned int)sta_getCubesatVar(indxVar), 10);
-            sprintf( buffer, "0x%X", (unsigned int)sta_getCubesatVar(indxVar) );
-            con_printf(buffer); con_printf("\r\n");
-        #endif
-        }
-
+    }
 
     // Close session
-    // data = trx_tm_addtoframe(&data, 0, CMD_ADDFRAME_STOP);     /* Empty stop frame */
     tm_id = trx_tm_addtoframe(&tm_id, 0, CMD_ADDFRAME_FIN);      /* End session */
 
     return tm_id;
@@ -189,8 +179,11 @@ int tcm_sendTM_cubesatVar(void *param)
  * https://docs.google.com/spreadsheet/ccc?key=0AlJNKX_r8AXcdFZwNURWdmZUVjNtM1RpdTlTRG9LV0E#gid=6
  *
  * @param param Tipo de beacon a construir y enviar.
- *          0 - Identificador
- *          1 - Identificador + Variables de estado
+ *          0 - Simple
+ *          1 - OBC
+ *          2 - Estado hardware
+ *          3 - Estado TRX
+ *          4 - Estado EPS
  *
  * @return 0-Fallo, 1-Exito
  * TODO: Actualizar campos para calzar con nuevo tamano de beacon
@@ -200,27 +193,24 @@ int tcm_update_beacon(void *param)
     int mode = *((int *)param);
     int ok = 0;
     int val = -1;
-    char buff[10];
+    static char buff[10];
     char *p_buff = p_beacon_buff;
     double d_val = 0;
 
+    //SIMPLE
     if(mode==0)
     {
         /* Tipo */
         itoa(buff, mode, 10);
-//        strcpy(p_buff++, buff);
         strcpy(p_buff++, buff);
         ok = 1;
     }
+
+    //OBC
     else if(mode == 1)
     {
         /* Tipo */
         itoa(buff, mode, 10);
-        strcpy(p_buff++, buff);
-
-        /* opMode */
-        val = sta_getCubesatVar(sta_ppc_opMode);
-        itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* hoursWithoutReset */
@@ -229,7 +219,7 @@ int tcm_update_beacon(void *param)
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
-        
+
         /* resetCounter */
         val = sta_getCubesatVar(sta_ppc_resetCounter);
         itoa(buff,val/10,10);
@@ -237,32 +227,167 @@ int tcm_update_beacon(void *param)
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
 
+        /* Last reset source */
+        val = sta_getCubesatVar(sta_ppc_lastResetSource);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
         /* ant_deployed */
         val = sta_getCubesatVar(sta_dep_ant_deployed);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        /* ant_tries */
-        val = sta_getCubesatVar(sta_dep_ant_tries);
+        /* opMode */
+        val = sta_getCubesatVar(sta_ppc_opMode);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        /* hours */
-        val = sta_getCubesatVar(sta_dep_hours);
-        itoa(buff,val,36); //Map 0-36 to 0-Z
+        /* ppc_osc */
+        val = sta_getCubesatVar(sta_ppc_osc);
+        itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        /* minutes */
-        val = sta_getCubesatVar(sta_dep_minutes);
+        /* ppc_osc */
+        val = sta_getCubesatVar(sta_ppc_enwdt);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        /* Separador */
+        itoa(buff,0,10);
+        strcpy(p_buff++, buff);
+        
+        ok = 1;
+    }
+
+    //HARDWARE
+    else if(mode == 2)
+    {
+        /* Tipo */
+        itoa(buff, mode, 10);
+        strcpy(p_buff++, buff);
+
+        val = sta_getCubesatVar(sta_RTC_isAlive);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        val = sta_getCubesatVar(sta_TRX_isAlive);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        val = sta_getCubesatVar(sta_EPS_isAlive);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        val = sta_getCubesatVar(sta_MemEEPROM_isAlive);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        val = sta_getCubesatVar(sta_MemSD_isAlive);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        val = sta_getCubesatVar(sta_pay_lagmuirProbe_isAlive);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        val = sta_getCubesatVar(sta_pay_sensTemp_isAlive);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        val = sta_getCubesatVar(sta_pay_gps_isAlive);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        val = sta_getCubesatVar(sta_pay_camera_isAlive);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        val = sta_getCubesatVar(sta_pay_gyro_isAlive);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        ok = 1;
+    }
+
+    //TRX
+    else if(mode == 3)
+    {
+        /* Tipo */
+        itoa(buff, mode, 10);
+        strcpy(p_buff++, buff);
+
+        /* count_tm */
+        val = sta_getCubesatVar(sta_trx_count_tm);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
+        strcpy(p_buff++, buff);
+
+        /* count_tc */
+        val = sta_getCubesatVar(sta_trx_count_tc);
+        itoa(buff,val/10,10);
+        strcpy(p_buff++, buff);
+        itoa(buff,val%10,10);
+        strcpy(p_buff++, buff);
+
+        /* tx baud */
+        val = TRX_CONFIG.tx_baud;
+        itoa(buff,val/10,10);
+        strcpy(p_buff++, buff);
+
+        /* rx baud */
+        val = TRX_CONFIG.rx_baud;
+        itoa(buff,val/10,10);
+        strcpy(p_buff++, buff);
+
+        /* do rs */
+        val = TRX_CONFIG.do_rs;
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        /* do random */
+        val = TRX_CONFIG.do_random;
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        /* do viterbi */
+        val = TRX_CONFIG.do_viterbi;
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        /* morse_bat_level */
+        val = TRX_CONFIG.morse_bat_level;
+        itoa(buff,val/100,10);
+        strcpy(p_buff++, buff);
+
+        ok = 1;
+    }
+
+    else if(mode == 4)
+    {
+        /* eps_soc */
+        val = sta_getCubesatVar(sta_eps_soc);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        /* eps_charging*/
+        val = sta_getCubesatVar(sta_eps_charging);
+        itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* bat0_voltage */
         val = sta_getCubesatVar(sta_eps_bat0_voltage);
         d_val = -0.00939*val + 9.791;
         val = (int)(d_val*10.0); /* 7.4V -> 74 */
+        itoa(buff,val/10,10);
+        strcpy(p_buff++, buff);
+        itoa(buff,val%10,10);
+        strcpy(p_buff++, buff);
+
+        /* bat0_tmp */
+        val = sta_getCubesatVar(sta_eps_bat0_current);
+        d_val =  -3.20*val+2926.22;
+        val = (int)(d_val); /* 38.1mA -> 38 */
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
@@ -277,41 +402,13 @@ int tcm_update_beacon(void *param)
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
 
-        /* eps_soc */
-        val = sta_getCubesatVar(sta_eps_soc);
-        itoa(buff,val,10);
-        strcpy(p_buff++, buff);
-
-        /* eps_charging*/
-        val = sta_getCubesatVar(sta_eps_charging);
-        itoa(buff,val,10);
-        strcpy(p_buff++, buff);
-
-        /* rssi_mean */
-        val = sta_getCubesatVar(sta_trx_rssi_mean);
-        val = val < 0 ? -1*val:val;
+        /* bat0_tmp */
+        val = sta_getCubesatVar(sta_eps_panel_pwr);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
         
-        /* count_tm */
-        val = sta_getCubesatVar(sta_trx_count_tm);
-        itoa(buff,val/10,10);
-        strcpy(p_buff++, buff);
-        itoa(buff,val%10,10);
-        strcpy(p_buff++, buff);
-        
-        /* count_tc */
-        val = sta_getCubesatVar(sta_trx_count_tc);
-        itoa(buff,val,36); //Map 0-36 to 0-Z
-        strcpy(p_buff++, buff);
-        
-        /* msd_status */
-        val = sta_getCubesatVar(sta_MemSD_isAlive);
-        itoa(buff,val,10);
-        strcpy(p_buff++, buff);
-
         ok = 1;
     }
     else

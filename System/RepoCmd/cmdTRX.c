@@ -390,64 +390,70 @@ int trx_asknewtc(void *param)
  * 
  * @param param (0) No verbose, (1) Verbose
  * @return Number of TC read.
+ * @deprecated
  */
 int trx_parsetcframe(void *param)
 {
-    uint16_t *tcframe = (uint16_t *)param;
-    int count = 0;
-    int step = 2;
-    int result = 0;
-
-    if(tcframe != NULL)
-    {
-        int parserindex = 0;
-        result = 0;
-
-        /* Parsing the TCTF in SUCHAI's commands */
-        //TODO: Check the frame lenght
-        for(count=0; count < TRX_TMFRAMELEN8/2; count+=step)
-        {
-            /* BIG ENDIAN [MSB]<<8 | [LSB] */
-            int cmdid = tcframe[count];
-            int cmdarg = tcframe[count+1];
-
-            /* Check for stop bytes, then add new cmd */
-            if((cmdid != CMD_STOP) && (cmdarg != CMD_STOP))
-            {
-                /* Save TC and ARG into repo_telecmd */
-                dat_set_TeleCmdBuff(parserindex++,cmdid);
-                dat_set_TeleCmdBuff(parserindex++,cmdarg);
-                result++;
-            }
-            /* Stop bytes detected, end parsing */
-            else
-            {
-                break;
-            }
-        }
-
-        /* Fill remaining buffer space */
-        while(parserindex < SCH_DATAREPOSITORY_MAX_BUFF_TELECMD)
-        {
-            dat_set_TeleCmdBuff(parserindex++, CMD_CMDNULL);
-        }
-    }
-
 #if SCH_CMDTRX_VERBOSE
-    printf("Number of read TC: %d\n", result);
+    printf("[DEPRECATED]\n");
 #endif
+    return 0;
 
-    if(result)
-    {
-        /* Aumentar el contador de TC recibidos */
-        result += sta_getCubesatVar(sta_trx_count_tc);
-        sta_setCubesatVar(sta_trx_count_tc, result);
-
-        /* Indicar que hay comandos que procesar en el buffer de Cmd */
-        sta_setCubesatVar(sta_trx_newCmdBuff, 1);
-    }
-
-    return result;
+//    uint16_t *tcframe = (uint16_t *)param;
+//    int count = 0;
+//    int step = 2;
+//    int result = 0;
+//
+//    if(tcframe != NULL)
+//    {
+//        int parserindex = 0;
+//        result = 0;
+//
+//        /* Parsing the TCTF in SUCHAI's commands */
+//        //TODO: Check the frame lenght
+//        for(count=0; count < TRX_TMFRAMELEN8/2; count+=step)
+//        {
+//            /* BIG ENDIAN [MSB]<<8 | [LSB] */
+//            int cmdid = tcframe[count];
+//            int cmdarg = tcframe[count+1];
+//
+//            /* Check for stop bytes, then add new cmd */
+//            if((cmdid != CMD_STOP) && (cmdarg != CMD_STOP))
+//            {
+//                /* Save TC and ARG into repo_telecmd */
+//                dat_set_TeleCmdBuff(parserindex++,cmdid);
+//                dat_set_TeleCmdBuff(parserindex++,cmdarg);
+//                result++;
+//            }
+//            /* Stop bytes detected, end parsing */
+//            else
+//            {
+//                break;
+//            }
+//        }
+//
+//        /* Fill remaining buffer space */
+//        while(parserindex < SCH_DATAREPOSITORY_MAX_BUFF_TELECMD)
+//        {
+//            dat_set_TeleCmdBuff(parserindex++, CMD_CMDNULL);
+//        }
+//    }
+//
+//#if SCH_CMDTRX_VERBOSE
+//    printf("Number of read TC: %d\n", result);
+//#endif
+//
+//    if(result)
+//    {
+//        /* Aumentar el contador de TC recibidos */
+//        result += sta_getCubesatVar(sta_trx_count_tc);
+//        sta_setCubesatVar(sta_trx_count_tc, result);
+//
+//        /* Indicar que hay comandos que procesar en el buffer de Cmd */
+//        sta_setCubesatVar(sta_trx_newCmdBuff, 1);
+//    }
+//
+//    return result;
 }
 
 /**
@@ -478,9 +484,15 @@ int trx_read_tcframe(void *param)
  *
  * @param param 0 - Only store, 1 - Only Send, 2 - Store and send @deprecated
  * @return 0 (Tx fail) - 1 (Tx OK)
+ * @deprecated
  */
 int trx_tm_trxstatus(void *param)
 {
+#if SCH_CMDTRX_VERBOSE
+    printf("[DEPRECATED]\n");
+#endif
+    return 0;
+
     /*Toopazo: Funcion del TRX antiguo, ocupaba "PPC_nTX_FLAG, PPC_nRX_FLAG" que ahora no existen */
 
 //    int data_len = 0x36;
@@ -523,7 +535,6 @@ int trx_tm_trxstatus(void *param)
 //    }
 //
 //    return data;
-    return 0;
 }
 
 /**
@@ -582,18 +593,23 @@ int trx_set_rx_baud(void *param)
  *
  * @param param register to write
  * @return 1 - OK; 0 - Fail
+ * @deprecated
  */
 int trx_write_reg(void *param)
 {
-    int reg = *((int *)param);
-    int val = TRX_REG_VAL;
-
-    if((reg > 0x00FF) || (val > 0x00FF))
-        return 0;
+#if SCH_CMDTRX_VERBOSE
+    printf("[DEPRECATED]\n");
+#endif
+    
+//    int reg = *((int *)param);
+//    int val = TRX_REG_VAL;
+//
+//    if((reg > 0x00FF) || (val > 0x00FF))
+//        return 0;
 
 //    TODO: TRX_WriteRegister((unsigned char)reg, (unsigned char)val);
 
-    return 1;
+    return 0;
 }
 
 /**
@@ -603,11 +619,15 @@ int trx_write_reg(void *param)
  *
  * @param param value to store
  * @return 0 (fail) - 1 (OK)
+ * @deprecated
  */
 int trx_set_reg_val(void *param)
 {
-    TRX_REG_VAL = *((int *)param);
-    return 1;
+#if SCH_CMDTRX_VERBOSE
+    printf("[DEPRECATED]\n");
+#endif
+//    TRX_REG_VAL = *((int *)param);
+    return 0;
 }
 
 /**

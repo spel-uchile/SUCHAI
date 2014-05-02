@@ -249,6 +249,7 @@
     <Elem>../Libcsp/include</Elem>
     <Elem>../Libcsp/src</Elem>
     <Elem>../FreeRTOS/Source/portable</Elem>
+    <Elem>../System</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

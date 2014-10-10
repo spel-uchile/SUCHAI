@@ -1,8 +1,7 @@
 SUCHAI
 ======
 
-Software de vuelo del Cubesat SUCHAI
-_SUCHAI Cubesat Flight Software_
+SUCHAI Cubesat Flight Software
 
 Key Features:
 * Designed for medium-range microcontrollers, as Microchip PIC24.

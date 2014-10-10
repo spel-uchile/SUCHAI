@@ -10,6 +10,6 @@ Key Features:
 * Highly extensible command processor architecture
 * Powered by FreeRTOS
 
-Visit http://suchai.li2.uchile.cl/?page_id=52 to get latest news about SUCHAI project
+Visit http://spel.ing.uchile.cl/suchai to get latest news about SUCHAI project
 
 Visit http://www.freertos.org/ to get FreeRTOS source code and documentation

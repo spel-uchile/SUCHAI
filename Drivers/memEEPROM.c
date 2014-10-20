@@ -89,7 +89,8 @@ int memEEPROM_isAlive(void)
     int indxVar;    //DAT_CubesatVar indxVar;
     int wvalue,rvalue;
 
-    indxVar = 0;  //indxVar = sta_MemEEPROM_testVal
+    //indxVar = sta_MemEEPROM_testVal;
+    indxVar = 0;
     
     wvalue = 5005;
     rvalue = 0;

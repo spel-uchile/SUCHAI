@@ -47,16 +47,17 @@
 #include "csp_if_i2c.h"
 #include "taskTest.h"
 
-void taskDeployment(void *param);
+void dep_init_hw(void *param);
+void dep_init_repos(void *param);
 
 int dep_init_dataRepo(void *param);
 int dep_init_cmdRepo(void *param);
 int dep_init_statusRepo(void *param);
-int dep_init_GnrlStrct(void *param);
-int dep_suicide(void *param);
-int dep_launch_tasks(void *param);
+int dep_init_adHoc_strcts(void *param);
+int dep_suicide(void *param);   //deprecated
+int dep_init_listeners(void *param);
 int dep_init_bus_hw(void *param);
-int dat_sd_init(void);
+//int dat_sd_init(void);
 
 void dep_csp_initialization(void);
 

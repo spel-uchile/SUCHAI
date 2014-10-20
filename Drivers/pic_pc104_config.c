@@ -502,7 +502,6 @@ void GPIO_PC104_init(void)
         // H1.03	SDA2/CN36/RA3 (Pin 59) => pin es RA3
         _TRISA3=0; 			//pin 0-output 1-input.
         _LATA3=0;             	//parte en 0
-        //pin es Magnetorquer_switch
     #endif
 //------------------------------------------------------------------------------
     #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)

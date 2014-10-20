@@ -18,7 +18,7 @@
 
 
 /* Peripheral's config */
-#define SCH_UART_DEBUG_PORT     (1) ///< 0-Habilita DB9, 1-Habilita USB
+#define SCH_UART_DEBUG_PORT     (0) ///< 0-Habilita DB9, 1-Habilita USB
 #define SCH_I2C1_ADDR           (0x00) ///< I2C 1 Slave address
 #define SCH_I2C2_ADDR           (0xF3) ///< I2C 2 Slave address
 #define SCH_I2C3_ADDR           (0xF4) ///< I2C 3 Slave address
@@ -34,10 +34,10 @@
 #define SCH_SYSBUS_ONBOARD                  (1)  //< Onboard => I2C1 en uso
 #define SCH_PAYBUS_ONBOARD                  (1)  ///< Onboard => I2C3 en uso
 #define SCH_ANTENNA_ONBOARD                 (1) ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
-#define SCH_TRX_ONBOARD                     (1) ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
+#define SCH_TRX_ONBOARD                     (0) ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
 #define SCH_RTC_ONBOARD                     (1) ///< 1 = Onboard 0 = Not Onboard
 #define SCH_MEMEEPROM_ONBOARD               (1) ///< 1 = Onboard 0 = Not Onboard
-#define SCH_EPS_ONBOARD                     (1) ///< Onboard => I2C1 en uso
+#define SCH_EPS_ONBOARD                     (0) ///< Onboard => I2C1 en uso
 #define SCH_MEMSD_ONBOARD                   (1) ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_MGN_ONBOARD                     (0)  ///< Onboard => 1 pin(es) en modo Switch
 

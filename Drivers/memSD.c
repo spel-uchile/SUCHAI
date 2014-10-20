@@ -228,6 +228,25 @@ unsigned char SD_init2(void){
 
     return r;
 }
+
+unsigned int SD_init_memSD(void){
+    //apagar energia MemSD
+    PPC_MB_nON_SD=1;
+    /* Un delay para poder inicializar conrrectamente la SD si el PIC se resetea */
+//    unsigned long i;
+//    for(i = 0x004FFFFF; i>0; i--){}
+    __delay_ms(3000);
+    //encender energia MemSD
+    PPC_MB_nON_SD=0;
+    unsigned char r = SD_init();
+    if(r == 0){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
 unsigned char SD_init(void){
 	MSD_COMMAND CMD0 = create_COMMAND(0x00,0x00000000,0x95);	// solo para este comando importa un crc valido (0x95)
 	MSD_COMMAND CMD1 = create_COMMAND(0x01,0x40000000,0x95);	// initialize card, and send Host Capcity Support

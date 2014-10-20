@@ -70,7 +70,13 @@ unsigned char Set_Block_Length(MSD_ARG l);			//largo de los block para leer y es
 unsigned char SD_init2(void);							//Inicializacion bajo estandar 2.0 de Part I, Physical layer
 														//si tiene exito devuelve COMMAND_ACCEPTED (es un define)
 														//si falla devuelve el byte R1 response (es una variable)
-														
+
+/**
+ * Init memSD and return status
+ * @return 1=init Ok 0=init Failed
+ */
+unsigned int SD_init_memSD(void);
+
 unsigned char SD_init(void);										//inicializacion alternativa para modo SPI de la tarjeta SD
 																	//si tiene exito devuelve COMMAND_ACCEPTED (es un define)
 																	//si falla devuelve el byte R1 response (es una variable)

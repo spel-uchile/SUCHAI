@@ -18,7 +18,7 @@
 
 //#include "pic_pc104_config.h"
 #include "cmdIncludes.h"
-#include "taskDeployment.h"
+#include "suchaiDeployment.h"
 //#include "cmdRepository.h"
 /* Add commands definitions*/
 #include "cmdTCM.h"

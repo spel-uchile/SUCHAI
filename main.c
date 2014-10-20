@@ -23,7 +23,7 @@
 #include "taskHouskeeping.h"
 #include "taskFlightPlan.h"
 #include "taskComunications.h"
-#include "taskDeployment.h"
+#include "suchaiDeployment.h"
 
 /* Command Includes */
 #include "cmdIncludes.h"
@@ -43,7 +43,7 @@ xTaskHandle taskComunicationsHandle, taskConsoleHandle, taskFlightPlanHandle,
 int main(void)
 {
     /* Initializing shared Queues */
-    dispatcherQueue = xQueueCreate(25,sizeof(DispCmd));
+    dispatcherQueue = xQueueCreate(25, sizeof(DispCmd));
     #if(SCH_TASKEXECUTER_INSIDE_TASKDISPATCHER==1)
         //no Queue creation
     #else
@@ -65,7 +65,8 @@ int main(void)
     dep_csp_initialization(); //Issue #8: Initialize libcsp before trx
 
     /* System initialization */
-    taskDeployment(NULL);
+    dep_init_hw(NULL);
+    dep_init_repos(NULL);
 
     /* Crating base tasks */
     printf("\n[main] Starting base tasks...\r\n");
@@ -77,7 +78,7 @@ int main(void)
     #endif
 
     /* Creating other tasks*/
-    dep_launch_tasks(NULL);
+    dep_init_listeners(NULL);
 
     /* Start the scheduler. Should never return */
     printf("\nStarting FreeRTOS [->]\r\n");

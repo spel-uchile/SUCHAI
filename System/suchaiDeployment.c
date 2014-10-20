@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "taskDeployment.h"
+#include "suchaiDeployment.h"
 
 extern xTaskHandle taskComunicationsHandle;
 extern xTaskHandle taskConsoleHandle;
@@ -27,7 +27,7 @@ extern xTaskHandle taskHouskeepingHandle;
 extern xQueueHandle dispatcherQueue;
 
 
-void taskDeployment(void *param)
+void dep_init_hw(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE)
         printf(">>[Deployment] Started\r\n");
@@ -36,14 +36,16 @@ void taskDeployment(void *param)
 
     /* Perifericos*/
     dep_init_bus_hw(NULL);
+}
 
+void dep_init_repos(void *param){
     /* Repositorios */
     dep_init_statusRepo(NULL);
     dep_init_cmdRepo(NULL);
     dep_init_dataRepo(NULL);
 
     /* Otras estructuras */
-    dep_init_GnrlStrct(NULL);
+    dep_init_adHoc_strcts(NULL);
 
 }
 
@@ -235,7 +237,7 @@ int dep_init_dataRepo(void *param)
     #endif
     dat_onReset_dataRepo(TRUE);
 
-    /* Initializing dataRepository Structures */
+    /* Initializing dataRepository structures */
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         printf("    * onReset Fligh Plan..\r\n");
     #endif
@@ -260,7 +262,7 @@ int dep_init_dataRepo(void *param)
  * @param param Not used
  * @return 1
  */
-int dep_init_GnrlStrct(void *param)
+int dep_init_adHoc_strcts(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
         printf("\n[dep_init_GnrlStruct] Initializing other structures...\r\n");
@@ -302,7 +304,7 @@ int dep_suicide(void *param)
  * @param param Not used
  * @return 1 success, 0 fails
  */
-int dep_launch_tasks(void *param)
+int dep_init_listeners(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
         printf("\n[dep_launch_tasks] Starting all tasks...\r\n");
@@ -449,7 +451,8 @@ int dep_init_bus_hw(void *param)
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             printf("    * External MemSD .. ");
         #endif
-        resp = dat_sd_init();
+        //resp = dat_sd_init();
+        resp =  SD_init_memSD();
         hw_isAlive = sta_MemSD_isAlive;
         sta_setCubesatVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
@@ -466,24 +469,24 @@ int dep_init_bus_hw(void *param)
     return 1;
 }
 
-int dat_sd_init(void){
-    //apagar energia MemSD
-    PPC_MB_nON_SD=1;
-    /* Un delay para poder inicializar conrrectamente la SD si el PIC se resetea */
-//    unsigned long i;
-//    for(i = 0x004FFFFF; i>0; i--){}
-    __delay_ms(3000);
-    //encender energia MemSD
-    PPC_MB_nON_SD=0;
-    unsigned char r = SD_init();
-    if(r == 0){
-        dat_onReset_dataRepo(FALSE);
-        return 1;
-    }
-    else{
-        return 0;
-    }
-}
+//int dat_sd_init(void){
+//    //apagar energia MemSD
+//    PPC_MB_nON_SD=1;
+//    /* Un delay para poder inicializar conrrectamente la SD si el PIC se resetea */
+////    unsigned long i;
+////    for(i = 0x004FFFFF; i>0; i--){}
+//    __delay_ms(3000);
+//    //encender energia MemSD
+//    PPC_MB_nON_SD=0;
+//    unsigned char r = SD_init();
+//    if(r == 0){
+//        dat_onReset_dataRepo(FALSE);
+//        return 1;
+//    }
+//    else{
+//        return 0;
+//    }
+//}
 
 
 //Libcsp defines and functions

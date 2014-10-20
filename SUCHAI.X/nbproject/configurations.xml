@@ -107,9 +107,9 @@
         <itemPath>../System/include/dataRepository.h</itemPath>
         <itemPath>../System/include/DebugIncludes.h</itemPath>
         <itemPath>../System/include/statusRepository.h</itemPath>
-        <itemPath>../System/include/taskDeployment.h</itemPath>
         <itemPath>../System/include/taskDispatcher.h</itemPath>
         <itemPath>../System/include/taskExecuter.h</itemPath>
+        <itemPath>../System/include/suchaiDeployment.h</itemPath>
       </logicalFolder>
       <itemPath>../FreeRTOSConfig.h</itemPath>
       <itemPath>../SUCHAI_config.h</itemPath>
@@ -234,8 +234,8 @@
         <itemPath>../System/taskExecuter.c</itemPath>
         <itemPath>../System/dataRepository.c</itemPath>
         <itemPath>../System/cmdRepository.c</itemPath>
-        <itemPath>../System/taskDeployment.c</itemPath>
         <itemPath>../System/statusRepository.c</itemPath>
+        <itemPath>../System/suchaiDeployment.c</itemPath>
       </logicalFolder>
       <itemPath>../main.c</itemPath>
     </logicalFolder>
@@ -259,9 +259,9 @@
         <targetDevice>PIC24FJ256GA110</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>ICD3PlatformTool</platformTool>
+        <platformTool>PICkit2PlatformTool</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>1.11</languageToolchainVersion>
+        <languageToolchainVersion>1.21</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <compileType>
@@ -271,6 +271,7 @@
         </linkerTool>
         <loading>
           <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
       </compileType>
@@ -323,6 +324,9 @@
         <property key="use-cci" value="false"/>
         <property key="use-iar" value="false"/>
       </C30>
+      <C30-AR>
+        <property key="additional-options-chop-files" value="false"/>
+      </C30-AR>
       <C30-AS>
         <property key="assembler-symbols" value=""/>
         <property key="expand-macros" value="false"/>
@@ -443,6 +447,7 @@
         <property key="UART 3" value="true"/>
         <property key="UART 4" value="true"/>
         <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="false"/>
@@ -454,6 +459,7 @@
         <property key="memories.programmemory.end" value="0x2abf7"/>
         <property key="memories.programmemory.start" value="0x0"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preserveeeprom" value="false"/>
         <property key="programoptions.preserveprogramrange" value="false"/>
@@ -474,7 +480,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>Simulator</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>1.11</languageToolchainVersion>
+        <languageToolchainVersion>1.21</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <compileType>
@@ -484,6 +490,7 @@
         </linkerTool>
         <loading>
           <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
       </compileType>
@@ -536,6 +543,9 @@
         <property key="use-cci" value="false"/>
         <property key="use-iar" value="false"/>
       </C30>
+      <C30-AR>
+        <property key="additional-options-chop-files" value="false"/>
+      </C30-AR>
       <C30-AS>
         <property key="assembler-symbols" value=""/>
         <property key="expand-macros" value="false"/>

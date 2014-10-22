@@ -59,35 +59,7 @@ void taskHouskeeping(void *param)
 
     portTickType xLastWakeTime = xTaskGetTickCount();
   
-
-    vTaskDelayUntil(&xLastWakeTime, delay_ticks); //Suspend task
-    vTaskDelayUntil(&xLastWakeTime, delay_ticks); //Suspend task
-    int rt_mode;
-    if( sta_getCubesatVar(sta_SUCHAI_isDeployed) == 0 ){
-        printf("[Houskeeping] sta_SUCHAI_isDeployed = 0..\r\n");
-
-        //wait 30mins, meanwhile take pictures
-        rt_mode = SCH_THK_SILENT_REALTIME; /* 1=Real Time, 0=Debug Time */
-        NewCmd.cmdId = thk_id_silent_time_and_pictures;
-        NewCmd.param = rt_mode;
-        xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-        
-        /* Deploy Antena */
-        #if (SCH_ANTENNA_ONBOARD==1)
-            rt_mode = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
-            NewCmd.cmdId = thk_id_deploy_antenna;
-            NewCmd.param = rt_mode;
-            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-        #endif
-
-        //deploy langmuir
-        //..
-        //other "only once"-tasks
-        //..
-            
-        sta_setCubesatVar(sta_SUCHAI_isDeployed, 1);
-        ppc_reset(NULL);
-    }
+    check_deploy_antenna();
 
     //thk_periodicUpdate_STA_CubesatVar(NULL); //TODO: Why?
     
@@ -184,5 +156,79 @@ void taskHouskeeping(void *param)
 
             //Nothing to do here
         }
+    }
+}
+
+
+void check_deploy_antenna(void){
+    portTickType xLastWakeTime = xTaskGetTickCount();
+    portTickType delay_60s    = 60000;    //Task period in [ms]
+    portTickType delay_tick_60s = delay_60s / portTICK_RATE_MS; //Task period in ticks
+
+    DispCmd NewCmd;
+    NewCmd.idOrig = CMD_IDORIG_THOUSEKEEPING; /* Housekeeping */
+    NewCmd.cmdId = CMD_CMDNULL;
+    NewCmd.param = 0;
+    
+    int rt_mode;
+    if( sta_getCubesatVar(sta_SUCHAI_isDeployed) == 0 ){
+        printf("[Houskeeping] sta_SUCHAI_isDeployed = 0 => Antenna is not yet deployed..\r\n");
+
+        unsigned long initial_tick_10ms = xTaskGetTickCount(); //get initial tick-time
+        unsigned long silent_time_10ms = (180000);     // 30 minutes = 1800 sec = 180000 [10ms]
+        unsigned long final_tick_10ms = initial_tick_10ms + silent_time_10ms;
+
+        // print rtc time
+        NewCmd.cmdId = rtc_id_print;
+        NewCmd.param = 0;
+        xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+
+        //take picture
+        #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
+            NewCmd.cmdId = pay_id_takePhoto_camera;
+            NewCmd.param = 0;
+            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+        #endif
+
+        // print rtc time
+        NewCmd.cmdId = rtc_id_print;
+        NewCmd.param = 0;
+        xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+
+        while(TRUE){
+            unsigned long int cu_tick_10ms = xTaskGetTickCount();
+            if( cu_tick_10ms >= final_tick_10ms ){
+                printf("[Houskeeping] Timeout of 30min silence time ..\r\n");
+                break;
+            }
+            vTaskDelayUntil(&xLastWakeTime, delay_tick_60s); //Suspend task 60 sec
+            printf("[Houskeeping] Waiting 30min silence time ..\r\n");
+        }
+
+        // print rtc time
+        NewCmd.cmdId = rtc_id_print;
+        NewCmd.param = 0;
+        xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+
+        /* Deploy Antena */
+        #if (SCH_ANTENNA_ONBOARD==1)
+            rt_mode = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
+            NewCmd.cmdId = thk_id_deploy_antenna;
+            NewCmd.param = rt_mode;
+            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+        #endif
+
+        // print rtc time
+        NewCmd.cmdId = rtc_id_print;
+        NewCmd.param = 0;
+        xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+
+        //deploy langmuir
+        //..
+        //other "only once"-tasks
+        //..
+
+//        sta_setCubesatVar(sta_SUCHAI_isDeployed, 1);
+//        ppc_reset(NULL);
     }
 }

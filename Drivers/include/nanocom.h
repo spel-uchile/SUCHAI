@@ -10,6 +10,12 @@
 
 #include <stdint.h>
 
+//includes for void com_csp_initialization(void);
+#include "SUCHAI_config.h"
+#include "csp.h"
+#include "csp_if_i2c.h"
+#include "taskTest.h"
+
 /** Default node address */
 #define NODE_COM				5
 #define NODE_TNC				9
@@ -182,5 +188,10 @@ void com_print_conf(nanocom_conf_t * config);
  * @param com_stat
  */
 void com_printf_status(nanocom_data_t * com_stat);
+
+/**
+ * Initialize de CPS library for the SUCHAI Sw (call only once)
+ */
+void com_csp_initialization(void);
 
 #endif /* NANOCOM_H_ */

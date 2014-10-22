@@ -58,6 +58,7 @@ typedef enum{
     pay_id_init_camera, ///< @cmd
     pay_id_take_camera, ///< @cmd
     pay_id_stop_camera, ///< @cmd
+    pay_id_takePhoto_camera, ///< @cmd
 
     pay_id_init_gps, ///< @cmd
     pay_id_take_gps, ///< @cmd
@@ -147,6 +148,7 @@ int pay_debug_camera(void *param);
 int pay_take_camera(void *param);
 int pay_init_camera(void *param);
 int pay_stop_camera(void *param);
+int pay_takePhoto_camera(void *param);
 //GPS
 int pay_take_gps(void *param);
 int pay_init_gps(void *param);

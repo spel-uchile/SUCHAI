@@ -37,28 +37,33 @@
 #include "cmdTHK.h"
 #include "cmdPayload.h"
 
+
+//FreeRTOS tasks
+#include "taskTest.h"
+#include "taskDispatcher.h"
 #include "taskConsole.h"
+#include "taskExecuter.h"
 #include "taskHouskeeping.h"
-#include "taskComunications.h"
 #include "taskFlightPlan.h"
 #include "taskFlightPlan2.h"
+#include "taskComunications.h"
 
 #include "csp.h"
 #include "csp_if_i2c.h"
 #include "taskTest.h"
 
-void dep_init_hw(void *param);
-void dep_init_repos(void *param);
+void dep_init_suchai_hw(void);
+void dep_init_suchai_repos(void);
+void dep_init_suchai_tasks(void);
 
+int dep_init_sysbus_hw(void *param);
 int dep_init_dataRepo(void *param);
 int dep_init_cmdRepo(void *param);
 int dep_init_statusRepo(void *param);
 int dep_init_adHoc_strcts(void *param);
-int dep_suicide(void *param);   //deprecated
-int dep_init_listeners(void *param);
-int dep_init_bus_hw(void *param);
-//int dat_sd_init(void);
 
-void dep_csp_initialization(void);
+int dep_suicide(void *param);           //deprecated
+//int dat_sd_init(void);                //deprecated
+//void dep_csp_initialization(void);    //deprecated
 
 #endif //_DEPLOYMENT_H

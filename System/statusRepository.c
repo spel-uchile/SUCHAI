@@ -49,6 +49,9 @@ void sta_setCubesatVar(STA_CubesatVar indxVar, int value){
     #endif
 
     semStatus = xSemaphoreGive(dataRepositorySem);
+
+    //callback function for every write to a STA_CubesatVar
+    
 }
 /**
  * Funcion para obtener una variable de estado
@@ -112,7 +115,6 @@ void sta_onResetStatRepo(void)
         #endif
     }
     sta_setCubesatVar(sta_ppc_enwdt, PPC_INITIAL_WDT_STATE);
-
     sta_setCubesatVar(sta_ppc_MB_nOE_USB_nINT_stat, PPC_MB_nOE_USB_nINT_CHECK);
     sta_setCubesatVar(sta_ppc_MB_nOE_MHX_stat, PPC_MB_nOE_MHX_CHECK);
     sta_setCubesatVar(sta_ppc_MB_nON_MHX_stat, PPC_MB_nON_MHX_CHECK);

@@ -140,22 +140,20 @@ int ppc_enwdt(void *on_off)
     if( i==0 )
     {
          EnableWDT( WDT_DISABLE );
-         txt_result = "WDT_DISABLE\r\n";
          sta_setCubesatVar(sta_ppc_enwdt, 0);
+         printf("WDT was disabled\r\n");
     }
     else if( i==1 )
     {
          EnableWDT( WDT_ENABLE );
-         txt_result = "WDT_ENABLE\r\n";
          sta_setCubesatVar(sta_ppc_enwdt, 1);
+         printf("WDT was enabled\r\n");
     }
     else
     {
-        txt_result = "Not a valid argument\r\n";
+        printf("Invalid argument\r\n");
         result = 0;
     }
-
-    con_printf(txt_result);
 
     return result;
 }

@@ -89,7 +89,7 @@
 #define SCH_FLIGHTPLAN_N_CMD                    ((24 * 60) / SCH_FLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]
 #define SCH_FLIGHTPLAN_EXTMEMORY                (1)     ///< (0) buffer en  RAM, (1) en memoria SD
 #define SCH_USE_FLIGHTPLAN                      (0)     ///< 1 = use it, 0 = do not use it
-#define SCH_USE_FLIGHTPLAN2                     (1)     ///< 1 = use it, 0 = do not use it
+#define SCH_USE_FLIGHTPLAN2                     (0)     ///< 1 = use it, 0 = do not use it
 #define SCH_USE_HOUSEKEEPING                    (1)     ///< 1 = use it, 0 = do not use it
 
 /**

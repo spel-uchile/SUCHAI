@@ -89,7 +89,7 @@ int thk_deploy_antenna(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
         printf("\n[thk_deploy_antenna] Deploying TRX Antenna... \r\n");
-        rtc_print(NULL);
+        //rtc_print(NULL);
     #endif
 
     //Realtime=1 DebugTime=0
@@ -194,6 +194,7 @@ int thk_deploy_antenna(void *param)
 
     return 0;
 }
+
 BOOL thk_check_antenna_isDeployed(unsigned int delay_recheck_dep_time){
     if(PPC_ANT12_CHECK==0)   /* reviso */
     {

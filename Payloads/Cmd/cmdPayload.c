@@ -54,6 +54,8 @@ void pay_onResetCmdPAY(void){
     payFunction[(unsigned char)pay_id_init_camera] = pay_init_camera;
     payFunction[(unsigned char)pay_id_take_camera] = pay_take_camera;
     payFunction[(unsigned char)pay_id_stop_camera] = pay_stop_camera;
+    payFunction[(unsigned char)pay_id_takePhoto_camera] = pay_takePhoto_camera;
+
 
     payFunction[(unsigned char)pay_id_init_gps] = pay_init_gps;
     payFunction[(unsigned char)pay_id_take_gps] = pay_take_gps;
@@ -907,7 +909,7 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type, int mode)
         if( (mode==CAM_MODE_SAVE_SD) || (mode==CAM_MODE_BOTH) ){
             stat = dat_set_PayloadBuff( dat_pay_camera, (int)resp );
             //__delay_ms(12);
-            #if (SCH_CAMERA_VERBOSE>=2)
+            #if (SCH_CAMERA_VERBOSE>=1)
                 cnt++;
                 if(cnt%200==0){
                     con_printf("still writing memSD .. cnt=");
@@ -930,6 +932,20 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type, int mode)
     }
 
     return TRUE;
+}
+int pay_takePhoto_camera(void *param){
+    printf("pay_takePhoto_camera ..");
+
+    //2) tomo foto
+    pay_init_camera(NULL);
+    //int arg = CAM_MODE_VERBOSE;
+    //int arg = CAM_MODE_BOTH;
+    int arg = CAM_MODE_SAVE_SD;
+    int st = pay_take_camera(&arg);
+    pay_stop_camera(NULL);
+   //parar ciclo de Payload
+    sta_setCubesatVar(sta_pay_camera_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+    return st;
 }
 //******************************************************************************
 int pay_init_gps(void *param){

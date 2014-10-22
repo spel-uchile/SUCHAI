@@ -19,34 +19,33 @@
  */
 #include "suchaiDeployment.h"
 
+//FreeRTOS tasks and Queue Handlers
 extern xTaskHandle taskComunicationsHandle;
+extern xTaskHandle taskDispatcherHandle;
 extern xTaskHandle taskConsoleHandle;
 extern xTaskHandle taskFlightPlanHandle;
 extern xTaskHandle taskFlightPlan2Handle;
 extern xTaskHandle taskHouskeepingHandle;
 extern xQueueHandle dispatcherQueue;
 
-
-void dep_init_hw(void *param)
+void dep_init_suchai_hw(void)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE)
-        printf(">>[Deployment] Started\r\n");
-        printf("\n[Deployment] INITIALIZING SUCHAI FLIGHT SOFTWARE\r\n");
+        printf("[suchaiDeployment] Started\r\n");
+        printf("\n[suchaiDeployment] INITIALIZING SUCHAI FLIGHT SOFTWARE\r\n");
     #endif
 
-    /* Perifericos*/
-    dep_init_bus_hw(NULL);
+    /* External Perippherals/Componentes/subsystems/Hw etc ..*/
+    dep_init_sysbus_hw(NULL);
 }
 
-void dep_init_repos(void *param){
-    /* Repositorios */
-    dep_init_statusRepo(NULL);
-    dep_init_cmdRepo(NULL);
-    dep_init_dataRepo(NULL);
-
-    /* Otras estructuras */
+void dep_init_suchai_repos(void){
+    /* Repositories */
+    dep_init_statusRepo(NULL);  //modify specific reset-dependant STA_CubesatVar vars
+    dep_init_cmdRepo(NULL);     //loads cmdXXX repos to be used
+    dep_init_dataRepo(NULL);    //prepares GnrlPurposeBuff to be used
+    /* Other structures */
     dep_init_adHoc_strcts(NULL);
-
 }
 
 /**
@@ -237,7 +236,7 @@ int dep_init_dataRepo(void *param)
     #endif
     dat_onReset_dataRepo(TRUE);
 
-    /* Initializing dataRepository structures */
+    /* Initializing the rest of dataRepository structures */
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         printf("    * onReset Fligh Plan..\r\n");
     #endif
@@ -285,8 +284,8 @@ int dep_init_adHoc_strcts(void *param)
 int dep_suicide(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE)
-        printf("[Deployment] ENDS\r\n");
-        printf("[Deployment] Deleting task\r\n");
+        printf("[suchaiDeployment] ENDS\r\n");
+        printf("[suchaiDeployment] Deleting task\r\n");
     #endif
     vTaskDelete(NULL);
 
@@ -304,8 +303,18 @@ int dep_suicide(void *param)
  * @param param Not used
  * @return 1 success, 0 fails
  */
-int dep_init_listeners(void *param)
+void dep_init_suchai_tasks(void)
 {
+    /* Crating base tasks */
+    printf("\n[main] Starting base tasks...\r\n");
+    #if(SCH_TASKEXECUTER_INSIDE_TASKDISPATCHER==1)
+        xTaskCreate(taskDispatcher, (signed char *)"DIS", 4*configMINIMAL_STACK_SIZE, NULL, 4, &taskDispatcherHandle);
+    #else
+        xTaskCreate(taskExecuter, (signed char *)"EXE", 3*configMINIMAL_STACK_SIZE, NULL, 4, &taskExecuterHandle);
+        xTaskCreate(taskDispatcher, (signed char *)"DIS", 1.5*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
+    #endif
+
+    /* Creating other tasks*/
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
         printf("\n[dep_launch_tasks] Starting all tasks...\r\n");
     #endif
@@ -349,15 +358,13 @@ int dep_init_listeners(void *param)
             __delay_ms(300);
         #endif
     }
-        
-    return 1;
 }
 /**
  * Initializes all peripherals and subsystems.
  * @param param Not used.
  * @return 1 success, 0 fail.
  */
-int dep_init_bus_hw(void *param)
+int dep_init_sysbus_hw(void *param)
 {
     int resp;
     STA_CubesatVar hw_isAlive;
@@ -466,6 +473,15 @@ int dep_init_bus_hw(void *param)
     }
     #endif
 
+    #if (SCH_ANTENNA_ONBOARD==1)
+    {
+        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            printf("    * External Antenna .. ");
+            printf("Pending (Antenna Deployment will be carried-out by Task Housekeeping)\r\n");
+        #endif
+    }
+    #endif
+
     return 1;
 }
 
@@ -489,43 +505,142 @@ int dep_init_bus_hw(void *param)
 //}
 
 
-//Libcsp defines and functions
-#define MY_ADDRESS (0)
-void dep_csp_initialization(void)
-{
-    printf("\nInitializing libcsp\n");
-    csp_debug_set_level(CSP_INFO, 1);
-    csp_debug_set_level(CSP_PACKET, 0); /* Fails if activated */
-    csp_debug_set_level(CSP_BUFFER, 0); /* Fails if activated */
-    csp_debug_set_level(CSP_ERROR, 1);
-    csp_debug_set_level(CSP_WARN, 1);
+////Libcsp defines and functions
+//#define MY_ADDRESS (0)
+//void dep_csp_initialization(void){
+//    printf("\nInitializing libcsp\n");
+//    csp_debug_set_level(CSP_INFO, 1);
+//    csp_debug_set_level(CSP_PACKET, 0); /* Fails if activated */
+//    csp_debug_set_level(CSP_BUFFER, 0); /* Fails if activated */
+//    csp_debug_set_level(CSP_ERROR, 1);
+//    csp_debug_set_level(CSP_WARN, 1);
+//
+//    /* Init buffer system with 3 packets of maximum N bytes each */
+//    csp_buffer_init(5, TRX_TMFRAMELEN8+CSP_BUFFER_PACKET_OVERHEAD+1);
+//
+//    /* Init CSP with address MY_ADDRESS */
+//    csp_init(MY_ADDRESS);
+//    csp_i2c_init(SCH_I2C1_ADDR, 0, 400);
+//
+//    csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
+//    csp_route_start_task(2*configMINIMAL_STACK_SIZE, 3);
+//
+//    /* Create socket without any socket options */
+//    csp_socket_t *sock = csp_socket(CSP_SO_NONE);
+//
+//    /* Bind all ports to socket */
+//    csp_bind(sock, CSP_ANY);
+//
+//    /* Create connections backlog queue */
+//    csp_listen(sock, 5);
+//
+//    //DEBUG
+//    printf("\n    * Conn table:\n");
+//    csp_conn_print_table();
+//    printf("\n    * Route table:\n");
+//    csp_route_print_table();
+////    printf("---- Interfaces ----\n");
+////    csp_route_print_interfaces();
+//
+////    xTaskCreate(taskServerCSP, (signed char *)"SRV", 2*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
+//}
 
-    /* Init buffer system with 3 packets of maximum N bytes each */
-    csp_buffer_init(5, TRX_TMFRAMELEN8+CSP_BUFFER_PACKET_OVERHEAD+1);
-
-    /* Init CSP with address MY_ADDRESS */
-    csp_init(MY_ADDRESS);
-    csp_i2c_init(SCH_I2C1_ADDR, 0, 400);
-
-    csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
-    csp_route_start_task(2*configMINIMAL_STACK_SIZE, 3);
-
-    /* Create socket without any socket options */
-    csp_socket_t *sock = csp_socket(CSP_SO_NONE);
-
-    /* Bind all ports to socket */
-    csp_bind(sock, CSP_ANY);
-
-    /* Create connections backlog queue */
-    csp_listen(sock, 5);
-
-    //DEBUG
-    printf("\n    * Conn table:\n");
-    csp_conn_print_table();
-    printf("\n    * Route table:\n");
-    csp_route_print_table();
-//    printf("---- Interfaces ----\n");
-//    csp_route_print_interfaces();
-
-//    xTaskCreate(taskServerCSP, (signed char *)"SRV", 2*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
-}
+///**
+// * Deploys satellite antennas
+// * @param param 1 realime, 0 debug time
+// * @return 1 success, 0 fails
+// */
+//int dep_deploy_antenna(void *param)
+//{
+//
+//    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
+//        printf("\n[dep_deploy_antenna] Deploying TRX Antenna... \r\n");
+//    #endif
+//
+//    if( sta_getCubesatVar(sta_dep_ant_deployed) == 0x0001 )
+//    {
+//        #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
+//            printf("    * Antenna is already deployed\r\n");
+//        #endif
+//        return 1;
+//    }
+//
+//    //Realtime=1 DebugTime=0
+//    unsigned int delay_dep_time, delay_rest_dep_time, delay_recheck_dep_time;
+//    int mode= *( (int *)param );
+//    if(mode)
+//    {
+//        delay_dep_time = (SCH_DEP_DEPLOY_TIME) / portTICK_RATE_MS;
+//        delay_rest_dep_time = (DEP_REST_DEPLOY_TIME) / portTICK_RATE_MS;
+//        delay_recheck_dep_time = (SCH_DEP_RECHECK_TIME) / portTICK_RATE_MS;
+//    }
+//    else
+//    {
+//        delay_dep_time = (600) / portTICK_RATE_MS;
+//        delay_rest_dep_time = (400) / portTICK_RATE_MS;
+//        delay_recheck_dep_time = (200) / portTICK_RATE_MS;
+//    }
+//
+//    //Quemado del nylon
+//    int tries_indx = 0;
+//
+//    #if(SCH_ANTENNA_ONBOARD == 1)
+//    {
+//        for(tries_indx=1; tries_indx<=SCH_DEP_TRY_DEPLOY; tries_indx++)
+//        {
+//            #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+//                printf("    [Deploying] Attempt #%d\r\n", tries_indx);
+//            #endif
+//
+//            PPC_ANT12_SWITCH=1;
+//            PPC_ANT1_SWITCH=1;
+//            PPC_ANT2_SWITCH=0;
+//            //PPC_ANT1_SWITCH=0;
+//            //PPC_ANT2_SWITCH=1;
+//            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT1 */
+//            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT1 */
+//
+//            PPC_ANT12_SWITCH=0;
+//            PPC_ANT1_SWITCH=0;
+//            PPC_ANT2_SWITCH=0;
+//            vTaskDelay(delay_rest_dep_time);   /* tiempo de descanso */
+//
+//            PPC_ANT12_SWITCH=1;
+//            PPC_ANT1_SWITCH=0;
+//            PPC_ANT2_SWITCH=1;
+//            //PPC_ANT1_SWITCH=1;
+//            //PPC_ANT2_SWITCH=0;
+//            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT2 */
+//            vTaskDelay(delay_dep_time);   /* tiempo de intento ANT2 */
+//
+//            PPC_ANT12_SWITCH=0;
+//            PPC_ANT1_SWITCH=0;
+//            PPC_ANT2_SWITCH=0;
+//            vTaskDelay(delay_rest_dep_time);   /* tiempo de descanso */
+//
+//
+//            if(PPC_ANT12_CHECK==0)   /* reviso */
+//            {
+//                vTaskDelay(delay_recheck_dep_time);   /* tiempo de RE-chequeo */
+//                if(PPC_ANT12_CHECK==0)   /* RE-reviso */
+//                {
+//                    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
+//                        printf("    ANTENNA DEPLOYED SUCCESSFULLY [%d TRIES]\r\n", tries_indx);
+//                    #endif
+//
+//                    drp_dep_write_deployed(1, tries_indx);
+//                    return 1;
+//                }
+//            }
+//        }
+//    }
+//    #endif
+//
+//    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+//        printf("    ANTENNA DEPLOY FAIL [%d TRIES]\r\n", TDP_TRY_DEPLOY);
+//    #endif
+//
+//    drp_dep_write_deployed(0, tries_indx);
+//
+//    return 0;
+//}

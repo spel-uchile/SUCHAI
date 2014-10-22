@@ -132,3 +132,44 @@ void com_printf_status(nanocom_data_t * com_stat) {
         printf("Last Battery Voltage:  %d\r\n", com_stat->last_batt_volt);
         printf("Bootcount:  %lu\r\n", com_stat->bootcount);
 }
+
+
+//Libcsp defines and functions
+#define MY_ADDRESS (0)
+void com_csp_initialization(void){
+    printf("\nInitializing libcsp\n");
+    csp_debug_set_level(CSP_INFO, 1);
+    csp_debug_set_level(CSP_PACKET, 0); /* Fails if activated */
+    csp_debug_set_level(CSP_BUFFER, 0); /* Fails if activated */
+    csp_debug_set_level(CSP_ERROR, 1);
+    csp_debug_set_level(CSP_WARN, 1);
+
+    /* Init buffer system with 3 packets of maximum N bytes each */
+    csp_buffer_init(5, TRX_TMFRAMELEN8+CSP_BUFFER_PACKET_OVERHEAD+1);
+
+    /* Init CSP with address MY_ADDRESS */
+    csp_init(MY_ADDRESS);
+    csp_i2c_init(SCH_I2C1_ADDR, 0, 400);
+
+    csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
+    csp_route_start_task(2*configMINIMAL_STACK_SIZE, 3);
+
+    /* Create socket without any socket options */
+    csp_socket_t *sock = csp_socket(CSP_SO_NONE);
+
+    /* Bind all ports to socket */
+    csp_bind(sock, CSP_ANY);
+
+    /* Create connections backlog queue */
+    csp_listen(sock, 5);
+
+    //DEBUG
+    printf("\n    * Conn table:\n");
+    csp_conn_print_table();
+    printf("\n    * Route table:\n");
+    csp_route_print_table();
+//    printf("---- Interfaces ----\n");
+//    csp_route_print_interfaces();
+
+//    xTaskCreate(taskServerCSP, (signed char *)"SRV", 2*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
+}

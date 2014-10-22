@@ -16,13 +16,13 @@
 #include "pic_pc104_config.h"
 
 /* Task includes */
-#include "taskTest.h"
-#include "taskDispatcher.h"
-#include "taskConsole.h"
-#include "taskExecuter.h"
-#include "taskHouskeeping.h"
-#include "taskFlightPlan.h"
-#include "taskComunications.h"
+//#include "taskTest.h"
+//#include "taskDispatcher.h"
+//#include "taskConsole.h"
+//#include "taskExecuter.h"
+//#include "taskHouskeeping.h"
+//#include "taskFlightPlan.h"
+//#include "taskComunications.h"
 #include "suchaiDeployment.h"
 
 /* Command Includes */
@@ -62,23 +62,14 @@ int main(void)
     default_PIC_config();
 
     /* Initializing LibCSP*/
-    dep_csp_initialization(); //Issue #8: Initialize libcsp before trx
+    com_csp_initialization(); //Issue #8: Initialize libcsp before trx
 
     /* System initialization */
-    dep_init_hw(NULL);
-    dep_init_repos(NULL);
+    dep_init_suchai_hw();
+    dep_init_suchai_repos();
 
-    /* Crating base tasks */
-    printf("\n[main] Starting base tasks...\r\n");
-    #if(SCH_TASKEXECUTER_INSIDE_TASKDISPATCHER==1)
-        xTaskCreate(taskDispatcher, (signed char *)"DIS", 4*configMINIMAL_STACK_SIZE, NULL, 4, &taskDispatcherHandle);
-    #else
-        xTaskCreate(taskExecuter, (signed char *)"EXE", 3*configMINIMAL_STACK_SIZE, NULL, 4, &taskExecuterHandle);
-        xTaskCreate(taskDispatcher, (signed char *)"DIS", 1.5*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);
-    #endif
-
-    /* Creating other tasks*/
-    dep_init_listeners(NULL);
+    /* Crating SUCHAI tasks */
+    dep_init_suchai_tasks();
 
     /* Start the scheduler. Should never return */
     printf("\nStarting FreeRTOS [->]\r\n");

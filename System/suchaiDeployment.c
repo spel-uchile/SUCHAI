@@ -475,6 +475,7 @@ int dep_init_sysbus_hw(void *param)
 
     #if (SCH_ANTENNA_ONBOARD==1)
     {
+        //check_deploy_antenna();
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             printf("    * External Antenna .. ");
             printf("Pending (Antenna Deployment will be carried-out by Task Housekeeping)\r\n");

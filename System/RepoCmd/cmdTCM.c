@@ -248,7 +248,7 @@ int tcm_update_beacon(void *param)
         strcpy(p_buff++, buff);
 
         /* ppc_osc */
-        val = sta_getCubesatVar(sta_ppc_enwdt);
+        val = sta_getCubesatVar(sta_ppc_wdt);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 

@@ -40,16 +40,13 @@
  * Cubesat's State Variables
  */
 typedef enum{
-    //address 0 is ALWAYS used to make sure MemEEPROM is working r/w values (isAlive)
-    sta_MemEEPROM_testVal=0,
-
     // Bus Hw status (connected trough the PC/104 to the OBC -PIC24-)
-    sta_RTC_isAlive,
+    sta_RTC_isAlive=0,
     sta_TRX_isAlive,
     sta_EPS_isAlive,
     sta_MemEEPROM_isAlive,
     sta_MemSD_isAlive,
-    sta_SUCHAI_isDeployed,
+    sta_SUCHAI_isDeployed,  // 6
 
     // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
     sta_pay_lagmuirProbe_isAlive,
@@ -69,7 +66,7 @@ typedef enum{
     sta_ppc_hoursAlive,
     sta_ppc_hoursWithoutReset,
     sta_ppc_resetCounter,
-    sta_ppc_enwdt,				// 1=WDT Active, 0=WDT Inactive
+    sta_ppc_wdt,				// 1=WDT Active, 0=WDT Inactive
     sta_ppc_osc,				// holds Current Oscillator
     sta_ppc_MB_nOE_USB_nINT_stat,
     sta_ppc_MB_nOE_MHX_stat,
@@ -149,8 +146,6 @@ typedef enum{
 void sta_setCubesatVar(STA_CubesatVar indxVar, int value);
 int sta_getCubesatVar(STA_CubesatVar indxVar);
 void sta_onResetStatRepo(void);
-
-int sta_get_ppc_lastResetSource(BOOL verb);
 
 
 //STA_CubesatVar dat_pay_i_to_performVar(DAT_Payload pay_i);

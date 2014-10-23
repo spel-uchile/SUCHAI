@@ -162,7 +162,7 @@ DispCmd con_cmd_handler(void)
         if(strcmp(con_cmd, "ppc_osc") == 0){
             switch(con_arg_count){
                 case 0:
-                    newCmd.cmdId = ppc_id_osc;
+                    newCmd.cmdId = ppc_id_get_osc;
                     break;
 
                 default:
@@ -181,7 +181,7 @@ DispCmd con_cmd_handler(void)
                        int i;
                case 1:
                    i=atoi(con_args[0]);
-                   newCmd.cmdId = ppc_id_enwdt;
+                   newCmd.cmdId = ppc_id_set_wdt_state;
                    newCmd.param = i;
                    break;
 

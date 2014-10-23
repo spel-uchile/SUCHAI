@@ -464,13 +464,13 @@ unsigned int STATUS_register(void){
 	int i=9;
 	do{
 		r2=MSD_readSPI();
-		if(r2!=0xFF)break;					//veo 9 veces si es que hay respuesta de la tarjeta SD
+		if(r2!=0xFF)break;	//veo 9 veces si es que hay respuesta de la tarjeta SD
 	}while(--i>0);
 	
-	r3=(r1<<8)| r2;							//r3= r1[15:8] | r2[7:0]
+	r3=(r1<<8)| r2;			//r3= r1[15:8] | r2[7:0]
 	
 	SPI_nSS_2=1;			//~SS=1
-	if(r1!=0x00) return r1;					//si hay errores devuelve r1
+	if(r1!=0x00) return r1;		//si hay errores devuelve r1
 	else return r3;
 	/*
 	R2 response format	
@@ -479,20 +479,42 @@ unsigned int STATUS_register(void){
 													   makes a sequence OR password errors during card lock/unlock operation
 	b2:	error				=> A general or an unknown error ocurred during the operation
 	b3:	CC error			=> Interal Card Controller error
-	b4:	card ECC failed		=> Card internal ECC was applied but failed to correct the data
-	b5:	wp violation		=> The command tried to write a write-protected block
+	b4:	card ECC failed                 => Card internal ECC was applied but failed to correct the data
+	b5:	wp violation                    => The command tried to write a write-protected block
 	b6:	erase param			=> An invalid selection for erase, block or groups
 	b7:	out of range | csd overwrite				=>
 	
-	b8: in idle state			=> the card is in idle state and running the initializing process
-	b9: erase reset				=> an erase sequence was cleared before executing because an out of erase sequence command was received
+	b8: in idle state		=> the card is in idle state and running the initializing process
+	b9: erase reset			=> an erase sequence was cleared before executing because an out of erase sequence command was received
 	b10: illegal command 		=> an illegal command code was detected
-	b11: communication CRC error => the CRC check of the last command failed
+	b11: communication CRC error    => the CRC check of the last command failed
 	b12: erase sequence error	=> an error in the sequence of erase commands occured
-	b13: addres error			=> a misaligned address that did not match the block lenght (512bytes) was used in the command
+	b13: addres error		=> a misaligned address that did not match the block lenght (512bytes) was used in the command
 	b14: parameter error		=> the command's argument (e.g. address, block lenght) was outside the allowed range for this card
-	b15: 0						=> Always set to zero
+	b15: 0				=> Always set to zero
 	*/
+}
+int memSD_isAlive(void){
+    MSD_CARD_ID cid = CID_register();
+    int cid_mid = cid.mid;
+    //printf("cid.mid = %d\r\n", cid.mid);    // siempre es 255
+    //printf("cid.psn = %lu\r\n", cid.psn);   // siempre es 117440583
+
+    MSD_ARG block = 0;
+    unsigned char indx = 254;
+    int value = 1235;
+    int get_val;
+    msd_getVar_1BlockExtMem(block, indx, &get_val);
+    //printf("msd_getVar_1BlockExtMem(%lu, %d) = %d \r\n", (unsigned long)block, indx, get_val);
+    msd_setVar_1BlockExtMem(block, indx, value);
+    //printf("msd_setVar_1BlockExtMem(%lu, %d, %d) \r\n", (unsigned long)block, indx, value);
+    msd_getVar_1BlockExtMem(block, indx, &get_val);
+    //printf("msd_getVar_1BlockExtMem(%lu, %d) = %d \r\n", (unsigned long)block, indx, get_val);
+
+    if(cid_mid == 255 && get_val == value){
+        return 1;
+    }
+    return 0;
 }
 unsigned char get_R1b_response(void){		//response to CMD12, CMD28, CMD29, CMD38
 	unsigned char r1,r2; 

@@ -90,7 +90,7 @@
 #define SCH_FLIGHTPLAN_EXTMEMORY                (1)     ///< (0) buffer en  RAM, (1) en memoria SD
 #define SCH_USE_FLIGHTPLAN                      (0)     ///< 1 = use it, 0 = do not use it
 #define SCH_USE_FLIGHTPLAN2                     (0)     ///< 1 = use it, 0 = do not use it
-#define SCH_USE_HOUSEKEEPING                    (1)     ///< 1 = use it, 0 = do not use it
+#define SCH_USE_HOUSEKEEPING                    (0)     ///< 1 = use it, 0 = do not use it
 
 /**
  * @def SCH_DATAREPOSITORY_MAX_BUFF_TELECMD

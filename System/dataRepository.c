@@ -24,9 +24,6 @@
 
 #define SCH_DATAREPOSITORY_VERBOSEMEMSD_ 0
 
-//semaforo para sincronizar accceso a las variables de estado
-extern xSemaphoreHandle dataRepositorySem; /*WARNING esto estaba asi: extern dataRepositorySem;*/
-
 #if (SCH_TC_BUFF_EXTMEMORY==0 || SCH_SYSBUS_ONBOARD==0)
     int DAT_CMD_BUFF[DAT_MAX_BUFF_TELECMD];
 #endif

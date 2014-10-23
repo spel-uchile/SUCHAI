@@ -13,6 +13,22 @@
 #define MEP_FIRST_ADDR 0x00
 #define MEP_LAST_ADDR 0x7F  //127
 
+/**
+ * EEMPROM Variables
+ */
+typedef enum{
+    //address 0 is ALWAYS used to make sure MemEEPROM is working r/w values (isAlive)
+    mem_MemEEPROM_testVal=0,
+    //PPC => (C&DH subsystem)
+    mem_ppc_opMode,
+    mem_ppc_hoursAlive,
+    mem_ppc_hoursWithoutReset,
+    mem_ppc_resetCounter,
+
+    //*************
+    mem_last_one     //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
+}MemEEPROM_Vars;
+
 void writeEEPROM1(unsigned char address, char data);
 unsigned char readEEPROM1(unsigned char address);
 

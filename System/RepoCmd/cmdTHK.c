@@ -195,11 +195,11 @@ int thk_deploy_antenna(void *param)
     return 0;
 }
 
-BOOL thk_check_antenna_isDeployed(unsigned int delay_recheck_dep_time){
+BOOL thk_check_antenna_isDeployed(unsigned int recheck_time_ms){
     if(PPC_ANT12_CHECK==0)   /* reviso */
     {
 //        vTaskDelay(delay_recheck_dep_time);   /* tiempo de RE-chequeo */
-        __delay_ms(delay_recheck_dep_time);
+        __delay_ms(recheck_time_ms);
         ClrWdt();
         if(PPC_ANT12_CHECK==0)   /* RE-reviso */
         {
@@ -414,7 +414,7 @@ int thk_CubesatVar_update(int indxVar){
 
     switch(indxVar){
         //PPC => (C&DH subsystem)
-        case sta_ppc_enwdt: // 1=WDT Active, 0=WDT Inactive
+        case sta_ppc_wdt: // 1=WDT Active, 0=WDT Inactive
             thk_ppc_enwdt();
             res = 1;
             break;

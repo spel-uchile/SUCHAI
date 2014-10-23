@@ -39,12 +39,31 @@ void ppc_onResetCmdPPC(void){
 
     ppcFunction[(unsigned char)ppc_id_reset] = ppc_reset;
     ppc_sysReq[(unsigned char)ppc_id_reset]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_get_lastResetSource] = ppc_get_lastResetSource;
+    ppc_sysReq[(unsigned char)ppc_id_get_lastResetSource]  = CMD_SYSREQ_MIN;
+
+    ppcFunction[(unsigned char)ppc_id_set_opMode] = ppc_set_opMode;
+    ppc_sysReq[(unsigned char)ppc_id_set_opMode]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_get_opMode] = ppc_get_opMode;
+    ppc_sysReq[(unsigned char)ppc_id_get_opMode]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_set_resetCounter] = ppc_set_resetCounter;
+    ppc_sysReq[(unsigned char)ppc_id_set_resetCounter]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_get_hoursAlive] = ppc_get_hoursAlive;
+    ppc_sysReq[(unsigned char)ppc_id_get_hoursAlive]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_set_hoursWithoutReset] = ppc_set_hoursWithoutReset;
+    ppc_sysReq[(unsigned char)ppc_id_set_hoursWithoutReset]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_get_resetCounter] = ppc_get_resetCounter;
+    ppc_sysReq[(unsigned char)ppc_id_get_resetCounter]  = CMD_SYSREQ_MIN;
+    
+    ppc_sysReq[(unsigned char)ppc_id_set_resetCounter]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_newosc] = ppc_newosc;
     ppc_sysReq[(unsigned char)ppc_id_newosc]  = CMD_SYSREQ_MIN;
-    ppcFunction[(unsigned char)ppc_id_osc] = ppc_osc;
-    ppc_sysReq[(unsigned char)ppc_id_osc]  = CMD_SYSREQ_MIN;
-    ppcFunction[(unsigned char)ppc_id_enwdt] = ppc_enwdt;
-    ppc_sysReq[(unsigned char)ppc_id_enwdt]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_get_osc] = ppc_get_osc;
+    ppc_sysReq[(unsigned char)ppc_id_get_osc]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_set_wdt_state] = ppc_set_wdt_state;
+    ppc_sysReq[(unsigned char)ppc_id_set_wdt_state]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_get_wdt_state] = ppc_get_wdt_state;
+    ppc_sysReq[(unsigned char)ppc_id_get_wdt_state]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_reactToSOC] = ppc_reactToSOC;
     ppc_sysReq[(unsigned char)ppc_id_reactToSOC]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_set_PPC_MB_nOE_USB_nINT] = ppc_set_PPC_MB_nOE_USB_nINT;
@@ -55,12 +74,125 @@ void ppc_onResetCmdPPC(void){
     ppc_sysReq[(unsigned char)ppc_id_set_PPC_MB_nON_MHX]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_set_PPC_MB_nON_SD] = ppc_set_PPC_MB_nON_SD;
     ppc_sysReq[(unsigned char)ppc_id_set_PPC_MB_nON_SD]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_get_PPC_MB_nOE_USB_nINT] = ppc_get_PPC_MB_nOE_USB_nINT;
+    ppc_sysReq[(unsigned char)ppc_id_get_PPC_MB_nOE_USB_nINT]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_get_PPC_MB_nOE_MHX] = ppc_get_PPC_MB_nOE_MHX;
+    ppc_sysReq[(unsigned char)ppc_id_get_PPC_MB_nOE_MHX]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_get_PPC_MB_nON_MHX] = ppc_get_PPC_MB_nON_MHX;
+    ppc_sysReq[(unsigned char)ppc_id_get_PPC_MB_nON_MHX]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_get_PPC_MB_nON_SD] = ppc_get_PPC_MB_nON_SD;
+    ppc_sysReq[(unsigned char)ppc_id_get_PPC_MB_nON_SD]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_rtos_debug] = ppc_rtos_debug;
     ppc_sysReq[(unsigned char)ppc_id_rtos_debug]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_frozen] = ppc_frozen;
     ppc_sysReq[(unsigned char)ppc_id_frozen]  = CMD_SYSREQ_MIN;
 }
 
+
+int ppc_get_opMode(void* param){
+    MemEEPROM_Vars mem_eeprom_var = mem_ppc_opMode;
+    int res = readIntEEPROM1(mem_eeprom_var);
+    return res;
+}
+int ppc_set_opMode(void* param){
+    MemEEPROM_Vars mem_eeprom_var = mem_ppc_opMode;
+    int value = *((int*)param);
+    writeIntEEPROM1(mem_eeprom_var, value);
+    return 1;   //se asume operacion exitosa
+}
+
+/**
+ *
+ * @return last Reset Source
+ */
+int ppc_get_lastResetSource(void* param){
+    int verb = *((int*)param);
+    static char first_time;
+    static int lreset;
+    if(first_time==0){
+        lreset = PwrMgnt_ResetSource();
+        first_time = 1; //enter only once
+    }
+
+    if(verb == 1){
+        printf("        - LastResetSouce: ");
+        switch ( lreset )
+        {
+            case POWER_ON_Reset:
+                printf("POWER_ON_Reset\r\n");      /* 0x00 Aun nose cuando salta */
+                mPWRMGNT_Clear_PORbit();
+            break;
+            case BURN_OUT_Reset:
+                printf("BURN_OUT_Reset\r\n");      /* 0x01 ver nota mas arriba*/
+                mPWRMGNT_Clear_BORbit();
+            break;
+            case WATCHDOG_Reset:
+                printf("WATCHDOG_Reset\r\n");      /* 0x02 al overflow del WDT, luego de aprox 2 min sin ejecutarse ClrWdt(); */
+                mPWRMGNT_Clear_WDTObit();
+            break;
+            case SOFTWARE_Reset:
+                printf("SOFTWARE_Reset\r\n");      /* 0x03 ocurre luego de ejecutar ppc_reset() */
+                mPWRMGNT_Clear_SWRbit();
+            break;
+            case EXTERNAL_Reset:
+                printf("EXTERNAL_Reset\r\n");      /* 0x04 Ocurre cuando se programa y cuando se energiza/desenergiza el PIC*/
+                mPWRMGNT_Clear_EXTRbit();
+            break;
+            case CFG_WORD_MISMATCH_Reset:
+                printf("CFG_WORD_MISMATCH_Reset\r\n");
+                mPWRMGNT_Clear_CMbit();
+            break;
+            case ILLEGAL_INSTR_Reset:
+                printf("ILLEGAL_INSTR_Reset\r\n");
+                mPWRMGNT_Clear_IOPUWRbit();
+            break;
+            case TRAP_Reset:
+                printf("TRAP_Reset\r\n");
+                mPWRMGNT_Clear_TRAPRbit();
+            break;
+            default:
+                printf("No new RESET\r\n");
+                lreset= -1;
+                /* ver nota mas arriba */
+            break;
+        }
+    }
+
+    return lreset;
+}
+int ppc_get_hoursAlive(void* param){
+    MemEEPROM_Vars mem_eeprom_var = mem_ppc_hoursAlive;
+    int res = readIntEEPROM1(mem_eeprom_var);
+    return res;
+}
+int ppc_get_hoursWithoutReset(void* param){
+    MemEEPROM_Vars mem_eeprom_var = mem_ppc_hoursWithoutReset;
+    int res = readIntEEPROM1(mem_eeprom_var);
+    return res;
+}
+int ppc_get_resetCounter(void* param){
+    MemEEPROM_Vars mem_eeprom_var = mem_ppc_resetCounter;
+    int res = readIntEEPROM1(mem_eeprom_var);
+    return res;
+}
+int ppc_set_hoursAlive(void* param){
+    MemEEPROM_Vars mem_eeprom_var = mem_ppc_hoursAlive;
+    int value = *((int*)param);
+    writeIntEEPROM1(mem_eeprom_var, value);
+    return 1;   //se asume operacion exitosa
+}
+int ppc_set_hoursWithoutReset(void* param){
+    MemEEPROM_Vars mem_eeprom_var = mem_ppc_hoursWithoutReset;
+    int value = *((int*)param);
+    writeIntEEPROM1(mem_eeprom_var, value);
+    return 1;   //se asume operacion exitosa
+}
+int ppc_set_resetCounter(void* param){
+    MemEEPROM_Vars mem_eeprom_var = mem_ppc_resetCounter;
+    int value = *((int*)param);
+    writeIntEEPROM1(mem_eeprom_var, value);
+    return 1;   //se asume operacion exitosa
+}
 /**
  * Selects a new oscilator source
  * @param osc Number of the oscilator source
@@ -80,37 +212,36 @@ int ppc_newosc(void * osc)
     char *txt_result;
     int result;
 
-    switch( i )
-    {
-		case 0:
-                    result = PwrMgnt_OscSel(FRC_OSC);
-                    txt_result = "new Oscillator is FRC_OSC\r\n";
-                    break;
-		case 1:
-                    result = PwrMgnt_OscSel(FRC_OSC_WITH_POSTSCALER_PLL);
-                    txt_result = "FRC_OSC_WITH_POSTSCALER_PLL\r\n";
-                    break;
-		case 2:
-                    result = (PwrMgnt_OscSel(PRIMARY_OSC) );
-                    txt_result = "PRIMARY_OSC\r\n";
-                    break;
-		case 3:
-                    result = (PwrMgnt_OscSel(PRIMARY_OSC_WITH_PLL) );
-                    txt_result = "PRIMARY_OSC_WITH_PLL\r\n";
-                    break;
-		case 4:
-                    result = (PwrMgnt_OscSel(SECONDRY_OSC) );
-                    txt_result = "SECONDRY_OSC\r\n";
-                    break;
-		case 5:
-                    result = (PwrMgnt_OscSel(LOW_POWER_RC) );
-                    txt_result = "LOW_POWER_RC\r\n";
-                    break;
-		case 7:
-                    result = (PwrMgnt_OscSel(FRC_OSC_WITH_POSTSCALER) );
-                    txt_result = "FRC_OSC_WITH_POSTSCALER\r\n";
-                    break;
-	}
+    switch( i ){
+        case 0:
+            result = PwrMgnt_OscSel(FRC_OSC);
+            txt_result = "new Oscillator is FRC_OSC\r\n";
+            break;
+        case 1:
+            result = PwrMgnt_OscSel(FRC_OSC_WITH_POSTSCALER_PLL);
+            txt_result = "FRC_OSC_WITH_POSTSCALER_PLL\r\n";
+            break;
+        case 2:
+            result = (PwrMgnt_OscSel(PRIMARY_OSC) );
+            txt_result = "PRIMARY_OSC\r\n";
+            break;
+        case 3:
+            result = (PwrMgnt_OscSel(PRIMARY_OSC_WITH_PLL) );
+            txt_result = "PRIMARY_OSC_WITH_PLL\r\n";
+            break;
+        case 4:
+            result = (PwrMgnt_OscSel(SECONDRY_OSC) );
+            txt_result = "SECONDRY_OSC\r\n";
+            break;
+        case 5:
+            result = (PwrMgnt_OscSel(LOW_POWER_RC) );
+            txt_result = "LOW_POWER_RC\r\n";
+            break;
+        case 7:
+            result = (PwrMgnt_OscSel(FRC_OSC_WITH_POSTSCALER) );
+            txt_result = "FRC_OSC_WITH_POSTSCALER\r\n";
+            break;
+    }
 
 #if SCH_CMDPPC_VERBOSE
     if(result){
@@ -124,29 +255,31 @@ int ppc_newosc(void * osc)
     return result;
 }
 
-/*------------------------------------------------------------------------------
- *                                  PPC ENWDT
- *------------------------------------------------------------------------------
- * Description        : Activates/Deactivate WDT
- * Arguments          : int  on_off: 1=Active, 0=Inactive
- * Return Value       : int: 1=Success, 0=Failure
- *----------------------------------------------------------------------------*/
-int ppc_enwdt(void *on_off)
+
+static int wdt_state = PPC_INITIAL_WDT_STATE;
+/*Se usa variable estatica ya que no existe una funcion que permita leer
+ * el estado actual del WDT*/
+
+/**
+ * Enable/disable WDT
+ * @param on_off
+ * @return 1 = Ok , 0 = fail
+ */
+int ppc_set_wdt_state(void *on_off)
 {
     int result = 1;
-    char *txt_result;
     int i = *(int *)on_off;
 
     if( i==0 )
     {
          EnableWDT( WDT_DISABLE );
-         sta_setCubesatVar(sta_ppc_enwdt, 0);
+         wdt_state = 0;
          printf("WDT was disabled\r\n");
     }
     else if( i==1 )
     {
          EnableWDT( WDT_ENABLE );
-         sta_setCubesatVar(sta_ppc_enwdt, 1);
+         wdt_state = 1;
          printf("WDT was enabled\r\n");
     }
     else
@@ -157,7 +290,9 @@ int ppc_enwdt(void *on_off)
 
     return result;
 }
-
+int ppc_get_wdt_state(void* param){
+    return wdt_state;
+}
 /*------------------------------------------------------------------------------
  *                                  PPC OSC
  *------------------------------------------------------------------------------
@@ -165,36 +300,42 @@ int ppc_enwdt(void *on_off)
  * Arguments          : None
  * Return Value       : int: 1=FRC_OSC .. 8=FRC_OSC_WITH_POSTSCALER, 0ther=Failure
  *----------------------------------------------------------------------------*/
-int ppc_osc(void *param)
+int ppc_get_osc(void *param)
 {
+    int verbose = *(int *)param;
+    char * ps;
+
     unsigned int osc = Current_OSCILLATOR();
 
     switch( osc )
     {
         case 0:
-            con_printf("Oscillator is FRC_OSC\r\n");
+            ps = "Oscillator is FRC_OSC\r\n";
         break;
         case 1:
-            con_printf("Oscillator is FRC_OSC_WITH_POSTSCALER_PLL\r\n");
+            ps = "Oscillator is FRC_OSC_WITH_POSTSCALER_PLL\r\n";
         break;
         case 2:
-            con_printf("Oscillator is PRIMARY_OSC\r\n");
+            ps = "Oscillator is PRIMARY_OSC\r\n";
         break;
         case 3:
-            con_printf("Oscillator is PRIMARY_OSC_WITH_PLL\r\n");
+            ps = "Oscillator is PRIMARY_OSC_WITH_PLL\r\n";
         break;
         case 4:
-            con_printf("Oscillator is SECONDRY_OSC\r\n");
+            ps = "Oscillator is SECONDRY_OSC\r\n";
         break;
         case 5:
-            con_printf("Oscillator is LOW_POWER_RC\r\n");
+            ps = "Oscillator is LOW_POWER_RC\r\n";
         break;
         case 7:
-            con_printf("Oscillator is FRC_OSC_WITH_POSTSCALER\r\n");
+            ps = "Oscillator is FRC_OSC_WITH_POSTSCALER\r\n";
         break;
         default:
-            con_printf("Oscillator is default\r\n");
+            ps = "Oscillator is default\r\n";
         break;
+    }
+    if(verbose==1){
+        printf(ps);
     }
 
     return (int)(osc+1);
@@ -226,7 +367,7 @@ int ppc_reset(void* param)
 int ppc_reactToSOC(void* param)
 {
     #if (SCH_CMDPPC_VERBOSE>=1)
-        con_printf("ppc_reactToSOC()\r\n");
+        printf("ppc_reactToSOC()\r\n");
     #endif
     //Check_FSCM();
     //Check_Reset_Status();
@@ -282,7 +423,7 @@ int ppc_set_PPC_MB_nOE_USB_nINT(void* param)
     char ascii_val[10];
     //utoa(ascii_val, r, 16);
     sprintf (ascii_val, "0x%X", r);
-    con_printf("ppc_set_PPC_MB_nOE_USB_nINT= "); con_printf(ascii_val); con_printf("\r\n");
+    printf("ppc_set_PPC_MB_nOE_USB_nINT= "); con_printf(ascii_val); printf("\r\n");
 
     return 1;
 }
@@ -357,10 +498,23 @@ int ppc_set_PPC_MB_nON_SD(void* param)
     char ascii_val[4];
     //itoa(ascii_val,r,16);
     sprintf (ascii_val, "0x%X", r);
-    con_printf("ppc_set_PPC_MB_nON_SD= "); con_printf(ascii_val); con_printf("\r\n");
+    printf("ppc_set_PPC_MB_nON_SD= "); con_printf(ascii_val); printf("\r\n");
 
     return 1;
 }
+int ppc_get_PPC_MB_nOE_USB_nINT(void* param){
+    return PPC_MB_nOE_USB_nINT_CHECK;
+}
+int ppc_get_PPC_MB_nOE_MHX(void* param){
+    return PPC_MB_nOE_MHX_CHECK;
+}
+int ppc_get_PPC_MB_nON_MHX(void* param){
+    return PPC_MB_nON_MHX_CHECK;
+}
+int ppc_get_PPC_MB_nON_SD(void* param){
+    return PPC_MB_nON_SD_CHECK;
+}
+
 
 /**
  * Performs debug taks over current RTOS. Print task and rtos memory usage in

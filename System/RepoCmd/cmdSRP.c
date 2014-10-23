@@ -223,7 +223,7 @@ int srp_executeBeforeFlight(void * param){
     sta_setCubesatVar(sta_ppc_hoursAlive, 0);
     sta_setCubesatVar(sta_ppc_hoursWithoutReset, 0);
     sta_setCubesatVar(sta_ppc_resetCounter, 0);
-    sta_setCubesatVar(sta_ppc_enwdt, PPC_INITIAL_WDT_STATE);	// 1=WDT Active, 0=WDT Inactive
+    sta_setCubesatVar(sta_ppc_wdt, PPC_INITIAL_WDT_STATE);	// 1=WDT Active, 0=WDT Inactive
 
     //DEP => (C&DH subsystem)
     sta_setCubesatVar(sta_dep_ant_deployed, 0);            // 1=already deployed, 0=not deployed yet
@@ -333,7 +333,7 @@ int srp_print_STA_CubesatVar(void *param)
         con_printf("ppc_hoursWithoutReset= "); con_printf(buffer); con_printf("\r\n");
         itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_resetCounter), 10);
         con_printf("ppc_resetCounter= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_enwdt), 10);
+        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_wdt), 10);
         con_printf("ppc_enwdt= "); con_printf(buffer); con_printf("\r\n");
         itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_osc), 10);
         con_printf("ppc_osc= "); con_printf(buffer); con_printf("\r\n");

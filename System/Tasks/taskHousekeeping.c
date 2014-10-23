@@ -171,7 +171,8 @@ void check_deploy_antenna(void){
     NewCmd.param = 0;
     
     int rt_mode;
-    if( sta_getCubesatVar(sta_SUCHAI_isDeployed) == 0 ){
+    if( sta_getCubesatVar(sta_dep_ant_deployed) == 0 ){
+    //if( sta_getCubesatVar(sta_Antenna_isDeployed) == 0 ){
         printf("[Houskeeping] sta_SUCHAI_isDeployed = 0 => Antenna is not yet deployed..\r\n");
 
         unsigned long initial_tick_10ms = xTaskGetTickCount(); //get initial tick-time

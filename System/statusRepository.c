@@ -87,7 +87,7 @@ int sta_getCubesatVar(STA_CubesatVar indxVar){
             case sta_MemSD_isAlive:
                 value = memSD_isAlive();
             break;
-            case sta_SUCHAI_isDeployed:
+            case sta_Antenna_isDeployed:
                 value = thk_check_antenna_isDeployed(1000);
             break;
 //            // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
@@ -145,25 +145,25 @@ int sta_getCubesatVar(STA_CubesatVar indxVar){
             case sta_ppc_MB_nON_SD_stat:
                 value = ppc_get_PPC_MB_nON_SD(NULL);
             break;
-//            //DEP => (C&DH subsystem)
-//            case sta_dep_ant_deployed:
-//            break;
-//            case sta_dep_ant_tries:
-//            break;
-//            case sta_dep_year:
-//            break;
-//            case sta_dep_month:
-//            break;
-//            case sta_dep_week_day:
-//            break;
-//            case sta_dep_day_number:
-//            break;
-//            case sta_dep_hours:
-//            break;
-//            case sta_dep_minutes:
-//            break;
-//            case sta_dep_seconds:
-//            break;
+            //DEP => (C&DH subsystem)
+            case sta_dep_ant_deployed:
+            break;
+            case sta_dep_ant_tries:
+            break;
+            case sta_dep_year:
+            break;
+            case sta_dep_month:
+            break;
+            case sta_dep_week_day:
+            break;
+            case sta_dep_day_number:
+            break;
+            case sta_dep_hours:
+            break;
+            case sta_dep_minutes:
+            break;
+            case sta_dep_seconds:
+            break;
 //            //RTC => (C&DH subsystem)
 //            case sta_rtc_year:
 //            break;

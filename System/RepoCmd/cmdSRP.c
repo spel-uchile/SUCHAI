@@ -203,7 +203,7 @@ int srp_executeBeforeFlight(void * param){
     sta_setCubesatVar(sta_EPS_isAlive, 0);
     sta_setCubesatVar(sta_MemEEPROM_isAlive, 0);
     sta_setCubesatVar(sta_MemSD_isAlive, 0);
-    sta_setCubesatVar(sta_SUCHAI_isDeployed, 0);
+    sta_setCubesatVar(sta_Antenna_isDeployed, 0);
 
     // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
     sta_setCubesatVar(sta_pay_lagmuirProbe_isAlive, 0);
@@ -283,7 +283,7 @@ int srp_executeBeforeFlight(void * param){
         sta_setCubesatVar(sta_pay_test2_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
     #endif
 
-    sta_setCubesatVar(sta_SUCHAI_isDeployed, 0);  //First time on!
+    sta_setCubesatVar(sta_Antenna_isDeployed, 0);  //First time on!
     /* Es la unica variable que gatilla las acciones de despliegue en THK */
     return 1;
 }

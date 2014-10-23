@@ -417,7 +417,7 @@ int dep_init_sysbus_hw(void *param)
             printf("    * External TRX .. ");
         #endif
         //Check if suchai is deployed to select correct trx configuration
-        hw_isAlive = sta_SUCHAI_isDeployed;
+        hw_isAlive = sta_Antenna_isDeployed;
         int deployed = sta_getCubesatVar(hw_isAlive);
         //Initialize trx
         resp  = trx_initialize(&deployed);

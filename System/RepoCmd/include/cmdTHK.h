@@ -51,6 +51,27 @@ typedef enum{
     thk_id_deploy_antenna, ///< @cmd
     thk_id_silent_time_and_pictures, ///< @cmd
 
+    //Deployment registration
+    thk_id_get_dep_ant_deployed, ///< @cmd
+    thk_id_set_dep_ant_deployed, ///< @cmd
+    thk_id_get_dep_ant_tries, ///< @cmd
+    thk_id_set_dep_ant_tries, ///< @cmd
+
+    thk_id_get_dep_year, ///< @cmd
+    thk_id_set_dep_year, ///< @cmd
+    thk_id_get_dep_month, ///< @cmd
+    thk_id_set_dep_month, ///< @cmd
+    thk_id_get_dep_week_day, ///< @cmd
+    thk_id_set_dep_week_day, ///< @cmd
+    thk_id_get_dep_day_number, ///< @cmd
+    thk_id_set_dep_day_number, ///< @cmd
+    thk_id_get_dep_hours, ///< @cmd
+    thk_id_set_dep_hours, ///< @cmd
+    thk_id_get_dep_minutes, ///< @cmd
+    thk_id_set_dep_minutes, ///< @cmd
+    thk_id_get_dep_seconds, ///< @cmd
+    thk_id_set_dep_seconds, ///< @cmd
+
     //De update en general de dat_CubesatVar
     thk_id_periodicUpdate_STA_CubesatVar, ///< @cmd
     
@@ -80,6 +101,26 @@ int thk_state_hw(void *param);
  */
 int thk_deploy_antenna(void *param);
 int thk_silent_time_and_pictures(void *param);
+
+int thk_get_dep_ant_deployed(void* param);
+int thk_set_dep_ant_deployed(void* param);
+int thk_get_dep_ant_tries(void* param);
+int thk_set_dep_ant_tries(void* param);
+
+int thk_get_dep_year(void* param);
+int thk_set_dep_year(void* param);
+int thk_get_dep_month(void* param);
+int thk_set_dep_month(void* param);
+int thk_get_dep_week_day(void* param);
+int thk_set_dep_week_day(void* param);
+int thk_get_dep_day_number(void* param);
+int thk_set_dep_day_number(void* param);
+int thk_get_dep_hours(void* param);
+int thk_set_dep_hours(void* param);
+int thk_get_dep_minutes(void* param);
+int thk_set_dep_minutes(void* param);
+int thk_get_dep_seconds(void* param);
+int thk_set_dep_seconds(void* param);
 
 //funciones auxiliares
 //****************************************************

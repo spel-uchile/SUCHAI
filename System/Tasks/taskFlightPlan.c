@@ -51,7 +51,7 @@ void taskFlightPlan(void *param)
     #if (SCH_USE_HOUSEKEEPING == 1)
         /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
         while( TRUE ){
-            if( sta_getCubesatVar(sta_SUCHAI_isDeployed)==1 ){
+            if( sta_getCubesatVar(sta_Antenna_isDeployed)==1 ){
                 break;
             }
             vTaskDelayUntil(&xLastWakeTime, _10sec_check);

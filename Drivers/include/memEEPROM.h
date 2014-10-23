@@ -14,7 +14,7 @@
 #define MEP_LAST_ADDR 0x7F  //127
 
 /**
- * EEMPROM Variables
+ * EEMPROM Variables, this variables MUST be reset-resistant
  */
 typedef enum{
     //address 0 is ALWAYS used to make sure MemEEPROM is working r/w values (isAlive)
@@ -24,6 +24,17 @@ typedef enum{
     mem_ppc_hoursAlive,
     mem_ppc_hoursWithoutReset,
     mem_ppc_resetCounter,
+
+    //DEP => (C&DH subsystem)
+    mem_dep_ant_deployed,            // 1=already deployed, 0=not deployed yet
+    mem_dep_ant_tries,               // Number of tries to deploy antenna
+    mem_dep_year,
+    mem_dep_month,
+    mem_dep_week_day,
+    mem_dep_day_number,
+    mem_dep_hours,
+    mem_dep_minutes,
+    mem_dep_seconds,
 
     //*************
     mem_last_one     //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo

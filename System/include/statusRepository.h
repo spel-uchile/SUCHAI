@@ -46,7 +46,7 @@ typedef enum{
     sta_EPS_isAlive,
     sta_MemEEPROM_isAlive,
     sta_MemSD_isAlive,
-    sta_SUCHAI_isDeployed,  // 6
+    sta_Antenna_isDeployed,  // 6
 
     // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
     sta_pay_lagmuirProbe_isAlive,

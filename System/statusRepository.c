@@ -74,186 +74,247 @@ int sta_getCubesatVar(STA_CubesatVar indxVar){
             // Bus Hw status (connected trough the PC/104 to the OBC -PIC24-)
             case sta_RTC_isAlive:
                 value = RTC_isAlive();
-            break;
-//            case sta_TRX_isAlive:
-//                value = trx_isAlive();
-//            break;
+                break;
+            case sta_TRX_isAlive:
+                value = trx_isAlive(NULL);
+                break;
             case sta_EPS_isAlive:
-                value = eps_isAlive();
-            break;
+                value = eps_isAlive(FALSE);
+                break;
             case sta_MemEEPROM_isAlive:
                 value = memEEPROM_isAlive();
-            break;
+                break;
             case sta_MemSD_isAlive:
                 value = memSD_isAlive();
-            break;
+                break;
             case sta_Antenna_isDeployed:
-                value = thk_check_antenna_isDeployed(1000);
-            break;
-//            // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
-//            case sta_pay_lagmuirProbe_isAlive:
-//            break;
-//            case sta_pay_sensTemp_isAlive:
-//            break;
-//            case sta_pay_gps_isAlive:
-//            break;
-//            case sta_pay_camera_isAlive:
-//            break;
-//            case sta_pay_gyro_isAlive:
-//            break;
-//            case sta_pay_tmEstado_isAlive:
-//            break;
-//            case sta_pay_test1_isAlive:
-//            break;
-//            case sta_pay_test2_isAlive:
-//            break;
-//            case sta_pay_lagmuirProbe_isDeployed:
-//            break;
+                value = (int)thk_check_antenna_isDeployed(1000);
+                break;
+            // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
+            case sta_pay_lagmuirProbe_isAlive:
+                printf("PAY => (Payload subsystem)\r\n");
+                value = pay_isAlive_lagmuirProbe(NULL);
+                break;
+            case sta_pay_sensTemp_isAlive:
+                value = pay_isAlive_sensTemp(NULL);
+                break;
+            case sta_pay_gps_isAlive:
+                value = pay_isAlive_gps(NULL);
+                break;
+            case sta_pay_expFis_isAlive:
+                value = pay_isAlive_expFis(NULL);
+                break;
+            case sta_pay_camera_isAlive:
+                value = pay_isAlive_camera(NULL);
+                break;
+            case sta_pay_gyro_isAlive:
+                value = pay_isAlive_gyro(NULL);
+                break;
+            case sta_pay_tmEstado_isAlive:
+                value = pay_isAlive_tmEstado(NULL);
+                break;
+            case sta_pay_battery_isAlive:
+                value = pay_isAlive_battery(NULL);
+                break;
+            case sta_pay_debug_isAlive:
+                value = pay_isAlive_debug(NULL);
+                break;
+            case sta_pay_lagmuirProbe_isDeployed:
+                value = 0;  //no hay forma de saberlo !!
+                break;
+            //FPL => (C&DH subsystem)
+            case sta_fpl_index:
+                printf("FPL => (C&DH subsystem, Fligth Plan)\r\n");
+                value =  drp_fpl_get_index(NULL);
+                break;
             //PPC => (C&DH subsystem)
             case sta_ppc_opMode:
+                printf("PPC => (C&DH subsystem)\r\n");
                 value = ppc_get_opMode(NULL);
-            break;
+                break;
             case sta_ppc_lastResetSource:
-                param = 1;
+                param = 0;  //verbosity level
                 value = ppc_get_lastResetSource(&param);
-            break;
+                break;
             case sta_ppc_hoursAlive:
                 value = ppc_get_hoursAlive(NULL);
-            break;
+                break;
             case sta_ppc_hoursWithoutReset:
                 value = ppc_get_hoursWithoutReset(NULL);
-            break;
+                break;
             case sta_ppc_resetCounter:
                 value = ppc_get_resetCounter(NULL);
-            break;
+                break;
             case sta_ppc_wdt:
                 value = ppc_get_wdt_state(NULL);
-            break;
+                break;
             case sta_ppc_osc:
-                param = 0;  //no verbose
+                param = 0;  //verbosity level
                 value = ppc_get_osc(&param);
-            break;
+                break;
             case sta_ppc_MB_nOE_USB_nINT_stat:
                 value = ppc_get_PPC_MB_nOE_USB_nINT(NULL);
-            break;
+                break;
             case sta_ppc_MB_nOE_MHX_stat:
                 value = ppc_get_PPC_MB_nOE_MHX(NULL);
-            break;
+                break;
             case sta_ppc_MB_nON_MHX_stat:
                 value = ppc_get_PPC_MB_nON_MHX(NULL);
-            break;
+                break;
             case sta_ppc_MB_nON_SD_stat:
                 value = ppc_get_PPC_MB_nON_SD(NULL);
-            break;
+                break;
             //DEP => (C&DH subsystem)
             case sta_dep_ant_deployed:
-            break;
+                printf("DEP => (C&DH subsystem)\r\n");
+                value = thk_get_dep_ant_deployed(NULL);
+                break;
             case sta_dep_ant_tries:
-            break;
+                value = thk_get_dep_ant_tries(NULL);
+                break;
             case sta_dep_year:
-            break;
+                value = thk_get_dep_year(NULL);
+                break;
             case sta_dep_month:
-            break;
+                value = thk_get_dep_month(NULL);
+                break;
             case sta_dep_week_day:
-            break;
+                value = thk_get_dep_week_day(NULL);
+                break;
             case sta_dep_day_number:
-            break;
+                value = thk_get_dep_day_number(NULL);
+                break;
             case sta_dep_hours:
-            break;
+                value = thk_get_dep_hours(NULL);
+                break;
             case sta_dep_minutes:
-            break;
+                value = thk_get_dep_minutes(NULL);
+                break;
             case sta_dep_seconds:
-            break;
-//            //RTC => (C&DH subsystem)
-//            case sta_rtc_year:
-//            break;
-//            case sta_rtc_month:
-//            break;
-//            case sta_rtc_week_day:
-//            break;
-//            case sta_rtc_day_number:
-//            break;
-//            case sta_rtc_hours:
-//            break;
-//            case sta_rtc_minutes:
-//            break;
-//            case sta_rtc_seconds:
-//            break;
-//            //EPS => (Energy subsystem)
-//            case sta_eps_bat0_voltage:
-//            break;
-//            case sta_eps_bat0_current:
-//            break;
-//            case sta_eps_bus5V_current:
-//            break;
-//            case sta_eps_bus3V_current:
-//            break;
-//            case sta_eps_bus_battery_current:
-//            break;
-//            case sta_eps_bat0_temp:
-//            break;
-//            case sta_eps_panel_pwr:
-//            break;
-//            case sta_eps_status:
-//            break;
-//            case sta_eps_soc:
-//            break;
-//            case sta_eps_socss:
-//            break;
-//            case sta_eps_state_flag:
-//            break;
-//            case sta_eps_charging:
-//            break;
-//            //TRX => (Communication subsystem)
-//            case sta_trx_opmode:
-//            break;
-//            case sta_trx_temp_hpa:
-//            break;
-//            case sta_trx_temp_mcu:
-//            break;
-//            case sta_trx_rssi:
-//            break;
-//            case sta_trx_rssi_mean:
-//            break;
-//            case sta_trx_status_tc:
-//            break;
-//            case sta_trx_count_tm:
-//            break;
-//            case sta_trx_count_tc:
-//            break;
-//            case sta_trx_lastcmd_day:
-//            break;
-//            case sta_trx_newTcFrame:
-//            break;
-//            case sta_trx_newCmdBuff:
-//            break;
-//            //FLIGHT PLAN
-//            case sta_fpl_index:
-//            break;
-//            //PAYLOAD
-//            case sta_pay_lagmuirProbe_perform:
-//            break;
-//            case sta_pay_sensTemp_perform:
-//            break;
-//            case sta_pay_gps_perform:
-//            break;
-//            case sta_pay_expFis_perform:
-//            break;
-//            case sta_pay_camera_perform:
-//            break;
-//            case sta_pay_gyro_perform:
-//            break;
-//            case sta_pay_tmEstado_perform:
-//            break;
-//            case sta_pay_test1_perform:
-//            break;
-//            case sta_pay_test2_perform:
-//            break;
-//            case :
-//            break;
+                value = thk_get_dep_seconds(NULL);
+                break;
+            //RTC => (C&DH subsystem)
+            case sta_rtc_year:
+                printf("RTC => (C&DH subsystem)\r\n");
+                value = RTC_get_year();
+                break;
+            case sta_rtc_month:
+                value = RTC_get_month();
+                break;
+            case sta_rtc_week_day:
+                value = RTC_get_week_day();
+                break;
+            case sta_rtc_day_number:
+                value = RTC_get_day_num();
+                break;
+            case sta_rtc_hours:
+                value = RTC_get_hours();
+                break;
+            case sta_rtc_minutes:
+                value = RTC_get_minutes();
+                break;
+            case sta_rtc_seconds:
+                value = RTC_get_seconds();
+                break;
+            #if (SCH_EPS_ONBOARD==1)
+                //EPS => (Energy subsystem)
+                case sta_eps_bat0_voltage:
+                    printf("EPS => (Energy subsystem)\r\n");
+                    value = readEPSvars(EPS_ID_bat0_voltage);
+                    break;
+                case sta_eps_bat0_current:
+                    value = readEPSvars(EPS_ID_bat0_current);
+                    break;
+                case sta_eps_bus5V_current:
+                    value = readEPSvars(EPS_ID_bus5V_current);
+                    break;
+                case sta_eps_bus3V_current:
+                    value = readEPSvars(EPS_ID_bus3V_current);
+                    break;
+                case sta_eps_bus_battery_current:
+                    value = readEPSvars(EPS_ID_bus_battery_current);
+                    break;
+                case sta_eps_bat0_temp:
+                    value = readEPSvars(EPS_ID_bat0_temp);
+                    break;
+                case sta_eps_panel_pwr:
+                    value = readEPSvars(EPS_ID_panel_pwr);
+                    break;
+                case sta_eps_status:
+                    value = readEPSvars(EPS_ID_status);
+                    break;
+                case sta_eps_soc:
+                    value = readEPSvars(EPS_ID_soc);
+                    break;
+                case sta_eps_socss:
+                    value = readEPSvars(EPS_ID_socss);
+                    break;
+                case sta_eps_state_flag:
+                    value = readEPSvars(EPS_ID_state_flag);
+                    break;
+                case sta_eps_charging:
+                    value = readEPSvars(EPS_ID_current_dir);
+                    break;
+            #endif
+            #if (SCH_TRX_ONBOARD==1)
+                //TRX => (Communication subsystem)
+                case sta_trx_opmode:
+                    printf("TRX => (Communication subsystem)\r\n");
+                    break;
+                case sta_trx_temp_hpa:
+                    break;
+                case sta_trx_temp_mcu:
+                    break;
+                case sta_trx_rssi:
+                    break;
+                case sta_trx_rssi_mean:
+                    break;
+                case sta_trx_status_tc:
+                    break;
+                case sta_trx_count_tm:
+                    break;
+                case sta_trx_count_tc:
+                    break;
+                case sta_trx_lastcmd_day:
+                    break;
+                case sta_trx_newTcFrame:
+                    break;
+                case sta_trx_newCmdBuff:
+                    break;
+            #endif
+            //PAY => (Payload subsystem)
+            case sta_pay_lagmuirProbe_state:
+                printf("PAY => (Payload subsystem)\r\n");
+                value = pay_get_state_lagmuirProbe(NULL);
+                break;
+            case sta_pay_sensTemp_state:
+                value = pay_get_state_sensTemp(NULL);
+                break;
+            case sta_pay_gps_state:
+                value = pay_get_state_gps(NULL);
+                break;
+            case sta_pay_expFis_state:
+                value = pay_get_state_expFis(NULL);
+                break;
+            case sta_pay_camera_state:
+                value = pay_get_state_camera(NULL);
+                break;
+            case sta_pay_gyro_state:
+                value = pay_get_state_gyro(NULL);
+                break;
+            case sta_pay_tmEstado_state:
+                value = pay_get_state_tmEstado(NULL);
+                break;
+            case sta_pay_battery_state:
+                value = pay_get_state_battery(NULL);
+                break;
+            case sta_pay_debug_state:
+                value = pay_get_state_debug(NULL);
+//            case:
+//                break;
             default:
-                printf("[sta_getCubesatVar] Error: No associated function for STA_CubesatVar %d \r\n", indxVar);
-                value = -1;
+                printf("[sta_getCubesatVar] Error: No function/command for STA_CubesatVar %d \r\n", indxVar);
+                value = -(0x7FFF);
             break;
         }
     #endif
@@ -265,19 +326,62 @@ int sta_getCubesatVar(STA_CubesatVar indxVar){
 
 
 /**
- * Funcion a llamar luego de un Reset del PIC y luego de @sa sta_onReset_memEEPROM
- * para inicializar a los valore correctos las variables de estado que necesitan ser modificadas.
+ * Funcion a llamar luego de un Reset del PIC y luego de 
+ * @sa sta_onReset_memEEPROM para inicializar a los valore correctos las
+ * variables de estado que necesitan ser modificadas.
  *
- *Funcion pensada para sersiorarse que luego del reseteo se tengan valores coherentes.
- *Se inicializan variables que explicitamente necesitan ser modificadas
+ * No todas son modificadas, hay muchas que se inicializan en otros
+ * llamados anteriores o posteriores (@sa default_PIC_config,
+ * @sa dep_init_suchai_hw, @sa dep_init_suchai_repos).
  */
 void sta_onResetStatRepo(void)
 {
+    int param, res;
+
+    // Set to default
+    param = STA_PPC_OPMODE_NORMAL;
+    ppc_set_opMode(&param);
+
+    // Increment reset counter
+    param = ppc_get_resetCounter(NULL);
+    param++;
+    ppc_set_resetCounter(&param);
+    
+
+    //print important StatusVars
+    printf("[sta_onResetStatRepo] Important STA_CubesatVar variables:\r\n");
+
+    res = ppc_get_resetCounter(NULL);
+    printf("    * ppc_get_resetCounter: %d\r\n", res);
+
+    param = 1;  //verbose
+    ppc_get_lastResetSource(&param);
+
+    res = ppc_get_hoursAlive(NULL);
+    printf("    * ppc_get_hoursAlive: %d\r\n", res);
+
+    res = ppc_get_hoursWithoutReset(NULL);
+    printf("    * ppc_get_hoursWithoutReset: %d\r\n", res);
+
+    res = ppc_get_wdt_state(NULL);
+    printf("    * ppc_get_wdt_state: %d\r\n", res);
+
+    param = 1;  //verbose
+    res = ppc_get_osc(&param);
+
+
+    /*
+     * Comment all this block ONLY after all var have a callable function "get"
+     */
+    printf("[sta_onResetStatRepo] All STA_CubesatVar variables:\r\n");
+    //print all SatatusVars
     STA_CubesatVar indxVar;
     for(indxVar=0;indxVar<sta_cubesatVar_last_one;indxVar++){
         int r = sta_getCubesatVar(indxVar);
-        printf("[sta_onResetStatRepo] sta_getCubesatVar(%d) = %d \r\n", indxVar, r);
+        //printf("    * sta_getCubesatVar(%d) = %d \r\n", indxVar, r);
+        printf("    * sta_getCubesatVar(%s) = %d \r\n", varToString(indxVar), r);
     }
+
 //    //External hw satus were already set
 //    //sta_RTC_isAlive,
 //    //sta_TRX_isAlive,
@@ -295,7 +399,7 @@ void sta_onResetStatRepo(void)
 //    if( sta_getCubesatVar(sta_SUCHAI_isDeployed) == 0 ){
 //        sta_setCubesatVar(sta_ppc_resetCounter, 0);
 //        #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-//            printf("        - First time on! Setting resetCounter to 0\r\n");
+//            printf("        * First time on! Setting resetCounter to 0\r\n");
 //        #endif
 //    }
 //    else{
@@ -303,8 +407,8 @@ void sta_onResetStatRepo(void)
 //        sta_setCubesatVar(sta_ppc_resetCounter, rc);
 //        #if (SCH_DATAREPOSITORY_VERBOSE>=1)
 //
-//            printf("            - NOT the First time on! resetCounter++\r\n");
-//            printf("            - resetCounter = %d\n", rc);
+//            printf("            * NOT the First time on! resetCounter++\r\n");
+//            printf("            * resetCounter = %d\n", rc);
 //        #endif
 //    }
 //    sta_setCubesatVar(sta_ppc_enwdt, PPC_INITIAL_WDT_STATE);
@@ -349,31 +453,31 @@ STA_CubesatVar sta_pay_i_to_performVar(int pay_i){
 
     switch(pay_i){
         case dat_pay_lagmuirProbe:
-            dat_pay_xxx_perform = sta_pay_lagmuirProbe_perform;
+            dat_pay_xxx_perform = sta_pay_lagmuirProbe_state;
         break;
         case dat_pay_sensTemp:
-            dat_pay_xxx_perform = sta_pay_sensTemp_perform;
+            dat_pay_xxx_perform = sta_pay_sensTemp_state;
         break;
         case dat_pay_gps:
-            dat_pay_xxx_perform = sta_pay_gps_perform;
+            dat_pay_xxx_perform = sta_pay_gps_state;
         break;
         case dat_pay_gyro:
-            dat_pay_xxx_perform = sta_pay_gyro_perform;
+            dat_pay_xxx_perform = sta_pay_gyro_state;
         break;
         case dat_pay_expFis:
-            dat_pay_xxx_perform = sta_pay_expFis_perform;
+            dat_pay_xxx_perform = sta_pay_expFis_state;
         break;
         case dat_pay_camera:
-            dat_pay_xxx_perform = sta_pay_camera_perform;
+            dat_pay_xxx_perform = sta_pay_camera_state;
         break;
         case dat_pay_tmEstado:
-            dat_pay_xxx_perform = sta_pay_tmEstado_perform;
+            dat_pay_xxx_perform = sta_pay_tmEstado_state;
         break;
-        case dat_pay_test1:
-            dat_pay_xxx_perform = sta_pay_test1_perform;
+        case dat_pay_battery:
+            dat_pay_xxx_perform = sta_pay_battery_state;
         break;
-        case dat_pay_test2:
-            dat_pay_xxx_perform = sta_pay_test2_perform;
+        case dat_pay_debug:
+            dat_pay_xxx_perform = sta_pay_debug_state;
         break;
         default:
             dat_pay_xxx_perform=-1;
@@ -381,4 +485,262 @@ STA_CubesatVar sta_pay_i_to_performVar(int pay_i){
     }
 
     return dat_pay_xxx_perform;
+}
+
+char* varToString(STA_CubesatVar var_i){
+    char *pc;
+    switch(var_i){
+        case sta_RTC_isAlive:
+            pc = "sta_RTC_isAlive";
+            break;
+        case sta_TRX_isAlive:
+            pc = "sta_TRX_isAlive";
+            break;
+        case sta_EPS_isAlive:
+            pc = "sta_EPS_isAlive";
+            break;
+        case sta_MemEEPROM_isAlive:
+            pc = "sta_MemEEPROM_isAlive";
+            break;
+        case sta_MemSD_isAlive:
+            pc = "sta_MemSD_isAlive";
+            break;
+        case sta_Antenna_isDeployed:
+            pc = "sta_Antenna_isDeployed";
+            break;
+
+        // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
+        case sta_pay_lagmuirProbe_isAlive:
+            pc = "sta_pay_lagmuirProbe_isAlive";
+            break;
+        case sta_pay_sensTemp_isAlive:
+            pc = "sta_pay_sensTemp_isAlive";
+            break;
+        case sta_pay_gps_isAlive:
+            pc = "sta_pay_gps_isAlive";
+            break;
+        case sta_pay_expFis_isAlive:
+            pc = "sta_pay_expFis_isAlive";
+            break;
+        case sta_pay_camera_isAlive:
+            pc = "sta_pay_camera_isAlive";
+            break;
+        case sta_pay_gyro_isAlive:
+            pc = "sta_pay_gyro_isAlive";
+            break;
+        case sta_pay_tmEstado_isAlive:
+            pc = "sta_pay_tmEstado_isAlive";
+            break;
+        case sta_pay_battery_isAlive:
+            pc = "sta_pay_battery_isAlive";
+            break;
+        case sta_pay_debug_isAlive:
+            pc = "sta_pay_debug_isAlive";
+            break;
+        case sta_pay_lagmuirProbe_isDeployed:
+            pc = "sta_pay_lagmuirProbe_isDeployed";
+            break;
+
+        //FLIGHT PLAN => (C&DH subsystem)
+        case sta_fpl_index:         // Indice del flight plan que sera editado
+            pc = "sta_fpl_index";
+            break;
+
+        //PPC => (C&DH subsystem)
+        case sta_ppc_opMode:
+            pc = "sta_ppc_opMode";
+            break;
+        case sta_ppc_lastResetSource:
+            pc = "sta_ppc_lastResetSource";
+            break;
+        case sta_ppc_hoursAlive:
+            pc = "sta_ppc_hoursAlive";
+            break;
+        case sta_ppc_hoursWithoutReset:
+            pc = "sta_ppc_hoursWithoutReset";
+            break;
+        case sta_ppc_resetCounter:
+            pc = "sta_ppc_resetCounter";
+            break;
+        case sta_ppc_wdt:				// 1=WDT Active: 0=WDT Inactive
+            pc = "sta_ppc_wdt";
+            break;
+        case sta_ppc_osc:				// holds Current Oscillator
+            pc = "sta_ppc_osc";
+            break;
+        case sta_ppc_MB_nOE_USB_nINT_stat:
+            pc = "sta_ppc_MB_nOE_USB_nINT_stat";
+            break;
+        case sta_ppc_MB_nOE_MHX_stat:
+            pc = "sta_ppc_MB_nOE_MHX_stat";
+            break;
+        case sta_ppc_MB_nON_MHX_stat:
+            pc = "sta_ppc_MB_nON_MHX_stat";
+            break;
+        case sta_ppc_MB_nON_SD_stat:
+            pc = "sta_ppc_MB_nON_SD_stat";
+            break;
+
+        //DEP => (C&DH subsystem)
+        case sta_dep_ant_deployed:      // 1=already deployed: 0=not deployed yet
+            pc = "sta_dep_ant_deployed";
+            break;
+        case sta_dep_ant_tries:         // Number of tries to deploy antenna
+            pc = "sta_dep_ant_tries";
+            break;
+        case sta_dep_year:
+            pc = "sta_dep_year";
+     	    break;
+        case sta_dep_month:
+            pc = "sta_dep_month";
+     	    break;
+        case sta_dep_week_day:
+            pc = "sta_dep_week_day";
+     	    break;
+        case sta_dep_day_number:
+            pc = "sta_dep_day_number";
+     	    break;
+        case sta_dep_hours:
+            pc = "sta_dep_hours";
+     	    break;
+        case sta_dep_minutes:
+            pc = "sta_dep_minutes";
+     	    break;
+        case sta_dep_seconds:
+            pc = "sta_dep_seconds";
+     	    break;
+
+        //RTC => (C&DH subsystem)
+        case sta_rtc_year:
+            pc = "sta_rtc_year";
+     	    break;
+        case sta_rtc_month:
+            pc = "sta_rtc_month";
+     	    break;
+        case sta_rtc_week_day:
+            pc = "sta_rtc_week_day";
+     	    break;
+        case sta_rtc_day_number:
+            pc = "sta_rtc_day_number";
+     	    break;
+        case sta_rtc_hours:
+            pc = "sta_rtc_hours";
+     	    break;
+        case sta_rtc_minutes:
+            pc = "sta_rtc_minutes";
+     	    break;
+        case sta_rtc_seconds:
+            pc = "sta_rtc_seconds";
+     	    break;
+
+        //EPS => (Energy subsystem)
+        case sta_eps_bat0_voltage:
+            pc = "sta_eps_bat0_voltage";
+     	    break;
+        case sta_eps_bat0_current:
+            pc = "sta_eps_bat0_current";
+     	    break;
+        case sta_eps_bus5V_current:
+            pc = "sta_eps_bus5V_current";
+     	    break;
+        case sta_eps_bus3V_current:
+            pc = "sta_eps_bus3V_current";
+     	    break;
+        case sta_eps_bus_battery_current:
+            pc = "sta_eps_bus_battery_current";
+     	    break;
+        case sta_eps_bat0_temp:
+            pc = "sta_eps_bat0_temp";
+     	    break;
+        case sta_eps_panel_pwr:
+            pc = "sta_eps_panel_pwr";
+     	    break;
+        case sta_eps_status:
+            pc = "sta_eps_status";
+     	    break;
+        case sta_eps_soc:
+            pc = "sta_eps_soc";
+     	    break;
+        case sta_eps_socss:
+            pc = "sta_eps_socss";
+     	    break;
+        case sta_eps_state_flag:
+            pc = "sta_eps_state_flag";
+     	    break;
+        case sta_eps_charging:
+            pc = "sta_eps_charging";
+     	    break;
+
+        /* Revisar de aqui hacia abajo si aun son necesarios !!! */
+
+        //TRX => (Communication subsystem)
+        case sta_trx_opmode:           // Operation mode
+            pc = "sta_trx_opmode";
+     	    break;
+        case sta_trx_temp_hpa:         // Temp of HPA
+            pc = "sta_trx_temp_hpa";
+     	    break;
+        case sta_trx_temp_mcu:         // Temp of MCU
+            pc = "sta_trx_temp_mcu";
+     	    break;
+        case sta_trx_rssi:             // RSSI: Signal level
+            pc = "sta_trx_rssi";
+     	    break;
+        case sta_trx_rssi_mean:        // RSSI_MEAN
+            pc = "sta_trx_rssi_mean";
+     	    break;
+        case sta_trx_status_tc:        // Status Register of TC
+            pc = "sta_trx_status_tc";
+     	    break;
+        case sta_trx_count_tm:         // number of sended TM
+            pc = "sta_trx_count_tm";
+     	    break;
+        case sta_trx_count_tc:         // number of received TC
+            pc = "sta_trx_count_tc";
+     	    break;
+        case sta_trx_lastcmd_day:      // day of the last received tc (since 1/1/00)
+            pc = "sta_trx_lastcmd_day";
+     	    break;
+        // Cmd buffer control
+        case sta_trx_newTcFrame:       // Exist any unprocessed TcFram?
+            pc = "sta_trx_newTcFrame";
+     	    break;
+        case sta_trx_newCmdBuff:       // Exist unprocessed CMD in the external buffer
+            pc = "sta_trx_newCmdBuff";
+     	    break;
+        //trx_repo_telecmd[STA_MAX_BUFF_TELECMD]:   // Assuming that each Telecommand is of the form: [cmdId | param]
+
+        //PAYLOAD
+        case sta_pay_lagmuirProbe_state:
+            pc = "sta_pay_lagmuirProbe_state";
+     	    break;
+        case sta_pay_sensTemp_state:
+            pc = "sta_pay_sensTemp_state";
+     	    break;
+        case sta_pay_gps_state:
+            pc = "sta_pay_gps_state";
+     	    break;
+        case sta_pay_expFis_state:
+            pc = "sta_pay_expFis_state";
+     	    break;
+        case sta_pay_camera_state:
+            pc = "sta_pay_camera_state";
+     	    break;
+        case sta_pay_gyro_state:
+            pc = "ta_pay_gyro_state";
+     	    break;
+        case sta_pay_tmEstado_state:
+            pc = "sta_pay_tmEstado_state";
+     	    break;
+        case sta_pay_battery_state:
+            pc = "sta_pay_battery_state";
+     	    break;
+        case sta_pay_debug_state:
+            pc = "sta_pay_debug_state";
+     	    break;
+        default:
+            pc = "No string for this var_i";
+     	    break;
+    }
+    return pc;
 }

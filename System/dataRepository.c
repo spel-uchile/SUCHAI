@@ -483,10 +483,10 @@ void dat_print_pay_i_name(DAT_PayloadBuff pay_i){
         case dat_pay_tmEstado:
             printf("dat_pay_tmEstado");
         break;
-        case dat_pay_test1:
+        case dat_pay_battery:
             printf("dat_pay_test1");
         break;
-        case dat_pay_test2:
+        case dat_pay_debug:
             printf("dat_pay_test2");
         break;
         default:

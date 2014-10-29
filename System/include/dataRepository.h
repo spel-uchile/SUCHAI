@@ -37,6 +37,9 @@
  * Defines que contienen los General Purpose Buffers (max indx = 2^16 = 65536 )
  * del SUCHAI, estos son usados por otros buffer (Payloads buffers, TC buffer,
  * Flight Plan Buffer ). Estos usan wrappers para accederlos mas comodamente
+ *
+ * @sa memSD_isAlive - int memSD_isAlive(void; usa MSD_ARG block = 0 para test.
+ * Por lo tanto es un block reservado y no se debe usar.
  */
 #define DAT_GPB_FIRST_BLOCK 31
 #define DAT_GPB_0       ( DAT_GPB_FIRST_BLOCK + 256*0 )
@@ -122,8 +125,8 @@ void dat_erase_FlightPlanBuff(void);
  */
 typedef enum _DAT_Payload{
     dat_pay_tmEstado=0,
-    dat_pay_test1,
-    dat_pay_test2,
+    dat_pay_battery,
+    dat_pay_debug,
     dat_pay_lagmuirProbe,   //pay_i=3
     dat_pay_gps,
     dat_pay_camera,         //pay_i=5

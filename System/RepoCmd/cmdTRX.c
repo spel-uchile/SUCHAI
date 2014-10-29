@@ -38,6 +38,8 @@ void trx_onResetCmdTRX(void){
     trx_sysReq[(unsigned char)trx_id_send_beacon]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_readconf] = trx_read_conf;
     trx_sysReq[(unsigned char)trx_id_readconf]  = CMD_SYSREQ_MIN;
+    trxFunction[(unsigned char)trx_id_isAlive] = trx_isAlive;
+    trx_sysReq[(unsigned char)trx_id_isAlive]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_ping] = trx_ping;
     trx_sysReq[(unsigned char)trx_id_ping]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_getstatus] = trx_getstatus;
@@ -165,6 +167,16 @@ int trx_send_beacon(void *param)
 }
 
 /**
+ * Check if the TRX is working normally
+ * @param param not used
+ * @return 1 Ok, 0 Fail
+ */
+int trx_isAlive(void *param){
+    int arg = NODE_COM;
+    return trx_ping(&arg);
+}
+
+/**
  * Send a frame for testing (ping) to desired node
  *
  * @param param int Node to transmit
@@ -194,7 +206,7 @@ int trx_ping(void *param)
  * Read and show TRX status. Debug only
  *
  * @param param Not used
- * @return 1 - OK
+ * @return 1 - OK, 0 - Fail
  */
 int trx_getstatus(void *param)
 {
@@ -207,7 +219,7 @@ int trx_getstatus(void *param)
     com_printf_status(&status);
 #endif
 
-    return 1;
+    return result;
 }
 
 

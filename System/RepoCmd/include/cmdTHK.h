@@ -50,27 +50,19 @@ typedef enum{
     //Deplyment
     thk_id_deploy_antenna, ///< @cmd
     thk_id_silent_time_and_pictures, ///< @cmd
+    thk_id_deployment_registration, ///< @cmd
 
-    //Deployment registration
+    //get Deployment registration
     thk_id_get_dep_ant_deployed, ///< @cmd
-    thk_id_set_dep_ant_deployed, ///< @cmd
     thk_id_get_dep_ant_tries, ///< @cmd
-    thk_id_set_dep_ant_tries, ///< @cmd
 
     thk_id_get_dep_year, ///< @cmd
-    thk_id_set_dep_year, ///< @cmd
-    thk_id_get_dep_month, ///< @cmd
-    thk_id_set_dep_month, ///< @cmd
-    thk_id_get_dep_week_day, ///< @cmd
-    thk_id_set_dep_week_day, ///< @cmd
-    thk_id_get_dep_day_number, ///< @cmd
-    thk_id_set_dep_day_number, ///< @cmd
-    thk_id_get_dep_hours, ///< @cmd
-    thk_id_set_dep_hours, ///< @cmd
     thk_id_get_dep_minutes, ///< @cmd
-    thk_id_set_dep_minutes, ///< @cmd
+    thk_id_get_dep_month, ///< @cmd
+    thk_id_get_dep_week_day, ///< @cmd
+    thk_id_get_dep_day_number, ///< @cmd
+    thk_id_get_dep_hours, ///< @cmd
     thk_id_get_dep_seconds, ///< @cmd
-    thk_id_set_dep_seconds, ///< @cmd
 
     //De update en general de dat_CubesatVar
     thk_id_periodicUpdate_STA_CubesatVar, ///< @cmd
@@ -78,6 +70,17 @@ typedef enum{
     //de EBF
     thk_id_state_hw, ///< @cmd
     thk_id_executeBeforeFlight, ///< @cmd
+
+//    thk_id_set_dep_ant_deployed, ///< @cmd
+//    thk_id_set_dep_ant_tries, ///< @cmd
+//
+//    thk_id_set_dep_week_day, ///< @cmd
+//    thk_id_set_dep_day_number, ///< @cmd
+//    thk_id_set_dep_hours, ///< @cmd
+//    thk_id_set_dep_month, ///< @cmd
+//    thk_id_set_dep_year, ///< @cmd
+//    thk_id_set_dep_seconds, ///< @cmd
+//    thk_id_set_dep_minutes, ///< @cmd
 
    //*************
     thk_id_last_one    //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
@@ -100,27 +103,32 @@ int thk_state_hw(void *param);
  * @return 1 success, 0 fails
  */
 int thk_deploy_antenna(void *param);
+int thk_deployment_registration(void *param);
 int thk_silent_time_and_pictures(void *param);
 
+//antenna registration
 int thk_get_dep_ant_deployed(void* param);
-int thk_set_dep_ant_deployed(void* param);
 int thk_get_dep_ant_tries(void* param);
-int thk_set_dep_ant_tries(void* param);
 
 int thk_get_dep_year(void* param);
-int thk_set_dep_year(void* param);
-int thk_get_dep_month(void* param);
-int thk_set_dep_month(void* param);
-int thk_get_dep_week_day(void* param);
-int thk_set_dep_week_day(void* param);
-int thk_get_dep_day_number(void* param);
-int thk_set_dep_day_number(void* param);
-int thk_get_dep_hours(void* param);
-int thk_set_dep_hours(void* param);
-int thk_get_dep_minutes(void* param);
-int thk_set_dep_minutes(void* param);
 int thk_get_dep_seconds(void* param);
-int thk_set_dep_seconds(void* param);
+int thk_get_dep_month(void* param);
+int thk_get_dep_minutes(void* param);
+int thk_get_dep_week_day(void* param);
+int thk_get_dep_day_number(void* param);
+int thk_get_dep_hours(void* param);
+
+////set
+//int thk_set_dep_ant_deployed(void* param);
+//int thk_set_dep_ant_tries(void* param);
+//
+//int thk_set_dep_day_number(void* param);
+//int thk_set_dep_hours(void* param);
+//int thk_set_dep_minutes(void* param);
+//int thk_set_dep_seconds(void* param);
+//int thk_set_dep_year(void* param);
+//int thk_set_dep_month(void* param);
+//int thk_set_dep_week_day(void* param);
 
 //funciones auxiliares
 //****************************************************
@@ -158,18 +166,18 @@ void thk_rtc_minutes(void);
 void thk_rtc_seconds(void);
 
 //EPS
-void thk_eps_bat0_voltage(void);
-void thk_eps_bat0_current(void);
-void thk_eps_bus5V_current(void);
-void thk_eps_bus3V_current(void);
-void thk_eps_bus_battery_current(void);
-void thk_eps_bat0_temp(void);
-void thk_eps_panel_pwr(void);
-void thk_eps_status(void);
-void thk_eps_soc(void);
-void thk_eps_socss(void);
-void thk_eps_state_flag(void);
-void thk_eps_charging(void);
+//void thk_eps_bat0_voltage(void);
+//void thk_eps_bat0_current(void);
+//void thk_eps_bus5V_current(void);
+//void thk_eps_bus3V_current(void);
+//void thk_eps_bus_battery_current(void);
+//void thk_eps_bat0_temp(void);
+//void thk_eps_panel_pwr(void);
+//void thk_eps_status(void);
+//void thk_eps_soc(void);
+//void thk_eps_socss(void);
+//void thk_eps_state_flag(void);
+//void thk_eps_charging(void);
 
 //TRX
 void thk_trx_opmode(void);

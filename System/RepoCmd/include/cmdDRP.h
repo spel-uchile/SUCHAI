@@ -55,6 +55,7 @@ typedef enum{
     
     //Flight Plan
     drp_id_fpl_set_index, ///< @cmd
+    drp_id_fpl_get_index, ///< @cmd
     drp_id_fpl_set_cmd, ///< @cmd
     drp_id_fpl_set_param, ///< @cmd
 
@@ -84,6 +85,8 @@ int drp_debug(void *param);
 int drp_fpl_set_index(void *param);
 int drp_fpl_set_cmd(void *param);
 int drp_fpl_set_param(void *param);
+int drp_fpl_get_index(void* param);
+int drp_fpl_set_index(void* param);
 //de TRX
 int drp_trx_newTcFrame(void *param);
 int drp_trx_newCmdBuff(void *param);

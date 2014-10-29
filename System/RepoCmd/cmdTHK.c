@@ -41,44 +41,47 @@ void thk_onResetCmdTHK(){
     thk_sysReq[(unsigned char)thk_id_deploy_antenna]  = CMD_SYSREQ_MIN + SCH_DEP_SYS_REQ;
     thkFunction[(unsigned char)thk_id_silent_time_and_pictures] = thk_silent_time_and_pictures;
     thk_sysReq[(unsigned char)thk_id_silent_time_and_pictures]  = CMD_SYSREQ_MIN;
+    thkFunction[(unsigned char)thk_id_deployment_registration] = thk_deployment_registration;
+    thk_sysReq[(unsigned char)thk_id_deployment_registration]  = CMD_SYSREQ_MIN;
 
     thkFunction[(unsigned char)thk_id_get_dep_ant_deployed] = thk_get_dep_ant_deployed;
     thk_sysReq[(unsigned char)thk_id_get_dep_ant_deployed]  = CMD_SYSREQ_MIN;
-    thkFunction[(unsigned char)thk_id_set_dep_ant_deployed] = thk_set_dep_ant_deployed;
-    thk_sysReq[(unsigned char)thk_id_set_dep_ant_deployed]  = CMD_SYSREQ_MIN;
     thkFunction[(unsigned char)thk_id_get_dep_ant_tries] = thk_get_dep_ant_tries;
     thk_sysReq[(unsigned char)thk_id_get_dep_ant_tries]  = CMD_SYSREQ_MIN;
-    thkFunction[(unsigned char)thk_id_set_dep_ant_tries] = thk_set_dep_ant_tries;
-    thk_sysReq[(unsigned char)thk_id_set_dep_ant_tries]  = CMD_SYSREQ_MIN;
-
     thkFunction[(unsigned char)thk_id_get_dep_year] = thk_get_dep_year;
     thk_sysReq[(unsigned char)thk_id_get_dep_year]  = CMD_SYSREQ_MIN;
-    thkFunction[(unsigned char)thk_id_set_dep_year] = thk_set_dep_year;
-    thk_sysReq[(unsigned char)thk_id_set_dep_year]  = CMD_SYSREQ_MIN;
     thkFunction[(unsigned char)thk_id_get_dep_month] = thk_get_dep_month;
     thk_sysReq[(unsigned char)thk_id_get_dep_month]  = CMD_SYSREQ_MIN;
-    thkFunction[(unsigned char)thk_id_set_dep_month] = thk_set_dep_month;
-    thk_sysReq[(unsigned char)thk_id_set_dep_month]  = CMD_SYSREQ_MIN;
     thkFunction[(unsigned char)thk_id_get_dep_week_day] = thk_get_dep_week_day;
     thk_sysReq[(unsigned char)thk_id_get_dep_week_day]  = CMD_SYSREQ_MIN;
-    thkFunction[(unsigned char)thk_id_set_dep_week_day] = thk_set_dep_week_day;
-    thk_sysReq[(unsigned char)thk_id_set_dep_week_day]  = CMD_SYSREQ_MIN;
     thkFunction[(unsigned char)thk_id_get_dep_day_number] = thk_get_dep_day_number;
     thk_sysReq[(unsigned char)thk_id_get_dep_day_number]  = CMD_SYSREQ_MIN;
-    thkFunction[(unsigned char)thk_id_set_dep_day_number] = thk_set_dep_day_number;
-    thk_sysReq[(unsigned char)thk_id_set_dep_day_number]  = CMD_SYSREQ_MIN;
     thkFunction[(unsigned char)thk_id_get_dep_hours] = thk_get_dep_hours;
     thk_sysReq[(unsigned char)thk_id_get_dep_hours]  = CMD_SYSREQ_MIN;
-    thkFunction[(unsigned char)thk_id_set_dep_hours] = thk_set_dep_hours;
-    thk_sysReq[(unsigned char)thk_id_set_dep_hours]  = CMD_SYSREQ_MIN;
     thkFunction[(unsigned char)thk_id_get_dep_minutes] = thk_get_dep_minutes;
     thk_sysReq[(unsigned char)thk_id_get_dep_minutes]  = CMD_SYSREQ_MIN;
-    thkFunction[(unsigned char)thk_id_set_dep_minutes] = thk_set_dep_minutes;
-    thk_sysReq[(unsigned char)thk_id_set_dep_minutes]  = CMD_SYSREQ_MIN;
     thkFunction[(unsigned char)thk_id_get_dep_seconds] = thk_get_dep_seconds;
     thk_sysReq[(unsigned char)thk_id_get_dep_seconds]  = CMD_SYSREQ_MIN;
-    thkFunction[(unsigned char)thk_id_set_dep_seconds] = thk_set_dep_seconds;
-    thk_sysReq[(unsigned char)thk_id_set_dep_seconds]  = CMD_SYSREQ_MIN;
+
+
+//    thkFunction[(unsigned char)thk_id_set_dep_ant_deployed] = thk_set_dep_ant_deployed;
+//    thk_sysReq[(unsigned char)thk_id_set_dep_ant_deployed]  = CMD_SYSREQ_MIN;
+//    thkFunction[(unsigned char)thk_id_set_dep_ant_tries] = thk_set_dep_ant_tries;
+//    thk_sysReq[(unsigned char)thk_id_set_dep_ant_tries]  = CMD_SYSREQ_MIN;
+//    thkFunction[(unsigned char)thk_id_set_dep_year] = thk_set_dep_year;
+//    thk_sysReq[(unsigned char)thk_id_set_dep_year]  = CMD_SYSREQ_MIN;
+//    thkFunction[(unsigned char)thk_id_set_dep_month] = thk_set_dep_month;
+//    thk_sysReq[(unsigned char)thk_id_set_dep_month]  = CMD_SYSREQ_MIN;
+//    thkFunction[(unsigned char)thk_id_set_dep_week_day] = thk_set_dep_week_day;
+//    thk_sysReq[(unsigned char)thk_id_set_dep_week_day]  = CMD_SYSREQ_MIN;
+//    thkFunction[(unsigned char)thk_id_set_dep_day_number] = thk_set_dep_day_number;
+//    thk_sysReq[(unsigned char)thk_id_set_dep_day_number]  = CMD_SYSREQ_MIN;
+//    thkFunction[(unsigned char)thk_id_set_dep_hours] = thk_set_dep_hours;
+//    thk_sysReq[(unsigned char)thk_id_set_dep_hours]  = CMD_SYSREQ_MIN;
+//    thkFunction[(unsigned char)thk_id_set_dep_minutes] = thk_set_dep_minutes;
+//    thk_sysReq[(unsigned char)thk_id_set_dep_minutes]  = CMD_SYSREQ_MIN;
+//    thkFunction[(unsigned char)thk_id_set_dep_seconds] = thk_set_dep_seconds;
+//    thk_sysReq[(unsigned char)thk_id_set_dep_seconds]  = CMD_SYSREQ_MIN;
 }
 
 //------------------------------------------------------------------------------
@@ -119,104 +122,106 @@ int thk_get_dep_ant_deployed(void* param){
     int res = readIntEEPROM1(mem_eeprom_var);
     return res;
 }
-int thk_set_dep_ant_deployed(void* param){
-    MemEEPROM_Vars mem_eeprom_var = mem_dep_ant_deployed;
-    int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;   //se asume operacion exitosa
-}
 int thk_get_dep_ant_tries(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_ant_tries;
     int res = readIntEEPROM1(mem_eeprom_var);
     return res;
 }
-int thk_set_dep_ant_tries(void* param){
-    MemEEPROM_Vars mem_eeprom_var = mem_dep_ant_tries;
-    int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;   //se asume operacion exitosa
-}
-
+//rtc
 int thk_get_dep_year(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_year;
     int res = readIntEEPROM1(mem_eeprom_var);
     return res;
-}
-int thk_set_dep_year(void* param){
-    MemEEPROM_Vars mem_eeprom_var = mem_dep_year;
-    int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;   //se asume operacion exitosa
 }
 int thk_get_dep_month(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_month;
     int res = readIntEEPROM1(mem_eeprom_var);
     return res;
 }
-int thk_set_dep_month(void* param){
-    MemEEPROM_Vars mem_eeprom_var = mem_dep_month;
-    int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;   //se asume operacion exitosa
-}
 int thk_get_dep_week_day(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_week_day;
     int res = readIntEEPROM1(mem_eeprom_var);
     return res;
-}
-int thk_set_dep_week_day(void* param){
-    MemEEPROM_Vars mem_eeprom_var = mem_dep_week_day;
-    int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;   //se asume operacion exitosa
 }
 int thk_get_dep_day_number(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_day_number;
     int res = readIntEEPROM1(mem_eeprom_var);
     return res;
 }
-int thk_set_dep_day_number(void* param){
-    MemEEPROM_Vars mem_eeprom_var = mem_dep_day_number;
-    int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;   //se asume operacion exitosa
-}
 int thk_get_dep_hours(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_hours;
     int res = readIntEEPROM1(mem_eeprom_var);
     return res;
-}
-int thk_set_dep_hours(void* param){
-    MemEEPROM_Vars mem_eeprom_var = mem_dep_hours;
-    int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;   //se asume operacion exitosa
 }
 int thk_get_dep_minutes(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_minutes;
     int res = readIntEEPROM1(mem_eeprom_var);
     return res;
 }
-int thk_set_dep_minutes(void* param){
-    MemEEPROM_Vars mem_eeprom_var = mem_dep_minutes;
-    int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;   //se asume operacion exitosa
-}
 int thk_get_dep_seconds(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_seconds;
     int res = readIntEEPROM1(mem_eeprom_var);
     return res;
 }
-int thk_set_dep_seconds(void* param){
-    MemEEPROM_Vars mem_eeprom_var = mem_dep_seconds;
-    int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;   //se asume operacion exitosa
-}
+
+//
+//int thk_set_dep_ant_deployed(void* param){
+//    MemEEPROM_Vars mem_eeprom_var = mem_dep_ant_deployed;
+//    int value = *((int*)param);
+//    writeIntEEPROM1(mem_eeprom_var, value);
+//    return 1;   //se asume operacion exitosa
+//}
+//int thk_set_dep_ant_tries(void* param){
+//    MemEEPROM_Vars mem_eeprom_var = mem_dep_ant_tries;
+//    int value = *((int*)param);
+//    writeIntEEPROM1(mem_eeprom_var, value);
+//    return 1;   //se asume operacion exitosa
+//}
+//int thk_set_dep_year(void* param){
+//    MemEEPROM_Vars mem_eeprom_var = mem_dep_year;
+//    int value = *((int*)param);
+//    writeIntEEPROM1(mem_eeprom_var, value);
+//    return 1;   //se asume operacion exitosa
+//}
+//int thk_set_dep_month(void* param){
+//    MemEEPROM_Vars mem_eeprom_var = mem_dep_month;
+//    int value = *((int*)param);
+//    writeIntEEPROM1(mem_eeprom_var, value);
+//    return 1;   //se asume operacion exitosa
+//}
+//int thk_set_dep_week_day(void* param){
+//    MemEEPROM_Vars mem_eeprom_var = mem_dep_week_day;
+//    int value = *((int*)param);
+//    writeIntEEPROM1(mem_eeprom_var, value);
+//    return 1;   //se asume operacion exitosa
+//}
+//int thk_set_dep_day_number(void* param){
+//    MemEEPROM_Vars mem_eeprom_var = mem_dep_day_number;
+//    int value = *((int*)param);
+//    writeIntEEPROM1(mem_eeprom_var, value);
+//    return 1;   //se asume operacion exitosa
+//}
+//int thk_set_dep_hours(void* param){
+//    MemEEPROM_Vars mem_eeprom_var = mem_dep_hours;
+//    int value = *((int*)param);
+//    writeIntEEPROM1(mem_eeprom_var, value);
+//    return 1;   //se asume operacion exitosa
+//}
+//int thk_set_dep_minutes(void* param){
+//    MemEEPROM_Vars mem_eeprom_var = mem_dep_minutes;
+//    int value = *((int*)param);
+//    writeIntEEPROM1(mem_eeprom_var, value);
+//    return 1;   //se asume operacion exitosa
+//}
+//int thk_set_dep_seconds(void* param){
+//    MemEEPROM_Vars mem_eeprom_var = mem_dep_seconds;
+//    int value = *((int*)param);
+//    writeIntEEPROM1(mem_eeprom_var, value);
+//    return 1;   //se asume operacion exitosa
+//}
 //------------------------------------------------------------------------------
 #define THK_SILENT_TIME_MIN 30          ///< cuantos "minutos" (65,535[s]) estara en inactividad antes de iniciarse
-#define THK_TRY_DEPLOY 10               ///< cuantas veces tratara desplegar la antena antes de anunciar fracaso
+#define THK_MAX_TRIES_ANT_DEPLOY 10               ///< cuantas veces tratara desplegar la antena antes de anunciar fracaso
 #define THK_DEPLOY_TIME 45311          ///< 2*THK_DEPLOY_TIME/1000 indica cuantos "s" estara activo el bus de 3.3V quemando el nilon
 #define THK_REST_DEPLOY_TIME 5000       ///< cuantos "ms" estara inactivo el bus de 3.3V descanzando de tratar de quemar el nilon
 #define THK_RECHECK_TIME 2000           ///< despues de cuantos "ms" RE-chequeara que efectivamente se desplego la antena
@@ -268,7 +273,7 @@ int thk_deploy_antenna(void *param)
 
     #if(SCH_ANTENNA_ONBOARD == 1)
     {
-        for(tries_indx=1; tries_indx<=THK_TRY_DEPLOY; tries_indx++)
+        for(tries_indx=1; tries_indx<=THK_MAX_TRIES_ANT_DEPLOY; tries_indx++)
         {
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
                 printf("    [Deploying] Attempt #%d\r\n", tries_indx);
@@ -312,7 +317,7 @@ int thk_deploy_antenna(void *param)
 
             if( thk_check_antenna_isDeployed(delay_recheck_dep_time)==TRUE )
             {
-                srp_deployment_registration(&tries_indx);
+                thk_deployment_registration(&tries_indx);
 
                 #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
                     printf("    ANTENNA DEPLOYED SUCCESSFULLY [%d TRIES]\r\n", tries_indx);
@@ -324,31 +329,114 @@ int thk_deploy_antenna(void *param)
     }
     #endif
 
-    tries_indx = -tries_indx;
-    srp_deployment_registration(&tries_indx);
+    //after the for() tries_indx == THK_MAX_TRIES_ANT_DEPLOY+1
+    tries_indx = THK_MAX_TRIES_ANT_DEPLOY+1; //por si acaso
+    thk_deployment_registration(&tries_indx);
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    ANTENNA DEPLOY FAIL [%d TRIES]\r\n", THK_TRY_DEPLOY);
+        printf("    ANTENNA DEPLOY FAIL [%d TRIES]\r\n", THK_MAX_TRIES_ANT_DEPLOY);
         rtc_print(NULL);
     #endif
 
     return 0;
 }
 
-BOOL thk_check_antenna_isDeployed(unsigned int recheck_time_ms){
-    if(PPC_ANT12_CHECK==0)   /* reviso */
-    {
+BOOL thk_check_antenna_isDeployed(unsigned int recheck_time_ms)
+{
+    if(recheck_time_ms >= 10000){   //cut everything longer than 10seg
+        recheck_time_ms = 10000;
+    }
+    
+    if(PPC_ANT12_CHECK == 0){   /* reviso */
 //        vTaskDelay(delay_recheck_dep_time);   /* tiempo de RE-chequeo */
         __delay_ms(recheck_time_ms);
-        ClrWdt();
-        if(PPC_ANT12_CHECK==0)   /* RE-reviso */
-        {
+        if(PPC_ANT12_CHECK == 0){   /* RE-reviso */
             return TRUE;
         }
     }
     return FALSE;
 }
+
+int thk_deployment_registration(void *param)
+{
+    int dep_tries = *( (int *)param );
+    int dep_state;
+    MemEEPROM_Vars mem_eeprom_var; int value;
+
+    //Reset antenna DEP variables (EBF routine)
+    if(dep_tries == -1){
+        mem_eeprom_var = mem_dep_ant_deployed; value = 0;
+        writeIntEEPROM1(mem_eeprom_var, value);
+
+        mem_eeprom_var = mem_dep_ant_tries; value = 0;
+        writeIntEEPROM1(mem_eeprom_var, value);
+
+        //RTC
+        mem_eeprom_var = mem_dep_year; value = 0;
+        writeIntEEPROM1(mem_eeprom_var, value);
+
+        mem_eeprom_var = mem_dep_month; value = 0;
+        writeIntEEPROM1(mem_eeprom_var, value);
+        
+        mem_eeprom_var = mem_dep_day_number; value = 0;
+        writeIntEEPROM1(mem_eeprom_var, value);
+        
+        mem_eeprom_var = mem_dep_week_day; value = 0;
+        writeIntEEPROM1(mem_eeprom_var, value);
+        
+        mem_eeprom_var = mem_dep_hours; value = 0;
+        writeIntEEPROM1(mem_eeprom_var, value);
+        
+        mem_eeprom_var = mem_dep_minutes; value = 0;
+        writeIntEEPROM1(mem_eeprom_var, value);
+        
+        mem_eeprom_var = mem_dep_seconds; value = 0;
+        writeIntEEPROM1(mem_eeprom_var, value);
+        return 1;
+    }
+    // Antennas were NOT deployed
+    if(dep_tries == (THK_MAX_TRIES_ANT_DEPLOY+1) ){
+        dep_state = 0;
+        dep_tries = THK_MAX_TRIES_ANT_DEPLOY;
+    }
+    //Antennas were deployed
+    else{
+        dep_state = 1;
+    }
+
+    mem_eeprom_var = mem_dep_ant_deployed; value = dep_state;
+    writeIntEEPROM1(mem_eeprom_var, value);
+    
+    mem_eeprom_var = mem_dep_ant_tries; value = dep_tries;
+    writeIntEEPROM1(mem_eeprom_var, value);
+    
+
+    //RTC
+    mem_eeprom_var = mem_dep_year; value = RTC_get_year();
+    writeIntEEPROM1(mem_eeprom_var, value);
+    
+    mem_eeprom_var = mem_dep_month; value = RTC_get_month();
+    writeIntEEPROM1(mem_eeprom_var, value);
+    
+    mem_eeprom_var = mem_dep_day_number; value = RTC_get_day_num();
+    writeIntEEPROM1(mem_eeprom_var, value);
+    
+    mem_eeprom_var = mem_dep_week_day; value = RTC_get_week_day();
+    writeIntEEPROM1(mem_eeprom_var, value);
+    
+    mem_eeprom_var = mem_dep_hours; value = RTC_get_hours();
+    writeIntEEPROM1(mem_eeprom_var, value);
+    
+    mem_eeprom_var = mem_dep_minutes; value = RTC_get_minutes();
+    writeIntEEPROM1(mem_eeprom_var, value);
+    
+    mem_eeprom_var = mem_dep_seconds; value = RTC_get_seconds();
+    writeIntEEPROM1(mem_eeprom_var, value);
+
+    return 1;
+}
 //------------------------------------------------------------------------------
+
 int thk_silent_time_and_pictures(void *param){
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
         con_printf("\n[thk_silent_time_and_pictures] Mandatory inactivity time...\r\n");
@@ -372,7 +460,7 @@ int thk_silent_time_and_pictures(void *param){
     pay_take_camera(&arg);
     pay_stop_camera(NULL);
    //parar ciclo de Payload
-    sta_setCubesatVar(sta_pay_camera_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+    sta_setCubesatVar(sta_pay_camera_state, SRP_PAY_XXX_PERFORM_INACTIVE );
 
     //3) duermo el SUCHAI por 30min
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
@@ -479,12 +567,12 @@ int thk_state_hw(void *param){
         pay_stop_expFis(NULL);
     #endif
     #if (SCH_PAY_TEST1_ONBOARD==1)
-        pay_init_test1(NULL);
-        printf("  sta_pay_test1_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_test1_isAlive) );
+        pay_init_battery(NULL);
+        printf("  sta_pay_test1_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_battery_isAlive) );
     #endif
     #if (SCH_PAY_TEST2_ONBOARD==1)
         pay_init_test2(NULL);
-        printf("  sta_pay_test2_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_test2_isAlive) );
+        printf("  sta_pay_test2_isAlive = %d \r\n", sta_getCubesatVar(sta_pay_debug_isAlive) );
     #endif
     #if (SCH_PAY_LANGMUIR_ONBOARD==1)
         pay_init_lagmuirProbe(NULL);

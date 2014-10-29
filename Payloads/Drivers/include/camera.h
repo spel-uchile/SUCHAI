@@ -36,6 +36,7 @@ unsigned int cam_photo(int resolution, int qual, int pic_type);
 void cam_recev_photo(unsigned int length);
 unsigned int cam_receivePhoto(unsigned int length, int mode);
 void cam_wait_hold_wtimeout(BOOL verb);
+int cam_isAlive(void);
 
 int send_comm(unsigned char* cmd, int arg1, int arg2, int arg3, int arg4);
 

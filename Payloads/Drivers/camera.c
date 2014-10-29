@@ -478,3 +478,10 @@ void cam_wait_hold_wtimeout(BOOL verb){
         max_hold_tries++;
     }
 }
+
+int cam_isAlive(void){
+    /*
+     * Is assummed that the camera isAlive if HOLD is not set (HOILD == 0)
+     */
+    return !PPC_CAM_HOLD_CHECK;
+}

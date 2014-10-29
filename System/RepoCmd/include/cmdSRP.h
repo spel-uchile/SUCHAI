@@ -59,9 +59,7 @@ typedef enum{
     //de TC buffer
     srp_id_update_STA_CubesatVar_trx_newTcFrame, ///< @cmd
     srp_id_update_STA_CubesatVar_trx_newCmdBuff, ///< @cmd
-    //de Deployment
-    srp_id_deployment_registration, ///< @cmd
-
+            
     //De EBF
     srp_id_executeBeforeFlight, ///< @cmd
 
@@ -84,7 +82,6 @@ int srp_increment_STA_CubesatVar_nReceived_tc(void *param);
 int srp_update_sta_CubesatVar_opMode(void *param);
 int srp_update_STA_CubesatVar_trx_rssi(void *param);
 int srp_update_STA_CubesatVar_trx_rssi_mean(void *param);
-int srp_deployment_registration(void *param);
 
 int srp_trx_update_STA_CubesatVar_newTcFrame(void *param);
 int srp_trx_STA_CubesatVar_newCmdBuff(void *param);

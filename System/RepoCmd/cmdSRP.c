@@ -54,38 +54,10 @@ void srp_onResetCmdSRP(){
     srpFunction[(unsigned char)srp_id_executeBeforeFlight] = srp_executeBeforeFlight;
     srp_sysReq[(unsigned char)srp_id_executeBeforeFlight]  = CMD_SYSREQ_MIN;
 
-    srpFunction[(unsigned char)srp_id_deployment_registration] = srp_deployment_registration;
-    srp_sysReq[(unsigned char)srp_id_deployment_registration]  = CMD_SYSREQ_MIN;
 }
 
 //------------------------------------------------------------------------------
-int srp_deployment_registration(void *param)
-{
-    int dep_tries = *( (int *)param );
-    int dep_state;
 
-    if(dep_tries < 0){  //Antennas are NOT deployed
-        dep_state = 0;
-        dep_tries = - dep_tries;
-    }
-    else{               //Antennas are deployed
-        dep_state = 1;
-    }
-
-    sta_setCubesatVar(sta_dep_ant_deployed, dep_state);
-    sta_setCubesatVar(sta_dep_ant_tries, dep_tries);
-
-    //RTC
-    sta_setCubesatVar(sta_dep_year, RTC_get_year() );
-    sta_setCubesatVar(sta_dep_month, RTC_get_month() );
-    sta_setCubesatVar(sta_dep_day_number, RTC_get_day_num() );
-    sta_setCubesatVar(sta_dep_week_day, RTC_get_week_day() );
-    sta_setCubesatVar(sta_dep_hours, RTC_get_hours() );
-    sta_setCubesatVar(sta_dep_minutes, RTC_get_minutes() );
-    sta_setCubesatVar(sta_dep_seconds, RTC_get_seconds() );
-
-    return 1;
-}
 int srp_increment_STA_CubesatVar_hoursWithoutReset(void *param)
 {
     /* En el futro esta funcion deberia ser llamada desde alguna interrupcion periodica del RTCC.
@@ -213,8 +185,8 @@ int srp_executeBeforeFlight(void * param){
     sta_setCubesatVar(sta_pay_camera_isAlive, 0);
     sta_setCubesatVar(sta_pay_gyro_isAlive, 0);
     sta_setCubesatVar(sta_pay_tmEstado_isAlive, 0);
-    sta_setCubesatVar(sta_pay_test1_isAlive, 0);
-    sta_setCubesatVar(sta_pay_test2_isAlive, 0);
+    sta_setCubesatVar(sta_pay_battery_isAlive, 0);
+    sta_setCubesatVar(sta_pay_debug_isAlive, 0);
     sta_setCubesatVar(sta_pay_lagmuirProbe_isDeployed, 0);
 
     //PPC => (C&DH subsystem)
@@ -238,49 +210,49 @@ int srp_executeBeforeFlight(void * param){
 
     //PAYLOAD
     #if (SCH_PAY_LANGMUIR_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_lagmuirProbe_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+        sta_setCubesatVar(sta_pay_lagmuirProbe_state, SRP_PAY_XXX_PERFORM_ACTIVE );
     #else
-        sta_setCubesatVar(sta_pay_lagmuirProbe_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+        sta_setCubesatVar(sta_pay_lagmuirProbe_state, SRP_PAY_XXX_PERFORM_INACTIVE );
     #endif
     #if (SCH_PAY_SENSTEMP_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_sensTemp_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+        sta_setCubesatVar(sta_pay_sensTemp_state, SRP_PAY_XXX_PERFORM_ACTIVE );
     #else
-        sta_setCubesatVar(sta_pay_sensTemp_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+        sta_setCubesatVar(sta_pay_sensTemp_state, SRP_PAY_XXX_PERFORM_INACTIVE );
     #endif
     #if (SCH_PAY_GPS_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_gps_perform, SRP_PAY_XXX_PERFORM_ACTIVE);
+        sta_setCubesatVar(sta_pay_gps_state, SRP_PAY_XXX_PERFORM_ACTIVE);
     #else
-        sta_setCubesatVar(sta_pay_gps_perform, SRP_PAY_XXX_PERFORM_INACTIVE);
+        sta_setCubesatVar(sta_pay_gps_state, SRP_PAY_XXX_PERFORM_INACTIVE);
     #endif
     #if (SCH_PAY_FIS_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_expFis_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+        sta_setCubesatVar(sta_pay_expFis_state, SRP_PAY_XXX_PERFORM_ACTIVE );
     #else
-        sta_setCubesatVar(sta_pay_expFis_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+        sta_setCubesatVar(sta_pay_expFis_state, SRP_PAY_XXX_PERFORM_INACTIVE );
     #endif
     #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_camera_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+        sta_setCubesatVar(sta_pay_camera_state, SRP_PAY_XXX_PERFORM_ACTIVE );
     #else
-        sta_setCubesatVar(sta_pay_camera_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+        sta_setCubesatVar(sta_pay_camera_state, SRP_PAY_XXX_PERFORM_INACTIVE );
     #endif
     #if (SCH_PAY_GYRO_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_gyro_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+        sta_setCubesatVar(sta_pay_gyro_state, SRP_PAY_XXX_PERFORM_ACTIVE );
     #else
-        sta_setCubesatVar(sta_pay_gyro_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+        sta_setCubesatVar(sta_pay_gyro_state, SRP_PAY_XXX_PERFORM_INACTIVE );
     #endif
     #if (SCH_PAY_TMESTADO_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_tmEstado_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+        sta_setCubesatVar(sta_pay_tmEstado_state, SRP_PAY_XXX_PERFORM_ACTIVE );
     #else
-        sta_setCubesatVar(sta_pay_tmEstado_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+        sta_setCubesatVar(sta_pay_tmEstado_state, SRP_PAY_XXX_PERFORM_INACTIVE );
     #endif
     #if (SCH_PAY_TEST1_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_test1_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+        sta_setCubesatVar(sta_pay_battery_state, SRP_PAY_XXX_PERFORM_ACTIVE );
     #else
-        sta_setCubesatVar(sta_pay_test1_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+        sta_setCubesatVar(sta_pay_battery_state, SRP_PAY_XXX_PERFORM_INACTIVE );
     #endif
     #if (SCH_PAY_TEST2_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_test2_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+        sta_setCubesatVar(sta_pay_debug_state, SRP_PAY_XXX_PERFORM_ACTIVE );
     #else
-        sta_setCubesatVar(sta_pay_test2_perform, SRP_PAY_XXX_PERFORM_INACTIVE );
+        sta_setCubesatVar(sta_pay_debug_state, SRP_PAY_XXX_PERFORM_INACTIVE );
     #endif
 
     sta_setCubesatVar(sta_Antenna_isDeployed, 0);  //First time on!

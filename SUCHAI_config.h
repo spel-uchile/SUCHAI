@@ -130,7 +130,7 @@
 #define SCH_CMDPPC_VERBOSE                  (1)  ///< 1=verboso 0=austero
 #define SCH_CMDREPOSITORY_VERBOSE           (1)  ///< 1=verboso 0=austero
 #define SCH_CMDRTC_VERBOSE                  (1)  ///< 1=verboso 0=austero
-#define SCH_CMDTRX_VERBOSE                  (1)  ///< 1=verboso 0=austero
+#define SCH_CMDTRX_VERBOSE                  (0)  ///< 1=verboso 0=austero
 #define SCH_CMDTCM_VERBOSE                  (1)  ///< 1=verboso 0=austero
 #define SCH_DATAREPOSITORY_VERBOSE          (1)  ///< 1=verboso 0=austero
 #define SCH_TASKCOMUNICATIONS_VERBOSE       (1)  ///< 1=verboso 0=austero

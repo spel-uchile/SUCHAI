@@ -115,7 +115,7 @@ int ppc_get_lastResetSource(void* param){
     }
 
     if(verb == 1){
-        printf("        - LastResetSouce: ");
+        printf("    * ppc_get_lastResetSource: ");
         switch ( lreset )
         {
             case POWER_ON_Reset:
@@ -165,27 +165,17 @@ int ppc_get_hoursAlive(void* param){
     int res = readIntEEPROM1(mem_eeprom_var);
     return res;
 }
-int ppc_get_hoursWithoutReset(void* param){
-    MemEEPROM_Vars mem_eeprom_var = mem_ppc_hoursWithoutReset;
-    int res = readIntEEPROM1(mem_eeprom_var);
-    return res;
-}
-int ppc_get_resetCounter(void* param){
-    MemEEPROM_Vars mem_eeprom_var = mem_ppc_resetCounter;
-    int res = readIntEEPROM1(mem_eeprom_var);
-    return res;
-}
 int ppc_set_hoursAlive(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_ppc_hoursAlive;
     int value = *((int*)param);
     writeIntEEPROM1(mem_eeprom_var, value);
     return 1;   //se asume operacion exitosa
 }
-int ppc_set_hoursWithoutReset(void* param){
-    MemEEPROM_Vars mem_eeprom_var = mem_ppc_hoursWithoutReset;
-    int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;   //se asume operacion exitosa
+
+int ppc_get_resetCounter(void* param){
+    MemEEPROM_Vars mem_eeprom_var = mem_ppc_resetCounter;
+    int res = readIntEEPROM1(mem_eeprom_var);
+    return res;
 }
 int ppc_set_resetCounter(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_ppc_resetCounter;
@@ -193,6 +183,26 @@ int ppc_set_resetCounter(void* param){
     writeIntEEPROM1(mem_eeprom_var, value);
     return 1;   //se asume operacion exitosa
 }
+
+/**
+ * Static varible is always initialized to Zero => 0 hours without reset.
+ * Wich is rigth on every onReset
+ */
+static int ppc_hoursWithoutReset = 0;
+/**
+ * get hours without reset
+ * @param param ignored
+ * @return hours without reset
+ */
+int ppc_get_hoursWithoutReset(void* param){
+    return ppc_hoursWithoutReset;
+}
+int ppc_set_hoursWithoutReset(void* param){
+    int value = *((int*)param);
+    ppc_hoursWithoutReset = value;
+    return 1;   //se asume operacion exitosa
+}
+
 /**
  * Selects a new oscilator source
  * @param osc Number of the oscilator source
@@ -245,10 +255,10 @@ int ppc_newosc(void * osc)
 
 #if SCH_CMDPPC_VERBOSE
     if(result){
-        con_printf(txt_result);
+        printf(txt_result);
     }
     else{
-        con_printf("Failed to set new oscilator\r\n");
+        printf("Failed to set new oscilator\r\n");
     }
 #endif
         
@@ -256,7 +266,7 @@ int ppc_newosc(void * osc)
 }
 
 
-static int wdt_state = PPC_INITIAL_WDT_STATE;
+static int ppc_wdt_state = PPC_INITIAL_WDT_STATE;
 /*Se usa variable estatica ya que no existe una funcion que permita leer
  * el estado actual del WDT*/
 
@@ -273,13 +283,13 @@ int ppc_set_wdt_state(void *on_off)
     if( i==0 )
     {
          EnableWDT( WDT_DISABLE );
-         wdt_state = 0;
+         ppc_wdt_state = 0;
          printf("WDT was disabled\r\n");
     }
     else if( i==1 )
     {
          EnableWDT( WDT_ENABLE );
-         wdt_state = 1;
+         ppc_wdt_state = 1;
          printf("WDT was enabled\r\n");
     }
     else
@@ -291,7 +301,7 @@ int ppc_set_wdt_state(void *on_off)
     return result;
 }
 int ppc_get_wdt_state(void* param){
-    return wdt_state;
+    return ppc_wdt_state;
 }
 /*------------------------------------------------------------------------------
  *                                  PPC OSC
@@ -335,6 +345,7 @@ int ppc_get_osc(void *param)
         break;
     }
     if(verbose==1){
+        printf("    * ppc_get_osc: ");
         printf(ps);
     }
 
@@ -420,10 +431,10 @@ int ppc_set_PPC_MB_nOE_USB_nINT(void* param)
 
     PPC_MB_nOE_USB_nINT = r;
 
-    char ascii_val[10];
-    //utoa(ascii_val, r, 16);
-    sprintf (ascii_val, "0x%X", r);
-    printf("ppc_set_PPC_MB_nOE_USB_nINT= "); con_printf(ascii_val); printf("\r\n");
+//    char ascii_val[10];
+//    //utoa(ascii_val, r, 16);
+//    sprintf (ascii_val, "0x%X", r);
+    printf("ppc_set_PPC_MB_nOE_USB_nINT = %d \r\n", r); //con_printf(ascii_val); printf("\r\n");
 
     return 1;
 }
@@ -445,10 +456,11 @@ int ppc_set_PPC_MB_nOE_MHX(void* param)
 
     PPC_MB_nOE_MHX = r;
 
-    char ascii_val[10];
+    printf("ppc_set_PPC_MB_nOE_MHX = %d \r\n", r);
+    //char ascii_val[10];
     //itoa(ascii_val, r, 16);
-    sprintf (ascii_val, "0x%X", r);
-    con_printf("ppc_set_PPC_MB_nOE_MHX= "); con_printf(ascii_val); con_printf("\r\n");
+    //sprintf (ascii_val, "0x%X", r);
+    //con_printf("ppc_set_PPC_MB_nOE_MHX= "); con_printf(ascii_val); con_printf("\r\n");
 
     return 1;
 }
@@ -470,10 +482,11 @@ int ppc_set_PPC_MB_nON_MHX(void* param)
 
     PPC_MB_nON_MHX = r;
 
-    char ascii_val[10];
-    //itoa(ascii_val, r, 16);
-    sprintf (ascii_val, "0x%X", r);
-    con_printf("ppc_set_PPC_MB_nON_MHX= "); con_printf(ascii_val); con_printf("\r\n");
+    printf("ppc_set_PPC_MB_nON_MHX = %d \r\n", r);
+//    char ascii_val[10];
+//    //itoa(ascii_val, r, 16);
+//    sprintf (ascii_val, "0x%X", r);
+//    con_printf("ppc_set_PPC_MB_nON_MHX= "); con_printf(ascii_val); con_printf("\r\n");
 
     return 1;
 }
@@ -495,10 +508,11 @@ int ppc_set_PPC_MB_nON_SD(void* param)
 
     PPC_MB_nON_SD = r;
 
-    char ascii_val[4];
-    //itoa(ascii_val,r,16);
-    sprintf (ascii_val, "0x%X", r);
-    printf("ppc_set_PPC_MB_nON_SD= "); con_printf(ascii_val); printf("\r\n");
+    printf("ppc_set_PPC_MB_nON_SD = %d \r\n", r);
+//    char ascii_val[4];
+//    //itoa(ascii_val,r,16);
+//    sprintf (ascii_val, "0x%X", r);
+//    printf("ppc_set_PPC_MB_nON_SD= "); con_printf(ascii_val); printf("\r\n");
 
     return 1;
 }

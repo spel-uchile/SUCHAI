@@ -41,6 +41,8 @@ void drp_onResetCmdDRP(){
     drpFunction[(unsigned char)drp_id_debug] = drp_debug;
     drp_sysReq[(unsigned char)drp_id_debug]  = CMD_SYSREQ_MIN;
     //Flight Plan
+    drpFunction[(unsigned char)drp_id_fpl_get_index] = drp_fpl_get_index;
+    drp_sysReq[(unsigned char)drp_id_fpl_get_index]  = CMD_SYSREQ_MIN;
     drpFunction[(unsigned char)drp_id_fpl_set_index] = drp_fpl_set_index;
     drp_sysReq[(unsigned char)drp_id_fpl_set_index]  = CMD_SYSREQ_MIN;
     drpFunction[(unsigned char)drp_id_fpl_set_cmd] = drp_fpl_set_cmd;
@@ -160,6 +162,12 @@ int drp_print_dat_PayloadVar(void *param){
     return 1;
 }
 
+int drp_fpl_get_index(void* param){
+    MemEEPROM_Vars mem_eeprom_var = mem_fpl_index;
+    int res = readIntEEPROM1(mem_eeprom_var);
+    return res;
+}
+
 /*------------------------------------------------------------------------------
  *                              DRP_FLP_SET_INDEX
  *------------------------------------------------------------------------------
@@ -174,10 +182,14 @@ int drp_print_dat_PayloadVar(void *param){
  *----------------------------------------------------------------------------*/
 int drp_fpl_set_index(void *param)
 {
-    int index = *((int *)param);
-    sta_setCubesatVar(sta_fpl_index, index);
+//    int index = *((int *)param);
+//    sta_setCubesatVar(sta_fpl_index, index);
+//    return 1;
 
-    return 1;
+    MemEEPROM_Vars mem_eeprom_var = mem_fpl_index;
+    int value = *((int*)param);
+    writeIntEEPROM1(mem_eeprom_var, value);
+    return 1;   //se asume operacion exitosa
 }
 
 /*------------------------------------------------------------------------------

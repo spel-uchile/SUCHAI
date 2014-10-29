@@ -46,7 +46,7 @@ typedef enum{
     sta_EPS_isAlive,
     sta_MemEEPROM_isAlive,
     sta_MemSD_isAlive,
-    sta_Antenna_isDeployed,  // 6
+    sta_Antenna_isDeployed,  // var number 6
 
     // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
     sta_pay_lagmuirProbe_isAlive,
@@ -56,9 +56,12 @@ typedef enum{
     sta_pay_camera_isAlive,
     sta_pay_gyro_isAlive,
     sta_pay_tmEstado_isAlive,
-    sta_pay_test1_isAlive,
-    sta_pay_test2_isAlive,
+    sta_pay_battery_isAlive,
+    sta_pay_debug_isAlive,
     sta_pay_lagmuirProbe_isDeployed,
+
+    //FLIGHT PLAN => (C&DH subsystem)
+    sta_fpl_index,            // Indice del flight plan que sera editado
 
     //PPC => (C&DH subsystem)
     sta_ppc_opMode,
@@ -124,19 +127,16 @@ typedef enum{
     sta_trx_newCmdBuff,       // Exist unprocessed CMD in the external buffer
     //trx_repo_telecmd[STA_MAX_BUFF_TELECMD],   // Assuming that each Telecommand is of the form: [cmdId | param]
 
-    //FLIGHT PLAN
-    sta_fpl_index,            // Indice del flight plan que sera editado
-
     //PAYLOAD
-    sta_pay_lagmuirProbe_perform,
-    sta_pay_sensTemp_perform,
-    sta_pay_gps_perform,
-    sta_pay_expFis_perform,
-    sta_pay_camera_perform,
-    sta_pay_gyro_perform,
-    sta_pay_tmEstado_perform,
-    sta_pay_test1_perform,
-    sta_pay_test2_perform,
+    sta_pay_lagmuirProbe_state,
+    sta_pay_sensTemp_state,
+    sta_pay_gps_state,
+    sta_pay_expFis_state,
+    sta_pay_camera_state,
+    sta_pay_gyro_state,
+    sta_pay_tmEstado_state,
+    sta_pay_battery_state,
+    sta_pay_debug_state,
 
     //*************
     sta_cubesatVar_last_one     //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
@@ -150,6 +150,9 @@ void sta_onResetStatRepo(void);
 
 //STA_CubesatVar dat_pay_i_to_performVar(DAT_Payload pay_i);
 STA_CubesatVar sta_pay_i_to_performVar(int pay_i);
+
+//debug funcitons
+char *varToString(STA_CubesatVar var_i);
 
 #define SRP_PAY_XXX_PERFORM_INACTIVE    0x0000
 #define SRP_PAY_XXX_PERFORM_ACTIVE      0x0001

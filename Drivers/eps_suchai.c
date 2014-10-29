@@ -125,14 +125,18 @@ const int EPS_TSOC[EPS_Tvsocdim] = {432,555,585,616,647,684,800};
 int eps_initialize(void){
     //nothing to do
 
-    return eps_isAlive();
+    return eps_isAlive(FALSE);
 }
-int eps_isAlive(void){
+int eps_isAlive(BOOL verbose){
     
     int ver = VersionReadEPS();
-//    printf("\r\n*********************************\n");
-//    printf("eps_isAlive, version = %d \n", ver);
-//    printf("*********************************\n");
+
+    if( verbose == TRUE ){
+        //    printf("\r\n*********************************\n");
+        printf("eps_isAlive, version = %d \r\n", ver);
+        //    printf("*********************************\n");
+    }
+
     int version = (258);
     if( ver==version ){
         return 1;

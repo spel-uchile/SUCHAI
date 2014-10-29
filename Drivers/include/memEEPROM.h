@@ -22,7 +22,6 @@ typedef enum{
     //PPC => (C&DH subsystem)
     mem_ppc_opMode,
     mem_ppc_hoursAlive,
-    mem_ppc_hoursWithoutReset,
     mem_ppc_resetCounter,
 
     //DEP => (C&DH subsystem)
@@ -35,6 +34,20 @@ typedef enum{
     mem_dep_hours,
     mem_dep_minutes,
     mem_dep_seconds,
+
+    //Flight Plan
+    mem_fpl_index,
+
+    //PAYLOAD
+    mem_pay_lagmuirProbe_state,
+    mem_pay_sensTemp_state,
+    mem_pay_gps_state,
+    mem_pay_expFis_state,
+    mem_pay_camera_state,
+    mem_pay_gyro_state,
+    mem_pay_tmEstado_state,
+    mem_pay_battery_state,
+    mem_pay_debug_state,
 
     //*************
     mem_last_one     //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo

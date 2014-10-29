@@ -379,8 +379,8 @@ int dep_init_sysbus_hw(void *param)
             printf("    * External MemEEPROM .. ");
         #endif
         resp = init_memEEPROM();
-        hw_isAlive = sta_MemEEPROM_isAlive;
-        sta_setCubesatVar(hw_isAlive, resp);
+        //hw_isAlive = sta_MemEEPROM_isAlive;
+        //sta_setCubesatVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
                 printf("Ok\r\n");
@@ -398,8 +398,8 @@ int dep_init_sysbus_hw(void *param)
             printf("    * External RTC .. ");
         #endif
         resp = RTC_init();
-        hw_isAlive = sta_RTC_isAlive;
-        sta_setCubesatVar(hw_isAlive, resp);
+        //hw_isAlive = sta_RTC_isAlive;
+        //sta_setCubesatVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
                 printf("Ok\r\n");
@@ -417,12 +417,12 @@ int dep_init_sysbus_hw(void *param)
             printf("    * External TRX .. ");
         #endif
         //Check if suchai is deployed to select correct trx configuration
-        hw_isAlive = sta_Antenna_isDeployed;
+        hw_isAlive = sta_dep_ant_deployed;
         int deployed = sta_getCubesatVar(hw_isAlive);
         //Initialize trx
         resp  = trx_initialize(&deployed);
-        hw_isAlive = sta_TRX_isAlive;
-        sta_setCubesatVar(hw_isAlive, resp);
+        //hw_isAlive = sta_TRX_isAlive;
+        //sta_setCubesatVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
                 printf("Ok\r\n");
@@ -440,8 +440,8 @@ int dep_init_sysbus_hw(void *param)
             printf("    * External EPS .. ");
         #endif
         resp  = eps_initialize();
-        hw_isAlive = sta_EPS_isAlive;
-        sta_setCubesatVar(hw_isAlive, resp);
+        //hw_isAlive = sta_EPS_isAlive;
+        //sta_setCubesatVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
                 printf("Ok\r\n");
@@ -460,8 +460,8 @@ int dep_init_sysbus_hw(void *param)
         #endif
         //resp = dat_sd_init();
         resp =  SD_init_memSD();
-        hw_isAlive = sta_MemSD_isAlive;
-        sta_setCubesatVar(hw_isAlive, resp);
+        //hw_isAlive = sta_MemSD_isAlive;
+        //sta_setCubesatVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
                 printf("Ok\r\n");
@@ -475,11 +475,24 @@ int dep_init_sysbus_hw(void *param)
 
     #if (SCH_ANTENNA_ONBOARD==1)
     {
-        //check_deploy_antenna();
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             printf("    * External Antenna .. ");
-            printf("Pending (Antenna Deployment will be carried-out by Task Housekeeping)\r\n");
         #endif
+        hw_isAlive = sta_Antenna_isDeployed;
+        resp = sta_getCubesatVar(hw_isAlive);
+        //hw_isAlive = sta_Antenna_isDeployed;
+        //sta_setCubesatVar(hw_isAlive, resp);
+        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            if(resp == 0x01){
+                printf("Ok (Deployed)\r\n");
+            }
+            else{
+                printf("Fail (NOT Deployed)\r\n");
+            }
+            printf("Antenna Deployment will be carried-out by Task Housekeeping\r\n");
+            //check_deploy_antenna();
+        #endif
+
     }
     #endif
 

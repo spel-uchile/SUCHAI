@@ -403,9 +403,8 @@
         <property key="relaxed-math" value="false"/>
         <property key="save-temps" value="false"/>
       </C30Global>
-      <ICD3PlatformTool>
-        <property key="firmware.download.all" value="false"/>
-      </ICD3PlatformTool>
+      <PICkit3PlatformTool>
+      </PICkit3PlatformTool>
     </conf>
     <conf name="simulator" type="2">
       <toolsSet>

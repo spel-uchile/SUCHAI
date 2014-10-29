@@ -62,13 +62,12 @@ DispCmd con_cmd_handler(void)
     DispCmd newCmd;
     newCmd.idOrig = CMD_IDORIG_TCONSOLE;
     newCmd.sysReq = CMD_SYSREQ_MIN;
-    newCmd.cmdId =CMD_CMDNULL;  /* cmdNULL */
+    newCmd.cmdId = CMD_CMDNULL;  /* cmdNULL */
     newCmd.param = 0;
 
     if(con_entry_flag && con_entry_index > 0 )
     {
         con_cmd_from_entry(con_entry);
-
         if(con_arg_toolong)
         {
             newCmd.cmdId = con_id_error_invalid_arg;
@@ -107,7 +106,7 @@ DispCmd con_cmd_handler(void)
                   cmd=(unsigned int)strtoul(con_args[0], &end, 0);
                   param = atoi(con_args[1]);
 
-                  newCmd.cmdId=cmd;
+                  newCmd.cmdId = cmd;
                   newCmd.param = param;        /* Argument to the command */
                   break;
               default:
@@ -194,87 +193,6 @@ DispCmd con_cmd_handler(void)
            return newCmd;
         }
 
-        if(strcmp(con_cmd, "ppc_set_PPC_MB_nOE_USB_nINT") == 0){
-           switch(con_arg_count){
-                int i;
-                case 1:
-                    i=atoi(con_args[0]);
-                    newCmd.cmdId= ppc_id_set_PPC_MB_nOE_USB_nINT;
-                    newCmd.param = i;
-                    break;
-                default:
-                    newCmd.cmdId = con_id_error_count_arg;
-                    break;
-           }
-
-           //con_printf("\r\n>>");
-           con_arg_toolong = FALSE;
-           con_entry_flag = FALSE;
-           return newCmd;
-        }
-
-        if(strcmp(con_cmd, "ppc_set_PPC_MB_nOE_MHX") == 0){
-           switch(con_arg_count)
-               {
-                       int i;
-               case 1:
-                   i=atoi(con_args[0]);
-                   newCmd.cmdId = ppc_id_set_PPC_MB_nOE_MHX;
-                   newCmd.param = i;
-                   break;
-
-               default:
-                   newCmd.cmdId = con_id_error_count_arg;
-                   break;
-           }
-
-           //con_printf("\r\n>>");
-           con_arg_toolong = FALSE;
-           con_entry_flag = FALSE;
-           return newCmd;
-        }
-
-        if(strcmp(con_cmd, "ppc_set_PPC_MB_nON_MHX") == 0){
-           switch(con_arg_count)
-               {
-                       int i;
-               case 1:
-                   i=atoi(con_args[0]);
-                   newCmd.cmdId = ppc_id_set_PPC_MB_nON_MHX;
-                   newCmd.param = i;
-                   break;
-
-               default:
-                   newCmd.cmdId = con_id_error_count_arg;
-                   break;
-           }
-
-           //con_printf("\r\n>>");
-           con_arg_toolong = FALSE;
-           con_entry_flag = FALSE;
-           return newCmd;
-        }
-
-        if(strcmp(con_cmd, "ppc_set_PPC_MB_nON_SD") == 0){
-           switch(con_arg_count)
-               {
-                       int i;
-               case 1:
-                   i=atoi(con_args[0]);
-                   newCmd.cmdId = ppc_id_set_PPC_MB_nON_SD;
-                   newCmd.param = i;
-                   break;
-
-               default:
-                   newCmd.cmdId = con_id_error_count_arg;
-                   break;
-           }
-
-           //con_printf("\r\n>>");
-           con_arg_toolong = FALSE;
-           con_entry_flag = FALSE;
-           return newCmd;
-        }
        /*----------------------- TRX COMMAND ------------------------*/
        /*TRX READ REG*/
        if(strcmp(con_cmd, "trx_cg") == 0)

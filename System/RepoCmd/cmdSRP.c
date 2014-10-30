@@ -18,47 +18,32 @@
  */
 
 #include "cmdSRP.h"
+#include "cmdPayload.h"
 
 cmdFunction srpFunction[SRP_NCMD];
 int srp_sysReq[SRP_NCMD];
 
-nanocom_rssi_t rssi_data[10];
-
 void srp_onResetCmdSRP(){
     printf("        srp_onResetCmdSRP\n");
 
+    int i;
+    for(i=0; i<SRP_NCMD; i++) srp_sysReq[i] = CMD_SYSREQ_MIN;
+
     //De display
-    srpFunction[(unsigned char)srp_id_print_STA_CubesatVar] = srp_print_STA_CubesatVar;
-    srp_sysReq[(unsigned char)srp_id_print_STA_CubesatVar]  = CMD_SYSREQ_MIN;
-    //De update en general en sta_CubesatVar
-    srpFunction[(unsigned char)srp_id_increment_STA_CubesatVar_hoursAlive] = srp_increment_STA_CubesatVar_hoursAlive;
-    srp_sysReq[(unsigned char)srp_id_increment_STA_CubesatVar_hoursAlive]  = CMD_SYSREQ_MIN;
-    srpFunction[(unsigned char)srp_id_increment_STA_CubesatVar_hoursWithoutReset] = srp_increment_STA_CubesatVar_hoursWithoutReset;
-    srp_sysReq[(unsigned char)srp_id_increment_STA_CubesatVar_hoursWithoutReset]  = CMD_SYSREQ_MIN;
-    srpFunction[(unsigned char)srp_id_increment_STA_CubesatVar_nSended_tm] = srp_increment_STA_CubesatVar_nSended_tm;
-    srp_sysReq[(unsigned char)srp_id_increment_STA_CubesatVar_nSended_tm]  = CMD_SYSREQ_MIN;
-    srpFunction[(unsigned char)srp_id_increment_STA_CubesatVar_nReceived_tc] = srp_increment_STA_CubesatVar_nReceived_tc;
-    srp_sysReq[(unsigned char)srp_id_increment_STA_CubesatVar_nReceived_tc]  = CMD_SYSREQ_MIN;
-    srpFunction[(unsigned char)srp_id_update_STA_CubesatVar_opMode] = srp_update_sta_CubesatVar_opMode;
-    srp_sysReq[(unsigned char)srp_id_update_STA_CubesatVar_opMode]  = CMD_SYSREQ_MIN;
-    srpFunction[(unsigned char)srp_id_update_STA_CubesatVar_trx_rssi] = srp_update_STA_CubesatVar_trx_rssi;
-    srp_sysReq[(unsigned char)srp_id_update_STA_CubesatVar_trx_rssi]  = CMD_SYSREQ_MIN;
-    srpFunction[(unsigned char)srp_id_update_STA_CubesatVar_trx_rssi_mean] = srp_update_STA_CubesatVar_trx_rssi_mean;
-    srp_sysReq[(unsigned char)srp_id_update_STA_CubesatVar_trx_rssi_mean]  = CMD_SYSREQ_MIN;
-
-    srpFunction[(unsigned char)srp_id_update_STA_CubesatVar_trx_newTcFrame] = srp_trx_update_STA_CubesatVar_newTcFrame;
-    srp_sysReq[(unsigned char)srp_id_update_STA_CubesatVar_trx_newTcFrame]  = CMD_SYSREQ_MIN;
-    srpFunction[(unsigned char)srp_id_update_STA_CubesatVar_trx_newCmdBuff] = srp_trx_STA_CubesatVar_newCmdBuff;
-    srp_sysReq[(unsigned char)srp_id_update_STA_CubesatVar_trx_newCmdBuff]  = CMD_SYSREQ_MIN;
-
+    srpFunction[(unsigned char)srp_id_print_STA_stateVar] = srp_print_STA_stateVar;
+    //De update en general en sta_stateVar
+    srpFunction[(unsigned char)srp_id_increment_STA_stateVar_hoursAlive] = srp_increment_STA_stateVar_hoursAlive;
+    srpFunction[(unsigned char)srp_id_increment_STA_stateVar_hoursWithoutReset] = srp_increment_STA_stateVar_hoursWithoutReset;
+    srpFunction[(unsigned char)srp_id_increment_STA_stateVar_nSended_tm] = srp_increment_STA_stateVar_nSended_tm;
+    srpFunction[(unsigned char)srp_id_increment_STA_stateVar_nReceived_tc] = srp_increment_STA_stateVar_nReceived_tc;
     srpFunction[(unsigned char)srp_id_executeBeforeFlight] = srp_executeBeforeFlight;
-    srp_sysReq[(unsigned char)srp_id_executeBeforeFlight]  = CMD_SYSREQ_MIN;
+    srpFunction[(unsigned char)srp_id_memEEPROM_initial_state] = srp_memEEPROM_initial_state;
 
 }
 
 //------------------------------------------------------------------------------
 
-int srp_increment_STA_CubesatVar_hoursWithoutReset(void *param)
+int srp_increment_STA_stateVar_hoursWithoutReset(void *param)
 {
     /* En el futro esta funcion deberia ser llamada desde alguna interrupcion periodica del RTCC.
      * O leer del RTCC y comparar con su valor actual (get_ppc_hoursWithoutReset) y decidir
@@ -67,198 +52,140 @@ int srp_increment_STA_CubesatVar_hoursWithoutReset(void *param)
     //int ar=*( (int *)param ); char ret[6];
     //con_printf("param= ");  Hex16ToAscii( ar, ret); con_printf(buffer); con_printf("\n");
     //solo debe ser llamada cada 1hora
-    int arg = sta_getCubesatVar(sta_ppc_hoursWithoutReset)+1;
-    sta_setCubesatVar(sta_ppc_hoursWithoutReset, arg);
+    int arg = sta_get_stateVar(sta_ppc_hoursWithoutReset)+1;
+    ppc_set_hoursWithoutReset(&arg);
     return 1;
 }
-int srp_increment_STA_CubesatVar_hoursAlive(void *param){
+int srp_increment_STA_stateVar_hoursAlive(void *param){
     //solo debe ser llamada cada 1hora
-    int arg = sta_getCubesatVar(sta_ppc_hoursAlive)+1;
-    sta_setCubesatVar(sta_ppc_hoursAlive, arg);
+    int arg = sta_get_stateVar(sta_ppc_hoursAlive)+1;
+    ppc_set_hoursAlive(&arg);
     return 1;
 }
-int srp_increment_STA_CubesatVar_nSended_tm(void *param){
+int srp_increment_STA_stateVar_nSended_tm(void *param){
     //solo debe ser llamada cada 1hora
-    int arg = sta_getCubesatVar(sta_trx_count_tm)+1;
-    sta_setCubesatVar(sta_trx_count_tm, arg);
+    int arg = sta_get_stateVar(sta_trx_count_tm)+1;
+    trx_set_count_tm(&arg);
+
     return 1;
 }
-int srp_increment_STA_CubesatVar_nReceived_tc(void *param){
+int srp_increment_STA_stateVar_nReceived_tc(void *param){
     //solo debe ser llamada cada 1hora
-    int arg = sta_getCubesatVar(sta_trx_count_tc)+1;
-    sta_setCubesatVar(sta_trx_count_tc, arg);
-    return 1;
-}
-int srp_update_sta_CubesatVar_opMode(void *param){
-
-    int arg = *((int *)param);
-    sta_setCubesatVar(sta_ppc_opMode, arg);
-
-    return 1;
-}
-int srp_update_STA_CubesatVar_trx_rssi_mean(void *param)
-{
-    int new_value=*((int *)param);
-    int res = srp_trx_rssi_mean(new_value);
-    
-    sta_setCubesatVar(sta_trx_rssi_mean, res);
-
-    return 1;
-}
-/*------------------------------------------------------------------------------
- *                               UPDATE RSSI
- *------------------------------------------------------------------------------
- * Description        : Updates the rssi level, when no TC availible mode
- * Arguments          : none
- * Return Value       : int: 1=Always successfull
- *----------------------------------------------------------------------------*/
-int srp_update_STA_CubesatVar_trx_rssi(void *param)
-{
-    //Actualizar periodicamente el rssi, para modo sin telecomandos
-    srp_trx_rssi();
-
-    return 1;
-}
-/*------------------------------------------------------------------------------
- *                                  DRP TRX NEWTCFRAME
- *------------------------------------------------------------------------------
- * Description        : Updates the new_TcFrame flag
- * Arguments          : flag value
- * Return Value       : int: 1=Always successfull
- * ID                 : 0x5019
- *----------------------------------------------------------------------------*/
-int srp_trx_update_STA_CubesatVar_newTcFrame(void *param)
-{
-#if (SCH_CMDSRP_VERBOSE >= 1)
-    char buffer[6];
-    con_printf("trx_newTcFrame= ");
-    itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_newTcFrame), 10);
-    con_printf(buffer);
-    con_printf("\r\n");
-#endif
-
-    int flag=*( (int *)param );
-    sta_setCubesatVar(sta_trx_newTcFrame, flag);     /* indico que llego un telecomando */
+    int arg = sta_get_stateVar(sta_trx_count_tc)+1;
+    trx_set_count_tc(&arg);
     return 1;
 }
 
-/*------------------------------------------------------------------------------
- *                                  DRP TRX NEWCMDBUFF
- *------------------------------------------------------------------------------
- * Description        : Updates the new_CmdBuff flag
- * Arguments          : flag value
- * Return Value       : int: 1=Always successfull
- * ID                 : 0x501A
- *----------------------------------------------------------------------------*/
-int srp_trx_STA_CubesatVar_newCmdBuff(void *param)
-{
-#if (SCH_CMDSRP_VERBOSE >= 1)
-    char buffer[6];
-    con_printf("trx_newCmdBuff= ");
-    itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_newCmdBuff), 10);
-    con_printf(buffer);
-    con_printf("\r\n");
-#endif
 
-    int flag = *(int *)param;
-    sta_setCubesatVar(sta_trx_newCmdBuff, flag);     /* indico que llegaron Comandos al  buff interno */
-    return 1;
-}
 int srp_executeBeforeFlight(void * param){
     printf("  srp_executeBeforeFlight()..\n");
 
-    sta_onResetStatRepo();
+    srp_memEEPROM_initial_state(NULL);
 
-    // Bus Hw status (connected trough the PC/104 to the OBC -PIC24-)
-    sta_setCubesatVar(sta_RTC_isAlive, 0);
-    sta_setCubesatVar(sta_TRX_isAlive, 0);
-    sta_setCubesatVar(sta_EPS_isAlive, 0);
-    sta_setCubesatVar(sta_MemEEPROM_isAlive, 0);
-    sta_setCubesatVar(sta_MemSD_isAlive, 0);
-    sta_setCubesatVar(sta_Antenna_isDeployed, 0);
-
-    // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
-    sta_setCubesatVar(sta_pay_lagmuirProbe_isAlive, 0);
-    sta_setCubesatVar(sta_pay_sensTemp_isAlive, 0);
-    sta_setCubesatVar(sta_pay_gps_isAlive, 0);
-    sta_setCubesatVar(sta_pay_expFis_isAlive, 0);
-    sta_setCubesatVar(sta_pay_camera_isAlive, 0);
-    sta_setCubesatVar(sta_pay_gyro_isAlive, 0);
-    sta_setCubesatVar(sta_pay_tmEstado_isAlive, 0);
-    sta_setCubesatVar(sta_pay_battery_isAlive, 0);
-    sta_setCubesatVar(sta_pay_debug_isAlive, 0);
-    sta_setCubesatVar(sta_pay_lagmuirProbe_isDeployed, 0);
+    return 1;
+}
+/**
+ * Set every memEEPROM var to its initial value (to a Before Fligth condition)
+ * @param param None
+ * @return 1 = Ok, 0 = Fail
+ */
+int srp_memEEPROM_initial_state(void * param){
+    int arg;
 
     //PPC => (C&DH subsystem)
-    sta_setCubesatVar(sta_ppc_opMode, STA_PPC_OPMODE_NORMAL);
-    sta_setCubesatVar(sta_ppc_lastResetSource, -1);
-    sta_setCubesatVar(sta_ppc_hoursAlive, 0);
-    sta_setCubesatVar(sta_ppc_hoursWithoutReset, 0);
-    sta_setCubesatVar(sta_ppc_resetCounter, 0);
-    sta_setCubesatVar(sta_ppc_wdt, PPC_INITIAL_WDT_STATE);	// 1=WDT Active, 0=WDT Inactive
+    arg = STA_PPC_OPMODE_NORMAL;
+    ppc_set_opMode(&arg);
+    arg = 0;
+    ppc_set_hoursAlive(&arg);
+    arg = 0;
+    ppc_set_hoursWithoutReset(&arg);
+    arg = -1;   //always incremented onReset => to get 0 a -1 needs to be set
+    ppc_set_resetCounter(&arg);
 
     //DEP => (C&DH subsystem)
-    sta_setCubesatVar(sta_dep_ant_deployed, 0);            // 1=already deployed, 0=not deployed yet
-    sta_setCubesatVar(sta_dep_ant_tries, 0);               // Number of tries to deploy antenna
-    sta_setCubesatVar(sta_dep_year, 0);
-    sta_setCubesatVar(sta_dep_month, 0);
-    sta_setCubesatVar(sta_dep_week_day, 0);
-    sta_setCubesatVar(sta_dep_day_number, 0);
-    sta_setCubesatVar(sta_dep_hours, 0);
-    sta_setCubesatVar(sta_dep_minutes, 0);
-    sta_setCubesatVar(sta_dep_seconds, 0);
+    arg = -1;   //Reset Antenna DEP vars to a Before Fligth condition
+    thk_deployment_registration(&arg);
+
+    //Flight Plan
+    arg = 0;
+    drp_fpl_set_index(&arg);
 
     //PAYLOAD
     #if (SCH_PAY_LANGMUIR_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_lagmuirProbe_state, SRP_PAY_XXX_PERFORM_ACTIVE );
+        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        pay_set_state_lagmuirProbe(&arg);
     #else
-        sta_setCubesatVar(sta_pay_lagmuirProbe_state, SRP_PAY_XXX_PERFORM_INACTIVE );
+        sta_setstateVar(sta_pay_lagmuirarg = SRP_PAY_XXX_STATE_INACTIVE;
+        pay_set_state_lagmuirProbe(&arg);
     #endif
     #if (SCH_PAY_SENSTEMP_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_sensTemp_state, SRP_PAY_XXX_PERFORM_ACTIVE );
+        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        pay_set_state_sensTemp(&arg);
     #else
-        sta_setCubesatVar(sta_pay_sensTemp_state, SRP_PAY_XXX_PERFORM_INACTIVE );
+        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        pay_set_state_sensTemp(&arg);
     #endif
     #if (SCH_PAY_GPS_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_gps_state, SRP_PAY_XXX_PERFORM_ACTIVE);
+        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        pay_set_state_gps(&arg);
     #else
-        sta_setCubesatVar(sta_pay_gps_state, SRP_PAY_XXX_PERFORM_INACTIVE);
+        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        pay_set_state_gps(&arg);
     #endif
     #if (SCH_PAY_FIS_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_expFis_state, SRP_PAY_XXX_PERFORM_ACTIVE );
+        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        pay_set_state_expFis(&arg);
     #else
-        sta_setCubesatVar(sta_pay_expFis_state, SRP_PAY_XXX_PERFORM_INACTIVE );
+        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        pay_set_state_expFis(&arg);
     #endif
     #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_camera_state, SRP_PAY_XXX_PERFORM_ACTIVE );
+        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        pay_set_state_camera(&arg);
     #else
-        sta_setCubesatVar(sta_pay_camera_state, SRP_PAY_XXX_PERFORM_INACTIVE );
+        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        pay_set_state_camera(&arg);
     #endif
     #if (SCH_PAY_GYRO_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_gyro_state, SRP_PAY_XXX_PERFORM_ACTIVE );
+        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        pay_set_state_gyro(&arg);
     #else
-        sta_setCubesatVar(sta_pay_gyro_state, SRP_PAY_XXX_PERFORM_INACTIVE );
+        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        pay_set_state_gyro(&arg);
     #endif
     #if (SCH_PAY_TMESTADO_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_tmEstado_state, SRP_PAY_XXX_PERFORM_ACTIVE );
+        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        pay_set_state_tmEstado(&arg);
     #else
-        sta_setCubesatVar(sta_pay_tmEstado_state, SRP_PAY_XXX_PERFORM_INACTIVE );
+        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        pay_set_state_tmEstado(&arg);
     #endif
-    #if (SCH_PAY_TEST1_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_battery_state, SRP_PAY_XXX_PERFORM_ACTIVE );
+    #if (SCH_PAY_BATTERY_ONBOARD==1)
+        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        pay_set_state_battery(&arg);
     #else
-        sta_setCubesatVar(sta_pay_battery_state, SRP_PAY_XXX_PERFORM_INACTIVE );
+        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        pay_set_state_battery(&arg);
     #endif
-    #if (SCH_PAY_TEST2_ONBOARD==1)
-        sta_setCubesatVar(sta_pay_debug_state, SRP_PAY_XXX_PERFORM_ACTIVE );
+    #if (SCH_PAY_DEBUG_ONBOARD==1)
+        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        pay_set_state_debug(&arg);
     #else
-        sta_setCubesatVar(sta_pay_debug_state, SRP_PAY_XXX_PERFORM_INACTIVE );
+        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        pay_set_state_debug(&arg);
     #endif
 
-    sta_setCubesatVar(sta_Antenna_isDeployed, 0);  //First time on!
-    /* Es la unica variable que gatilla las acciones de despliegue en THK */
+    //TRX
+    arg = 0;
+    trx_set_count_tc(&arg);
+    arg = 0;
+    trx_set_count_tm(&arg);
+    arg = 0;
+    trx_set_day_last_tc(&arg);
+
     return 1;
 }
+
 //------------------------------------------------------------------------------
 // functions to "read" Cubestat
 /*------------------------------------------------------------------------------
@@ -269,7 +196,7 @@ int srp_executeBeforeFlight(void * param){
  * Return Value       : int
  * ID                 : 0x501D
  *----------------------------------------------------------------------------*/
-int srp_print_STA_CubesatVar(void *param)
+int srp_print_STA_stateVar(void *param)
 {
     char buffer[10];
     int arg=*((int *)param);
@@ -280,138 +207,138 @@ int srp_print_STA_CubesatVar(void *param)
 
     if(arg==1)
     {
-        STA_CubesatVar indxVar;
-        for(indxVar=0; indxVar<sta_cubesatVar_last_one; indxVar++)
+        STA_StateVar indxVar;
+        for(indxVar=0; indxVar<sta_stateVar_last_one; indxVar++)
         {
-            con_printf("sta_CubesatVar[");
+            con_printf("sta_stateVar[");
             //itoa(buffer, (unsigned int)indxVar, 10);
             sprintf( buffer, "%d", (unsigned int)indxVar );
             con_printf(buffer); con_printf("]=");
-            //itoa(buffer,(unsigned int)sta_getCubesatVar(indxVar), 10);
-            sprintf( buffer, "0x%X", (unsigned int)sta_getCubesatVar(indxVar) );
+            //itoa(buffer,(unsigned int)sta_getstateVar(indxVar), 10);
+            sprintf( buffer, "0x%X", (unsigned int)sta_get_stateVar(indxVar) );
             con_printf(buffer); con_printf("\r\n");
         }
     }
     else
     {
         /* Get mPPC */
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_opMode), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_opMode), 10);
         con_printf("ppc_opMode= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_lastResetSource), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_lastResetSource), 10);
         con_printf("ppc_lastResetSource= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_hoursAlive), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_hoursAlive), 10);
         con_printf("ppc_hoursAlive= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_hoursWithoutReset), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_hoursWithoutReset), 10);
         con_printf("ppc_hoursWithoutReset= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_resetCounter), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_resetCounter), 10);
         con_printf("ppc_resetCounter= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_wdt), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_wdt), 10);
         con_printf("ppc_enwdt= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_osc), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_osc), 10);
         con_printf("ppc_osc= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_MB_nOE_USB_nINT_stat), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_MB_nOE_USB_nINT_stat), 10);
         con_printf("ppc_MB_nOE_USB_nINT_stat= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_MB_nOE_MHX_stat), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_MB_nOE_MHX_stat), 10);
         con_printf("ppc_MB_nOE_MHX_stat= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_MB_nON_MHX_stat), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_MB_nON_MHX_stat), 10);
         con_printf("ppc_MB_nON_MHX_stat= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_ppc_MB_nON_SD_stat), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_MB_nON_SD_stat), 10);
         con_printf("ppc_MB_nON_SD_stat= "); con_printf(buffer); con_printf("\r\n");
         con_printf("-----------------------------------\r\n");
 
         /* Get mDEP */
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_ant_deployed), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_ant_deployed), 10);
         con_printf("dep_ant_deployed= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_ant_tries), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_ant_tries), 10);
         con_printf("dep_ant_tries= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_year), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_year), 10);
         con_printf("dep_year= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_month), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_month), 10);
         con_printf("dep_month= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_week_day), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_week_day), 10);
         con_printf("dep_week_day= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_day_number), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_day_number), 10);
         con_printf("dep_day_number= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_hours), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_hours), 10);
         con_printf("dep_hours= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_minutes), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_minutes), 10);
         con_printf("dep_minutes= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_dep_seconds), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_seconds), 10);
         con_printf("dep_seconds= "); con_printf(buffer); con_printf("\r\n");
         con_printf("-----------------------------------\r\n");
 
         /* Get mRTC */
-        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_rtc_year), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_rtc_year), 10);
+        itoa(buffer, (unsigned int)sta_get_stateVar(sta_rtc_year), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_rtc_year), 10);
         con_printf("rtc_year= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_rtc_month), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_rtc_month), 10);
+        itoa(buffer, (unsigned int)sta_get_stateVar(sta_rtc_month), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_rtc_month), 10);
         con_printf("rtc_month= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_rtc_week_day), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_rtc_week_day), 10);
+        itoa(buffer, (unsigned int)sta_get_stateVar(sta_rtc_week_day), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_rtc_week_day), 10);
         con_printf("rtc_week_day= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_rtc_day_number), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_rtc_day_number), 10);
+        itoa(buffer, (unsigned int)sta_get_stateVar(sta_rtc_day_number), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_rtc_day_number), 10);
         con_printf("rtc_day_number= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_rtc_hours), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_rtc_hours), 10);
+        itoa(buffer, (unsigned int)sta_get_stateVar(sta_rtc_hours), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_rtc_hours), 10);
         con_printf("rtc_hours= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_rtc_minutes), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_rtc_minutes), 10);
+        itoa(buffer, (unsigned int)sta_get_stateVar(sta_rtc_minutes), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_rtc_minutes), 10);
         con_printf("rtc_minutes= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_rtc_seconds), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_rtc_seconds), 10);
+        itoa(buffer, (unsigned int)sta_get_stateVar(sta_rtc_seconds), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_rtc_seconds), 10);
         con_printf("rtc_seconds= "); con_printf(buffer); con_printf("\r\n");
         con_printf("-----------------------------------\r\n");
 
         /* Get mEPS */
 
-        itoa(buffer,   (unsigned int)sta_getCubesatVar(sta_eps_bat0_voltage), 10);
+        itoa(buffer,   (unsigned int)sta_get_stateVar(sta_eps_bat0_voltage), 10);
         con_printf("eps_bat0_voltage= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_bat0_current), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_bat0_current), 10);
         con_printf("eps_bat0_current= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_bus5V_current), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_bus5V_current), 10);
         con_printf("eps_bus5V_current= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_bus3V_current), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_bus3V_current), 10);
         con_printf("eps_bus3V_current= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_bus_battery_current), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_bus_battery_current), 10);
         con_printf("eps_bus_battery_current= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_bat0_temp), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_bat0_temp), 10);
         con_printf("eps_bat0_temp= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_panel_pwr), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_panel_pwr), 10);
         con_printf("eps_panel_pwr= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_status), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_status), 10);
         con_printf("eps_status= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_soc), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_soc), 10);
         con_printf("eps_soc= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_socss), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_socss), 10);
         con_printf("eps_socss= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_state_flag), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_state_flag), 10);
         con_printf("eps_state_flag= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_eps_charging), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_charging), 10);
         con_printf("eps_charging= "); con_printf(buffer); con_printf("\r\n");
         con_printf("-----------------------------------\r\n");
 
         /* Get mTRX */
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_opmode), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_opmode), 10);
         con_printf("trx_opmode= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_temp_hpa), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_temp_hpa), 10);
         con_printf("trx_temp_hpa= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_temp_mcu), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_temp_mcu), 10);
         con_printf("trx_temp_mcu= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)sta_getCubesatVar(sta_trx_rssi), 10); //itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_rssi), 10);
+        itoa(buffer, (unsigned int)sta_get_stateVar(sta_trx_rssi), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_trx_rssi), 10);
         con_printf("trx_rssi= "); con_printf(buffer); con_printf(" dBm\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_status_tc), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_status_tc), 10);
         con_printf("trx_status_tc= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_count_tm), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_count_tm), 10);
         con_printf("trx_count_tm= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_count_tc), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_count_tc), 10);
         con_printf("trx_count_tc= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_lastcmd_day), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_day_last_tc), 10);
         con_printf("trx_lastcmd_day= "); con_printf(buffer); con_printf("\r\n");
         con_printf("-----------------------------------\r\n");
 
         // Cmd buffer control
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_newTcFrame), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_newTcFrame), 10);
         con_printf("trx_newTcFrame= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_newCmdBuff), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_newCmdBuff), 10);
         con_printf("trx_newCmdBuff= "); con_printf(buffer); con_printf("\r\n");        
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_fpl_index), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_fpl_index), 10);
         con_printf("fpl_index= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_MemSD_isAlive), 10);
+        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_MemSD_isAlive), 10);
         con_printf("msd_status= "); con_printf(buffer); con_printf("\r\n");
         con_printf("-----------------------------------\r\n");
     }
@@ -440,41 +367,6 @@ int srp_debug(void *param){
 //------------------------------------------------------------------------------
 //Aux functions
 //------------------------------------------------------------------------------
-void srp_eraseAll_CubesatVar(void){
-    #if (SCH_CMDSRP_VERBOSE>=1)
-        con_printf("    Erasing memEEPROM\n");
-    #endif
-
-    unsigned int indxVar;
-    int data = -1;  //oxFFFF
-
-    for(indxVar=0; indxVar<sta_cubesatVar_last_one; indxVar++){
-        sta_setCubesatVar(indxVar, data);
-    }
-}
-/*------------------------------------------------------------------------------
- *		 	DRP TRX RSSI
- *------------------------------------------------------------------------------
- * Description        : Update TRX RSSI status in data repository
- * Arguments          : void
- * Return Value       : 1 - OK, 0 - FAIL
- * ID                 : 0x5015
- *----------------------------------------------------------------------------*/
-void srp_trx_rssi(void)
-{
-    uint8_t count = 0;
-    int result = 0;
-    int rssi_value = 0;
-
-    //result = com_get_log_rssi(rssi_data, &count, NODE_COM, 1000);
-    if(result)
-    {
-        rssi_value = rssi_data[count].rssi; //Get last RSSI measure
-    }
-
-    /* Writing RSSI to repo */
-    sta_setCubesatVar(sta_trx_rssi, rssi_value);
-}
 
 /*------------------------------------------------------------------------------
  *		 	DRP TRX RSSI_MEAN
@@ -570,7 +462,5 @@ void srp_debug4(void){
         else{ con_printf("fail"); }
         con_printf("\n");
     }
-    srp_eraseAll_CubesatVar();
-
 }
 

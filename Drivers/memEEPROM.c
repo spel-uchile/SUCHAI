@@ -86,7 +86,7 @@ int memEEPROM_isAlive(void)
 {
     //check if working normally
 
-    int indxVar;    //DAT_CubesatVar indxVar;
+    int indxVar;    //DAT_StateVar indxVar;
     int wvalue,rvalue;
 
     //indxVar = sta_MemEEPROM_testVal;

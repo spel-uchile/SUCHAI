@@ -1,5 +1,6 @@
 #include "cmdTCM.h"
 #include "csp.h"
+#include "cmdPayload.h"
 
 
 
@@ -24,8 +25,8 @@ void tcm_onResetCmdTCM(void){
     tcmFunction[(unsigned char)tcm_id_sendTM_all_pay_i] = tcm_sendTM_all_pay_i;
     tcmFunction[(unsigned char)tcm_id_sendTM_pay_i] = tcm_sendTM_pay_i;
 
-    //dat_CubesatVar
-    tcmFunction[(unsigned char)tcm_id_sendTM_cubesatVar] = tcm_sendTM_cubesatVar;
+    //dat_stateVar
+    tcmFunction[(unsigned char)tcm_id_sendTM_stateVar] = tcm_sendTM_stateVar;
 
     //Beacon
     tcmFunction[(unsigned char)tcm_id_update_beacon] = tcm_update_beacon;
@@ -104,7 +105,7 @@ int tcm_resend(void *param)
 int tcm_sendTM_all_pay_i(void *param){
 
     //envio TM de payload
-    DAT_PayloadBuff pay_i;
+    DAT_Payload_Buff pay_i;
     for(pay_i=0; pay_i<dat_pay_last_one; pay_i++)
     {
         tcm_sendTM_pay_i( (void *)(&pay_i) );
@@ -123,14 +124,68 @@ int tcm_sendTM_all_pay_i(void *param){
 int tcm_sendTM_pay_i(void *param){
     con_printf("tcm_sendTM_pay_i\r\n");
     
-    DAT_PayloadBuff pay_i = *((DAT_PayloadBuff*)param);
+    DAT_Payload_Buff pay_i = *((DAT_Payload_Buff*)param);
     int mode=2;
-    STA_CubesatVar dat_pay_xxx_perform=sta_pay_i_to_performVar(pay_i);
 
     int res = tcm_sendTM_PayloadVar(mode, pay_i);
     if(res!=0x0000){
         //inicia nuevamente el ciclo del Payload
-        sta_setCubesatVar(dat_pay_xxx_perform, SRP_PAY_XXX_PERFORM_ACTIVE );
+        int arg, pay_state;
+
+        pay_state =  pay_get_state_lagmuirProbe(NULL);
+        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
+            arg = SRP_PAY_XXX_STATE_ACTIVE;
+            pay_set_state_lagmuirProbe(&arg);
+        }
+
+        pay_state =  pay_get_state_sensTemp(NULL);
+        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
+            arg = SRP_PAY_XXX_STATE_ACTIVE;
+            pay_set_state_sensTemp(&arg);
+        }
+        
+        pay_state =  pay_get_state_gps(NULL);
+        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
+            arg = SRP_PAY_XXX_STATE_ACTIVE;
+            pay_set_state_gps(&arg);
+        }
+        
+        pay_state =  pay_get_state_expFis(NULL);
+        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
+            arg = SRP_PAY_XXX_STATE_ACTIVE;
+            pay_set_state_expFis(&arg);
+        }
+        
+        pay_state =  pay_get_state_camera(NULL);
+        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
+            arg = SRP_PAY_XXX_STATE_ACTIVE;
+            pay_set_state_camera(&arg);
+        }
+
+        pay_state =  pay_get_state_gyro(NULL);
+        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
+            arg = SRP_PAY_XXX_STATE_ACTIVE;
+            pay_set_state_gyro(&arg);
+        }
+        
+        pay_state =  pay_get_state_tmEstado(NULL);
+        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
+            arg = SRP_PAY_XXX_STATE_ACTIVE;
+            pay_set_state_tmEstado(&arg);
+        }
+
+        pay_state =  pay_get_state_battery(NULL);
+        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
+            arg = SRP_PAY_XXX_STATE_ACTIVE;
+            pay_set_state_battery(&arg);
+        }
+
+        pay_state =  pay_get_state_debug(NULL);
+        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
+            arg = SRP_PAY_XXX_STATE_ACTIVE;
+            pay_set_state_debug(&arg);
+        }
+        
     }
     return res;
 }
@@ -139,27 +194,27 @@ int tcm_sendTM_pay_i(void *param){
  * Reads and transmit telemetry ralated to satellite's status
  *
  * Envia telemetria instantanea (en ese momento) del estado del SUCHAI.
- * Envia por TM todas las variables de estado de cubesatVar
+ * Envia por TM todas las variables de estado de stateVar
  *
  * TMID : 0x0009
  *
  * @param param 0 - Only store, 1 - Only Send, 2 - Store and send @deprecated @sa trx_tm_addtoframe()
  * @return 0 (Tx fail) - 1 (Tx OK)
  */
-int tcm_sendTM_cubesatVar(void *param)
+int tcm_sendTM_stateVar(void *param)
 {
     int tm_id = 0x0009;
 
     /* Start a new session (Single or normal) */
-    tm_id = dat_pay_last_one; /* TM ID */ /*Para distingur cubesatVar de los Paylaods*/
+    tm_id = dat_pay_last_one; /* TM ID */ /*Para distingur stateVar de los Paylaods*/
     trx_tm_addtoframe(&tm_id, 0, CMD_ADDFRAME_FIN);   /* Close previos sessions */
     trx_tm_addtoframe(&tm_id, 1, CMD_ADDFRAME_START); /* New empty start frame */
 
     /* Read info and append to the frame */
-    STA_CubesatVar indxVar;
-    for(indxVar=0; indxVar<sta_cubesatVar_last_one; indxVar++)
+    STA_StateVar indxVar;
+    for(indxVar=0; indxVar<sta_stateVar_last_one; indxVar++)
     {
-        tm_id = sta_getCubesatVar(indxVar);
+        tm_id = sta_get_stateVar(indxVar);
         trx_tm_addtoframe(&tm_id, 1, CMD_ADDFRAME_ADD);
     }
 
@@ -214,41 +269,41 @@ int tcm_update_beacon(void *param)
         strcpy(p_buff++, buff);
 
         /* hoursWithoutReset */
-        val = sta_getCubesatVar(sta_ppc_hoursWithoutReset);
+        val = sta_get_stateVar(sta_ppc_hoursWithoutReset);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
 
         /* resetCounter */
-        val = sta_getCubesatVar(sta_ppc_resetCounter);
+        val = sta_get_stateVar(sta_ppc_resetCounter);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
 
         /* Last reset source */
-        val = sta_getCubesatVar(sta_ppc_lastResetSource);
+        val = sta_get_stateVar(sta_ppc_lastResetSource);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* ant_deployed */
-        val = sta_getCubesatVar(sta_dep_ant_deployed);
+        val = sta_get_stateVar(sta_dep_ant_deployed);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* opMode */
-        val = sta_getCubesatVar(sta_ppc_opMode);
+        val = sta_get_stateVar(sta_ppc_opMode);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* ppc_osc */
-        val = sta_getCubesatVar(sta_ppc_osc);
+        val = sta_get_stateVar(sta_ppc_osc);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* ppc_osc */
-        val = sta_getCubesatVar(sta_ppc_wdt);
+        val = sta_get_stateVar(sta_ppc_wdt);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
@@ -266,43 +321,43 @@ int tcm_update_beacon(void *param)
         itoa(buff, mode, 10);
         strcpy(p_buff++, buff);
 
-        val = sta_getCubesatVar(sta_RTC_isAlive);
+        val = sta_get_stateVar(sta_RTC_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = sta_getCubesatVar(sta_TRX_isAlive);
+        val = sta_get_stateVar(sta_TRX_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = sta_getCubesatVar(sta_EPS_isAlive);
+        val = sta_get_stateVar(sta_EPS_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = sta_getCubesatVar(sta_MemEEPROM_isAlive);
+        val = sta_get_stateVar(sta_MemEEPROM_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = sta_getCubesatVar(sta_MemSD_isAlive);
+        val = sta_get_stateVar(sta_MemSD_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = sta_getCubesatVar(sta_pay_lagmuirProbe_isAlive);
+        val = sta_get_stateVar(sta_pay_lagmuirProbe_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = sta_getCubesatVar(sta_pay_sensTemp_isAlive);
+        val = sta_get_stateVar(sta_pay_sensTemp_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = sta_getCubesatVar(sta_pay_gps_isAlive);
+        val = sta_get_stateVar(sta_pay_gps_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = sta_getCubesatVar(sta_pay_camera_isAlive);
+        val = sta_get_stateVar(sta_pay_camera_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = sta_getCubesatVar(sta_pay_gyro_isAlive);
+        val = sta_get_stateVar(sta_pay_gyro_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
@@ -317,14 +372,14 @@ int tcm_update_beacon(void *param)
         strcpy(p_buff++, buff);
 
         /* count_tm */
-        val = sta_getCubesatVar(sta_trx_count_tm);
+        val = sta_get_stateVar(sta_trx_count_tm);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
 
         /* count_tc */
-        val = sta_getCubesatVar(sta_trx_count_tc);
+        val = sta_get_stateVar(sta_trx_count_tc);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
@@ -366,17 +421,17 @@ int tcm_update_beacon(void *param)
     else if(mode == 4)
     {
         /* eps_soc */
-        val = sta_getCubesatVar(sta_eps_soc);
+        val = sta_get_stateVar(sta_eps_soc);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* eps_charging*/
-        val = sta_getCubesatVar(sta_eps_charging);
+        val = sta_get_stateVar(sta_eps_charging);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* bat0_voltage */
-        val = sta_getCubesatVar(sta_eps_bat0_voltage);
+        val = sta_get_stateVar(sta_eps_bat0_voltage);
         d_val = -0.00939*val + 9.791;
         val = (int)(d_val*10.0); /* 7.4V -> 74 */
         itoa(buff,val/10,10);
@@ -385,7 +440,7 @@ int tcm_update_beacon(void *param)
         strcpy(p_buff++, buff);
 
         /* bat0_tmp */
-        val = sta_getCubesatVar(sta_eps_bat0_current);
+        val = sta_get_stateVar(sta_eps_bat0_current);
         d_val =  -3.20*val+2926.22;
         val = (int)(d_val); /* 38.1mA -> 38 */
         itoa(buff,val/10,10);
@@ -394,7 +449,7 @@ int tcm_update_beacon(void *param)
         strcpy(p_buff++, buff);
 
         /* bat0_tmp */
-        val = sta_getCubesatVar(sta_eps_bat0_temp);
+        val = sta_get_stateVar(sta_eps_bat0_temp);
         d_val =  -0.163*val+110.338;
         val = (int)(d_val); /* 18.3C -> 18 */
         itoa(buff,val/10,10);
@@ -403,7 +458,7 @@ int tcm_update_beacon(void *param)
         strcpy(p_buff++, buff);
 
         /* bat0_tmp */
-        val = sta_getCubesatVar(sta_eps_panel_pwr);
+        val = sta_get_stateVar(sta_eps_panel_pwr);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
@@ -472,7 +527,7 @@ int tcm_set_sysreq(void *param)
  * @param pay_i Payload id
  * @return 0 (Tx fail) - 1 (Tx OK)
  */
-int tcm_sendTM_PayloadVar(int mode, DAT_PayloadBuff pay_i){
+int tcm_sendTM_PayloadVar(int mode, DAT_Payload_Buff pay_i){
     con_printf("tcm_sendTM_PayloadVar...\r\n");
 
     int tm_id, nfrm;
@@ -498,7 +553,7 @@ int tcm_sendTM_PayloadVar(int mode, DAT_PayloadBuff pay_i){
     unsigned int indx; int val;
     for(indx=0; indx<=maxIndx; indx++)
     {
-        dat_get_PayloadBuff(pay_i, indx, &val);
+        dat_get_Payload_Buff(pay_i, indx, &val);
         nfrm = trx_tm_addtoframe(&val, 1, CMD_ADDFRAME_ADD);
 
         #if (SCH_CMDTCM_VERBOSE>=2)
@@ -507,7 +562,7 @@ int tcm_sendTM_PayloadVar(int mode, DAT_PayloadBuff pay_i){
             //itoa(buffer, (unsigned int)indxVar, 10);
             sprintf( buffer, "%d", (unsigned int)indx );
             con_printf(buffer); con_printf("]=");
-            //itoa(buffer,(unsigned int)sta_getCubesatVar(indxVar), 10);
+            //itoa(buffer,(unsigned int)sta_getstateVar(indxVar), 10);
             sprintf( buffer, "0x%X", (unsigned int)val );
             con_printf(buffer); con_printf("\r\n");
         #endif

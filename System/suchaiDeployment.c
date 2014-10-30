@@ -41,7 +41,7 @@ void dep_init_suchai_hw(void)
 
 void dep_init_suchai_repos(void){
     /* Repositories */
-    dep_init_statusRepo(NULL);  //modify specific reset-dependant STA_CubesatVar vars
+    dep_init_stateRepo(NULL);  //modify specific reset-dependant STA_StateVar vars
     dep_init_cmdRepo(NULL);     //loads cmdXXX repos to be used
     dep_init_dataRepo(NULL);    //prepares GnrlPurposeBuff to be used
     /* Other structures */
@@ -54,7 +54,7 @@ void dep_init_suchai_repos(void){
  * @param param Not used
  * @return 1
  */
-int dep_init_statusRepo(void *param)
+int dep_init_stateRepo(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
         printf("\n[dep_init_statusRepo] Initializing status repository...\r\n");
@@ -63,7 +63,7 @@ int dep_init_statusRepo(void *param)
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         printf("    * Status rep.\r\n");
     #endif
-    sta_onResetStatRepo();
+    sta_onReset_stateRepo();
 
     return 1;
 }
@@ -238,19 +238,19 @@ int dep_init_dataRepo(void *param)
 
     /* Initializing the rest of dataRepository structures */
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * onReset Fligh Plan..\r\n");
+        printf("        * onReset Fligh Plan..\r\n");
     #endif
     dat_onReset_FlightPlan();
     
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * onReset Telecommand Buffer..\r\n");
-    #endif
-    dat_onReset_TeleCmdBuff();
+//    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+//        printf("    * onReset Telecommand Buffer..\r\n");
+//    #endif
+//    dat_onReset_TeleCmdBuff();
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * onReset Payloads..\r\n");
+        printf("        * onReset Payloads..\r\n");
     #endif
-    dat_onReset_PayloadBuff();
+    dat_onReset_Payload_Buff();
 
     return 1;
 }
@@ -271,7 +271,7 @@ int dep_init_adHoc_strcts(void *param)
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
         printf("    * init EPS structs\r\n");
     #endif
-    setStateFlagEPS( (unsigned char)sta_getCubesatVar(sta_eps_state_flag) );
+    setStateFlagEPS( (unsigned char)sta_get_stateVar(sta_eps_state_flag) );
 
     return 1;
 }
@@ -341,7 +341,7 @@ void dep_init_suchai_tasks(void)
         __delay_ms(300);
     #endif
 
-    if( sta_getCubesatVar(sta_MemSD_isAlive) == 1 )
+    if( sta_get_stateVar(sta_MemSD_isAlive) == 1 )
     {
         #if (SCH_USE_FLIGHTPLAN == 1)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
@@ -367,7 +367,7 @@ void dep_init_suchai_tasks(void)
 int dep_init_sysbus_hw(void *param)
 {
     int resp;
-    STA_CubesatVar hw_isAlive;
+    STA_StateVar hw_isAlive;
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
         printf("\n[dep_init_bus_hw] Initializig external hardware...\r\n");
@@ -380,7 +380,7 @@ int dep_init_sysbus_hw(void *param)
         #endif
         resp = init_memEEPROM();
         //hw_isAlive = sta_MemEEPROM_isAlive;
-        //sta_setCubesatVar(hw_isAlive, resp);
+        //sta_set_stateVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
                 printf("Ok\r\n");
@@ -399,7 +399,7 @@ int dep_init_sysbus_hw(void *param)
         #endif
         resp = RTC_init();
         //hw_isAlive = sta_RTC_isAlive;
-        //sta_setCubesatVar(hw_isAlive, resp);
+        //sta_set_stateVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
                 printf("Ok\r\n");
@@ -418,11 +418,11 @@ int dep_init_sysbus_hw(void *param)
         #endif
         //Check if suchai is deployed to select correct trx configuration
         hw_isAlive = sta_dep_ant_deployed;
-        int deployed = sta_getCubesatVar(hw_isAlive);
+        int deployed = sta_get_stateVar(hw_isAlive);
         //Initialize trx
         resp  = trx_initialize(&deployed);
         //hw_isAlive = sta_TRX_isAlive;
-        //sta_setCubesatVar(hw_isAlive, resp);
+        //sta_set_stateVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
                 printf("Ok\r\n");
@@ -441,7 +441,7 @@ int dep_init_sysbus_hw(void *param)
         #endif
         resp  = eps_initialize();
         //hw_isAlive = sta_EPS_isAlive;
-        //sta_setCubesatVar(hw_isAlive, resp);
+        //sta_set_stateVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
                 printf("Ok\r\n");
@@ -461,7 +461,7 @@ int dep_init_sysbus_hw(void *param)
         //resp = dat_sd_init();
         resp =  SD_init_memSD();
         //hw_isAlive = sta_MemSD_isAlive;
-        //sta_setCubesatVar(hw_isAlive, resp);
+        //sta_set_stateVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
                 printf("Ok\r\n");
@@ -478,10 +478,10 @@ int dep_init_sysbus_hw(void *param)
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             printf("    * External Antenna .. ");
         #endif
-        hw_isAlive = sta_Antenna_isDeployed;
-        resp = sta_getCubesatVar(hw_isAlive);
+        hw_isAlive = sta_AntSwitch_isOpen;
+        resp = sta_get_stateVar(hw_isAlive);
         //hw_isAlive = sta_Antenna_isDeployed;
-        //sta_setCubesatVar(hw_isAlive, resp);
+        //sta_set_stateVar(hw_isAlive, resp);
         #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){
                 printf("Ok (Deployed)\r\n");
@@ -571,7 +571,7 @@ int dep_init_sysbus_hw(void *param)
 //        printf("\n[dep_deploy_antenna] Deploying TRX Antenna... \r\n");
 //    #endif
 //
-//    if( sta_getCubesatVar(sta_dep_ant_deployed) == 0x0001 )
+//    if( sta_get_stateVar(sta_dep_ant_deployed) == 0x0001 )
 //    {
 //        #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
 //            printf("    * Antenna is already deployed\r\n");

@@ -33,45 +33,41 @@ int trx_sysReq[TRX_NCMD];
 
 void trx_onResetCmdTRX(void){
     printf("        trx_onResetCmdTRX\n");
-    /*TRX*/
+
+    int i;
+    for(i=0; i<TRX_NCMD; i++) trx_sysReq[i] = CMD_SYSREQ_MIN;
+    
     trxFunction[(unsigned char)trx_id_send_beacon] = trx_send_beacon;
-    trx_sysReq[(unsigned char)trx_id_send_beacon]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_readconf] = trx_read_conf;
-    trx_sysReq[(unsigned char)trx_id_readconf]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_isAlive] = trx_isAlive;
-    trx_sysReq[(unsigned char)trx_id_isAlive]  = CMD_SYSREQ_MIN;
+    trxFunction[(unsigned char)trx_id_get_count_tc] = trx_get_count_tc;
+    trxFunction[(unsigned char)trx_id_set_count_tc] = trx_set_count_tc;
+    trxFunction[(unsigned char)trx_id_get_count_tm] = trx_get_count_tm;
+    trxFunction[(unsigned char)trx_id_set_count_tm] = trx_set_count_tm;
+    trxFunction[(unsigned char)trx_id_get_day_last_tc] = trx_get_day_last_tc;
+    trxFunction[(unsigned char)trx_id_set_day_last_tc] = trx_set_day_last_tc;
+
     trxFunction[(unsigned char)trx_id_ping] = trx_ping;
-    trx_sysReq[(unsigned char)trx_id_ping]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_getstatus] = trx_getstatus;
-    trx_sysReq[(unsigned char)trx_id_getstatus]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_set_beacon] = trx_set_beacon;
-    trx_sysReq[(unsigned char)trx_id_set_beacon]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_initialize] = trx_initialize;
-    trx_sysReq[(unsigned char)trx_id_initialize]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_setmode] = trx_setmode;
-    trx_sysReq[(unsigned char)trx_id_setmode]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_asknewtc] = trx_asknewtc;
-    trx_sysReq[(unsigned char)trx_id_asknewtc]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_parsetcframe] = trx_parsetcframe;
-    trx_sysReq[(unsigned char)trx_id_parsetcframe]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_set_tx_baud] = trx_set_tx_baud;
-    trx_sysReq[(unsigned char)trx_id_set_tx_baud]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_set_rx_baud] = trx_set_rx_baud;
-    trx_sysReq[(unsigned char)trx_id_set_rx_baud]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_read_tcframe] = trx_read_tcframe;
-    trx_sysReq[(unsigned char)trx_id_read_tcframe]  = CMD_SYSREQ_MIN;
-    trxFunction[(unsigned char)trx_id_tm_trxstatus] = trx_tm_trxstatus;
-    trx_sysReq[(unsigned char)trx_id_tm_trxstatus]  = CMD_SYSREQ_MIN+2;
+
     trxFunction[(unsigned char)trx_id_write_reg] = trx_write_reg;
-    trx_sysReq[(unsigned char)trx_id_write_reg]  = CMD_SYSREQ_MIN;
     trxFunction[(unsigned char)trx_id_set_reg_val] = trx_set_reg_val;
-    trx_sysReq[(unsigned char)trx_id_set_reg_val]  = CMD_SYSREQ_MIN;
+    trxFunction[(unsigned char)trx_id_reset_tm_pointer] = trx_reset_tm_pointer;
+    trxFunction[(unsigned char)trx_id_set_beacon_level] = trx_set_beacon_level;
+
+    //Power budget restriction
     trxFunction[(unsigned char)trx_id_resend] = trx_resend;
     trx_sysReq[(unsigned char)trx_id_resend]  = CMD_SYSREQ_MIN+3; /* CMD_SYSREQ_MIN+3 */
-    trxFunction[(unsigned char)trx_id_reset_tm_pointer] = trx_reset_tm_pointer;
-    trx_sysReq[(unsigned char)trx_id_reset_tm_pointer]  = CMD_SYSREQ_MIN;
-    trxFunction[(unsigned char)trx_id_set_beacon_level] = trx_set_beacon_level;
-    trx_sysReq[(unsigned char)trx_id_set_beacon_level]  = CMD_SYSREQ_MIN;
+    trxFunction[(unsigned char)trx_id_tm_trxstatus] = trx_tm_trxstatus;
+    trx_sysReq[(unsigned char)trx_id_tm_trxstatus]  = CMD_SYSREQ_MIN+2;
 }
 
 /**
@@ -174,6 +170,40 @@ int trx_send_beacon(void *param)
 int trx_isAlive(void *param){
     int arg = NODE_COM;
     return trx_ping(&arg);
+}
+
+int trx_get_count_tm(void *param){
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tm;
+    int res = readIntEEPROM1(mem_eeprom_var);
+    return res;
+}
+int trx_set_count_tm(void *param){
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tm;
+    int value = *((int*)param);
+    writeIntEEPROM1(mem_eeprom_var, value);
+    return 1;   //se asume operacion exitosa
+}
+int trx_get_count_tc(void *param){
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tc;
+    int res = readIntEEPROM1(mem_eeprom_var);
+    return res;
+}
+int trx_set_count_tc(void *param){
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tc;
+    int value = *((int*)param);
+    writeIntEEPROM1(mem_eeprom_var, value);
+    return 1;   //se asume operacion exitosa
+}
+int trx_get_day_last_tc(void *param){
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_day_last_tc;
+    int res = readIntEEPROM1(mem_eeprom_var);
+    return res;
+}
+int trx_set_day_last_tc(void *param){
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_day_last_tc;
+    int value = *((int*)param);
+    writeIntEEPROM1(mem_eeprom_var, value);
+    return 1;   //se asume operacion exitosa
 }
 
 /**
@@ -348,8 +378,8 @@ int trx_asknewtc(void *param)
     if ((conn = csp_accept(sock, 250)) == NULL)
     {
         /* Setting status in data repository */
-        sta_setCubesatVar(sta_trx_newTcFrame, 0); //No new TC
-        return 1;
+        //sta_setstateVar(sta_trx_newTcFrame, 0); //No new TC
+        //return 1;
     }
 
 //        printf("[SRV] New connection\n");
@@ -364,8 +394,10 @@ int trx_asknewtc(void *param)
                 printf("[New packet] ");
 
                  /* Setting status in data repository */
-                sta_setCubesatVar(sta_trx_newTcFrame, 1);
-                new_cmd_buff = sta_getCubesatVar(sta_trx_newCmdBuff);
+                //TODO: Check if function is still correct
+                //sta_setstateVar(sta_trx_newTcFrame, 1);
+                //new_cmd_buff = sta_getstateVar(sta_trx_newCmdBuff);
+                new_cmd_buff = 1;
 
                 if(new_cmd_buff == 0)
                     trx_parsetcframe((void *)packet->data16); //TODO: Check frame lenght
@@ -379,7 +411,7 @@ int trx_asknewtc(void *param)
                 csp_service_handler(conn, packet);
 
                 /* Setting status in data repository */
-                sta_setCubesatVar(sta_trx_newTcFrame, 0);
+                //sta_setstateVar(sta_trx_newTcFrame, 0);
                 break;
         }
     }
@@ -458,11 +490,11 @@ int trx_parsetcframe(void *param)
 //    if(result)
 //    {
 //        /* Aumentar el contador de TC recibidos */
-//        result += sta_getCubesatVar(sta_trx_count_tc);
-//        sta_setCubesatVar(sta_trx_count_tc, result);
+//        result += sta_getstateVar(sta_trx_count_tc);
+//        sta_setstateVar(sta_trx_count_tc, result);
 //
 //        /* Indicar que hay comandos que procesar en el buffer de Cmd */
-//        sta_setCubesatVar(sta_trx_newCmdBuff, 1);
+//        sta_setstateVar(sta_trx_newCmdBuff, 1);
 //    }
 //
 //    return result;

@@ -388,6 +388,8 @@ unsigned int cam_take_photo(void)
                        // with the " best " Quality
                         // with mode get picture " snapshot picture"
 }
+
+//TODO: trasladar esta funcion a cmdPayload de la camara
 unsigned int cam_receivePhoto(unsigned int length, int mode)
 {
     con_printf("cam_receivePhoto()..\r\n");
@@ -395,8 +397,8 @@ unsigned int cam_receivePhoto(unsigned int length, int mode)
     int ml=length/2;    //se guardan 2byten en 1int
     
     //Inicializa la estructura de data payload
-    DAT_PayloadBuff pay_i=dat_pay_camera;
-    dat_reset_PayloadBuff(pay_i, ml, 0);
+    DAT_Payload_Buff pay_i=dat_pay_camera;
+    dat_reset_Payload_Buff(pay_i, ml, 0);
 
     unsigned char respuesta; char ret[10];
     unsigned int resp;
@@ -426,7 +428,7 @@ unsigned int cam_receivePhoto(unsigned int length, int mode)
             con_printf(ret);
         }
         if( (mode==CAM_MODE_SAVE_SD) || (mode==CAM_MODE_BOTH) ){
-            stat = dat_set_PayloadBuff( pay_i, (int)resp );
+            stat = dat_set_Payload_Buff( pay_i, (int)resp );
             //__delay_ms(12);
             #if (SCH_CAMERA_VERBOSE>=1)
                 cnt++;
@@ -444,7 +446,7 @@ unsigned int cam_receivePhoto(unsigned int length, int mode)
     //Si sale esta linea tengo un error
     if( (mode==CAM_MODE_SAVE_SD) || (mode==CAM_MODE_BOTH) ){
         while(stat==FALSE){
-            stat = dat_set_PayloadBuff( pay_i, (int)0xFF00 );
+            stat = dat_set_Payload_Buff( pay_i, (int)0xFF00 );
             con_printf("rellenando\r\n");
             //__delay_ms(12);
         }

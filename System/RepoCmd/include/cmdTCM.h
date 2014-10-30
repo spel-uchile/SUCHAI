@@ -29,8 +29,8 @@ typedef enum{
     tcm_id_resend, ///< @cmd
     //Beacon
     tcm_id_update_beacon, ///< @cmd
-    //CubesatVar
-    tcm_id_sendTM_cubesatVar, ///< @cmd
+    //stateVar
+    tcm_id_sendTM_stateVar, ///< @cmd
     //Payload
     tcm_id_sendTM_all_pay_i, ///< @cmd
     tcm_id_sendTM_pay_i, ///< @cmd
@@ -50,7 +50,7 @@ int tcm_resend(void *param);
 int tcm_testframe(void *param);
 int tcm_sendTM_all_pay_i(void *param);
 int tcm_sendTM_pay_i(void *param);
-int tcm_sendTM_cubesatVar(void *param);
+int tcm_sendTM_stateVar(void *param);
 int tcm_sendTM_expFis(void *param);
 int tcm_sendTM_gyro(void *param);
 int tcm_sendTM_camera(void *param);
@@ -62,7 +62,7 @@ int tcm_update_beacon(void *param);
 int tcm_set_sysreq(void *param);
 
 //funciones aux
-int tcm_sendTM_PayloadVar(int mode, DAT_PayloadBuff pay_i);
+int tcm_sendTM_PayloadVar(int mode, DAT_Payload_Buff pay_i);
 
 #endif
 

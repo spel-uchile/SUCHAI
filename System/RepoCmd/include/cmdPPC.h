@@ -13,7 +13,7 @@
 
 #include "SUCHAI_config.h"
 #include "dataRepository.h"
-#include "statusRepository.h"
+#include "stateRepository.h"
 #include "cmdIncludes.h"    //para CMD_XXX
 #include "DebugIncludes.h"  //para con_printf
 //#include "cmdTRX.h"

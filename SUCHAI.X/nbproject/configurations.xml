@@ -106,10 +106,10 @@
         <itemPath>../System/include/cmdRepository.h</itemPath>
         <itemPath>../System/include/dataRepository.h</itemPath>
         <itemPath>../System/include/DebugIncludes.h</itemPath>
-        <itemPath>../System/include/statusRepository.h</itemPath>
         <itemPath>../System/include/taskDispatcher.h</itemPath>
         <itemPath>../System/include/taskExecuter.h</itemPath>
         <itemPath>../System/include/suchaiDeployment.h</itemPath>
+        <itemPath>../System/include/stateRepository.h</itemPath>
       </logicalFolder>
       <itemPath>../FreeRTOSConfig.h</itemPath>
       <itemPath>../SUCHAI_config.h</itemPath>
@@ -234,8 +234,8 @@
         <itemPath>../System/taskExecuter.c</itemPath>
         <itemPath>../System/dataRepository.c</itemPath>
         <itemPath>../System/cmdRepository.c</itemPath>
-        <itemPath>../System/statusRepository.c</itemPath>
         <itemPath>../System/suchaiDeployment.c</itemPath>
+        <itemPath>../System/stateRepository.c</itemPath>
       </logicalFolder>
       <itemPath>../main.c</itemPath>
     </logicalFolder>
@@ -404,6 +404,7 @@
         <property key="save-temps" value="false"/>
       </C30Global>
       <PICkit3PlatformTool>
+        <property key="firmware.download.all" value="false"/>
       </PICkit3PlatformTool>
     </conf>
     <conf name="simulator" type="2">

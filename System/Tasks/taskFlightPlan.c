@@ -51,7 +51,7 @@ void taskFlightPlan(void *param)
     #if (SCH_USE_HOUSEKEEPING == 1)
         /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
         while( TRUE ){
-            if( sta_getCubesatVar(sta_Antenna_isDeployed)==1 ){
+            if( sta_get_stateVar(sta_AntSwitch_isOpen)==1 ){
                 break;
             }
             vTaskDelayUntil(&xLastWakeTime, _10sec_check);
@@ -64,8 +64,8 @@ void taskFlightPlan(void *param)
 
         /* Map hh:mm to MM minutues of the day to obtain the
          * index of the next command to read from fligh plan */
-        current_hour = sta_getCubesatVar(sta_rtc_hours);
-        current_mins = sta_getCubesatVar(sta_rtc_minutes);
+        current_hour = sta_get_stateVar(sta_rtc_hours);
+        current_mins = sta_get_stateVar(sta_rtc_minutes);
         index = current_hour*60 + current_mins;
         index = index / SCH_FLIGHTPLAN_RESOLUTION;
 

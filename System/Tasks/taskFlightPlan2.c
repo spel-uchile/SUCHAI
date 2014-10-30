@@ -51,7 +51,7 @@ void taskFlightPlan2(void *param)
     #if (SCH_USE_HOUSEKEEPING == 1)
         /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
         while( TRUE ){
-            if( sta_getCubesatVar(sta_Antenna_isDeployed)==1 ){
+            if( sta_get_stateVar(sta_AntSwitch_isOpen)==1 ){
                 break;
             }
             vTaskDelayUntil(&xLastWakeTime, _10sec_check);
@@ -103,7 +103,7 @@ void fp2_pay_i_multiplexing(xQueueHandle dispatcherQueue){
     NewCmd.idOrig = CMD_IDORIG_TFLIGHTPLAN2;
     NewCmd.param = 0;
 
-    static DAT_PayloadBuff current_pay_i;
+    static DAT_Payload_Buff current_pay_i;
     
     //multiplexo pay_i por turnos
     #if (SCH_FLIGHTPLAN2_VERBOSE>=2)
@@ -140,12 +140,12 @@ void fp2_pay_i_simultaneous(xQueueHandle dispatcherQueue)
     NewCmd.param = 0;
 
     //ejecuto payloads, "simultaneamente" osea, todos en cada ciclo
-    STA_CubesatVar dat_pay_xxx_perform = sta_pay_i_to_performVar(dat_pay_tmEstado);
-    DAT_PayloadBuff pay_i;
+    STA_StateVar dat_pay_xxx_perform = sta_pay_i_to_performVar(dat_pay_tmEstado);
+    DAT_Payload_Buff pay_i;
 
     for(pay_i = 0; pay_i < dat_pay_last_one; pay_i++)
     {
-        if(sta_getCubesatVar(dat_pay_xxx_perform) == 0x0001)
+        if(sta_get_stateVar(dat_pay_xxx_perform) == 0x0001)
         {
             NewCmd.cmdId = pay_id_FSM_default;
             NewCmd.param = pay_i;

@@ -390,7 +390,7 @@ int ppc_reactToSOC(void* param)
     /*
     #if (_CHECK_IF_EXECUTABLE_==1)
         int trx_mode, cu_soc; static int prev_soc;
-        cu_soc = dat_getCubesatVar(dat_eps_soc);
+        cu_soc = dat_get_stateVar(dat_eps_soc);
         if( cu_soc < (CMD_SYSREQ_MIN+1) )
         {
             con_printf("get_eps_soc()<(CMD_SYSREQ_MIN+1) Nivel critico, TRX debe silenciarse\r\n");

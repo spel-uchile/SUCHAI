@@ -4,20 +4,6 @@
  * @date 2012
  * @copyright GNU Public License.
  *
- * Este header contiene las definiciones de comandos asociados al repositorio de
- * datos. Comandos para accesar a las variables de estado y a la memoria externa.
- *
- * Estos comandos seran SOLO aquellos relacionados con dataRepository, por tanto tendran que ver con:
- * actualizacion                =>  update
- * visualizacion en consola     =>  print
- * condiciones iniciales        =>  executeBeforFligth
- * modificaion de FlightPlan    =>  setFlightPlan
- *
- * Lo anterior para las estructuras de dataRepository:
- * dat_CubesatVar
- * dat_TelecmdBuff
- * dat_FligthPlan
- * dat_PayloadVar
  */
 
 #ifndef CMD_DRP_H
@@ -72,7 +58,7 @@ void drp_onResetCmdDRP();
 
 //Comandos
 //****************************************************
-// command's to print dat_CubesatVar
+// command's to print
 int drp_print_dat_TelecmdBuff(void *param);
 int drp_print_dat_FlightPlan(void *param);
 int drp_print_dat_PayloadIndxs(void *param);
@@ -93,9 +79,9 @@ int drp_trx_newCmdBuff(void *param);
 
 //funciones auxiliares
 //****************************************************
-void drp_DAT_FlightPlanBuff_EBF(void);
-void drp_DAT_TeleCmdBuff_EBF(void);
-void drp_DAT_PayloadBuff_EBF(void);
+void drp_DAT_FlightPlan_EBF(void);
+void drp_DAT_TeleCmd_Buff_EBF(void);
+void drp_DAT_Payload_Buff_EBF(void);
 
 void drp_debug1(void);
 void drp_debug2(void);

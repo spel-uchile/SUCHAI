@@ -61,7 +61,7 @@ void taskHouskeeping(void *param)
   
     check_deploy_antenna();
 
-    //thk_periodicUpdate_STA_CubesatVar(NULL); //TODO: Why?
+    //thk_periodicUpdate_STA_stateVar(NULL); //TODO: Why?
     
     while(1)
     {
@@ -81,16 +81,16 @@ void taskHouskeeping(void *param)
                 con_printf("[Houskeeping] 20[s] actions..\r\n");
             #endif
 
-            NewCmd.cmdId = thk_id_periodicUpdate_STA_CubesatVar;
-            NewCmd.param = 0;
-            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+//            NewCmd.cmdId = thk_id_periodicUpdate_STA_stateVar;
+//            NewCmd.param = 0;
+//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 //
 //            NewCmd.cmdId = ppc_id_reactToSOC;
 //            NewCmd.param = 0;
 //            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=2)
-                NewCmd.cmdId = drp_id_print_sta_CubesatVar;
+                NewCmd.cmdId = drp_id_print_sta_stateVar;
                 NewCmd.param = 0;
                 xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
             #endif
@@ -104,7 +104,7 @@ void taskHouskeeping(void *param)
             #endif
 
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=2)
-                NewCmd.cmdId = srp_id_print_STA_CubesatVar;
+                NewCmd.cmdId = srp_id_print_STA_stateVar;
                 NewCmd.param = 0;
                 xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
             #endif
@@ -136,11 +136,11 @@ void taskHouskeeping(void *param)
                 con_printf("[Houskeeping] 1[hr] actions..\r\n");
             #endif
 
-            NewCmd.cmdId = srp_id_increment_STA_CubesatVar_hoursWithoutReset;
+            NewCmd.cmdId = srp_id_increment_STA_stateVar_hoursWithoutReset;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
-            NewCmd.cmdId = srp_id_increment_STA_CubesatVar_hoursAlive;
+            NewCmd.cmdId = srp_id_increment_STA_stateVar_hoursAlive;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
@@ -171,8 +171,8 @@ void check_deploy_antenna(void){
     NewCmd.param = 0;
     
     int rt_mode;
-    if( sta_getCubesatVar(sta_dep_ant_deployed) == 0 ){
-    //if( sta_getCubesatVar(sta_Antenna_isDeployed) == 0 ){
+    if( sta_get_stateVar(sta_dep_ant_deployed) == 0 ){
+    //if( sta_getstateVar(sta_Antenna_isDeployed) == 0 ){
         printf("[Houskeeping] sta_SUCHAI_isDeployed = 0 => Antenna is not yet deployed..\r\n");
 
         unsigned long initial_tick_10ms = xTaskGetTickCount(); //get initial tick-time
@@ -229,7 +229,7 @@ void check_deploy_antenna(void){
         //other "only once"-tasks
         //..
 
-//        sta_setCubesatVar(sta_SUCHAI_isDeployed, 1);
+//        sta_setstateVar(sta_SUCHAI_isDeployed, 1);
 //        ppc_reset(NULL);
     }
 }

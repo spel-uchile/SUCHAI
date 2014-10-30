@@ -4,18 +4,6 @@
  * @date 2013
  * @copyright GNU Public License.
  *
- * Este header contiene al Status Prepository (variables de estado) y al
- * Data Repository (datos varios). API interfaz para cada caso:
- *
- * Status Repository:
- *      DAT_Cubesatvar
- * 
- * Data Repository:
- *      DAT_FligthPlanBuff
- *      DAT_TeleCmdBuff
- *      DAT_PayloadVar
- *      DAT_GnrlPurpBuff
- *
  */
 
 #ifndef DATA_REPO_H
@@ -71,13 +59,13 @@
 void dat_onReset_dataRepo(BOOL verbose);
 
 //******************************************************************************
-// DAT_TeleCmdBuff
+// DAT_TeleCmd_Buff
 //******************************************************************************
 
 typedef enum _DAT_TeleCmdBuff{
     //*************
     dat_tcb_last_one    //Se utiliza para marcar el largo del arreglo.
-}DAT_TeleCmdBuff;
+}DAT_TeleCmd_Buff;
 
 /* Max internal (not Transceiver mem) TeleCMD buffer length considering TC in
  * format [0xTCID|0xARGM|0xSTOP] in frames of 63 bytes each one. So 10,5
@@ -85,13 +73,13 @@ typedef enum _DAT_TeleCmdBuff{
 #define DAT_MAX_BUFF_TELECMD SCH_DATAREPOSITORY_MAX_BUFF_TELECMD
 
 //Get
-int dat_get_TeleCmdBuff(int indx);
+int dat_get_TeleCmd_Buff(int indx);
 //Set
-void dat_set_TeleCmdBuff(int indx, int data);
+void dat_set_TeleCmd_Buff(int indx, int data);
 //onReset
-int dat_onReset_TeleCmdBuff(void);
+int dat_onReset_TeleCmd_Buff(void);
 //Erase
-void dat_erase_TeleCmdBuff(void);
+void dat_erase_TeleCmd_Buff(void);
 
 //******************************************************************************
 // DAT_FligthPlanBuff
@@ -99,7 +87,7 @@ void dat_erase_TeleCmdBuff(void);
 typedef enum _DAT_FligthPlanBuff{
     //*************
     dat_fpb_last_one    //Se utiliza para marcar el largo del arreglo.
-}DAT_FligthPlanBuff;
+}DAT_FligthPlan;
 
 //Get
 DispCmd dat_get_FlightPlan(unsigned int index);
@@ -109,7 +97,7 @@ int dat_set_FlightPlan_param(unsigned int index, int param);
 //onReset
 int dat_onReset_FlightPlan(void);
 //Erase
-void dat_erase_FlightPlanBuff(void);
+void dat_erase_FlightPlan(void);
 
 //******************************************************************************
 // DAT_PayloadBuff
@@ -117,7 +105,7 @@ void dat_erase_FlightPlanBuff(void);
 /**
  * Enum que contiene los Payloads en el SUCHAI. Para agregar uno, se debe:
  * 1) Agergar el dat_pay_xxx a #DAT_Payload
- * 2) Agregar dat_pay_xxx_perform a #DAT_cubesatVar
+ * 2) Agregar dat_pay_xxx_perform a #DAT_stateVar
  * 3) Agregar case a <dat_pay_i_to_performVar>"()"
  * 4) hacer funciones pay_init_xxx, pay_take_xxx y pay_stop_xxx en \sa cmdPayload.c
  * 5) Agregar las funciones de 4) en los case de <pay_currentStateLogic>"()"
@@ -135,35 +123,35 @@ typedef enum _DAT_Payload{
     dat_pay_expFis,     
     //*************
     dat_pay_last_one    //Se utiliza para marcar el largo del arreglo.
-                        //Y para indicar el ID de TM de CUbesatVar
-}DAT_PayloadBuff;
+                        //Y para indicar el ID de TM de stateVar
+}DAT_Payload_Buff;
 
 //Get
-BOOL dat_get_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int indx, int *value);
-unsigned int dat_get_MaxPayIndx(DAT_PayloadBuff pay_i);
-unsigned int dat_get_NextPayIndx(DAT_PayloadBuff pay_i);
+BOOL dat_get_Payload_Buff(DAT_Payload_Buff pay_i, unsigned int indx, int *value);
+unsigned int dat_get_MaxPayIndx(DAT_Payload_Buff pay_i);
+unsigned int dat_get_NextPayIndx(DAT_Payload_Buff pay_i);
 
 //Set
-BOOL dat_set_PayloadBuff(DAT_PayloadBuff pay_i, int value);
-void dat_set_MaxPayIndx(DAT_PayloadBuff pay_i, unsigned int lastIndx);
-void dat_set_NextPayIndx(DAT_PayloadBuff pay_i, unsigned int nextIndx);
+BOOL dat_set_Payload_Buff(DAT_Payload_Buff pay_i, int value);
+void dat_set_MaxPayIndx(DAT_Payload_Buff pay_i, unsigned int lastIndx);
+void dat_set_NextPayIndx(DAT_Payload_Buff pay_i, unsigned int nextIndx);
 
 //onReset
-void dat_onReset_PayloadBuff(void);
-void dat_reset_PayloadBuff(DAT_PayloadBuff pay_i, unsigned int lenBuff, int mode);
+void dat_onReset_Payload_Buff(void);
+void dat_reset_Payload_Buff(DAT_Payload_Buff pay_i, unsigned int lenBuff, int mode);
 
 //Erase
-void dat_erase_PayloadBuff(DAT_PayloadBuff pay_i);
+void dat_erase_Payload_Buff(DAT_Payload_Buff pay_i);
 
 //Auxiliary functions
-unsigned long dat_pay_i_to_block(DAT_PayloadBuff pay_i);
-BOOL dat_isFull_PayloadBuff(DAT_PayloadBuff pay_i);
-void dat_print_pay_i_name(DAT_PayloadBuff pay_i);
+unsigned long dat_pay_i_to_block(DAT_Payload_Buff pay_i);
+BOOL dat_isFull_Payload_Buff(DAT_Payload_Buff pay_i);
+void dat_print_pay_i_name(DAT_Payload_Buff pay_i);
 
 //******************************************************************************
 // DAT_AuxBuff
 //******************************************************************************
-typedef enum _DAT_GnrlPurpBuff{
+typedef enum _DAT_AuxBuff{
     dat_auxBuff_0,
     dat_auxBuff_1,
     dat_auxBuff_2,
@@ -179,19 +167,19 @@ typedef enum _DAT_GnrlPurpBuff{
     dat_auxBuff_12,
     //*************
     dat_aux_last_one    //Se utiliza para marcar el largo del arreglo.
-                        //Y para indicar el ID de TM de CUbesatVar
-}DAT_AuxBuff;
+                        //Y para indicar el ID de TM de stateVar
+}DAT_Aux_Buff;
 
 //Get
-int dat_get_AuxBuff(DAT_AuxBuff  aux_i, unsigned int indx);
+int dat_get_Aux_Buff(DAT_Aux_Buff  aux_i, unsigned int indx);
 //Set
-void dat_set_AuxBuff(DAT_AuxBuff  aux_i, unsigned int indx, int value);
+void dat_set_Aux_Buff(DAT_Aux_Buff  aux_i, unsigned int indx, int value);
 //onReset
-int dat_onReset_AuxBuff(void);
+int dat_onReset_Aux_Buff(void);
 //Erase
-int dat_erase_AuxBuff(DAT_AuxBuff aux_i);
+int dat_erase_Aux_Buff(DAT_Aux_Buff aux_i);
 //Auxiliary functions
-unsigned long dat_aux_i_to_block(DAT_AuxBuff aux_i);
+unsigned long dat_aux_i_to_block(DAT_Aux_Buff aux_i);
 
 
 #endif // DATA_REPO_H

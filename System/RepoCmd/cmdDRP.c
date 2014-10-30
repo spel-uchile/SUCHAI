@@ -61,16 +61,16 @@ int drp_print_dat_TelecmdBuff(void *param)
     con_printf("===================================\r\n");
 
     // Cmd buffer control
-    itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_newTcFrame), 10);
+    itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_newTcFrame), 10);
     con_printf("drp_trx_newTcFrame= "); con_printf(buffer); con_printf("\r\n");
-    itoa(buffer,  (unsigned int)sta_getCubesatVar(sta_trx_newCmdBuff), 10);
+    itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_newCmdBuff), 10);
     con_printf("drp_trx_newCmdBuff= "); con_printf(buffer); con_printf("\r\n");
 
     con_printf("Contenido del sta_telecmdBuff:\r\n");
     int i;
     for(i=0; i<DAT_MAX_BUFF_TELECMD; i++)
     {
-        itoa(buffer,  (unsigned int)dat_get_TeleCmdBuff(i), 10);
+        itoa(buffer,  (unsigned int)dat_get_TeleCmd_Buff(i), 10);
         con_printf("sta_telecmdBuff["); itoa(buffer, (unsigned int)i, 10);
         con_printf(buffer); con_printf("]= "); con_printf(buffer); con_printf("\r\n");
 
@@ -101,7 +101,7 @@ int drp_print_dat_PayloadIndxs(void *param){
     con_printf("===================================\r\n");
 
     char buffer[10];
-    DAT_PayloadBuff pay_i;
+    DAT_Payload_Buff pay_i;
     for(pay_i=0; pay_i<dat_pay_last_one; pay_i++)
     {
         unsigned int max = dat_get_MaxPayIndx( pay_i);
@@ -131,7 +131,7 @@ int drp_print_dat_PayloadVar(void *param){
     con_printf("===================================\r\n");
 
     char buffer[10];
-    DAT_PayloadBuff pay_i=pay_i2;
+    DAT_Payload_Buff pay_i=pay_i2;
     if(pay_i>=dat_pay_last_one){
         con_printf("pay_i=");
         itoa(buffer, (unsigned int)pay_i,10);
@@ -147,7 +147,7 @@ int drp_print_dat_PayloadVar(void *param){
     unsigned int indx; unsigned int max = dat_get_MaxPayIndx(pay_i); int val;
     for(indx=0; indx<=max; indx++)
     {
-        dat_get_PayloadBuff(pay_i, indx, &val);
+        dat_get_Payload_Buff(pay_i, indx, &val);
         
         con_printf("sta_getPayloadVar[");
         //itoa(buffer, (unsigned int)indx,10);
@@ -182,10 +182,6 @@ int drp_fpl_get_index(void* param){
  *----------------------------------------------------------------------------*/
 int drp_fpl_set_index(void *param)
 {
-//    int index = *((int *)param);
-//    sta_setCubesatVar(sta_fpl_index, index);
-//    return 1;
-
     MemEEPROM_Vars mem_eeprom_var = mem_fpl_index;
     int value = *((int*)param);
     writeIntEEPROM1(mem_eeprom_var, value);
@@ -204,7 +200,7 @@ int drp_fpl_set_cmd(void *param)
 {
     //Se recupera el comando y el indice
     int cmdid = *((int *)param);
-    int index = sta_getCubesatVar(sta_fpl_index);
+    int index = sta_get_stateVar(sta_fpl_index);
 
     //Se actualiza el flight plan
     int result = dat_set_FlightPlan_cmd(index, cmdid);
@@ -225,7 +221,7 @@ int drp_fpl_set_param(void *param)
 {
     //Se recupera el comando y el indice
     int var = *((int *)param);
-    int index = sta_getCubesatVar(sta_fpl_index);
+    int index = sta_get_stateVar(sta_fpl_index);
 
     //Se actualiza el flight plan
     int result = dat_set_FlightPlan_param(index, var);
@@ -351,11 +347,11 @@ void drp_debug4(void){
     for(index=0; index<SCH_DATAREPOSITORY_MAX_BUFF_TELECMD; index++, value++){
 
         printf("  writing: ");
-        dat_set_TeleCmdBuff(index, value);
+        dat_set_TeleCmd_Buff(index, value);
         printf("    DAT_TeleCmdBuff[%u] = %d    |    ", index, value);
 
         printf("  reading: ");
-        res = dat_get_TeleCmdBuff(index);
+        res = dat_get_TeleCmd_Buff(index);
         printf("    DAT_TeleCmdBuff[%u] = %d    |    ", index, res);
 
         printf("comparing: ");
@@ -410,7 +406,7 @@ void drp_debug4(void){
         ClrWdt();
     }
 
-    printf("DAT_PayloadBuff..\n");
+    printf("DAT_Payload_Buff..\n");
     int maxind;
     for(pay_i=0; pay_i<dat_pay_last_one; pay_i++){
         value=20000; 
@@ -418,13 +414,13 @@ void drp_debug4(void){
         for(index=0; index<=maxind; index++, value++){
 
             printf("  writing: ");
-            dat_set_PayloadBuff(pay_i, value);
-            printf("    DAT_PayloadBuff[%u][%u] = %d    |    ",pay_i, index, value);
+            dat_set_Payload_Buff(pay_i, value);
+            printf("    DAT_Payload_Buff[%u][%u] = %d    |    ",pay_i, index, value);
             printf("%d/%d [NextIndx/MaxIndx]   |    \n", dat_get_NextPayIndx(pay_i), dat_get_MaxPayIndx(pay_i) );
 
             printf("  reading: ");
-            dat_get_PayloadBuff(pay_i, index, &res);
-            printf("    DAT_PayloadBuff[%u][%u] = %d    |    \n",pay_i,  index, res);
+            dat_get_Payload_Buff(pay_i, index, &res);
+            printf("    DAT_Payload_Buff[%u][%u] = %d    |    \n",pay_i,  index, res);
 
             printf("  comparing: ");
             if( value==res ){ printf("ok\n"); }
@@ -443,11 +439,11 @@ void drp_debug4(void){
         for(index=0; index<=maxind2; index++, value++){
 
             printf("  writing: ");
-            dat_set_AuxBuff(aux_i, index, value);
+            dat_set_Aux_Buff(aux_i, index, value);
             printf("    DAT_AuxdBuff[%u] = %d    |    ", index, value);
 
             printf("  reading: ");
-            res = dat_get_AuxBuff(aux_i, index);
+            res = dat_get_Aux_Buff(aux_i, index);
             printf("    DAT_AuxdBuff[%u] = %d    |    ", index, res);
 
             printf("  comparing: ");
@@ -464,12 +460,12 @@ void drp_debug5(void){
     int value=0, res=0;
     unsigned int index;
 
-    printf("dat_reset_PayloadBuff()..\n");
+    printf("dat_reset_Payload_Buff()..\n");
     int pay_i; int lenBuff=10, r_nextIndx, r_MaxIndx;
     for(pay_i=0; pay_i<dat_pay_last_one; pay_i++, lenBuff=lenBuff+1){
         printf("  writing: ");
-        dat_reset_PayloadBuff(pay_i, lenBuff, 0);
-        printf("    dat_reset_PayloadBuff(%d, %d)\r\n", pay_i, lenBuff);
+        dat_reset_Payload_Buff(pay_i, lenBuff, 0);
+        printf("    dat_reset_Payload_Buff(%d, %d)\r\n", pay_i, lenBuff);
 
         printf("  reading: ");
         r_nextIndx = dat_get_NextPayIndx(pay_i);
@@ -484,7 +480,7 @@ void drp_debug5(void){
         ClrWdt();
     }
 
-    printf("DAT_PayloadBuff..\n");
+    printf("DAT_Payload_Buff..\n");
     int maxind; BOOL st;
     for(pay_i=0; pay_i<dat_pay_last_one; pay_i++){
         value=20000;
@@ -493,20 +489,20 @@ void drp_debug5(void){
         for(index=0; st==TRUE; index++, value++){
 
             printf("  writing: ");
-            dat_set_PayloadBuff(pay_i, value);
-            printf("    DAT_PayloadBuff[%u][%u] = %d    |    ",pay_i, index, value);
+            dat_set_Payload_Buff(pay_i, value);
+            printf("    DAT_Payload_Buff[%u][%u] = %d    |    ",pay_i, index, value);
             printf("%d/%d [NextIndx/MaxIndx]   |    \n", dat_get_NextPayIndx(pay_i), dat_get_MaxPayIndx(pay_i) );
 
             printf("  reading: ");
-            dat_get_PayloadBuff(pay_i, index, &res);
-            printf("    DAT_PayloadBuff[%u][%u] = %d    |    \n",pay_i,  index, res);
+            dat_get_Payload_Buff(pay_i, index, &res);
+            printf("    DAT_Payload_Buff[%u][%u] = %d    |    \n",pay_i,  index, res);
 
             printf("  comparing: ");
             if( value==res ){ printf("ok\n"); }
             else{ printf("fail\n"); return; }
 
-            if( dat_isFull_PayloadBuff(pay_i)==TRUE){
-                printf("    DAT_PayloadBuff[%u] esta lleno\r\n", pay_i);
+            if( dat_isFull_Payload_Buff(pay_i)==TRUE){
+                printf("    DAT_Payload_Buff[%u] esta lleno\r\n", pay_i);
                 st = FALSE;
             }
 
@@ -522,9 +518,9 @@ int drp_executeBeforeFlight(void *param){
         printf("  drp_executeBeforeFlight()..\n");
     #endif
 
-    drp_DAT_FlightPlanBuff_EBF();
-    drp_DAT_TeleCmdBuff_EBF();
-    drp_DAT_PayloadBuff_EBF();
+    drp_DAT_FlightPlan_EBF();
+    drp_DAT_TeleCmd_Buff_EBF();
+    drp_DAT_Payload_Buff_EBF();
 
 //    int mode=*((int *)param);
 //    if(mode==1){return 1;}
@@ -543,18 +539,18 @@ int drp_executeBeforeFlight(void *param){
 
     return 1;
 }
-void drp_DAT_PayloadBuff_EBF(void){
+void drp_DAT_Payload_Buff_EBF(void){
     #if (SCH_CMDDRP_VERBOSE>=1)
-        printf("    Setting PayloadBuff in launch configuration..\n");
+        printf("    Setting Payload_Buff in launch configuration..\n");
     #endif
     //nothing to do..
 }
-void drp_DAT_FlightPlanBuff_EBF(void){
+void drp_DAT_FlightPlan_EBF(void){
     #if (SCH_CMDDRP_VERBOSE>=1)
         printf("    Setting FligthPlan in launch configuration..\n");
     #endif
 
-    dat_erase_FlightPlanBuff();
+    dat_erase_FlightPlan();
     
     #if (SCH_CMDDRP_VERBOSE>=1)
         printf("    Setting initial commands in FligthPlan..\n");
@@ -570,11 +566,11 @@ void drp_DAT_FlightPlanBuff_EBF(void){
     }
 }
 
-void drp_DAT_TeleCmdBuff_EBF(void){
+void drp_DAT_TeleCmd_Buff_EBF(void){
     #if (SCH_CMDDRP_VERBOSE>=1)
         printf("    Setting TeleCmdBuff in launch configuration..\n");
     #endif
 
-    dat_erase_TeleCmdBuff();
+    dat_erase_TeleCmd_Buff();
 }
 

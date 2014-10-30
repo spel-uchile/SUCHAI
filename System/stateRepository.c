@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "statusRepository.h"
+#include "stateRepository.h"
 #include "cmdRTC.h"
 #include "cmdPayload.h"
 #include "include/cmdIncludes.h"
@@ -28,43 +28,41 @@
 extern xSemaphoreHandle statusRepositorySem;
 
 #if (SCH_MEMEEPROM_ONBOARD==0)
-    int STA_CUBESAT_VAR_BUFF[sta_cubesatVar_last_one];
+    int STA_STATE_VAR_BUFF[sta_stateVar_last_one];
 #endif
 
 
-/**
- * Funcion para modificar una variable de estado
- * @param indxVar. Variable de estado que quiero modificar
- * @param value. Valor a asignar a la variable de estado
- */
-void sta_setCubesatVar(STA_CubesatVar indxVar, int value){
-    portBASE_TYPE semStatus = xSemaphoreTake( statusRepositorySem, portMAX_DELAY );
+///**
+// * Funcion para modificar una variable de estado
+// * @param indxVar. Variable de estado que quiero modificar
+// * @param value. Valor a asignar a la variable de estado
+// */
+//void sta_set_stateVar(STA_StateVar indxVar, int value){
+//    portBASE_TYPE semStatus = xSemaphoreTake( statusRepositorySem, portMAX_DELAY );
+//
+//    #if (SCH_MEMEEPROM_ONBOARD==0)
+//        //Para el caso de guardar las variables en memoria interna
+//        STA_CUBESAT_VAR_BUFF[indxVar] = value;
+//    #else
+//        //Para el caso de guardar las variables en la memI2C
+//        writeIntEEPROM1( (unsigned char)indxVar, value);
+//    #endif
+//
+//    semStatus = xSemaphoreGive(statusRepositorySem);
+//}
 
-    #if (SCH_MEMEEPROM_ONBOARD==0)
-        //Para el caso de guardar las variables en memoria interna
-        STA_CUBESAT_VAR_BUFF[indxVar] = value;
-    #else
-        //Para el caso de guardar las variables en la memI2C
-        writeIntEEPROM1( (unsigned char)indxVar, value);
-    #endif
-
-    semStatus = xSemaphoreGive(statusRepositorySem);
-
-    //callback function for every write to a STA_CubesatVar
-    
-}
 /**
  * Funcion para obtener una variable de estado
  * @param indxVar. Variable de estado que quiero modificar
  * @param value. Valor a asignar a la variable de estado
  */
-int sta_getCubesatVar(STA_CubesatVar indxVar){
+int sta_get_stateVar(STA_StateVar indxVar){
     portBASE_TYPE semStatus = xSemaphoreTake( statusRepositorySem, portMAX_DELAY );
     
     int value;
     #if (SCH_MEMEEPROM_ONBOARD==0)
         //Para el caso de obtener las variables de la memoria interna
-        value = STA_CUBESAT_VAR_BUFF[indxVar];
+        value = STA_STATE_VAR_BUFF[indxVar];
     #else
 //        //Para el caso de obtener las variables de la memI2C
 //        value = readIntEEPROM1( (unsigned char)indxVar );
@@ -87,8 +85,9 @@ int sta_getCubesatVar(STA_CubesatVar indxVar){
             case sta_MemSD_isAlive:
                 value = memSD_isAlive();
                 break;
-            case sta_Antenna_isDeployed:
-                value = (int)thk_check_antenna_isDeployed(1000);
+            case sta_AntSwitch_isOpen:
+                param = 1000;
+                value = thk_get_AntSwitch_isOpen(&param);
                 break;
             // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
             case sta_pay_lagmuirProbe_isAlive:
@@ -272,10 +271,13 @@ int sta_getCubesatVar(STA_CubesatVar indxVar){
                 case sta_trx_status_tc:
                     break;
                 case sta_trx_count_tm:
+                    value = trx_get_count_tm(NULL);
                     break;
                 case sta_trx_count_tc:
+                    value = trx_get_count_tc(NULL);
                     break;
-                case sta_trx_lastcmd_day:
+                case sta_trx_day_last_tc:
+                    value = trx_get_day_last_tc(NULL);
                     break;
                 case sta_trx_newTcFrame:
                     break;
@@ -313,7 +315,7 @@ int sta_getCubesatVar(STA_CubesatVar indxVar){
 //            case:
 //                break;
             default:
-                printf("[sta_getCubesatVar] Error: No function/command for STA_CubesatVar %d \r\n", indxVar);
+                printf("[sta_get_stateVar] Error: No function/command for STA_StateVar %d \r\n", indxVar);
                 value = -(0x7FFF);
             break;
         }
@@ -324,7 +326,6 @@ int sta_getCubesatVar(STA_CubesatVar indxVar){
     return value;
 }
 
-
 /**
  * Funcion a llamar luego de un Reset del PIC y luego de 
  * @sa sta_onReset_memEEPROM para inicializar a los valore correctos las
@@ -334,7 +335,7 @@ int sta_getCubesatVar(STA_CubesatVar indxVar){
  * llamados anteriores o posteriores (@sa default_PIC_config,
  * @sa dep_init_suchai_hw, @sa dep_init_suchai_repos).
  */
-void sta_onResetStatRepo(void)
+void sta_onReset_stateRepo(void)
 {
     int param, res;
 
@@ -349,10 +350,18 @@ void sta_onResetStatRepo(void)
     
 
     //print important StatusVars
-    printf("[sta_onResetStatRepo] Important STA_CubesatVar variables:\r\n");
+    printf("[sta_onResetStatRepo] Important STA_StateVar variables:\r\n");
 
     res = ppc_get_resetCounter(NULL);
     printf("    * ppc_get_resetCounter: %d\r\n", res);
+    #if (SCH_DATAREPOSITORY_VERBOSE>=1)
+        if(res == 0){
+            printf("        * First time on, resetCounter = %d\n", res);
+        }
+        else{
+            printf("        * NOT the First time on, resetCounter = %d\n", res);
+        }
+    #endif
 
     param = 1;  //verbose
     ppc_get_lastResetSource(&param);
@@ -369,87 +378,47 @@ void sta_onResetStatRepo(void)
     param = 1;  //verbose
     res = ppc_get_osc(&param);
 
+    //Antenna
+    param = 1000;
+    res = thk_get_AntSwitch_isOpen(&param);
+    printf("    * thk_get_AntSwitch_isOpen: %d\r\n", res);
+    #if (SCH_DATAREPOSITORY_VERBOSE>=1)
+        printf("        * Antenna Deployment rely on this var AND others\r\n");
+    #endif
+
+    res = thk_get_dep_ant_deployed(NULL);
+    printf("    * thk_get_dep_ant_deployed: %d\r\n", res);
+    #if (SCH_DATAREPOSITORY_VERBOSE>=1)
+        if(res == 0){
+            printf("        * Antenna Deployment is pending\r\n");
+        }
+        else{
+            printf("        * Antenna Deployment was successfully completed\r\n");
+        }
+    #endif
 
     /*
      * Comment all this block ONLY after all var have a callable function "get"
      */
-    printf("[sta_onResetStatRepo] All STA_CubesatVar variables:\r\n");
+    printf("[sta_onResetStatRepo] All STA_StateVar variables:\r\n");
     //print all SatatusVars
-    STA_CubesatVar indxVar;
-    for(indxVar=0;indxVar<sta_cubesatVar_last_one;indxVar++){
-        int r = sta_getCubesatVar(indxVar);
-        //printf("    * sta_getCubesatVar(%d) = %d \r\n", indxVar, r);
-        printf("    * sta_getCubesatVar(%s) = %d \r\n", varToString(indxVar), r);
+    STA_StateVar indxVar;
+    for(indxVar=0;indxVar<sta_stateVar_last_one;indxVar++){
+        int r = sta_get_stateVar(indxVar);
+        //printf("    * sta_get_stateVar(%d) = %d \r\n", indxVar, r);
+        printf("    * sta_get_stateVar(%s) = %d \r\n", varToString(indxVar), r);
     }
-
-//    //External hw satus were already set
-//    //sta_RTC_isAlive,
-//    //sta_TRX_isAlive,
-//    //sta_EPS_isAlive,
-//    //sta_MemEEPROM_isAlive,
-//    //sta_MemSD_isAlive,
-//
-//    sta_setCubesatVar(sta_ppc_opMode, STA_PPC_OPMODE_NORMAL);
-//    // lee, guarda e imprime razon del reset
-//    sta_setCubesatVar(sta_ppc_lastResetSource, sta_get_ppc_lastResetSource(TRUE) );
-//    //reseta la variable, pues hubo un reset
-//    sta_setCubesatVar(sta_ppc_hoursWithoutReset, 0x0000);
-//    //resetCounter No debe inicializarse luego de un reset
-//    //Su valor debe ser traido de la memEEPROM y modificado
-//    if( sta_getCubesatVar(sta_SUCHAI_isDeployed) == 0 ){
-//        sta_setCubesatVar(sta_ppc_resetCounter, 0);
-//        #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-//            printf("        * First time on! Setting resetCounter to 0\r\n");
-//        #endif
-//    }
-//    else{
-//        int rc=sta_getCubesatVar(sta_ppc_resetCounter) + 1;
-//        sta_setCubesatVar(sta_ppc_resetCounter, rc);
-//        #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-//
-//            printf("            * NOT the First time on! resetCounter++\r\n");
-//            printf("            * resetCounter = %d\n", rc);
-//        #endif
-//    }
-//    sta_setCubesatVar(sta_ppc_enwdt, PPC_INITIAL_WDT_STATE);
-//    sta_setCubesatVar(sta_ppc_MB_nOE_USB_nINT_stat, PPC_MB_nOE_USB_nINT_CHECK);
-//    sta_setCubesatVar(sta_ppc_MB_nOE_MHX_stat, PPC_MB_nOE_MHX_CHECK);
-//    sta_setCubesatVar(sta_ppc_MB_nON_MHX_stat, PPC_MB_nON_MHX_CHECK);
-//    sta_setCubesatVar(sta_ppc_MB_nON_SD_stat, PPC_MB_nON_SD_CHECK);
-//
-//    // mDEP_state
-//    // No  deben inicializarse, su valor debe ser conservado en la memExt y modificado solo en deploy_antenna
-//
-//    // mRTC_state
-//
-//    // mEPS_state
-//
-//
-//    // mTRX_state
-//    sta_setCubesatVar(sta_trx_rssi_mean, 9999);
-//    sta_setCubesatVar(sta_trx_count_tc, 0);
-//    sta_setCubesatVar(sta_trx_count_tm, 0);
-//
-//    //Telecomand Buffer
-//    sta_setCubesatVar(sta_trx_newCmdBuff, 0x0000);      // Doesn't exist unproccessed TC Frames in TRX
-//    sta_setCubesatVar(sta_trx_newTcFrame, 0x0000);      // Doues't exist unproccessed TC in internal buffer
-//
-//    //Flight Plan
-//
-//    //memSD
-//
-//    //PAYLOAD
 }
 
 /**
- * Asocia el STA_Payload pay_i a la DAT_CubesatVar que controla la ejecucion o
+ * Asocia el STA_Payload pay_i a la DAT_StateVar que controla la ejecucion o
  * o no de ese Payload
- * @param pay_i DAT_Payload del que quiero obtener el DAT_CubesatVar
- * @return DAT_CubesatVar dat_pay_xxx_perform
+ * @param pay_i DAT_Payload del que quiero obtener el DAT_StateVar
+ * @return DAT_StateVar dat_pay_xxx_perform
  */
-//STA_CubesatVar dat_pay_i_to_performVar(DAT_Payload pay_i){
-STA_CubesatVar sta_pay_i_to_performVar(int pay_i){
-    STA_CubesatVar dat_pay_xxx_perform;
+//STA_StateVar dat_pay_i_to_performVar(DAT_Payload pay_i){
+STA_StateVar sta_pay_i_to_performVar(int pay_i){
+    STA_StateVar dat_pay_xxx_perform;
 
     switch(pay_i){
         case dat_pay_lagmuirProbe:
@@ -487,7 +456,7 @@ STA_CubesatVar sta_pay_i_to_performVar(int pay_i){
     return dat_pay_xxx_perform;
 }
 
-char* varToString(STA_CubesatVar var_i){
+char* varToString(STA_StateVar var_i){
     char *pc;
     switch(var_i){
         case sta_RTC_isAlive:
@@ -505,8 +474,8 @@ char* varToString(STA_CubesatVar var_i){
         case sta_MemSD_isAlive:
             pc = "sta_MemSD_isAlive";
             break;
-        case sta_Antenna_isDeployed:
-            pc = "sta_Antenna_isDeployed";
+        case sta_AntSwitch_isOpen:
+            pc = "sta_AntSwitch_isOpen";
             break;
 
         // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
@@ -698,7 +667,7 @@ char* varToString(STA_CubesatVar var_i){
         case sta_trx_count_tc:         // number of received TC
             pc = "sta_trx_count_tc";
      	    break;
-        case sta_trx_lastcmd_day:      // day of the last received tc (since 1/1/00)
+        case sta_trx_day_last_tc:      // day of the last received tc (since 1/1/00)
             pc = "sta_trx_lastcmd_day";
      	    break;
         // Cmd buffer control

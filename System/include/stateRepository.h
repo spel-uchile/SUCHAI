@@ -4,18 +4,6 @@
  * @date 2013
  * @copyright GNU Public License.
  *
- * Este header contiene al Status Prepository (variables de estado) y al
- * Data Repository (datos varios). API interfaz para cada caso:
- *
- * Status Repository:
- *      STA_Cubesatvar
- * 
- * Data Repository:
- *      STA_FligthPlanBuff
- *      STA_TeleCmdBuff
- *      STA_PayloadVar
- *      STA_GnrlPurpBuff
- *
  */
 
 #ifndef STATUS_REPO_H
@@ -46,7 +34,7 @@ typedef enum{
     sta_EPS_isAlive,
     sta_MemEEPROM_isAlive,
     sta_MemSD_isAlive,
-    sta_Antenna_isDeployed,  // var number 6
+    sta_AntSwitch_isOpen,  // var number 6
 
     // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
     sta_pay_lagmuirProbe_isAlive,
@@ -121,7 +109,7 @@ typedef enum{
     sta_trx_status_tc,        // Status Register of TC
     sta_trx_count_tm,         // number of sended TM
     sta_trx_count_tc,         // number of received TC
-    sta_trx_lastcmd_day,      // day of the last received tc (since 1/1/00)
+    sta_trx_day_last_tc,      // day of the last received tc (since 1/1/00)
     // Cmd buffer control
     sta_trx_newTcFrame,       // Exist any unprocessed TcFram?
     sta_trx_newCmdBuff,       // Exist unprocessed CMD in the external buffer
@@ -139,23 +127,25 @@ typedef enum{
     sta_pay_debug_state,
 
     //*************
-    sta_cubesatVar_last_one     //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
-}STA_CubesatVar;                // SUCHAI's most important variables
+    sta_stateVar_last_one     //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
+}STA_StateVar;                // SUCHAI's most important variables
 
 
-void sta_setCubesatVar(STA_CubesatVar indxVar, int value);
-int sta_getCubesatVar(STA_CubesatVar indxVar);
-void sta_onResetStatRepo(void);
+//void sta_set_stateVar(STA_StateVar indxVar, int value);  //deprecated, OCt 2014
+int sta_get_stateVar(STA_StateVar indxVar);
+void sta_onReset_stateRepo(void);
 
 
-//STA_CubesatVar dat_pay_i_to_performVar(DAT_Payload pay_i);
-STA_CubesatVar sta_pay_i_to_performVar(int pay_i);
+//STA_StateVar dat_pay_i_to_performVar(DAT_Payload pay_i);
+STA_StateVar sta_pay_i_to_performVar(int pay_i);
 
 //debug funcitons
-char *varToString(STA_CubesatVar var_i);
+char *varToString(STA_StateVar var_i);
 
-#define SRP_PAY_XXX_PERFORM_INACTIVE    0x0000
-#define SRP_PAY_XXX_PERFORM_ACTIVE      0x0001
+#define SRP_PAY_XXX_STATE_INACTIVE    0x0000
+#define SRP_PAY_XXX_STATE_ACTIVE      0x0001
+#define SRP_PAY_XXX_STATE_RUNNING     0x0002
+#define SRP_PAY_XXX_STATE_WAITING_TX  0x0003
 
 #endif // STATUS_REPO_H
 

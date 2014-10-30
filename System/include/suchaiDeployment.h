@@ -59,7 +59,7 @@ void dep_init_suchai_tasks(void);
 int dep_init_sysbus_hw(void *param);
 int dep_init_dataRepo(void *param);
 int dep_init_cmdRepo(void *param);
-int dep_init_statusRepo(void *param);
+int dep_init_stateRepo(void *param);
 int dep_init_adHoc_strcts(void *param);
 
 int dep_suicide(void *param);           //deprecated

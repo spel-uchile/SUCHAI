@@ -26,30 +26,28 @@ extern xQueueHandle dispatcherQueue; /* Commands queue */
 void taskHouskeeping(void *param)
 {
     #if SCH_TASKHOUSEKEEPING_VERBOSE
-        con_printf(">>[Houskeeping] Started\r\n");
+        printf(">>[Houskeeping] Started\r\n");
     #endif
 
     portTickType delay_ms    = 1000;    //Task period in [ms]
     portTickType delay_ticks = delay_ms / portTICK_RATE_MS; //Task period in ticks
 
-#if SCH_TASKHOUSEKEEPING_REALTIME
-    unsigned int elapsed_sec = 0;       // Seconds counter
-    unsigned int elapsed_hrs = 1;       // Hours counter
-    unsigned int _1sec_check = 1;       //1[s] condition
-    unsigned int _20sec_check = 20;     //20[s] condition
-    unsigned int _1min_check = 60;      //1[m] condition
-    unsigned int _5min_check = 5*60;    //5[m] condition
-    unsigned int _1hour_check = 60*60;  //1[h] condition
-    unsigned int _1day_check = 24;      //24[hrs] condition
-#else
+#if (SCH_THK_REALTIME == 1)
     unsigned int elapsed_sec = 0;       // Seconds counter
     unsigned int elapsed_hrs = 0;       // Hours counter
-    unsigned int _1sec_check = 1;       //1[ms] condition
-    unsigned int _20sec_check = 2;      //2[s] condition
-    unsigned int _1min_check = 3;      //3[s] condition
-    unsigned int _5min_check = 5;       //5[s] condition
-    unsigned int _1hour_check = 10;     //10[s] condition
-    unsigned int _1day_check = 60;      //1[m] condition
+    unsigned int check_20sec = 20;     //20[s] condition
+    unsigned int check_1min = 1*60;      //1[m] condition
+    unsigned int check_5min = 5*60;    //5[m] condition
+    unsigned int check_1hour = 60*60;  //1[h] condition
+    unsigned int check_1day = 24;      //24[hrs] condition
+#else
+    unsigned int elapsed_sec = 0;                    // Seconds counter
+    unsigned int elapsed_hrs = 0;                    // Hours counter
+    unsigned int check_20sec = 2;                    //2[s] condition
+    unsigned int check_1min = 3*check_20sec;         //3[s] condition
+    unsigned int check_5min = 3*3*check_20sec;       //5[s] condition
+    unsigned int check_1hour = 3*3*3*check_20sec;   //10[s] condition
+    unsigned int check_1day = 3;                     //1[m] condition
 #endif
 
     DispCmd NewCmd;
@@ -58,49 +56,48 @@ void taskHouskeeping(void *param)
     NewCmd.param = 0;
 
     portTickType xLastWakeTime = xTaskGetTickCount();
-  
-    check_deploy_antenna();
 
-    //thk_periodicUpdate_STA_stateVar(NULL); //TODO: Why?
+    //deploy if necessary
+    if( sta_get_stateVar(sta_dep_ant_deployed) == 0 ){
+
+        #if (SCH_THK_SILENT_REALTIME==1)
+            NewCmd.cmdId = thk_id_suchai_deployment;
+            NewCmd.param = 31;  //in minutes
+            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+        #else
+            NewCmd.cmdId = thk_id_suchai_deployment;
+            NewCmd.param = 2;  //in minutes
+            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+        #endif
+    }
     
-    while(1)
+    while(TRUE)
     {
+        /* 1 seconds actions */
         vTaskDelayUntil(&xLastWakeTime, delay_ticks); //Suspend task
         elapsed_sec += delay_ms/1000; //Update seconds counts
-
-        /* 1 seconds actions */
-        if((elapsed_sec % _1sec_check) == 0)
-        {
-            //nothing to do here
-        }
+        //Add commands below ..
 
         /* 20 seconds actions */
-        if((elapsed_sec % _20sec_check) == 0)
+        if((elapsed_sec % check_20sec) == 0)
         {
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 20[s] actions..\r\n");
+                printf("[Houskeeping]:  20[s] actions ..\r\n");
             #endif
+            //Add commands below ..
 
-//            NewCmd.cmdId = thk_id_periodicUpdate_STA_stateVar;
-//            NewCmd.param = 0;
-//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-//
-//            NewCmd.cmdId = ppc_id_reactToSOC;
-//            NewCmd.param = 0;
-//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-
-            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=2)
-                NewCmd.cmdId = drp_id_print_sta_stateVar;
+            //update SOC and other stuctures
+            #if (SCH_EPS_ONBOARD==1)
+                NewCmd.cmdId = eps_id_update_internal_vars;
                 NewCmd.param = 0;
                 xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
             #endif
-        }
 
-        /* 1 minute actions */
-        if((elapsed_sec % _1min_check) == 0)
-        {
-            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 1[min] actions..\r\n");
+            //make changes if SOC is too low, among others
+            #if (SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE==1)
+                NewCmd.cmdId = ppc_id_reactToSOC;
+                NewCmd.param = 0;
+                xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
             #endif
 
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=2)
@@ -110,36 +107,41 @@ void taskHouskeeping(void *param)
             #endif
         }
 
-        /* 5 minutes actions */
-        if((elapsed_sec % _5min_check) == 0)
+        /* 1 minute actions */
+        if((elapsed_sec % check_1min) == 0)
         {
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 5[min] actions..\r\n");
+                printf("[Houskeeping]:    1[min] actions ..\r\n");
             #endif
+            //Add commands below ..
+        }
 
-            #if (SCH_EPS_ONBOARD == 1)
-                #if (SCH_TASKHOUSEKEEPING_VERBOSE>=2)
-                    NewCmd.cmdId = eps_id_print_all_reg;
-                    NewCmd.param = 0;
-                    xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-                #endif
+        /* 5 minutes actions */
+        if((elapsed_sec % check_5min) == 0)
+        {
+            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
+                printf("[Houskeeping]:    5[min] actions ..\r\n");
             #endif
+            //Add commands below ..
         }
 
         /* 1 hour actions  */
-        if((elapsed_sec % _1hour_check) == 0)
+        if((elapsed_sec % check_1hour) == 0)
         {
             elapsed_hrs++;
-            elapsed_sec = 0; //Reset prevent overflow
+            elapsed_sec = 0; //Prevent overflow
 
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 1[hr] actions..\r\n");
+                printf("[Houskeeping]:      1[hr] actions ..\r\n");
             #endif
+            //Add commands below ..
 
+            // hoursWithoutReset++
             NewCmd.cmdId = srp_id_increment_STA_stateVar_hoursWithoutReset;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
+            // hoursAlive ++
             NewCmd.cmdId = srp_id_increment_STA_stateVar_hoursAlive;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
@@ -147,89 +149,13 @@ void taskHouskeeping(void *param)
         }
 
         /* codigo para _1day_check */
-        if((elapsed_hrs % _1day_check) == 0)
+        if( (elapsed_hrs % check_1day == 0) && (elapsed_hrs != 0) )
         {
             #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
-                con_printf("[Houskeeping] 1[day] actions..\r\n");
+                printf("[Houskeeping]:        1[day] actions ..\r\n");
             #endif
-            elapsed_hrs = 1;  //Reset prevent overflow
-
-            //Nothing to do here
+            elapsed_hrs = 0;  //Prevent overflow
+            //Add commands below ..
         }
-    }
-}
-
-
-void check_deploy_antenna(void){
-    portTickType xLastWakeTime = xTaskGetTickCount();
-    portTickType delay_60s    = 60000;    //Task period in [ms]
-    portTickType delay_tick_60s = delay_60s / portTICK_RATE_MS; //Task period in ticks
-
-    DispCmd NewCmd;
-    NewCmd.idOrig = CMD_IDORIG_THOUSEKEEPING; /* Housekeeping */
-    NewCmd.cmdId = CMD_CMDNULL;
-    NewCmd.param = 0;
-    
-    int rt_mode;
-    if( sta_get_stateVar(sta_dep_ant_deployed) == 0 ){
-    //if( sta_getstateVar(sta_Antenna_isDeployed) == 0 ){
-        printf("[Houskeeping] sta_SUCHAI_isDeployed = 0 => Antenna is not yet deployed..\r\n");
-
-        unsigned long initial_tick_10ms = xTaskGetTickCount(); //get initial tick-time
-        unsigned long silent_time_10ms = (180000);     // 30 minutes = 1800 sec = 180000 [10ms]
-        unsigned long final_tick_10ms = initial_tick_10ms + silent_time_10ms;
-
-        // print rtc time
-        NewCmd.cmdId = rtc_id_print;
-        NewCmd.param = 0;
-        xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-
-        //take picture
-        #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
-            NewCmd.cmdId = pay_id_takePhoto_camera;
-            NewCmd.param = 0;
-            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-        #endif
-
-        // print rtc time
-        NewCmd.cmdId = rtc_id_print;
-        NewCmd.param = 0;
-        xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-
-        while(TRUE){
-            unsigned long int cu_tick_10ms = xTaskGetTickCount();
-            if( cu_tick_10ms >= final_tick_10ms ){
-                printf("[Houskeeping] Timeout of 30min silence time ..\r\n");
-                break;
-            }
-            vTaskDelayUntil(&xLastWakeTime, delay_tick_60s); //Suspend task 60 sec
-            printf("[Houskeeping] Waiting 30min silence time ..\r\n");
-        }
-
-        // print rtc time
-        NewCmd.cmdId = rtc_id_print;
-        NewCmd.param = 0;
-        xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-
-        /* Deploy Antena */
-        #if (SCH_ANTENNA_ONBOARD==1)
-            rt_mode = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
-            NewCmd.cmdId = thk_id_deploy_antenna;
-            NewCmd.param = rt_mode;
-            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-        #endif
-
-        // print rtc time
-        NewCmd.cmdId = rtc_id_print;
-        NewCmd.param = 0;
-        xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-
-        //deploy langmuir
-        //..
-        //other "only once"-tasks
-        //..
-
-//        sta_setstateVar(sta_SUCHAI_isDeployed, 1);
-//        ppc_reset(NULL);
     }
 }

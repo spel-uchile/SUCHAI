@@ -301,12 +301,13 @@ unsigned int dat_get_NextPayIndx(DAT_Payload_Buff pay_i){
 }
 
 /**
- *
+ * Save value in the corresponding pay_i dataRepo
  * @param pay_i
  * @param value
- * @return  Retorna FALSE si hay problemas, TRUE si todo OK
+ * @param mode
+ * @return FALSE if there is any problem, TRUE if not
  */
-BOOL dat_set_Payload_Buff(DAT_Payload_Buff pay_i, int value){
+BOOL dat_set_Payload_Buff(DAT_Payload_Buff pay_i, int value, int mode){
     // guarda "value" en la sgte posicion libre del buffer,
     // y retorna si lo logro o no (buffer lleno, payload invalido)
     unsigned int nextIndx;
@@ -319,13 +320,16 @@ BOOL dat_set_Payload_Buff(DAT_Payload_Buff pay_i, int value){
         return FALSE;
     }
 
-//    // Descarta si pay_i esta lleno
-//    if( dat_isFull_Payload_Buff(pay_i)==TRUE){
-//        #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-//            printf("dat_set_PayloadBuff: nextIndx > maxIndx\n");
-//        #endif
-//        return FALSE;
-//    }
+    if(mode == DAT_PAYBUFF_MODE_USE_MAXINDX){
+        printf("dat_set_PayloadBuff: Using MAXINDX mode\n");
+        // Descarta si pay_i esta lleno
+        if( dat_isFull_Payload_Buff(pay_i)==TRUE){
+            #if (SCH_DATAREPOSITORY_VERBOSE>=1)
+                printf("dat_set_PayloadBuff: nextIndx > maxIndx\n");
+            #endif
+            return FALSE;
+        }
+    }
 
     //Obtiene nextIndx (posicion a la que guardar)
     nextIndx = dat_get_NextPayIndx(pay_i);

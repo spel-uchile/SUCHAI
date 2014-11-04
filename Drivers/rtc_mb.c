@@ -618,3 +618,25 @@ int RTC_set_seconds(int ss)
 
     return 1;
 }
+
+
+unsigned long int RTC_get_seconds_since2000(void){
+//    int base_year = 2000;
+//    int base_month = 1;
+//    int base_day = 1;
+//    int base_hours = 00;
+//    int base_minutes = 00;
+//    int base_seconds = 00;
+//
+//    int curr_year = RTC_get_year();
+//    int curr_month = RTC_get_month();
+//    int curr_day = RTC_get_day_num();
+//    int curr_hours = RTC_get_hours();
+//    int curr_minutes = RTC_get_minutes();
+//    int curr_seconds = RTC_get_seconds();
+//
+//    //como calcular dif de meses con 28, 30 y 31 dias??
+//    unsigned long int diff = (curr_year-base_year)*365*24*60*60 + (curr_month-base_month)*1 ;
+
+    return 0;
+}

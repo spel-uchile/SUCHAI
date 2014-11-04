@@ -140,7 +140,7 @@ void sta_onReset_stateRepo(void);
 STA_StateVar sta_pay_i_to_performVar(int pay_i);
 
 //debug funcitons
-char *varToString(STA_StateVar var_i);
+char *sta_varToString(STA_StateVar var_i);
 
 #define SRP_PAY_XXX_STATE_INACTIVE    0x0000
 #define SRP_PAY_XXX_STATE_ACTIVE      0x0001

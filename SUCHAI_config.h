@@ -26,7 +26,7 @@
 /* Realtime config */
 #define SCH_THK_SILENT_REALTIME             (0)  ///< 1=Realtime 0=Debugtime
 #define SCH_THK_ANTENNA_REALTIME            (0)  ///< 1=Realtime 0=Debugtime
-#define SCH_TASKHOUSEKEEPING_REALTIME       (1)  ///< 1=Realtime 0=Debugtime
+#define SCH_THK_REALTIME                    (1)  ///< 1=Realtime 0=Debugtime
 #define SCH_TASKFLIGHTPLAN_REALTIME         (0)  ///< 1=Realtime 0=Debugtime
 #define SCH_FLIGHTPLAN2_REALTIME            (1)  ///< 1=Realtime 0=Debugtime
 
@@ -90,7 +90,7 @@
 #define SCH_FLIGHTPLAN_EXTMEMORY                (1)     ///< (0) buffer en  RAM, (1) en memoria SD
 #define SCH_USE_FLIGHTPLAN                      (0)     ///< 1 = use it, 0 = do not use it
 #define SCH_USE_FLIGHTPLAN2                     (0)     ///< 1 = use it, 0 = do not use it
-#define SCH_USE_HOUSEKEEPING                    (0)     ///< 1 = use it, 0 = do not use it
+#define SCH_USE_HOUSEKEEPING                    (1)     ///< 1 = use it, 0 = do not use it
 
 /**
  * @def SCH_DATAREPOSITORY_MAX_BUFF_TELECMD
@@ -104,6 +104,7 @@
 #define SCH_TCM_SYS_REQ                     (3)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de telemetria
 #define SCH_BCN_SYS_REQ                     (2)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de beacon
 #define SCH_DEP_SYS_REQ                     (2)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de antenna deployment
+#define SCH_PAY_GPS_SYS_REQ                 (2)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de PAY del GPS
 
 /* Drivers config VERBOSE */
 #define SCH_CONSOLE_VERBOSE                 (1)   ///< 1=verboso 0=austero

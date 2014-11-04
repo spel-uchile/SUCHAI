@@ -34,7 +34,5 @@
 
 void taskHouskeeping(void *param);
 
-void check_deploy_antenna(void);
-
 #endif //T_HOUSEKEEPING_H
 

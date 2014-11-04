@@ -32,8 +32,10 @@
 typedef enum{
     //de debug
     thk_id_debug=((unsigned int)SCH_CMD_THK*0x100), ///< @cmd_first
+    thk_id_debug2, ///< @cmd
 
     //Deplyment
+    thk_id_suchai_deployment, ///< @cmd
     thk_id_deploy_antenna, ///< @cmd
     thk_id_get_AntSwitch_isOpen, ///< @cmd
     thk_id_silent_time_and_pictures, ///< @cmd
@@ -52,7 +54,6 @@ typedef enum{
     thk_id_get_dep_seconds, ///< @cmd
     
     //de EBF
-    thk_id_state_hw, ///< @cmd
     thk_id_executeBeforeFlight, ///< @cmd
 
 //    thk_id_set_dep_ant_deployed, ///< @cmd
@@ -79,7 +80,8 @@ void thk_onResetCmdTHK();
 //****************************************************
 int thk_debug(void *param);
 int thk_executeBeforeFlight(void *param);
-int thk_state_hw(void *param);
+int thk_debug2(void *param);
+int thk_suchai_deployment(void *param);
 /**
  * Deploys satellite antennas
  * @param param 1 realime, 0 debug time

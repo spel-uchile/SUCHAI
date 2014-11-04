@@ -25,30 +25,22 @@ int drp_sysReq[DRP_NCMD];
 void drp_onResetCmdDRP(){
     printf("        drp_onResetCmdDRP\n");
 
-    drpFunction[(unsigned char)drp_id_print_dat_TelecmdBuff] = drp_print_dat_TelecmdBuff;
-    drp_sysReq[(unsigned char)drp_id_print_dat_TelecmdBuff]  = CMD_SYSREQ_MIN;
-    drpFunction[(unsigned char)drp_id_print_dat_FlightPlan] = drp_print_dat_FlightPlan;
-    drp_sysReq[(unsigned char)drp_id_print_dat_FlightPlan]  = CMD_SYSREQ_MIN;
-    drpFunction[(unsigned char)drp_id_print_dat_PayloadIndxs] = drp_print_dat_PayloadIndxs;
-    drp_sysReq[(unsigned char)drp_id_print_dat_PayloadIndxs]  = CMD_SYSREQ_MIN;
-    drpFunction[(unsigned char)drp_id_print_dat_PayloadVar] = drp_print_dat_PayloadVar;
-    drp_sysReq[(unsigned char)drp_id_print_dat_PayloadVar]  = CMD_SYSREQ_MIN;
+    int i;
+    for(i=0; i<DRP_NCMD; i++) drp_sysReq[i] = CMD_SYSREQ_MIN;
 
+    drpFunction[(unsigned char)drp_id_print_dat_TelecmdBuff] = drp_print_dat_TelecmdBuff;
+    drpFunction[(unsigned char)drp_id_print_dat_FlightPlan] = drp_print_dat_FlightPlan;
+    drpFunction[(unsigned char)drp_id_print_dat_PayloadIndxs] = drp_print_dat_PayloadIndxs;
+    drpFunction[(unsigned char)drp_id_print_dat_PayloadVar] = drp_print_dat_PayloadVar;
     //De mem ext (EEPROM y SD)
     drpFunction[(unsigned char)drp_id_executeBeforeFlight] = drp_executeBeforeFlight;
-    drp_sysReq[(unsigned char)drp_id_executeBeforeFlight]  = CMD_SYSREQ_MIN;
     //de debug
     drpFunction[(unsigned char)drp_id_debug] = drp_debug;
-    drp_sysReq[(unsigned char)drp_id_debug]  = CMD_SYSREQ_MIN;
     //Flight Plan
     drpFunction[(unsigned char)drp_id_fpl_get_index] = drp_fpl_get_index;
-    drp_sysReq[(unsigned char)drp_id_fpl_get_index]  = CMD_SYSREQ_MIN;
     drpFunction[(unsigned char)drp_id_fpl_set_index] = drp_fpl_set_index;
-    drp_sysReq[(unsigned char)drp_id_fpl_set_index]  = CMD_SYSREQ_MIN;
     drpFunction[(unsigned char)drp_id_fpl_set_cmd] = drp_fpl_set_cmd;
-    drp_sysReq[(unsigned char)drp_id_fpl_set_cmd]  = CMD_SYSREQ_MIN;
     drpFunction[(unsigned char)drp_id_fpl_set_param] = drp_fpl_set_param;
-    drp_sysReq[(unsigned char)drp_id_fpl_set_param]  = CMD_SYSREQ_MIN;
 }
 
 //******************************************************************************
@@ -414,7 +406,7 @@ void drp_debug4(void){
         for(index=0; index<=maxind; index++, value++){
 
             printf("  writing: ");
-            dat_set_Payload_Buff(pay_i, value);
+            dat_set_Payload_Buff(pay_i, value, DAT_PAYBUFF_MODE_NO_MAXINDX);
             printf("    DAT_Payload_Buff[%u][%u] = %d    |    ",pay_i, index, value);
             printf("%d/%d [NextIndx/MaxIndx]   |    \n", dat_get_NextPayIndx(pay_i), dat_get_MaxPayIndx(pay_i) );
 
@@ -489,7 +481,7 @@ void drp_debug5(void){
         for(index=0; st==TRUE; index++, value++){
 
             printf("  writing: ");
-            dat_set_Payload_Buff(pay_i, value);
+            dat_set_Payload_Buff(pay_i, value, DAT_PAYBUFF_MODE_NO_MAXINDX);
             printf("    DAT_Payload_Buff[%u][%u] = %d    |    ",pay_i, index, value);
             printf("%d/%d [NextIndx/MaxIndx]   |    \n", dat_get_NextPayIndx(pay_i), dat_get_MaxPayIndx(pay_i) );
 

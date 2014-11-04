@@ -402,12 +402,7 @@ void sta_onReset_stateRepo(void)
      */
     printf("[sta_onResetStatRepo] All STA_StateVar variables:\r\n");
     //print all SatatusVars
-    STA_StateVar indxVar;
-    for(indxVar=0;indxVar<sta_stateVar_last_one;indxVar++){
-        int r = sta_get_stateVar(indxVar);
-        //printf("    * sta_get_stateVar(%d) = %d \r\n", indxVar, r);
-        printf("    * sta_get_stateVar(%s) = %d \r\n", varToString(indxVar), r);
-    }
+    srp_print_STA_stateVar(NULL);
 }
 
 /**
@@ -456,7 +451,7 @@ STA_StateVar sta_pay_i_to_performVar(int pay_i){
     return dat_pay_xxx_perform;
 }
 
-char* varToString(STA_StateVar var_i){
+char* sta_varToString(STA_StateVar var_i){
     char *pc;
     switch(var_i){
         case sta_RTC_isAlive:

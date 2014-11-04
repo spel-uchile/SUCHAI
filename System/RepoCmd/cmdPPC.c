@@ -19,8 +19,6 @@
 
 #include "cmdPPC.h"
 
-#define _CHECK_IF_EXECUTABLE_ SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE
-
 //Para ppc_rtos_debug
 extern xTaskHandle taskDeploymentHandle;
 extern xTaskHandle taskDispatcherHandle;
@@ -37,55 +35,34 @@ int ppc_sysReq[PPC_NCMD];
 void ppc_onResetCmdPPC(void){
     printf("        ppc_onResetCmdPPC\n");
 
-    ppcFunction[(unsigned char)ppc_id_reset] = ppc_reset;
-    ppc_sysReq[(unsigned char)ppc_id_reset]  = CMD_SYSREQ_MIN;
-    ppcFunction[(unsigned char)ppc_id_get_lastResetSource] = ppc_get_lastResetSource;
-    ppc_sysReq[(unsigned char)ppc_id_get_lastResetSource]  = CMD_SYSREQ_MIN;
+    int i;
+    for(i=0; i<PPC_NCMD; i++) ppc_sysReq[i] = CMD_SYSREQ_MIN;
 
-    ppcFunction[(unsigned char)ppc_id_set_opMode] = ppc_set_opMode;
-    ppc_sysReq[(unsigned char)ppc_id_set_opMode]  = CMD_SYSREQ_MIN;
-    ppcFunction[(unsigned char)ppc_id_get_opMode] = ppc_get_opMode;
-    ppc_sysReq[(unsigned char)ppc_id_get_opMode]  = CMD_SYSREQ_MIN;
-    ppcFunction[(unsigned char)ppc_id_set_resetCounter] = ppc_set_resetCounter;
-    ppc_sysReq[(unsigned char)ppc_id_set_resetCounter]  = CMD_SYSREQ_MIN;
-    ppcFunction[(unsigned char)ppc_id_get_hoursAlive] = ppc_get_hoursAlive;
-    ppc_sysReq[(unsigned char)ppc_id_get_hoursAlive]  = CMD_SYSREQ_MIN;
-    ppcFunction[(unsigned char)ppc_id_set_hoursWithoutReset] = ppc_set_hoursWithoutReset;
-    ppc_sysReq[(unsigned char)ppc_id_set_hoursWithoutReset]  = CMD_SYSREQ_MIN;
-    ppcFunction[(unsigned char)ppc_id_get_resetCounter] = ppc_get_resetCounter;
-    ppc_sysReq[(unsigned char)ppc_id_get_resetCounter]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_reset] = ppc_reset;
+    ppcFunction[(unsigned char)ppc_id_get_lastResetSource] = ppc_get_lastResetSource;
     
-    ppc_sysReq[(unsigned char)ppc_id_set_resetCounter]  = CMD_SYSREQ_MIN;
+    ppcFunction[(unsigned char)ppc_id_set_opMode] = ppc_set_opMode;
+    ppcFunction[(unsigned char)ppc_id_get_opMode] = ppc_get_opMode;
+    ppcFunction[(unsigned char)ppc_id_set_resetCounter] = ppc_set_resetCounter;
+    ppcFunction[(unsigned char)ppc_id_get_hoursAlive] = ppc_get_hoursAlive;
+    ppcFunction[(unsigned char)ppc_id_set_hoursWithoutReset] = ppc_set_hoursWithoutReset;
+    ppcFunction[(unsigned char)ppc_id_get_resetCounter] = ppc_get_resetCounter;
+    
     ppcFunction[(unsigned char)ppc_id_newosc] = ppc_newosc;
-    ppc_sysReq[(unsigned char)ppc_id_newosc]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_get_osc] = ppc_get_osc;
-    ppc_sysReq[(unsigned char)ppc_id_get_osc]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_set_wdt_state] = ppc_set_wdt_state;
-    ppc_sysReq[(unsigned char)ppc_id_set_wdt_state]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_get_wdt_state] = ppc_get_wdt_state;
-    ppc_sysReq[(unsigned char)ppc_id_get_wdt_state]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_reactToSOC] = ppc_reactToSOC;
-    ppc_sysReq[(unsigned char)ppc_id_reactToSOC]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_set_PPC_MB_nOE_USB_nINT] = ppc_set_PPC_MB_nOE_USB_nINT;
-    ppc_sysReq[(unsigned char)ppc_id_set_PPC_MB_nOE_USB_nINT]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_set_PPC_MB_nOE_MHX] = ppc_set_PPC_MB_nOE_MHX;
-    ppc_sysReq[(unsigned char)ppc_id_set_PPC_MB_nOE_MHX]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_set_PPC_MB_nON_MHX] = ppc_set_PPC_MB_nON_MHX;
-    ppc_sysReq[(unsigned char)ppc_id_set_PPC_MB_nON_MHX]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_set_PPC_MB_nON_SD] = ppc_set_PPC_MB_nON_SD;
-    ppc_sysReq[(unsigned char)ppc_id_set_PPC_MB_nON_SD]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_get_PPC_MB_nOE_USB_nINT] = ppc_get_PPC_MB_nOE_USB_nINT;
-    ppc_sysReq[(unsigned char)ppc_id_get_PPC_MB_nOE_USB_nINT]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_get_PPC_MB_nOE_MHX] = ppc_get_PPC_MB_nOE_MHX;
-    ppc_sysReq[(unsigned char)ppc_id_get_PPC_MB_nOE_MHX]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_get_PPC_MB_nON_MHX] = ppc_get_PPC_MB_nON_MHX;
-    ppc_sysReq[(unsigned char)ppc_id_get_PPC_MB_nON_MHX]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_get_PPC_MB_nON_SD] = ppc_get_PPC_MB_nON_SD;
-    ppc_sysReq[(unsigned char)ppc_id_get_PPC_MB_nON_SD]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_rtos_debug] = ppc_rtos_debug;
-    ppc_sysReq[(unsigned char)ppc_id_rtos_debug]  = CMD_SYSREQ_MIN;
     ppcFunction[(unsigned char)ppc_id_frozen] = ppc_frozen;
-    ppc_sysReq[(unsigned char)ppc_id_frozen]  = CMD_SYSREQ_MIN;
 }
 
 
@@ -375,42 +352,86 @@ int ppc_reset(void* param)
  * Arguments          : None
  * Return Value       : int: 1=Always successfull
  *----------------------------------------------------------------------------*/
+static int prev_soc=-1;
 int ppc_reactToSOC(void* param)
 {
     #if (SCH_CMDPPC_VERBOSE>=1)
         printf("ppc_reactToSOC()\r\n");
     #endif
-    //Check_FSCM();
-    //Check_Reset_Status();
-    //Check_Wakeup_Status();
+       
+    int current_soc;
+    current_soc = sta_get_stateVar(sta_eps_soc);
 
-    // Tomas Opazo: Esto aun no esta probado, por lo que no se usara para las pruebas de SUCHAIv1.
-    // De todos modos con no ejecutar el comando a nivel de taskDispather es suficiente, por lo que
-    //probablemente este comando quede sin ejecutar linea alguna
-    /*
-    #if (_CHECK_IF_EXECUTABLE_==1)
-        int trx_mode, cu_soc; static int prev_soc;
-        cu_soc = dat_get_stateVar(dat_eps_soc);
-        if( cu_soc < (CMD_SYSREQ_MIN+1) )
-        {
-            con_printf("get_eps_soc()<(CMD_SYSREQ_MIN+1) Nivel critico, TRX debe silenciarse\r\n");
-            #if (SCH_TRX_TYPE_ONBOARD==1)
-                trx_mode=2; trx_setmode( (void *)&trx_mode );   //silent
-            #endif
-            prev_soc=cu_soc;
-        }
-        else
-        {
-            if( (prev_soc!=0) && (prev_soc<cu_soc) ){
-                con_printf("get_eps_soc()>=(CMD_SYSREQ_MIN+1) Nivel critico reestablecido, TRX vuevle a nominal\r\n");
-            }
-            #if (SCH_TRX_TYPE_ONBOARD==1)
-                trx_mode=5; trx_setmode( (void *)&trx_mode );   //nominal
-            #endif
-        }
-    #endif
-    */
+    if(prev_soc == current_soc){
+        //nothing new to do
+        return 1;
+    }
 
+    switch(current_soc){
+        case (CMD_SYSREQ_MIN+0):
+            //turn off GPS
+            PPC_GPS_SWITCH = 0;
+            //set only beacon (no TM)
+            break;
+        case (CMD_SYSREQ_MIN+1):
+            //turn off GPS
+            PPC_GPS_SWITCH = 0;
+            //set only beacon (no TM)
+            break;
+        case (CMD_SYSREQ_MIN+2):
+            //turn off GPS
+            PPC_GPS_SWITCH = 0;
+            //set only beacon (no TM)
+            break;
+        case (CMD_SYSREQ_MIN+3):
+            //allow TM
+            break;
+        case (CMD_SYSREQ_MIN+4):
+            //allow TM
+            break;
+        case (CMD_SYSREQ_MIN+5):
+            //allow TM
+            break;
+        case (CMD_SYSREQ_MIN+6):
+            //allow TM
+            break;
+        case (CMD_SYSREQ_MIN+7):
+            //allow TM
+            break;
+        case CMD_SYSREQ_MAX:
+            //allow TM
+            break;
+        default:
+            break;
+    }
+
+//    //Legacy code
+//    //Check_FSCM();
+//    //Check_Reset_Status();
+//    //Check_Wakeup_Status();
+//
+//    // Tomas Opazo: Esto aun no esta probado, por lo que no se usara para las pruebas de SUCHAIv1.
+//    // De todos modos con no ejecutar el comando a nivel de taskDispather es suficiente, por lo que
+//    //probablemente este comando quede sin ejecutar linea alguna
+//
+//    if( current_soc < (CMD_SYSREQ_MIN+1) )
+//    {
+//        con_printf("get_eps_soc()<(CMD_SYSREQ_MIN+1) Nivel critico, TRX debe silenciarse\r\n");
+//        #if (SCH_TRX_TYPE_ONBOARD==1)
+//            trx_mode=2; trx_setmode( (void *)&trx_mode );   //silent
+//        #endif
+//    }
+//    else
+//    {
+//        if( (prev_soc!=0) && (prev_soc<current_soc) ){
+//            con_printf("get_eps_soc()>=(CMD_SYSREQ_MIN+1) Nivel critico reestablecido, TRX vuevle a nominal\r\n");
+//        }
+//        #if (SCH_TRX_TYPE_ONBOARD==1)
+//            trx_mode=5; trx_setmode( (void *)&trx_mode );   //nominal
+//        #endif
+//    }
+
+    prev_soc = current_soc;
     return 1;
 }
 

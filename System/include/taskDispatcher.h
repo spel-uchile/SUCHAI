@@ -20,4 +20,4 @@
 #include "dataRepository.h"
 
 void taskDispatcher(void *param);
-int check_if_executable(DispCmd *newCmd);
+BOOL check_if_executable(DispCmd *newCmd);

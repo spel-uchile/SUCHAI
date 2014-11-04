@@ -64,4 +64,6 @@ int RTC_set_hour(int hh);
 int RTC_set_minutes(int mi);
 int RTC_set_seconds(int ss);
 
+unsigned long int RTC_get_seconds_since2000(void);
+
 #endif

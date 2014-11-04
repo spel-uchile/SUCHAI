@@ -26,22 +26,34 @@ int eps_sysReq[EPS_NCMD];
 void eps_onResetCmdEPS(void){
     printf("        eps_onResetCmdEPS\n");
 
+    int i;
+    for(i=0; i<EPS_NCMD; i++) eps_sysReq[i] = CMD_SYSREQ_MIN;
+
     epsFunction[(unsigned char)eps_id_readreg] = eps_readreg;
-    eps_sysReq[(unsigned char)eps_id_readreg]  = CMD_SYSREQ_MIN;
-    epsFunction[(unsigned char)eps_id_soc_estimation] = eps_soc_estimation;
-    eps_sysReq[(unsigned char)eps_id_soc_estimation]  = CMD_SYSREQ_MIN;
-    epsFunction[(unsigned char)eps_id_current_meassurement] = eps_current_meassurement;
-    eps_sysReq[(unsigned char)eps_id_current_meassurement]  = CMD_SYSREQ_MIN;
-    epsFunction[(unsigned char)eps_id_panel_pwr_meassuerement] = eps_panel_pwr_meassuerement;
-    eps_sysReq[(unsigned char)eps_id_panel_pwr_meassuerement]  = CMD_SYSREQ_MIN;
     epsFunction[(unsigned char)eps_id_status_read] = eps_status_read;
-    eps_sysReq[(unsigned char)eps_id_status_read]  = CMD_SYSREQ_MIN;
+    
+    epsFunction[(unsigned char)eps_id_update_internal_vars] = eps_update_internal_vars;
+    epsFunction[(unsigned char)eps_id_soc_estimation] = eps_soc_estimation;
     epsFunction[(unsigned char)eps_id_energy_estimation] = eps_energy_estimation;
-    eps_sysReq[(unsigned char)eps_id_energy_estimation]  = CMD_SYSREQ_MIN;
+
+    epsFunction[(unsigned char)eps_id_current_meassurement] = eps_current_meassurement;
+    epsFunction[(unsigned char)eps_id_panel_pwr_meassuerement] = eps_panel_pwr_meassuerement;
     epsFunction[(unsigned char)eps_id_pdm_off] = eps_pdm_off;
-    eps_sysReq[(unsigned char)eps_id_pdm_off]  = CMD_SYSREQ_MIN;
+    
     epsFunction[(unsigned char)eps_id_print_all_reg] = eps_print_all_reg;
-    eps_sysReq[(unsigned char)eps_id_print_all_reg]  = CMD_SYSREQ_MIN;
+}
+
+/**
+ * Update various EPS structures (SOC, nergy estimation, etc)
+ * @param param
+ * @return 
+ */
+int eps_update_internal_vars(void *param){
+    updateSOCEPS();
+    updateStatusEPS();
+    updateENERGYEPS();
+
+    return 1;
 }
 
 /**

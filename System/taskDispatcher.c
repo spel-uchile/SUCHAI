@@ -103,7 +103,7 @@ void taskDispatcher(void *param)
  * @param newCmd Command to check
  * @return 0, Do not execute. 1, can be executed.
  */
-int check_if_executable(DispCmd *newCmd)
+BOOL check_if_executable(DispCmd *newCmd)
 {
     int cmdId, idOrig, sysReq, param; /* Cmd metadata */
 
@@ -117,7 +117,7 @@ int check_if_executable(DispCmd *newCmd)
         #if SCH_TASKDISPATCHER_VERBOSE >=1
             printf("[Dispatcher] Command: 0x%X | From: 0x%X Refused because of CMD_NULL \n", cmdId, idOrig);
         #endif
-        return 0;
+        return FALSE;
     }
 
     #if(SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE != 0)
@@ -128,7 +128,7 @@ int check_if_executable(DispCmd *newCmd)
             #if SCH_TASKDISPATCHER_VERBOSE >=1
                 printf("[Dispatcher] Orig: 0x%X | Cmd: 0x%X | Param: %d Refused because of SOC\n", idOrig, cmdId, param );
             #endif
-            return 0;
+            return FALSE;
         }
 
         //Prevent TCM command to discharge bat. (Pina-Bilbao Power Budget)
@@ -137,10 +137,10 @@ int check_if_executable(DispCmd *newCmd)
             #if SCH_TASKDISPATCHER_VERBOSE >=1
                 printf("[Dispatcher] Orig: 0x%X | Cmd: 0x%X | Param: %d Refused because of EPS flag\n", idOrig, cmdId, param );
             #endif
-            return 0;
+            return FALSE;
         }
     }
     #endif
     
-    return 1;
+    return TRUE;
 }

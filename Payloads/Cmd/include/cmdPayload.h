@@ -70,7 +70,7 @@ typedef enum{
     pay_id_take_camera, ///< @cmd
     pay_id_stop_camera, ///< @cmd
     pay_id_takePhoto_camera, ///< @cmd
-    pay_id_debug_camera, ///< @cmd
+    pay_id_get_savedPhoto_camera, ///< @cmd
 
     pay_id_isAlive_gps, ///< @cmd
     pay_id_get_state_gps, ///< @cmd
@@ -198,7 +198,7 @@ int pay_set_state_camera(void *param);
 int pay_init_camera(void *param);
 int pay_take_camera(void *param);
 int pay_stop_camera(void *param);
-int pay_debug_camera(void *param);
+int pay_get_savedPhoto_camera(void *param);
 int pay_takePhoto_camera(void *param);
 //GPS
 int pay_isAlive_gps(void *param);
@@ -209,7 +209,8 @@ int pay_init_gps(void *param);
 int pay_stop_gps(void *param);
 
 //aux functions
-BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type, int mode);
+BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type);
+int pay_camera_get_1int_from_2bytes(void);
 
 #endif	/* CMDPAYLOAD_H */
 

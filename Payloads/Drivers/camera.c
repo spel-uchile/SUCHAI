@@ -428,7 +428,7 @@ unsigned int cam_receivePhoto(unsigned int length, int mode)
             con_printf(ret);
         }
         if( (mode==CAM_MODE_SAVE_SD) || (mode==CAM_MODE_BOTH) ){
-            stat = dat_set_Payload_Buff( pay_i, (int)resp );
+            stat = dat_set_Payload_Buff(pay_i, (int)resp, DAT_PAYBUFF_MODE_NO_MAXINDX);
             //__delay_ms(12);
             #if (SCH_CAMERA_VERBOSE>=1)
                 cnt++;
@@ -446,7 +446,7 @@ unsigned int cam_receivePhoto(unsigned int length, int mode)
     //Si sale esta linea tengo un error
     if( (mode==CAM_MODE_SAVE_SD) || (mode==CAM_MODE_BOTH) ){
         while(stat==FALSE){
-            stat = dat_set_Payload_Buff( pay_i, (int)0xFF00 );
+            stat = dat_set_Payload_Buff(pay_i, (int)0xFF00, DAT_PAYBUFF_MODE_NO_MAXINDX);
             con_printf("rellenando\r\n");
             //__delay_ms(12);
         }

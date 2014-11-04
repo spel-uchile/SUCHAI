@@ -198,150 +198,16 @@ int srp_memEEPROM_initial_state(void * param){
  *----------------------------------------------------------------------------*/
 int srp_print_STA_stateVar(void *param)
 {
-    char buffer[10];
-    int arg=*((int *)param);
+    printf("===============================\r\n");
+    printf("StateVar content: \r\n");
+    printf("===============================\r\n");
 
-    con_printf("===================================\r\n");
-    con_printf("Contenido de CubestatVar: \r\n");
-    con_printf("===================================\r\n");
-
-    if(arg==1)
-    {
-        STA_StateVar indxVar;
-        for(indxVar=0; indxVar<sta_stateVar_last_one; indxVar++)
-        {
-            con_printf("sta_stateVar[");
-            //itoa(buffer, (unsigned int)indxVar, 10);
-            sprintf( buffer, "%d", (unsigned int)indxVar );
-            con_printf(buffer); con_printf("]=");
-            //itoa(buffer,(unsigned int)sta_getstateVar(indxVar), 10);
-            sprintf( buffer, "0x%X", (unsigned int)sta_get_stateVar(indxVar) );
-            con_printf(buffer); con_printf("\r\n");
-        }
+    STA_StateVar indxVar; int val;
+    for(indxVar=0; indxVar<sta_stateVar_last_one; indxVar++){
+        val = sta_get_stateVar(indxVar);
+        printf("    * sta_get_stateVar(%s) = %d \r\n", sta_varToString(indxVar), val);
     }
-    else
-    {
-        /* Get mPPC */
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_opMode), 10);
-        con_printf("ppc_opMode= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_lastResetSource), 10);
-        con_printf("ppc_lastResetSource= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_hoursAlive), 10);
-        con_printf("ppc_hoursAlive= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_hoursWithoutReset), 10);
-        con_printf("ppc_hoursWithoutReset= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_resetCounter), 10);
-        con_printf("ppc_resetCounter= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_wdt), 10);
-        con_printf("ppc_enwdt= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_osc), 10);
-        con_printf("ppc_osc= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_MB_nOE_USB_nINT_stat), 10);
-        con_printf("ppc_MB_nOE_USB_nINT_stat= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_MB_nOE_MHX_stat), 10);
-        con_printf("ppc_MB_nOE_MHX_stat= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_MB_nON_MHX_stat), 10);
-        con_printf("ppc_MB_nON_MHX_stat= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_ppc_MB_nON_SD_stat), 10);
-        con_printf("ppc_MB_nON_SD_stat= "); con_printf(buffer); con_printf("\r\n");
-        con_printf("-----------------------------------\r\n");
-
-        /* Get mDEP */
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_ant_deployed), 10);
-        con_printf("dep_ant_deployed= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_ant_tries), 10);
-        con_printf("dep_ant_tries= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_year), 10);
-        con_printf("dep_year= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_month), 10);
-        con_printf("dep_month= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_week_day), 10);
-        con_printf("dep_week_day= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_day_number), 10);
-        con_printf("dep_day_number= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_hours), 10);
-        con_printf("dep_hours= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_minutes), 10);
-        con_printf("dep_minutes= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_dep_seconds), 10);
-        con_printf("dep_seconds= "); con_printf(buffer); con_printf("\r\n");
-        con_printf("-----------------------------------\r\n");
-
-        /* Get mRTC */
-        itoa(buffer, (unsigned int)sta_get_stateVar(sta_rtc_year), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_rtc_year), 10);
-        con_printf("rtc_year= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)sta_get_stateVar(sta_rtc_month), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_rtc_month), 10);
-        con_printf("rtc_month= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)sta_get_stateVar(sta_rtc_week_day), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_rtc_week_day), 10);
-        con_printf("rtc_week_day= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)sta_get_stateVar(sta_rtc_day_number), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_rtc_day_number), 10);
-        con_printf("rtc_day_number= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)sta_get_stateVar(sta_rtc_hours), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_rtc_hours), 10);
-        con_printf("rtc_hours= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)sta_get_stateVar(sta_rtc_minutes), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_rtc_minutes), 10);
-        con_printf("rtc_minutes= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)sta_get_stateVar(sta_rtc_seconds), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_rtc_seconds), 10);
-        con_printf("rtc_seconds= "); con_printf(buffer); con_printf("\r\n");
-        con_printf("-----------------------------------\r\n");
-
-        /* Get mEPS */
-
-        itoa(buffer,   (unsigned int)sta_get_stateVar(sta_eps_bat0_voltage), 10);
-        con_printf("eps_bat0_voltage= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_bat0_current), 10);
-        con_printf("eps_bat0_current= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_bus5V_current), 10);
-        con_printf("eps_bus5V_current= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_bus3V_current), 10);
-        con_printf("eps_bus3V_current= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_bus_battery_current), 10);
-        con_printf("eps_bus_battery_current= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_bat0_temp), 10);
-        con_printf("eps_bat0_temp= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_panel_pwr), 10);
-        con_printf("eps_panel_pwr= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_status), 10);
-        con_printf("eps_status= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_soc), 10);
-        con_printf("eps_soc= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_socss), 10);
-        con_printf("eps_socss= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_state_flag), 10);
-        con_printf("eps_state_flag= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_eps_charging), 10);
-        con_printf("eps_charging= "); con_printf(buffer); con_printf("\r\n");
-        con_printf("-----------------------------------\r\n");
-
-        /* Get mTRX */
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_opmode), 10);
-        con_printf("trx_opmode= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_temp_hpa), 10);
-        con_printf("trx_temp_hpa= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_temp_mcu), 10);
-        con_printf("trx_temp_mcu= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer, (unsigned int)sta_get_stateVar(sta_trx_rssi), 10); //itoa(buffer,  (unsigned int)sta_getstateVar(sta_trx_rssi), 10);
-        con_printf("trx_rssi= "); con_printf(buffer); con_printf(" dBm\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_status_tc), 10);
-        con_printf("trx_status_tc= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_count_tm), 10);
-        con_printf("trx_count_tm= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_count_tc), 10);
-        con_printf("trx_count_tc= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_day_last_tc), 10);
-        con_printf("trx_lastcmd_day= "); con_printf(buffer); con_printf("\r\n");
-        con_printf("-----------------------------------\r\n");
-
-        // Cmd buffer control
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_newTcFrame), 10);
-        con_printf("trx_newTcFrame= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_newCmdBuff), 10);
-        con_printf("trx_newCmdBuff= "); con_printf(buffer); con_printf("\r\n");        
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_fpl_index), 10);
-        con_printf("fpl_index= "); con_printf(buffer); con_printf("\r\n");
-        itoa(buffer,  (unsigned int)sta_get_stateVar(sta_MemSD_isAlive), 10);
-        con_printf("msd_status= "); con_printf(buffer); con_printf("\r\n");
-        con_printf("-----------------------------------\r\n");
-    }
+    printf("===============================\r\n");
 
     return 1;
 }

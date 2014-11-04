@@ -126,13 +126,16 @@ typedef enum _DAT_Payload{
                         //Y para indicar el ID de TM de stateVar
 }DAT_Payload_Buff;
 
+#define DAT_PAYBUFF_MODE_USE_MAXINDX 0
+#define DAT_PAYBUFF_MODE_NO_MAXINDX 1
+
 //Get
 BOOL dat_get_Payload_Buff(DAT_Payload_Buff pay_i, unsigned int indx, int *value);
 unsigned int dat_get_MaxPayIndx(DAT_Payload_Buff pay_i);
 unsigned int dat_get_NextPayIndx(DAT_Payload_Buff pay_i);
 
 //Set
-BOOL dat_set_Payload_Buff(DAT_Payload_Buff pay_i, int value);
+BOOL dat_set_Payload_Buff(DAT_Payload_Buff pay_i, int value, int mode);
 void dat_set_MaxPayIndx(DAT_Payload_Buff pay_i, unsigned int lastIndx);
 void dat_set_NextPayIndx(DAT_Payload_Buff pay_i, unsigned int nextIndx);
 

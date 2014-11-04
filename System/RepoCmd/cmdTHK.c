@@ -32,7 +32,7 @@ void thk_onResetCmdTHK(){
     thkFunction[(unsigned char)thk_id_debug] = thk_debug;
 
     thkFunction[(unsigned char)thk_id_executeBeforeFlight] = thk_executeBeforeFlight;
-    thkFunction[(unsigned char)thk_id_state_hw] = thk_state_hw;
+    thkFunction[(unsigned char)thk_id_debug2] = thk_debug2;
     
     thkFunction[(unsigned char)thk_id_silent_time_and_pictures] = thk_silent_time_and_pictures;
     thkFunction[(unsigned char)thk_id_get_AntSwitch_isOpen] = thk_get_AntSwitch_isOpen;
@@ -51,6 +51,8 @@ void thk_onResetCmdTHK(){
     //Power budget restriction
     thkFunction[(unsigned char)thk_id_deploy_antenna] = thk_deploy_antenna;
     thk_sysReq[(unsigned char)thk_id_deploy_antenna]  = CMD_SYSREQ_MIN + SCH_DEP_SYS_REQ;
+    thkFunction[(unsigned char)thk_id_suchai_deployment] = thk_suchai_deployment;
+    thk_sysReq[(unsigned char)thk_id_suchai_deployment]  = CMD_SYSREQ_MIN + SCH_DEP_SYS_REQ;
 
 }
 
@@ -190,6 +192,63 @@ int thk_get_dep_seconds(void* param){
 //    return 1;   //se asume operacion exitosa
 //}
 //------------------------------------------------------------------------------
+int thk_suchai_deployment(void *param)
+{
+    printf("[thk_suchai_deployment] Suchai deployment routine..\r\n");
+    
+    int delay_min = *( (int*)param );
+    portTickType xLastWakeTime = xTaskGetTickCount();
+    portTickType delay_60s    = 60000;    //Task period in [ms]
+    portTickType delay_tick_60s = delay_60s / portTICK_RATE_MS; //Task period in ticks
+
+    unsigned long initial_tick_10ms = xTaskGetTickCount(); //get initial tick-time
+    //unsigned long silent_time_10ms = (180000);     // 30 minutes = 1800 sec = 180000 [10ms]
+    unsigned long silent_time_10ms = delay_min*60*100; // time_s*100 [ms] = time_ms
+    unsigned long final_tick_10ms = initial_tick_10ms + silent_time_10ms;
+
+    printf("[thk_suchai_deployment] initial_tick_10ms = %lu | final_tick_10ms = %lu \r\n", initial_tick_10ms, final_tick_10ms);
+
+    // print rtc time
+    rtc_print(NULL);
+
+    //take picture
+    #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
+        pay_takePhoto_camera(NULL);
+    #endif
+
+    // print rtc time
+    rtc_print(NULL);
+
+    while(TRUE){
+        unsigned long int cu_tick_10ms = xTaskGetTickCount();
+        if( cu_tick_10ms >= final_tick_10ms ){
+            printf("[thk_suchai_deployment] Waiting timeout, cu_tick_10ms = %lu\r\n", cu_tick_10ms);
+            break;
+        }
+        printf("[thk_suchai_deployment] Waiting for timeout, cu_tick_10ms = %lu\r\n", cu_tick_10ms);
+        vTaskDelayUntil(&xLastWakeTime, delay_tick_60s); //Suspend task 60 sec
+    }
+
+    // print rtc time
+    rtc_print(NULL);
+
+    /* Deploy Antena */
+    #if (SCH_ANTENNA_ONBOARD==1)
+        int rt_mode = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
+        thk_deploy_antenna(&rt_mode);
+    #endif
+
+    // print rtc time
+    rtc_print(NULL);
+
+    //deploy langmuir
+    //..
+    //other "only once"-tasks
+    //..
+
+    return 1;
+}
+
 #define THK_SILENT_TIME_MIN 30          ///< cuantos "minutos" (65,535[s]) estara en inactividad antes de iniciarse
 #define THK_MAX_TRIES_ANT_DEPLOY 10               ///< cuantas veces tratara desplegar la antena antes de anunciar fracaso
 #define THK_DEPLOY_TIME 45311          ///< 2*THK_DEPLOY_TIME/1000 indica cuantos "s" estara activo el bus de 3.3V quemando el nilon
@@ -228,15 +287,6 @@ int thk_deploy_antenna(void *param)
         delay_rest_dep_time = (400);
         delay_recheck_dep_time = (200);
     }
-
-
-//    if( thk_check_antenna_isDeployed(delay_recheck_dep_time)==TRUE )
-//    {
-//        #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-//            printf("    * Antenna is already deployed\r\n");
-//        #endif
-//        return 1;
-//    }
     
     //intentos quemando el nylon
     int tries_indx = 0;
@@ -510,7 +560,7 @@ int thk_silent_time_and_pictures(void *param){
     return 1;
 }
 //------------------------------------------------------------------------------
-int thk_state_hw(void *param){
+int thk_debug2(void *param){
     rtc_print(NULL);
     
     printf("Bus Hardware (initialized in dep_init_bus_hw)..\r\n");

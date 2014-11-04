@@ -38,7 +38,7 @@ ______________________________________________________________________________\n
 void taskConsole(void *param)
 {
 #if (SCH_TASKCONSOLE_VERBOSE)
-    con_printf(">>[Console] Started\r\n");
+    printf(">>[Console] Started\r\n");
 #endif
 
     char ret[10];
@@ -55,7 +55,7 @@ void taskConsole(void *param)
     #if (SCH_USE_HOUSEKEEPING == 1)
         /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
         while( TRUE ){
-            if( sta_get_stateVar(sta_AntSwitch_isOpen)==1 ){
+            if( sta_get_stateVar(sta_dep_ant_deployed)==1 ){
                 break;
             }
             vTaskDelayUntil(&xLastWakeTime, _10sec_check);
@@ -66,12 +66,14 @@ void taskConsole(void *param)
     con_init();
 
 #if (SCH_TASKCONSOLE_VERBOSE>=1)
-    con_printf((char *)console_baner);
+    __delay_ms(500);    //helps printing a cleaner banner (avoid interruption)
+    printf((char *)console_baner);
 #endif
 
     while(1)
     {
         vTaskDelay(Delayms);
+        //vTaskDelayUntil(&xLastWakeTime, Delayms);
 
         /* Parsing command - return CmdDisp structure*/
         NewCmd = con_cmd_handler();

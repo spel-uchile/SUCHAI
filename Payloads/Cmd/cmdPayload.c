@@ -65,14 +65,18 @@ void pay_onResetCmdPAY(void){
     payFunction[(unsigned char)pay_id_take_camera] = pay_take_camera;
     payFunction[(unsigned char)pay_id_stop_camera] = pay_stop_camera;
     payFunction[(unsigned char)pay_id_takePhoto_camera] = pay_takePhoto_camera;
-    payFunction[(unsigned char)pay_id_debug_camera] = pay_debug_camera;
+    payFunction[(unsigned char)pay_id_get_savedPhoto_camera] = pay_get_savedPhoto_camera;
 
-    payFunction[(unsigned char)pay_id_isAlive_gps] = pay_isAlive_gps;
     payFunction[(unsigned char)pay_id_get_state_gps] = pay_get_state_gps;
     payFunction[(unsigned char)pay_id_set_state_gps] = pay_set_state_gps;
+    payFunction[(unsigned char)pay_id_isAlive_gps] = pay_isAlive_gps;
+    pay_sysReq[(unsigned char)pay_id_isAlive_gps] =  CMD_SYSREQ_MIN + SCH_PAY_GPS_SYS_REQ;
     payFunction[(unsigned char)pay_id_init_gps] = pay_init_gps;
+    pay_sysReq[(unsigned char)pay_id_init_gps] =  CMD_SYSREQ_MIN + SCH_PAY_GPS_SYS_REQ;
     payFunction[(unsigned char)pay_id_take_gps] = pay_take_gps;
+    pay_sysReq[(unsigned char)pay_id_take_gps] =  CMD_SYSREQ_MIN + SCH_PAY_GPS_SYS_REQ;
     payFunction[(unsigned char)pay_id_stop_gps] = pay_stop_gps;
+    pay_sysReq[(unsigned char)pay_id_stop_gps] =  CMD_SYSREQ_MIN + SCH_PAY_GPS_SYS_REQ;
 
     payFunction[(unsigned char)pay_id_isAlive_expFis] = pay_isAlive_expFis;
     payFunction[(unsigned char)pay_id_get_state_expFis] = pay_get_state_expFis;
@@ -251,7 +255,7 @@ int pay_test_dataRepo(void *param){
         printf(ret); printf("\r\n");
 
         //escribo
-        stat = dat_set_Payload_Buff( pay_i, value);
+        stat = dat_set_Payload_Buff(pay_i, value, DAT_PAYBUFF_MODE_NO_MAXINDX);
         printf("stat = dat_setPayloadVar( pay_i, value);\r\nstat =  ");
         if(stat==TRUE){ printf("TRUE\r\n"); }
         else{ printf("FALSE\nFin del test\r\n"); break; }
@@ -585,7 +589,7 @@ int pay_take_battery(void *param){
 
     int i;
     for(i=0;i<50;i++){
-        dat_set_Payload_Buff(dat_pay_battery, battery_indx);
+        dat_set_Payload_Buff(dat_pay_battery, battery_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
         battery_indx++;
     }
 
@@ -627,8 +631,8 @@ int pay_take_debug(void *param){
     printf("pay_take_debug()..\r\n");
 
     //
-    dat_set_Payload_Buff(dat_pay_debug, 0x01);
-    dat_set_Payload_Buff(dat_pay_debug, 0x02);
+    dat_set_Payload_Buff(dat_pay_debug, 0x01, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_debug, 0x02, DAT_PAYBUFF_MODE_NO_MAXINDX);
     return 1;
 
     /*
@@ -772,18 +776,18 @@ int pay_take_gyro(void *param){
         unsigned int lenBuff;
         lenBuff = (unsigned int)(3);
         dat_reset_Payload_Buff(dat_pay_gyro, lenBuff, 0);
-        dat_set_Payload_Buff(dat_pay_gyro ,0xFAFA);
-        dat_set_Payload_Buff(dat_pay_gyro, 0xFAFA);
-        dat_set_Payload_Buff(dat_pay_gyro, 0xFAFA);
+        dat_set_Payload_Buff(dat_pay_gyro ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_gyro, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_gyro, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
         
         return 1;
     }
 
     GYR_DATA res_data;
     gyr_take_samples(FALSE, &res_data);
-    dat_set_Payload_Buff(dat_pay_gyro, res_data.a_x);
-    dat_set_Payload_Buff(dat_pay_gyro, res_data.a_y);
-    dat_set_Payload_Buff(dat_pay_gyro, res_data.a_z);
+    dat_set_Payload_Buff(dat_pay_gyro, res_data.a_x, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_gyro, res_data.a_y, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_gyro, res_data.a_z, DAT_PAYBUFF_MODE_NO_MAXINDX);
     
     return 1;
 }
@@ -833,7 +837,7 @@ int pay_take_tmEstado(void *param){
     STA_StateVar indxVar; int var;
     for(indxVar=0; indxVar<sta_stateVar_last_one; indxVar++){
         var = sta_get_stateVar(indxVar);
-        dat_set_Payload_Buff(dat_pay_tmEstado, var);
+        dat_set_Payload_Buff(dat_pay_tmEstado, var, DAT_PAYBUFF_MODE_NO_MAXINDX);
         #if (_VERBOSE_>=2)
             printf("sta_get_stateVar[%d] = %d\r\n", indxVar, var);
         #endif
@@ -846,44 +850,29 @@ int pay_stop_tmEstado(void *param){
     return 1;
 }
 //******************************************************************************
-int pay_debug_camera(void *param){
-    int issync;
+int pay_get_savedPhoto_camera(void *param){
+    unsigned int length_indx = dat_get_NextPayIndx(dat_pay_camera);
+    unsigned int index, value;
 
-    //encender camera
-    PPC_CAM_SWITCH=1;
-    printf("PPC_CAM_SWITCH = %d\n", PPC_CAM_SWITCH_CHECK);
+    //Chequeo que pay langth sea la mitad que el
+    printf("[pay_get_savedPhoto_camera]: NextPayIndx = %u \r\n", length_indx);
 
-    // Wait for the camera to be ready
-    cam_wait_hold_wtimeout(TRUE);
+    // print rtc time
+    rtc_print(NULL);
 
-    //initialize camera
-    issync = cam_sync(TRUE);
-    printf("SYNC() arrojo: issync = 0x%X\n", issync);
-
-    if(issync!=0x0000){
-        printf("issync!=0x0000()\r\n");
-        printf("Camera is broken (once again)\r\n");
+    for(index = 0; index<length_indx; index++)
+    {
+        dat_get_Payload_Buff(dat_pay_camera, index, (int* )&value);
+        printf("%04X", (unsigned int)value);    //print also left-side zeros
+        
+        ClrWdt();
     }
+    printf("\r\n");
 
-    //unsigned int larg= cam_photo(0x01, 0x00, 0x05);
-    unsigned int larg= cam_photo(0x07, 0x00, 0x05);
-    #if (_VERBOSE_>=1)
-        char ret[6];
-        printf("cam_photo() retorno ");
-        sprintf (ret, "0x%X", (unsigned int)larg);
-        printf(ret); printf("\r\n");
-    #endif
+    // print rtc time
+    rtc_print(NULL);
 
-    //int mode=CAM_MODE_BOTH;
-    //int mode=CAM_MODE_SAVE_SD;
-    int mode=CAM_MODE_VERBOSE;
-    cam_receivePhoto(larg, mode);
-
-    //apagar camera
-    PPC_CAM_SWITCH=0;
-    printf("PPC_CAM_SWITCH = %d\n", PPC_CAM_SWITCH_CHECK);
-
-    return larg;
+    return 1;
 }
 int pay_isAlive_camera(void *param){
     return cam_isAlive();
@@ -937,17 +926,16 @@ int pay_take_camera(void *param){
         unsigned int lenBuff;
         lenBuff = (unsigned int)(3);
         dat_reset_Payload_Buff(dat_pay_camera, lenBuff, 0);
-        dat_set_Payload_Buff(dat_pay_camera ,0xFAFA);
-        dat_set_Payload_Buff(dat_pay_camera, 0xFAFA);
-        dat_set_Payload_Buff(dat_pay_camera, 0xFAFA);
+        dat_set_Payload_Buff(dat_pay_camera ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_camera, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_camera, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
         return 1;
     }
 
-    int mode = *( (int*)param );
-    //BOOL st = pay_cam_takeAndSave_photo(0x07, 0x00, 0x05, mode);
-    //BOOL st = pay_cam_takeAndSave_photo(0x02, 0x00, 0x05, mode);
-    BOOL st = pay_cam_takeAndSave_photo(0x02, 0x00, 0x05, mode);
+    BOOL st = pay_cam_takeAndSave_photo(0x07, 0x00, 0x05);
+    //BOOL st = pay_cam_takeAndSave_photo(0x02, 0x00, 0x05);
+    //BOOL st = pay_cam_takeAndSave_photo(0x02, 0x00, 0x05);
 
     return st;
 }
@@ -961,101 +949,127 @@ int pay_stop_camera(void *param){
 
     return 1;
 }
-BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type, int mode){
-    printf("pay_takeAndSave_photo()..\r\n");
+BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
+    printf("pay_takeAndSave_photo()\r\n");
 
-    printf(" taking photo..\r\n");
-    unsigned int length= cam_photo(resolution, qual, pic_type);
+    printf(" Taking photo..\r\n");
+    unsigned int photo_byte_length= cam_photo(resolution, qual, pic_type);
     #if (_VERBOSE_>=1)
-        printf("    photo length = %u\r\n", length);
+        printf("    Photo length = %u\r\n", photo_byte_length);
     #endif
 
-    if(length==0){
+    if(photo_byte_length == 0){
+        printf(" Error: No photo was taken ..\r\n");
         unsigned int lenBuff;
         lenBuff = (unsigned int)(3);
         dat_reset_Payload_Buff(dat_pay_camera, lenBuff, 0);
-        dat_set_Payload_Buff(dat_pay_camera ,0xFAFA);
-        dat_set_Payload_Buff(dat_pay_camera, 0xFAFA);
-        dat_set_Payload_Buff(dat_pay_camera, 0xFAFA);
+        dat_set_Payload_Buff(dat_pay_camera ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_camera, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_camera, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
         return FALSE;
     }
 
-    printf("  saving photo..\r\n");
-    static int cnt; BOOL stat;
-    int ml=length/2;    //se guardan 2byten en 1int
+    printf("  Saving photo ..\r\n");
+    unsigned int photo_int_length = photo_byte_length/2;    //se guardan 2byten en 1int
+    printf("  Debug info: photo_int_length = %u, photo_byte_length = %d\r\n",
+            photo_int_length, photo_byte_length);
 
     //Inicializa la estructura de data payload
-    dat_reset_Payload_Buff(dat_pay_camera, ml, 0);
+    dat_reset_Payload_Buff(dat_pay_camera, photo_int_length, 0);
 
-    unsigned char respuesta; char ret[10];
-    unsigned int resp;
+    unsigned int int_r[10];
 
-    int i; cnt=0;
-    for(i=0;i<ml;i++)
+    // print rtc time
+    rtc_print(NULL);
+
+    unsigned int num_10sections, rest_10sections;
+
+    num_10sections = photo_int_length/10;
+    rest_10sections = photo_int_length%10;
+    
+    printf("  Debug info: num_10sections = %d, rest_10sections = %d\r\n",
+            num_10sections, rest_10sections);
+
+    unsigned int iter;
+    for(iter = 0; iter<num_10sections; iter++)
     {
-        resp=0;
-        SPI_nSS_1=0;
-        respuesta=SPI_1_transfer(0x00);
-        SPI_nSS_1=1;
-        resp=(unsigned int)respuesta;
+        //get 1 int out of 2 bytes
+        int_r[0] = pay_camera_get_1int_from_2bytes();
+        int_r[1] = pay_camera_get_1int_from_2bytes();
+        int_r[2] = pay_camera_get_1int_from_2bytes();
+        int_r[3] = pay_camera_get_1int_from_2bytes();
+        int_r[4] = pay_camera_get_1int_from_2bytes();
+        int_r[5] = pay_camera_get_1int_from_2bytes();
+        int_r[6] = pay_camera_get_1int_from_2bytes();
+        int_r[7] = pay_camera_get_1int_from_2bytes();
+        int_r[8] = pay_camera_get_1int_from_2bytes();
+        int_r[9] = pay_camera_get_1int_from_2bytes();
 
-        SPI_nSS_1=0;
-        respuesta=SPI_1_transfer(0x00);
-        SPI_nSS_1=1;
-        resp=( (resp<<8)|((unsigned int)respuesta) );
-
-
-        if( (mode==CAM_MODE_VERBOSE) || (mode==CAM_MODE_BOTH) ){
-
-            //imprime 0's que se comen sprintf y utoa ( a menos que este 1000% seguro, no toque esta parte !! )
-            if( (resp&0xF000)==0x0000 ){ con_printf("0"); }
-            if( (resp&0xFF00)==0x0000 ){ con_printf("0"); }
-            if( (resp&0xFFF0)==0x0000 ){ con_printf("0"); }
-            sprintf (ret, "%X", ((unsigned int)resp) );
-            con_printf(ret);
-        }
-        if( (mode==CAM_MODE_SAVE_SD) || (mode==CAM_MODE_BOTH) ){
-            stat = dat_set_Payload_Buff( dat_pay_camera, (int)resp );
-            //__delay_ms(12);
-            #if (SCH_CAMERA_VERBOSE>=1)
-                cnt++;
-                if(cnt%200==0){
-                    con_printf("still writing memSD .. cnt=");
-                    sprintf (ret, "%X", ((unsigned int)cnt) );
-                    con_printf(ret); con_printf("\r\n");
-                }
-            #endif
-        }
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[0], DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[1], DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[2], DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[3], DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[4], DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[5], DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[6], DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[7], DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[8], DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[9], DAT_PAYBUFF_MODE_NO_MAXINDX);
 
         ClrWdt();
     }
 
-    //Si entro a este if es q tengo un error
-    if( (mode==CAM_MODE_SAVE_SD) || (mode==CAM_MODE_BOTH) ){
-        while(stat==TRUE){
-            stat = dat_set_Payload_Buff( dat_pay_camera, (int)0x0000 );
-            printf("rellenando\r\n");
-            //__delay_ms(12);
-        }
+    for(iter = 0; iter<rest_10sections; iter++)
+    {
+        //get 1 int out of 2 bytes
+        int_r[0] = pay_camera_get_1int_from_2bytes();
+
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[0], DAT_PAYBUFF_MODE_NO_MAXINDX);
+
+        ClrWdt();
     }
+
+    // print rtc time
+    rtc_print(NULL);
+
+    //Chequeo que pay langth sea la mitad que el
+    printf(" Debug info: NextPayIndx = %u \r\n",
+            dat_get_NextPayIndx(dat_pay_camera));
 
     return TRUE;
 }
 int pay_takePhoto_camera(void *param){
     printf("pay_takePhoto_camera ..");
 
-    //2) tomo foto
     pay_init_camera(NULL);
     //int arg = CAM_MODE_VERBOSE;
     //int arg = CAM_MODE_BOTH;
     int arg = CAM_MODE_SAVE_SD;
     int st = pay_take_camera(&arg);
     pay_stop_camera(NULL);
-   //parar ciclo de Payload
+    //parar ciclo de Payload
     int cam_state = SRP_PAY_XXX_STATE_INACTIVE;
     pay_set_state_camera(&cam_state);
             
     return st;
+}
+//aux
+int pay_camera_get_1int_from_2bytes(void){
+    unsigned char byte_r1;
+    unsigned int int_r1;
+    //get 1 int out of 2 bytes
+    int_r1 = 0;
+    SPI_nSS_1 = 0;
+    byte_r1 = SPI_1_transfer(0x00);
+    SPI_nSS_1 = 1;
+    int_r1 = (unsigned int)byte_r1;
+
+    SPI_nSS_1 = 0;
+    byte_r1 = SPI_1_transfer(0x00);
+    SPI_nSS_1 = 1;
+    int_r1 = ( (int_r1<<8)|((unsigned int)byte_r1) );
+    
+    return int_r1;
 }
 //******************************************************************************
 int pay_isAlive_gps(void *param){
@@ -1104,9 +1118,9 @@ int pay_take_gps(void *param){
         unsigned int lenBuff;
         lenBuff = (unsigned int)(3);
         dat_reset_Payload_Buff(dat_pay_gps, lenBuff, 0);
-        dat_set_Payload_Buff(dat_pay_gps ,0xFAFA);
-        dat_set_Payload_Buff(dat_pay_gps, 0xFAFA);
-        dat_set_Payload_Buff(dat_pay_gps, 0xFAFA);
+        dat_set_Payload_Buff(dat_pay_gps ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_gps, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_gps, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
         return 0;
     }
@@ -1184,8 +1198,8 @@ int pay_init_lagmuirProbe(void *param){
 int pay_take_lagmuirProbe(void *param){
     printf("pay_take_lagmuirProbe\r\n");
 
-    dat_set_Payload_Buff(dat_pay_lagmuirProbe, 0x01);
-    dat_set_Payload_Buff(dat_pay_lagmuirProbe, 0x02);
+    dat_set_Payload_Buff(dat_pay_lagmuirProbe, 0x01, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_lagmuirProbe, 0x02, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
 //    #if (SCH_PAY_LANGMUIR_ONBOARD==0)
 //        dat_set_Payload_Buff(dat_pay_lagmuirProbe, 0x01);
@@ -1356,16 +1370,16 @@ int pay_init_sensTemp(void *param){
     //configure Payload
     BOOL s1, s2, s3, s4;
     s1 = sensTemp_init(ST1_ADDRESS);
-    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s1);
+    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s1, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
     s2 = sensTemp_init(ST2_ADDRESS);
-    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s2);
+    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s2, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
     s3 = sensTemp_init(ST3_ADDRESS);
-    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s3);
+    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s3, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
     s4 = sensTemp_init(ST4_ADDRESS);
-    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s4);
+    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s4, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
     //debug info
     printf("  sta_pay_sensTemp_isAlive = %d \r\n", sta_get_stateVar(sta_pay_sensTemp_isAlive) );
@@ -1382,22 +1396,22 @@ int pay_take_sensTemp(void *param){
         unsigned int lenBuff;
         lenBuff = (unsigned int)(3);
         dat_reset_Payload_Buff(dat_pay_sensTemp, lenBuff, 0);
-        dat_set_Payload_Buff(dat_pay_sensTemp ,0xFAFA);
-        dat_set_Payload_Buff(dat_pay_sensTemp, 0xFAFA);
-        dat_set_Payload_Buff(dat_pay_sensTemp, 0xFAFA);
+        dat_set_Payload_Buff(dat_pay_sensTemp ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_sensTemp, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_sensTemp, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
         return 1;
     }
 
     int val;
     val=sensTemp_take(ST1_ADDRESS, FALSE);
-    dat_set_Payload_Buff(dat_pay_sensTemp, val);
+    dat_set_Payload_Buff(dat_pay_sensTemp, val, DAT_PAYBUFF_MODE_NO_MAXINDX);
     val=sensTemp_take(ST2_ADDRESS, FALSE);
-    dat_set_Payload_Buff(dat_pay_sensTemp, val);
+    dat_set_Payload_Buff(dat_pay_sensTemp, val, DAT_PAYBUFF_MODE_NO_MAXINDX);
     val=sensTemp_take(ST3_ADDRESS, FALSE);
-    dat_set_Payload_Buff(dat_pay_sensTemp, val);
+    dat_set_Payload_Buff(dat_pay_sensTemp, val, DAT_PAYBUFF_MODE_NO_MAXINDX);
     val=sensTemp_take(ST4_ADDRESS, FALSE);
-    dat_set_Payload_Buff(dat_pay_sensTemp, val);
+    dat_set_Payload_Buff(dat_pay_sensTemp, val, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
     return 1;
 }

@@ -6,8 +6,8 @@
  *
  */
 
-#ifndef STATUS_REPO_H
-#define STATUS_REPO_H
+#ifndef STATE_REPO_H
+#define STATE_REPO_H
 
 #include "FreeRTOS.h"
 #include "semphr.h"
@@ -21,8 +21,9 @@
 
 //***STATUS REPOSITORY**********************************************************
 #define STA_PPC_OPMODE_NORMAL   (0) /* Operacion normal*/
-#define STA_PPC_OPMODE_RSSI     (1) /* No hay telecomandos, solo usa RSSI*/
-#define STA_PPC_OPMODE_FAIL     (2) /* Falla total */
+#define STA_PPC_OPMODE_TRX_TX   (1) /* Transceiver is TX */
+#define STA_PPC_OPMODE_EXPFIS   (1) /* expFis is running*/
+#define STA_PPC_OPMODE_CAMERA   (1) /* Camera is running */
 
 /**
  * Cubesat's State Variables
@@ -137,15 +138,18 @@ void sta_onReset_stateRepo(void);
 
 
 //STA_StateVar dat_pay_i_to_performVar(DAT_Payload pay_i);
-STA_StateVar sta_pay_i_to_performVar(int pay_i);
+STA_StateVar sta_DAT_Payload_Buff_to_STA_StateVar(DAT_Payload_Buff pay_i);
+//STA_StateVar sta_get_pay_state(int pay_i);
 
 //debug funcitons
 char *sta_varToString(STA_StateVar var_i);
 
 #define SRP_PAY_XXX_STATE_INACTIVE    0x0000
 #define SRP_PAY_XXX_STATE_ACTIVE      0x0001
-#define SRP_PAY_XXX_STATE_RUNNING     0x0002
-#define SRP_PAY_XXX_STATE_WAITING_TX  0x0003
+#define SRP_PAY_XXX_STATE_RUN_INIT    0x0002
+#define SRP_PAY_XXX_STATE_RUN_TAKE    0x0003
+#define SRP_PAY_XXX_STATE_RUN_STOP    0x0004
+#define SRP_PAY_XXX_STATE_WAITING_TX  0x0005
 
-#endif // STATUS_REPO_H
+#endif // STATE_REPO_H
 

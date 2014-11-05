@@ -251,6 +251,60 @@ void Check_FSCM(void)
     if(mPWRMGNT_GetClkFailDetectBit() ){FSCM_Routine();}
 }
 
+
+void sw_reset(int arg){
+    if(arg){
+        printf("Resetting system NOW!! ...\r\n");
+    }
+    PPC_SWReset;
+}
+
+int set_new_osc(int arg){
+    char *txt_result;
+    int result = 0;
+
+    switch( arg ){
+        case 0:
+            result = PwrMgnt_OscSel(FRC_OSC);
+            txt_result = "new Oscillator is FRC_OSC\r\n";
+            break;
+        case 1:
+            result = PwrMgnt_OscSel(FRC_OSC_WITH_POSTSCALER_PLL);
+            txt_result = "FRC_OSC_WITH_POSTSCALER_PLL\r\n";
+            break;
+        case 2:
+            result = (PwrMgnt_OscSel(PRIMARY_OSC) );
+            txt_result = "PRIMARY_OSC\r\n";
+            break;
+        case 3:
+            result = (PwrMgnt_OscSel(PRIMARY_OSC_WITH_PLL) );
+            txt_result = "PRIMARY_OSC_WITH_PLL\r\n";
+            break;
+        case 4:
+            result = (PwrMgnt_OscSel(SECONDRY_OSC) );
+            txt_result = "SECONDRY_OSC\r\n";
+            break;
+        case 5:
+            result = (PwrMgnt_OscSel(LOW_POWER_RC) );
+            txt_result = "LOW_POWER_RC\r\n";
+            break;
+        case 7:
+            result = (PwrMgnt_OscSel(FRC_OSC_WITH_POSTSCALER) );
+            txt_result = "FRC_OSC_WITH_POSTSCALER\r\n";
+            break;
+    }
+    #if(SCH_PIC_PC104_CONFIG_VERBOSE>=1)
+        if(result){
+            printf(txt_result);
+        }
+        else{
+            printf("Failed to set new oscilator\r\n");
+        }
+    #endif
+
+    return result;
+}
+
 /**
  * Rutina para manejo de error tipo FSCM
  */
@@ -264,7 +318,8 @@ void FSCM_Routine(void)
     printf("*******************************************************\r\n");
     
     int arg=FRC_OSC_WITH_POSTSCALER_PLL;
-    ppc_newosc((void *)&arg);
+    //ppc_newosc((void *)&arg);
+    set_new_osc(arg);
 
     printf("***************************************************************\r\n");
     printf("Si ves esto, es porque ahora clk=FRC w PLL\r\n");
@@ -273,7 +328,7 @@ void FSCM_Routine(void)
     printf("***************************************************************\r\n");
 
     mPWRMGNT_GetClkFailDetectBit()=0;
-    ppc_reset(NULL);
+    sw_reset(1);
 }
 
 /**

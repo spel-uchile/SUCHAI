@@ -303,7 +303,7 @@ int pay_FSM_default(void *param){
 
     #if (_VERBOSE_>=1)
         printf("  FSM_default => pay_i = ");
-        dat_print_pay_i_name(pay_i); printf("\r\n");
+        dat_print_payload_name(pay_i); printf("\r\n");
         printf("    ");
     #endif
 
@@ -1423,7 +1423,7 @@ int pay_stop_sensTemp(void *param){
 PAY_State pay_nextStateLogic(PAY_State pay_sem, DAT_Payload_Buff pay_i){
     STA_StateVar dat_pay_xxx_perform;
 
-    dat_pay_xxx_perform = sta_pay_i_to_performVar(pay_i);
+    dat_pay_xxx_perform = sta_DAT_Payload_Buff_to_STA_StateVar(pay_i);
 
     //logica del cambio de estados
     switch(pay_sem){
@@ -1569,7 +1569,7 @@ void pay_currentStateLogic(PAY_State pay_sem_state, DAT_Payload_Buff pay_i){
                 break;
             }
             //parar ciclo de Payload
-            STA_StateVar dat_perfVar=sta_pay_i_to_performVar(pay_i);
+            STA_StateVar dat_perfVar=sta_DAT_Payload_Buff_to_STA_StateVar(pay_i);
             //sta_set_stateVar(dat_perfVar, SRP_PAY_XXX_STATE_INACTIVE );
             //TODO: revisar
 

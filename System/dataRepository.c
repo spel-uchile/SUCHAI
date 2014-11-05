@@ -489,7 +489,7 @@ void dat_reset_Payload_Buff(DAT_Payload_Buff pay_i, unsigned int lenBuff, int mo
 //        printf("reseteo de payload completo\n");
 //    #endif
 }
-void dat_print_pay_i_name(DAT_Payload_Buff pay_i){
+void dat_print_payload_name(DAT_Payload_Buff pay_i){
     switch(pay_i){
         case dat_pay_lagmuirProbe:
             printf("dat_pay_lagmuirProbe");
@@ -513,7 +513,7 @@ void dat_print_pay_i_name(DAT_Payload_Buff pay_i){
             printf("dat_pay_tmEstado");
         break;
         case dat_pay_battery:
-            printf("dat_pay_batter");
+            printf("dat_pay_battery");
         break;
         case dat_pay_debug:
             printf("dat_pay_debug");

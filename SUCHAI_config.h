@@ -50,8 +50,8 @@
 #define SCH_PAY_GPS_ONBOARD                 (1)  ///< Onboard => UART4 en uso, 1 pin(es) en modo Switch
 #define SCH_PAYCAM_nMEMFLASH_ONBOARD        (1)  ///< Onboard => SPI-1 asignado a la Camara. Offboard => SPI-1 asignado a memFlash
 #define SCH_PAY_TMESTADO_ONBOARD            (1)  ///< 1 = Onboard 0 = Offboard
-#define SCH_PAY_BATTERY_ONBOARD               (0)  ///< 1 = Onboard 0 = Offboard
-#define SCH_PAY_DEBUG_ONBOARD               (0)  ///< 1 = Onboard 0 = Offboard
+#define SCH_PAY_BATTERY_ONBOARD             (1)  ///< 1 = Onboard 0 = Offboard
+#define SCH_PAY_DEBUG_ONBOARD               (1)  ///< 1 = Onboard 0 = Offboard
 
 /* Command Repo configs */
 #define SCH_CMD_PPC         (0x10)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
@@ -89,7 +89,7 @@
 #define SCH_FLIGHTPLAN_N_CMD                    ((24 * 60) / SCH_FLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]
 #define SCH_FLIGHTPLAN_EXTMEMORY                (1)     ///< (0) buffer en  RAM, (1) en memoria SD
 #define SCH_USE_FLIGHTPLAN                      (0)     ///< 1 = use it, 0 = do not use it
-#define SCH_USE_FLIGHTPLAN2                     (0)     ///< 1 = use it, 0 = do not use it
+#define SCH_USE_FLIGHTPLAN2                     (1)     ///< 1 = use it, 0 = do not use it
 #define SCH_USE_HOUSEKEEPING                    (1)     ///< 1 = use it, 0 = do not use it
 
 /**

@@ -25,20 +25,17 @@ extern xQueueHandle dispatcherQueue;
 void taskFlightPlan2(void *param)
 {
 #if (SCH_FLIGHTPLAN2_VERBOSE)
-        con_printf(">>[FlightPlan2] Started\r\n");
+        printf(">>[FlightPlan2] Started\r\n");
 #endif
 
 #if SCH_FLIGHTPLAN2_REALTIME
-    portTickType _1sec_check = (1000) / portTICK_RATE_MS;      /* check every 1sec  */
-    portTickType _10sec_check = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
-    unsigned int elapsed_sec = 0;
-    unsigned int _4sec_check = (8);                /* check every 4 sec */
-    unsigned int _5min_check = (300);                /* check every 5min */
+    unsigned int min_check_period_ms = 10000;      /* check every x ms  */
+    portTickType check_time = (min_check_period_ms) / portTICK_RATE_MS;
+    portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
 #else
-    portTickType _1sec_check = (250) / portTICK_RATE_MS;      /* check every 250ms  */
-    unsigned int elapsed_sec = 0;
-    unsigned int _4sec_check = (4);              /* check every 4*0,25 sec=1seg */
-    unsigned int _5min_check = (30);                /* check every 30 sec  */
+    unsigned int min_check_period_ms = 1000;      /* check every 2sec  */
+    portTickType check_time = (min_check_period_ms) / portTICK_RATE_MS;
+    portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
 #endif
 
     DispCmd NewCmd;
@@ -46,58 +43,43 @@ void taskFlightPlan2(void *param)
     NewCmd.cmdId = CMD_CMDNULL;
     NewCmd.param = 0;
 
+    /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
     portTickType xLastWakeTime = xTaskGetTickCount();
-
     #if (SCH_USE_HOUSEKEEPING == 1)
-        /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
         while( TRUE ){
             if( sta_get_stateVar(sta_dep_ant_deployed)==1 ){
                 break;
             }
-            vTaskDelayUntil(&xLastWakeTime, _10sec_check);
+            vTaskDelayUntil(&xLastWakeTime, check_deployment_time);
         }
     #endif
 
     while(1)
     {
-        vTaskDelayUntil(&xLastWakeTime, _1sec_check);
-        elapsed_sec++;
+        /* min_check_period_ms actions */
+        vTaskDelayUntil(&xLastWakeTime, check_time);
+        //Add commands below ..
 
-        /* codigo para _1sec_check */
-        if(1)
-        {
-            //nothing to do here
+        #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+            printf("[FlightPlan2] min_check_period_ms (%d) actions ..\r\n", min_check_period_ms);
+        #endif
+
+        //fp2_pay_i_multiplexing(dispatcherQueue);
+        if(sta_get_stateVar(sta_ppc_opMode)==STA_PPC_OPMODE_NORMAL){
+            fp2_pay_i_simultaneous(dispatcherQueue);
         }
 
-        // codigo para _20sec_check 
-        if((elapsed_sec % _4sec_check) == 0)
-        {
-            #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
-                con_printf("[FlightPlan2] _4sec_check\r\n");
-            #endif
-
-            fp2_pay_i_multiplexing(dispatcherQueue);
-            //fp2_pay_i_simultaneous(dispatcherQueue);
-        }
-        
-        // codigo para _5min_check
-        if((elapsed_sec % _5min_check) == 0)
-        {
-            elapsed_sec = 0;
-            #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
-                con_printf("[FlightPlan2] _5min_check\r\n");
-            #endif
-
-            //ejecuto payload TMestado
-            NewCmd.cmdId = pay_id_FSM_default;
-            NewCmd.param = dat_pay_tmEstado;
-            xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
+//            //ejecuto payload tmEstado
+//            NewCmd.cmdId = pay_id_FSM_default;
+//            NewCmd.param = dat_pay_tmEstado;
+//            xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
             
-        }
     }
 }
 
 void fp2_pay_i_multiplexing(xQueueHandle dispatcherQueue){
+    printf("fp2_pay_i_multiplexing ..\r\n");
+
     DispCmd NewCmd;
     NewCmd.cmdId = CMD_CMDNULL;
     NewCmd.idOrig = CMD_IDORIG_TFLIGHTPLAN2;
@@ -110,17 +92,46 @@ void fp2_pay_i_multiplexing(xQueueHandle dispatcherQueue){
         printf("fp2_pay_i_multiplexing => pay_i = %d\r\n", (unsigned int)current_pay_i);
     #endif
 
+    int pay_i_state = sta_get_stateVar(sta_DAT_Payload_Buff_to_STA_StateVar(current_pay_i));
+    switch(pay_i_state){
+        case SRP_PAY_XXX_STATE_INACTIVE:
+            printf("  pay_i = "); dat_print_payload_name(current_pay_i);
+            printf(", state = SRP_PAY_XXX_STATE_INACTIVE \r\n");
+            break;
+        case SRP_PAY_XXX_STATE_ACTIVE:
+            printf("  pay_i = "); dat_print_payload_name(current_pay_i);
+            printf(", state = SRP_PAY_XXX_STATE_ACTIVE \r\n");
+            break;
+        case SRP_PAY_XXX_STATE_RUN_INIT:
+            printf("  pay_i = "); dat_print_payload_name(current_pay_i);
+            printf(", state = SRP_PAY_XXX_STATE_RUNNING \r\n");
+            break;
+        case SRP_PAY_XXX_STATE_WAITING_TX:
+            printf("  pay_i = "); dat_print_payload_name(current_pay_i);
+            printf(", state = SRP_PAY_XXX_STATE_WAITING_TX \r\n");
+            break;
+        default:
+            printf("  pay_i = "); dat_print_payload_name(current_pay_i);
+            printf(", state = [ERROR] Unknown State \r\n");
+            break;
+    }
+    return;
+
     switch(current_pay_i){
         //excluyo casos particulares
-        case dat_pay_tmEstado:
+        case dat_pay_camera:
+            //do nothing
+            printf("dat_pay_tmEstado does not use FSM_default..\r\n");
+            break;
+        case dat_pay_expFis:
             //do nothing
             //printf("dat_pay_tmEstado does not use FSM_default..\r\n");
-        break;
+            break;
         default:
             NewCmd.cmdId = pay_id_FSM_default;
             NewCmd.param = current_pay_i;
             xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
-        break;
+            break;
     }
 
     //Si el actual es el ultimo, el proximo sera el primero
@@ -132,6 +143,10 @@ void fp2_pay_i_multiplexing(xQueueHandle dispatcherQueue){
     }
 }
 
+/**
+ * Check the payloads "simultaneouslly" and execute it in reentrant calling multiples
+ * @param dispatcherQueue
+ */
 void fp2_pay_i_simultaneous(xQueueHandle dispatcherQueue)
 {
     DispCmd NewCmd;
@@ -139,17 +154,141 @@ void fp2_pay_i_simultaneous(xQueueHandle dispatcherQueue)
     NewCmd.idOrig = CMD_IDORIG_TFLIGHTPLAN2;
     NewCmd.param = 0;
 
-    //ejecuto payloads, "simultaneamente" osea, todos en cada ciclo
-    STA_StateVar dat_pay_xxx_perform = sta_pay_i_to_performVar(dat_pay_tmEstado);
-    DAT_Payload_Buff pay_i;
+    //reviso payloads "simultaneamente" y ejecuto en multiplos de cada llamada reentrante
+    static long unsigned int exec_tick;
+    exec_tick++;
 
+    DAT_Payload_Buff pay_i; int pay_i_state, next_state, pay_i_tick_rate;
     for(pay_i = 0; pay_i < dat_pay_last_one; pay_i++)
     {
-        if(sta_get_stateVar(dat_pay_xxx_perform) == 0x0001)
-        {
-            NewCmd.cmdId = pay_id_FSM_default;
-            NewCmd.param = pay_i;
-            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+        //if( fp2_sim_exe_every_tick[pay_i]%exec_tick )
+        pay_i_state = sta_get_stateVar(sta_DAT_Payload_Buff_to_STA_StateVar(pay_i));
+        switch(pay_i_state){
+            case SRP_PAY_XXX_STATE_INACTIVE:
+//                printf("  pay_i = "); dat_print_payload_name(pay_i); printf("\r\n");
+//                printf("  state = SRP_PAY_XXX_STATE_INACTIVE \r\n");
+//                printf("---------------------------------------------\r\n");
+                break;
+            case SRP_PAY_XXX_STATE_ACTIVE:
+                pay_i_tick_rate = fp2_get_pay_exec_rate(pay_i);
+                if( exec_tick%pay_i_tick_rate == 0 ){
+                    printf("  pay_i = %d = ", pay_i); dat_print_payload_name(pay_i); printf("\r\n");
+                    printf("  state = SRP_PAY_XXX_STATE_ACTIVE \r\n");
+                    printf("  pay_i_tick_rate = %d \r\n", pay_i_tick_rate);
+                    printf("  exec_tick = %lu \r\n", exec_tick);
+                    printf("---------------------------------------------\r\n");
+
+//                    //change state to SRP_PAY_XXX_STATE_RUN_INIT
+//                    next_state = SRP_PAY_XXX_STATE_RUN_INIT;
+//                    fp2_set_pay_state(pay_i, next_state);
+                }
+                break;
+            case SRP_PAY_XXX_STATE_RUN_INIT:
+                printf("  pay_i = "); dat_print_payload_name(pay_i);
+                printf(", state = SRP_PAY_XXX_STATE_RUN_INIT \r\n");
+                break;
+            case SRP_PAY_XXX_STATE_RUN_TAKE:
+                printf("  pay_i = "); dat_print_payload_name(pay_i);
+                printf(", state = SRP_PAY_XXX_STATE_RUN_TAKE \r\n");
+                break;
+            case SRP_PAY_XXX_STATE_RUN_STOP:
+                printf("  pay_i = "); dat_print_payload_name(pay_i);
+                printf(", state = SRP_PAY_XXX_STATE_RUN_STOP \r\n");
+                break;
+            case SRP_PAY_XXX_STATE_WAITING_TX:
+                printf("  pay_i = "); dat_print_payload_name(pay_i);
+                printf(", state = SRP_PAY_XXX_STATE_WAITING_TX \r\n");
+                break;
+            default:
+                printf("  pay_i = "); dat_print_payload_name(pay_i);
+                printf(", state = [ERROR] Unknown State \r\n");
+                break;
         }
+//        STA_StateVar dat_pay_xxx_state = sta_DAT_Payload_Buff_to_STA_StateVar(dat_pay_tmEstado);
+//        if(sta_get_stateVar(dat_pay_xxx_perform) == 0x0001)
+//        {
+//            NewCmd.cmdId = pay_id_FSM_default;
+//            NewCmd.param = pay_i;
+//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+//        }
+        //__delay_ms(100);   //separate commands
+    }
+}
+
+/**
+ * Return the number of tick before a pay_i is to be executed
+ * @param pay_i
+ * @return Return the number of tick before a pay_i is to be executed
+ */
+int fp2_get_pay_exec_rate(DAT_Payload_Buff pay_i){
+    switch(pay_i){
+        case dat_pay_tmEstado:
+            return 1;
+            break;
+        case dat_pay_battery:
+            return 2;
+            break;
+        case dat_pay_debug:
+            return 3;
+            break;
+        case dat_pay_lagmuirProbe:
+            return 4;
+            break;
+        case dat_pay_gps:
+            return 5;
+            break;
+        case dat_pay_camera:
+            return 6;
+            break;
+        case dat_pay_sensTemp:
+            return 7;
+            break;
+        case dat_pay_gyro:
+            return 8;
+            break;
+        case dat_pay_expFis:
+            return 9;
+            break;
+        case dat_pay_last_one:
+            //ignore
+            break;
+    }
+    return -1;
+}
+
+void fp2_set_pay_state(DAT_Payload_Buff pay_i, int state){
+    //change state
+    switch(pay_i){
+        case dat_pay_tmEstado:
+            pay_set_state_tmEstado(&state);
+            break;
+        case dat_pay_battery:
+            pay_set_state_battery(&state);
+            break;
+        case dat_pay_debug:
+            pay_set_state_debug(&state);
+            break;
+        case dat_pay_lagmuirProbe:
+            pay_set_state_lagmuirProbe(&state);
+            break;
+        case dat_pay_gps:
+            pay_set_state_gps(&state);
+            break;
+        case dat_pay_camera:
+            pay_set_state_camera(&state);
+            break;
+        case dat_pay_sensTemp:
+            pay_set_state_sensTemp(&state);
+            break;
+        case dat_pay_gyro:
+            pay_set_state_gyro(&state);
+            break;
+        case dat_pay_expFis:
+            pay_set_state_expFis(&state);
+            break;
+        case dat_pay_last_one:
+            //ignore
+//            state = state;
+            break;
     }
 }

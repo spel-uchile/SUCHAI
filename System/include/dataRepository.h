@@ -149,7 +149,7 @@ void dat_erase_Payload_Buff(DAT_Payload_Buff pay_i);
 //Auxiliary functions
 unsigned long dat_pay_i_to_block(DAT_Payload_Buff pay_i);
 BOOL dat_isFull_Payload_Buff(DAT_Payload_Buff pay_i);
-void dat_print_pay_i_name(DAT_Payload_Buff pay_i);
+void dat_print_payload_name(DAT_Payload_Buff pay_i);
 
 //******************************************************************************
 // DAT_AuxBuff

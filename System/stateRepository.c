@@ -91,7 +91,7 @@ int sta_get_stateVar(STA_StateVar indxVar){
                 break;
             // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
             case sta_pay_lagmuirProbe_isAlive:
-                printf("PAY => (Payload subsystem)\r\n");
+                //printf("PAY => (Payload subsystem)\r\n");
                 value = pay_isAlive_lagmuirProbe(NULL);
                 break;
             case sta_pay_sensTemp_isAlive:
@@ -123,12 +123,12 @@ int sta_get_stateVar(STA_StateVar indxVar){
                 break;
             //FPL => (C&DH subsystem)
             case sta_fpl_index:
-                printf("FPL => (C&DH subsystem, Fligth Plan)\r\n");
+                //printf("FPL => (C&DH subsystem, Fligth Plan)\r\n");
                 value =  drp_fpl_get_index(NULL);
                 break;
             //PPC => (C&DH subsystem)
             case sta_ppc_opMode:
-                printf("PPC => (C&DH subsystem)\r\n");
+                //printf("PPC => (C&DH subsystem)\r\n");
                 value = ppc_get_opMode(NULL);
                 break;
             case sta_ppc_lastResetSource:
@@ -165,7 +165,7 @@ int sta_get_stateVar(STA_StateVar indxVar){
                 break;
             //DEP => (C&DH subsystem)
             case sta_dep_ant_deployed:
-                printf("DEP => (C&DH subsystem)\r\n");
+                //printf("DEP => (C&DH subsystem)\r\n");
                 value = thk_get_dep_ant_deployed(NULL);
                 break;
             case sta_dep_ant_tries:
@@ -194,7 +194,7 @@ int sta_get_stateVar(STA_StateVar indxVar){
                 break;
             //RTC => (C&DH subsystem)
             case sta_rtc_year:
-                printf("RTC => (C&DH subsystem)\r\n");
+                //printf("RTC => (C&DH subsystem)\r\n");
                 value = RTC_get_year();
                 break;
             case sta_rtc_month:
@@ -218,7 +218,7 @@ int sta_get_stateVar(STA_StateVar indxVar){
             #if (SCH_EPS_ONBOARD==1)
                 //EPS => (Energy subsystem)
                 case sta_eps_bat0_voltage:
-                    printf("EPS => (Energy subsystem)\r\n");
+                    //printf("EPS => (Energy subsystem)\r\n");
                     value = readEPSvars(EPS_ID_bat0_voltage);
                     break;
                 case sta_eps_bat0_current:
@@ -258,7 +258,7 @@ int sta_get_stateVar(STA_StateVar indxVar){
             #if (SCH_TRX_ONBOARD==1)
                 //TRX => (Communication subsystem)
                 case sta_trx_opmode:
-                    printf("TRX => (Communication subsystem)\r\n");
+                    //printf("TRX => (Communication subsystem)\r\n");
                     break;
                 case sta_trx_temp_hpa:
                     break;
@@ -286,7 +286,7 @@ int sta_get_stateVar(STA_StateVar indxVar){
             #endif
             //PAY => (Payload subsystem)
             case sta_pay_lagmuirProbe_state:
-                printf("PAY => (Payload subsystem)\r\n");
+                //printf("PAY => (Payload subsystem)\r\n");
                 value = pay_get_state_lagmuirProbe(NULL);
                 break;
             case sta_pay_sensTemp_state:
@@ -312,6 +312,7 @@ int sta_get_stateVar(STA_StateVar indxVar){
                 break;
             case sta_pay_debug_state:
                 value = pay_get_state_debug(NULL);
+                break;
 //            case:
 //                break;
             default:
@@ -406,49 +407,49 @@ void sta_onReset_stateRepo(void)
 }
 
 /**
- * Asocia el STA_Payload pay_i a la DAT_StateVar que controla la ejecucion o
+ * Asocia el DAT_Payload_Buff pay_i a la STA_StateVar que controla la ejecucion o
  * o no de ese Payload
  * @param pay_i DAT_Payload del que quiero obtener el DAT_StateVar
  * @return DAT_StateVar dat_pay_xxx_perform
  */
 //STA_StateVar dat_pay_i_to_performVar(DAT_Payload pay_i){
-STA_StateVar sta_pay_i_to_performVar(int pay_i){
-    STA_StateVar dat_pay_xxx_perform;
+STA_StateVar sta_DAT_Payload_Buff_to_STA_StateVar(DAT_Payload_Buff pay_i){
+    STA_StateVar dat_pay_xxx_state;
 
     switch(pay_i){
         case dat_pay_lagmuirProbe:
-            dat_pay_xxx_perform = sta_pay_lagmuirProbe_state;
+            dat_pay_xxx_state = sta_pay_lagmuirProbe_state;
         break;
         case dat_pay_sensTemp:
-            dat_pay_xxx_perform = sta_pay_sensTemp_state;
+            dat_pay_xxx_state = sta_pay_sensTemp_state;
         break;
         case dat_pay_gps:
-            dat_pay_xxx_perform = sta_pay_gps_state;
+            dat_pay_xxx_state = sta_pay_gps_state;
         break;
         case dat_pay_gyro:
-            dat_pay_xxx_perform = sta_pay_gyro_state;
+            dat_pay_xxx_state = sta_pay_gyro_state;
         break;
         case dat_pay_expFis:
-            dat_pay_xxx_perform = sta_pay_expFis_state;
+            dat_pay_xxx_state = sta_pay_expFis_state;
         break;
         case dat_pay_camera:
-            dat_pay_xxx_perform = sta_pay_camera_state;
+            dat_pay_xxx_state = sta_pay_camera_state;
         break;
         case dat_pay_tmEstado:
-            dat_pay_xxx_perform = sta_pay_tmEstado_state;
+            dat_pay_xxx_state = sta_pay_tmEstado_state;
         break;
         case dat_pay_battery:
-            dat_pay_xxx_perform = sta_pay_battery_state;
+            dat_pay_xxx_state = sta_pay_battery_state;
         break;
         case dat_pay_debug:
-            dat_pay_xxx_perform = sta_pay_debug_state;
+            dat_pay_xxx_state = sta_pay_debug_state;
         break;
         default:
-            dat_pay_xxx_perform=-1;
+            dat_pay_xxx_state=-1;
         break;
     }
 
-    return dat_pay_xxx_perform;
+    return dat_pay_xxx_state;
 }
 
 char* sta_varToString(STA_StateVar var_i){

@@ -133,14 +133,16 @@ int srp_memEEPROM_initial_state(void * param){
         pay_set_state_gps(&arg);
     #endif
     #if (SCH_PAY_FIS_ONBOARD==1)
-        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        //arg = SRP_PAY_XXX_STATE_ACTIVE;
+        arg = SRP_PAY_XXX_STATE_INACTIVE;   //special case, not executed by FP2
         pay_set_state_expFis(&arg);
     #else
         arg = SRP_PAY_XXX_STATE_INACTIVE;
         pay_set_state_expFis(&arg);
     #endif
     #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
-        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        //  arg = SRP_PAY_XXX_STATE_ACTIVE;
+        arg = SRP_PAY_XXX_STATE_INACTIVE;   //special case, not executed by FP2
         pay_set_state_camera(&arg);
     #else
         arg = SRP_PAY_XXX_STATE_INACTIVE;

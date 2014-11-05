@@ -55,8 +55,6 @@ void taskHouskeeping(void *param)
     NewCmd.cmdId = CMD_CMDNULL;
     NewCmd.param = 0;
 
-    portTickType xLastWakeTime = xTaskGetTickCount();
-
     //deploy if necessary
     if( sta_get_stateVar(sta_dep_ant_deployed) == 0 ){
 
@@ -70,7 +68,9 @@ void taskHouskeeping(void *param)
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
         #endif
     }
-    
+
+    /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
+    portTickType xLastWakeTime = xTaskGetTickCount();
     while(TRUE)
     {
         /* 1 seconds actions */

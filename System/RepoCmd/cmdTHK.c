@@ -197,9 +197,9 @@ int thk_suchai_deployment(void *param)
     printf("[thk_suchai_deployment] Suchai deployment routine..\r\n");
     
     int delay_min = *( (int*)param );
-    portTickType xLastWakeTime = xTaskGetTickCount();
-    portTickType delay_60s    = 60000;    //Task period in [ms]
-    portTickType delay_tick_60s = delay_60s / portTICK_RATE_MS; //Task period in ticks
+//    portTickType xLastWakeTime = xTaskGetTickCount();
+//    portTickType delay_60s    = 60000;    //Task period in [ms]
+//    portTickType delay_tick_60s = delay_60s / portTICK_RATE_MS; //Task period in ticks
 
     unsigned long initial_tick_10ms = xTaskGetTickCount(); //get initial tick-time
     //unsigned long silent_time_10ms = (180000);     // 30 minutes = 1800 sec = 180000 [10ms]
@@ -212,8 +212,12 @@ int thk_suchai_deployment(void *param)
     rtc_print(NULL);
 
     //take picture
-    #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
-        pay_takePhoto_camera(NULL);
+    #if(SCH_PAYCAM_nMEMFLASH_ONBOARD==1 )
+        #if(SCH_THK_SILENT_REALTIME==1)
+            pay_takePhoto_camera(NULL); //takes 10min to complete
+        #else
+            printf("  Jumping pay_takePhoto_camera(NULL) call, it takes 10min to complete ..\r\n");
+        #endif
     #endif
 
     // print rtc time
@@ -226,7 +230,8 @@ int thk_suchai_deployment(void *param)
             break;
         }
         printf("[thk_suchai_deployment] Waiting for timeout, cu_tick_10ms = %lu\r\n", cu_tick_10ms);
-        vTaskDelayUntil(&xLastWakeTime, delay_tick_60s); //Suspend task 60 sec
+        //vTaskDelayUntil(&xLastWakeTime, delay_tick_60s); //Suspend task 60 sec
+        __delay_ms(60000);  //delay 60sec
     }
 
     // print rtc time
@@ -615,7 +620,7 @@ int thk_debug2(void *param){
         printf("  sta_pay_test1_isAlive = %d \r\n", sta_get_stateVar(sta_pay_battery_isAlive) );
     #endif
     #if (SCH_PAY_DEBUG_ONBOARD==1)
-        pay_init_test2(NULL);
+        pay_init_debug(NULL);
         printf("  sta_pay_test2_isAlive = %d \r\n", sta_get_stateVar(sta_pay_debug_isAlive) );
     #endif
     #if (SCH_PAY_LANGMUIR_ONBOARD==1)

@@ -19,6 +19,7 @@
 
 #include "pic_pc104_config.h"
 #include "cmdIncludes.h"
+#include "stateRepository.h"
 #include "dataRepository.h"
 
 void taskFlightPlan(void *param);

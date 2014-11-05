@@ -49,16 +49,16 @@ void taskConsole(void *param)
     NewCmd.cmdId = CMD_CMDNULL;  /* cmdNULL */
     NewCmd.param = 0;
 
-    portTickType _10sec_check = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
+    portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
+
+    /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
     portTickType xLastWakeTime = xTaskGetTickCount();
-    
     #if (SCH_USE_HOUSEKEEPING == 1)
-        /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
         while( TRUE ){
             if( sta_get_stateVar(sta_dep_ant_deployed)==1 ){
                 break;
             }
-            vTaskDelayUntil(&xLastWakeTime, _10sec_check);
+            vTaskDelayUntil(&xLastWakeTime, check_deployment_time);
         }
     #endif
 

@@ -196,50 +196,9 @@ int ppc_set_hoursWithoutReset(void* param){
 int ppc_newosc(void * osc)
 {
     int i = *(int *)osc;
-    char *txt_result;
-    int result;
+    set_new_osc(i);
 
-    switch( i ){
-        case 0:
-            result = PwrMgnt_OscSel(FRC_OSC);
-            txt_result = "new Oscillator is FRC_OSC\r\n";
-            break;
-        case 1:
-            result = PwrMgnt_OscSel(FRC_OSC_WITH_POSTSCALER_PLL);
-            txt_result = "FRC_OSC_WITH_POSTSCALER_PLL\r\n";
-            break;
-        case 2:
-            result = (PwrMgnt_OscSel(PRIMARY_OSC) );
-            txt_result = "PRIMARY_OSC\r\n";
-            break;
-        case 3:
-            result = (PwrMgnt_OscSel(PRIMARY_OSC_WITH_PLL) );
-            txt_result = "PRIMARY_OSC_WITH_PLL\r\n";
-            break;
-        case 4:
-            result = (PwrMgnt_OscSel(SECONDRY_OSC) );
-            txt_result = "SECONDRY_OSC\r\n";
-            break;
-        case 5:
-            result = (PwrMgnt_OscSel(LOW_POWER_RC) );
-            txt_result = "LOW_POWER_RC\r\n";
-            break;
-        case 7:
-            result = (PwrMgnt_OscSel(FRC_OSC_WITH_POSTSCALER) );
-            txt_result = "FRC_OSC_WITH_POSTSCALER\r\n";
-            break;
-    }
-
-#if SCH_CMDPPC_VERBOSE
-    if(result){
-        printf(txt_result);
-    }
-    else{
-        printf("Failed to set new oscilator\r\n");
-    }
-#endif
-        
-    return result;
+    return 1;
 }
 
 
@@ -338,9 +297,8 @@ int ppc_get_osc(void *param)
  *----------------------------------------------------------------------------*/
 int ppc_reset(void* param)
 {
-    if(*(int *)param)
-        con_printf("Resetting system NOW!! ...\r\n");
-    PPC_SWReset;
+    int arg = *((int *)param);
+    sw_reset(arg);
     
     return 1;
 }

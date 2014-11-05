@@ -33,6 +33,9 @@ void taskFlightPlan2(void *param);
 void fp2_pay_i_multiplexing(xQueueHandle cmdQueue);
 void fp2_pay_i_simultaneous(xQueueHandle cmdQueue);
 
+int fp2_get_pay_exec_rate(DAT_Payload_Buff pay_i);
+void fp2_set_pay_state(DAT_Payload_Buff pay_i, int state);
+
 #endif //T_FLIGHTPLAN2_H
 
 

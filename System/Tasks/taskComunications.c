@@ -54,9 +54,8 @@ void taskComunications(void *param)
     unsigned long seconds_cnt = 0; /* Contador para comandos periodicos */
     unsigned int type_cnt = 0; /* Identificador del tipo de beacon siguiente */
 
-    portTickType xLastWakeTime = xTaskGetTickCount();
-
     /* Comienza el ciclo de la tarea */
+    portTickType xLastWakeTime = xTaskGetTickCount();
     while(1)
     {
         /* Tarea periodica cada 1 Segundos*/

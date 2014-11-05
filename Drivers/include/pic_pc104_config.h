@@ -48,7 +48,7 @@
 #include "eps_suchai.h"
 
 //Comandos
-#include "cmdPPC.h"
+//#include "cmdPPC.h"
 
 
 /**
@@ -180,6 +180,8 @@ unsigned int Current_OSCILLATOR(void);
 #define PPC_ENABLE_SOSC()	_SOSCEN=1   ///< SOSC Enable
 #define PPC_DISABLE_SOSC()	_SOSCEN=0	///< SOSC Disabled
 
+void sw_reset(int arg);
+int set_new_osc(int arg);
 void Check_FSCM(void);
 void FSCM_Routine(void);
 

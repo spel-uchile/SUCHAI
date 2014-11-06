@@ -18,6 +18,7 @@
  */
 
 #include "cmdPayload.h"
+#include "taskFlightPlan2.h"
 
 
 cmdFunction payFunction[PAY_NCMD];
@@ -33,7 +34,7 @@ void pay_onResetCmdPAY(void){
     for(i=0; i<PAY_NCMD; i++) pay_sysReq[i] = CMD_SYSREQ_MIN;
 
     payFunction[(unsigned char)pay_id_test_dataRepo] = pay_test_dataRepo;
-    payFunction[(unsigned char)pay_id_FSM_default] = pay_FSM_default;
+    payFunction[(unsigned char)pay_id_fp2_default_fsm] = pay_fp2_default_fsm;
 
     payFunction[(unsigned char)pay_id_isAlive_tmEstado] = pay_isAlive_tmEstado;
     payFunction[(unsigned char)pay_id_get_state_tmEstado] = pay_get_state_tmEstado;
@@ -111,7 +112,17 @@ void pay_onResetCmdPAY(void){
 }
 
 
-//****************************************************************
+/**
+ *
+ * @param param
+ * @return
+ */
+int pay_fp2_default_fsm(void *param){
+    //pay_fp2_multiplexing();
+    pay_fp2_simultaneous();
+    return 1;
+}
+//******************************************************************************
 int pay_debugPay(void *param){
     DAT_Payload_Buff pay_i = *((DAT_Payload_Buff*)param);
     int res;
@@ -280,46 +291,6 @@ int pay_test_dataRepo(void *param){
     return 1;
 }
 
-/**
- * Comando para manejar la ejecucion por default de un Payload indicado en el parametro.
- * Cada vez que se llama esta funcion, la FSM ejecuta el estado PAY_State correspondiente para pay_i
- * @param param Puntero a DAT_Payload con el pay_i que se quiere manejar
- * @return 1 success, 0 fail
- */
-int pay_FSM_default(void *param){
-    DAT_Payload_Buff pay_i = *((DAT_Payload_Buff*)param);
-
-    static PAY_State pay_current_state_buff[dat_pay_last_one];
-    static PAY_State pay_current_state;
-    static int ini;
-
-    //inicializacion luego de cada reset
-    if(ini==0){
-        for(ini=0;ini<dat_pay_last_one;ini++){
-            pay_current_state_buff[ini]=0;
-        }
-        pay_current_state=0;
-    }
-
-    #if (_VERBOSE_>=1)
-        printf("  FSM_default => pay_i = ");
-        dat_print_payload_name(pay_i); printf("\r\n");
-        printf("    ");
-    #endif
-
-    //asigna el estado actual al pay_i correspondiente
-    pay_current_state = pay_current_state_buff[pay_i];
-
-    //logica del cambio de estados_prox
-    pay_current_state = pay_nextStateLogic(pay_current_state, pay_i);
-    //guarda el estado proximo al pay_i correspondiente
-    pay_current_state_buff[pay_i] = pay_current_state;
-
-    //logica del estado_actual
-    pay_currentStateLogic(pay_current_state, pay_i);
-
-    return 1;
-}
 //******************************************************************************
 int pay_debug_expFis(void *param){
         /*
@@ -570,33 +541,31 @@ int pay_set_state_battery(void *param){
     writeIntEEPROM1(mem_eeprom_var, value);
     return 1;
 }
-static int battery_indx;
+
 int pay_init_battery(void *param){
-    printf("pay_init_test1\r\n");
+    printf("pay_init_battery() ..\r\n");
 
     DAT_Payload_Buff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_battery;
     lenBuff = (unsigned int)(500*4);   //desde 0x00 a 0xFF
     dat_reset_Payload_Buff(pay_i, lenBuff, 1);
 
-    //Reiniciar test1
-    battery_indx=0;
 
-    return 1;
+    return pay_isAlive_battery(NULL);
 }
 int pay_take_battery(void *param){
-    printf("pay_take_test1()..\r\n");
+    printf("pay_take_test1()  ..\r\n");
 
-    int i;
-    for(i=0;i<50;i++){
-        dat_set_Payload_Buff(dat_pay_battery, battery_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
-        battery_indx++;
+    int i, val;
+    for(i=0;i<34;i++){
+        val = eps_readreg( (void *)(&i) );
+        dat_set_Payload_Buff(dat_pay_battery, val, DAT_PAYBUFF_MODE_NO_MAXINDX);
     }
 
     return 1;
 }
 int pay_stop_battery(void *param){
-    printf("pay_stop_test1()..\r\n");
+    printf("pay_stop_battery()  ..\r\n");
     return 1;
 }
 //******************************************************************************
@@ -617,6 +586,7 @@ int pay_set_state_debug(void *param){
     writeIntEEPROM1(mem_eeprom_var, value);
     return 1;
 }
+static unsigned int pay_debug_cnt;
 int pay_init_debug(void *param){
     printf("pay_init_debug\r\n");
 
@@ -625,93 +595,39 @@ int pay_init_debug(void *param){
     lenBuff = (unsigned int)(500);    //payload en etapa experimental aun
     dat_reset_Payload_Buff(pay_i, lenBuff, 0);
 
-    return 1;
+    //restart counter
+    pay_debug_cnt = 0;
+
+    return pay_isAlive_debug(NULL);
 }
 int pay_take_debug(void *param){
-    printf("pay_take_debug()..\r\n");
+    printf("pay_take_debug()  ..\r\n");
 
-    //
-    dat_set_Payload_Buff(dat_pay_debug, 0x01, DAT_PAYBUFF_MODE_NO_MAXINDX);
-    dat_set_Payload_Buff(dat_pay_debug, 0x02, DAT_PAYBUFF_MODE_NO_MAXINDX);
-    return 1;
-
-    /*
-    int tot_len=0;
-    int ind=0; char ret[10];
-    DAT_Payload pay_i; unsigned int maxIndx;
-    pay_i = dat_pay_debug;
-
-    dat_setPayloadVar(dat_pay_debug, ind);
-
-    #if (TEST2_MSJS==1)
-        //se definen mensajes
-        char msj1[]="Pico pal que lo lee. Super Taldo\r\n";
-        int len1=strlen(msj1);
-        char msj2[]="En el cielo hay estrellas y yo digo que tu eres bella. Super Taldo\r\n";
-        int len2=strlen(msj2);
-//        char msj3[]="Hola mundo. \r\n";
-//        int len3=strlen(msj3);
-
-        //Resetea al buffer para adecuarse al tama�o correcto de TODOS los msjes
-        tot_len=len1+len2;
-        printf("tot_len = ");
-        sprintf (ret, "%d", (unsigned int)tot_len);
-        printf(ret);printf("\r\n");
-        lenBuff = (unsigned int)(tot_len);
-        dat_resetPayload_Buffer(pay_i, lenBuff, 0);
-        
-        //guarda msj1
-        for(ind=0;ind<len1;ind++){
-            dat_setPayloadVar(dat_pay_debug, msj1[ind]);
-        }
-        
-        //guarda msj2
-        for(ind=0;ind<len2;ind++){
-            dat_setPayloadVar(dat_pay_debug, msj2[ind]);
-        }
-
-    #else
-        //Resetea al buffer para adecuarse al tama�o correcto de TODOS los msjes
-        tot_len=102;    //len1+len2;
-        printf("tot_len = ");
-        sprintf (ret, "%d", (unsigned int)tot_len);
-        printf(ret);printf("\r\n");
-        lenBuff = (unsigned int)(tot_len);
-        dat_resetPayload_Buffer(pay_i, lenBuff, 0);
-    #endif
-    */
-
+    pay_debug_cnt++;
+    dat_set_Payload_Buff(dat_pay_debug, pay_debug_cnt, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
     return 1;
 }
 int pay_stop_debug(void *param){
-    printf("pay_stop_debug()..\r\n");
-
-    #if (_VERBOSE_>=2)
-        printf("dat_pay_debug\r\n");
-
-        char buffer[10];
-        DAT_Payload_Buff pay_i=dat_pay_debug;
-
-        unsigned int indx; unsigned int max = dat_getMaxPayIndx(pay_i); int val;
-        for(indx=0; indx<=max; indx++)
-        {
-            dat_get_Payload_Buff(pay_i, indx, &val);
-
-            printf("dat_getPayloadVar[");
-            sprintf (buffer, "%d", (unsigned int)indx);
-            printf(buffer); printf("]=");
-            sprintf (buffer, "%c", (unsigned int)val);
-            printf(buffer); printf("\r\n");
-
-            ClrWdt();
-        }
-    #endif
-
+    printf("pay_stop_debug()  ..\r\n");
 
     return 1;
 }
 //******************************************************************************
+int pay_isAlive_gyro(void *param){
+    return gyr_isAlive();
+}
+int pay_get_state_gyro(void *param){
+    MemEEPROM_Vars mem_eeprom_var = mem_pay_gyro_state;
+    int res = readIntEEPROM1(mem_eeprom_var);
+    return res;
+}
+int pay_set_state_gyro(void *param){
+    int value = *( (int*)param );
+    MemEEPROM_Vars mem_eeprom_var = mem_pay_gyro_state;
+    writeIntEEPROM1(mem_eeprom_var, value);
+    return 1;
+}
 int pay_debug_gyro(void *param){
 
 //    BOOL st = gyr_isAlive();
@@ -754,32 +670,12 @@ int pay_init_gyro(void *param){
 
     return res;
 }
-int pay_isAlive_gyro(void *param){
-    return gyr_isAlive();
-}
-int pay_get_state_gyro(void *param){
-    MemEEPROM_Vars mem_eeprom_var = mem_pay_gyro_state;
-    int res = readIntEEPROM1(mem_eeprom_var);
-    return res;
-}
-int pay_set_state_gyro(void *param){
-    int value = *( (int*)param );
-    MemEEPROM_Vars mem_eeprom_var = mem_pay_gyro_state;
-    writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;
-}
 int pay_take_gyro(void *param){
-    printf("pay_take_gyro()..\r\n");
+    printf("pay_take_gyro()  ..\r\n");
 
     //in case of failure
-    if( sta_get_stateVar(sta_pay_gyro_isAlive)==0 ){
-        unsigned int lenBuff;
-        lenBuff = (unsigned int)(3);
-        dat_reset_Payload_Buff(dat_pay_gyro, lenBuff, 0);
-        dat_set_Payload_Buff(dat_pay_gyro ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff(dat_pay_gyro, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff(dat_pay_gyro, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
-        
+    if( pay_isAlive_gyro(NULL) == 0){
+        dat_set_Payload_Buff(dat_pay_gyro ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);      
         return 1;
     }
 
@@ -792,7 +688,7 @@ int pay_take_gyro(void *param){
     return 1;
 }
 int pay_stop_gyro(void *param){
-    printf("pay_stop_gyro()..\r\n");
+    printf("pay_stop_gyro()  ..\r\n");
     return 1;
 }
 //******************************************************************************
@@ -822,17 +718,18 @@ int pay_init_tmEstado(void *param){
     lenBuff = (unsigned int)(40*sta_stateVar_last_one);  //(4*60/5=48)      //numero de 5-minutos en una orbita (4 horas)
     dat_reset_Payload_Buff(pay_i, lenBuff, 1);
 
-    //configure Paylaod
-    //nothing to do..
-    int res = 1;
+    //isAlive
+    int res_isAlive = sta_get_stateVar(sta_pay_tmEstado_isAlive);
 
     //debug info
-    printf("  sta_pay_tmEstado_isAlive = %d \r\n", sta_get_stateVar(sta_pay_tmEstado_isAlive) );
+    #if (_VERBOSE_>=2)
+        printf("  sta_pay_tmEstado_isAlive = %d \r\n", res_isAlive );
+    #endif
 
-    return res;
+    return res_isAlive;
 }
 int pay_take_tmEstado(void *param){
-    printf("pay_take_tmEstado()..\r\n");
+    printf("pay_take_tmEstado()  ..\r\n");
 
     STA_StateVar indxVar; int var;
     for(indxVar=0; indxVar<sta_stateVar_last_one; indxVar++){
@@ -846,7 +743,7 @@ int pay_take_tmEstado(void *param){
     return 1;
 }
 int pay_stop_tmEstado(void *param){
-    printf("pay_stop_tmEstado()..\r\n");
+    printf("pay_stop_tmEstado()  ..\r\n");
     return 1;
 }
 //******************************************************************************
@@ -922,14 +819,7 @@ int pay_take_camera(void *param){
     //in case of failure
     if( sta_get_stateVar(sta_pay_camera_isAlive)==0 ){
         printf("camera is not alive!..\r\n");
-
-        unsigned int lenBuff;
-        lenBuff = (unsigned int)(3);
-        dat_reset_Payload_Buff(dat_pay_camera, lenBuff, 0);
         dat_set_Payload_Buff(dat_pay_camera ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff(dat_pay_camera, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff(dat_pay_camera, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
-
         return 1;
     }
 
@@ -960,12 +850,7 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
 
     if(photo_byte_length == 0){
         printf(" Error: No photo was taken ..\r\n");
-        unsigned int lenBuff;
-        lenBuff = (unsigned int)(3);
-        dat_reset_Payload_Buff(dat_pay_camera, lenBuff, 0);
         dat_set_Payload_Buff(dat_pay_camera ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff(dat_pay_camera, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff(dat_pay_camera, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
         return FALSE;
     }
 
@@ -1048,7 +933,8 @@ int pay_takePhoto_camera(void *param){
     int st = pay_take_camera(&arg);
     pay_stop_camera(NULL);
     //parar ciclo de Payload
-    int cam_state = SRP_PAY_XXX_STATE_INACTIVE;
+    //int cam_state = SRP_PAY_XXX_STATE_INACTIVE;
+    STA_Pay_xxx_State cam_state = sta_pay_xxx_state_inactive;
     pay_set_state_camera(&cam_state);
             
     return st;
@@ -1100,28 +986,24 @@ int pay_init_gps(void *param){
     res = 0;    //not implemented yet => always dead ..
 
     //check SW and CHECK pins (not definitive)
+    PPC_GPS_SWITCH = 0;
     printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
     PPC_GPS_SWITCH = 1;
     __delay_ms(50); //wait while port write takes effect
     printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
     printf("  sta_pay_gps_isAlive = %d \r\n", sta_get_stateVar(sta_pay_gps_isAlive) );
 
-    return 1;
+    return pay_isAlive_gps(NULL);
 }
 int pay_take_gps(void *param){
     printf("pay_take_gps\r\n");
 
     //in case of failure
-    if( sta_get_stateVar(sta_pay_gps_isAlive)==0 ){
-        printf("camera is not alive!..\r\n");
-
-        unsigned int lenBuff;
-        lenBuff = (unsigned int)(3);
-        dat_reset_Payload_Buff(dat_pay_gps, lenBuff, 0);
+    if( pay_isAlive_gps(NULL) == 0 ){
+        printf("gps is not alive!..\r\n");
         dat_set_Payload_Buff(dat_pay_gps ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff(dat_pay_gps, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff(dat_pay_gps, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
-
+        //turn GPS off
+        PPC_GPS_SWITCH = 0;
         return 0;
     }
 
@@ -1180,32 +1062,22 @@ int pay_init_lagmuirProbe(void *param){
     lenBuff = (unsigned int)(20*1); /*TODO: SET VALUE*/ //(1440)      //numero de 10-minutos en un dia
     dat_reset_Payload_Buff(pay_i, lenBuff, 1);
 
-    //configure Payload
-    if( sta_get_stateVar(sta_pay_lagmuirProbe_isDeployed)==0 ){
-        pay_deploy_langmuirProbe();
-    }
-
-    int res = 0; //not fully implemented yet => always dead
+    //configs
+    int res_isAlive = pay_isAlive_lagmuirProbe(NULL); //not fully implemented yet => always dead
     lag_erase_buffer();
 
     //debug info
-    printf("  sta_pay_lagmuirProbe_isAlive = %d \r\n", sta_get_stateVar(sta_pay_lagmuirProbe_isAlive) );
+    printf("  sta_pay_lagmuirProbe_isAlive = %d \r\n", res_isAlive );
     printf("  sta_pay_lagmuirProbe_isDeployed = %d \r\n", sta_get_stateVar(sta_pay_lagmuirProbe_isDeployed) );
 
-    return res;
+    return res_isAlive;
 }
 
 int pay_take_lagmuirProbe(void *param){
     printf("pay_take_lagmuirProbe\r\n");
 
     dat_set_Payload_Buff(dat_pay_lagmuirProbe, 0x01, DAT_PAYBUFF_MODE_NO_MAXINDX);
-    dat_set_Payload_Buff(dat_pay_lagmuirProbe, 0x02, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
-//    #if (SCH_PAY_LANGMUIR_ONBOARD==0)
-//        dat_set_Payload_Buff(dat_pay_lagmuirProbe, 0x01);
-//        dat_set_Payload_Buff(dat_pay_lagmuirProbe, 0x02);
-//    #else
-//
 ////    int verbose = *(int *)param;
 //    int ok = 0;
 //    int i = 0;
@@ -1293,7 +1165,7 @@ int pay_debug_langmuir(void *param)
 }
 
 int pay_stop_lagmuirProbe(void *param){
-    printf("pay_stop_lagmuirProbe()..\r\n");
+    printf("pay_stop_lagmuirProbe()  ..\r\n");
     
     lag_erase_buffer();
 
@@ -1325,7 +1197,7 @@ int pay_debug_sensTemp(void *param){
     sensTemp_init(ST4_ADDRESS);
     res = sensTemp_take(ST4_ADDRESS, TRUE);
 
-    return 1;
+    return pay_isAlive_sensTemp(NULL);
 }
 int pay_isAlive_sensTemp(void *param){
     int res, rest = 0;
@@ -1381,26 +1253,21 @@ int pay_init_sensTemp(void *param){
     s4 = sensTemp_init(ST4_ADDRESS);
     dat_set_Payload_Buff(dat_pay_sensTemp, (int)s4, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
-    //debug info
-    printf("  sta_pay_sensTemp_isAlive = %d \r\n", sta_get_stateVar(sta_pay_sensTemp_isAlive) );
+    int res_isAlive = sta_get_stateVar(sta_pay_sensTemp_isAlive);
 
-    return 1;
+    //debug info
+    printf("  sta_pay_sensTemp_isAlive = %d \r\n", res_isAlive );
+
+    return res_isAlive;
 }
 int pay_take_sensTemp(void *param){
     printf("pay_take_sensTemp\r\n");
 
     //in case of failure
-    if( sta_get_stateVar(sta_pay_sensTemp_isAlive)==0 ){
+    if( pay_isAlive_sensTemp(NULL) == 0){
         printf("sensTemp is not alive!..\r\n");
-
-        unsigned int lenBuff;
-        lenBuff = (unsigned int)(3);
-        dat_reset_Payload_Buff(dat_pay_sensTemp, lenBuff, 0);
         dat_set_Payload_Buff(dat_pay_sensTemp ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff(dat_pay_sensTemp, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff(dat_pay_sensTemp, 0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
-
-        return 1;
+        return 0;
     }
 
     int val;
@@ -1420,172 +1287,521 @@ int pay_stop_sensTemp(void *param){
     return 1;
 }
 //******************************************************************************
-PAY_State pay_nextStateLogic(PAY_State pay_sem, DAT_Payload_Buff pay_i){
-    STA_StateVar dat_pay_xxx_perform;
+//Aux function for FP2
 
-    dat_pay_xxx_perform = sta_DAT_Payload_Buff_to_STA_StateVar(pay_i);
 
-    //logica del cambio de estados
-    switch(pay_sem){
-        case pay_state_pre_init:
-            if( sta_get_stateVar(dat_pay_xxx_perform)==SRP_PAY_XXX_STATE_ACTIVE ){
-                pay_sem = pay_state_init;
-            }
-            else{
-                pay_sem = pay_state_pre_init;
-            }
-        break;
-        case pay_state_init:
-            pay_sem = pay_state_take;
-        break;
-        case pay_state_take:
-            if(dat_isFull_Payload_Buff(pay_i)==TRUE){
-                pay_sem = pay_state_stop;
-            }
-            else{
-                pay_sem = pay_state_take;
-            }
-        break;
-        case pay_state_stop:
-            pay_sem = pay_state_pre_init;
-        break;
-        default:
-            printf("pay_nextStateLogic: en default !!!\r\n");
-        break;
+void pay_fp2_multiplexed(){
+    printf("pay_fp2_i_multiplexing ..\r\n");
+
+//    DispCmd NewCmd;
+//    NewCmd.cmdId = CMD_CMDNULL;
+//    NewCmd.idOrig = CMD_IDORIG_TFLIGHTPLAN2;
+//    NewCmd.param = 0;
+
+    static DAT_Payload_Buff current_pay_i;
+
+    //multiplexo pay_i por turnos
+    #if (SCH_FLIGHTPLAN2_VERBOSE>=2)
+        printf("pay_fp2_i_multiplexing => pay_i = %d\r\n", (unsigned int)current_pay_i);
+    #endif
+
+    STA_Pay_xxx_State pay_i_state = sta_get_stateVar(sta_DAT_Payload_Buff_to_STA_StateVar(current_pay_i));
+    switch(pay_i_state){
+        case sta_pay_xxx_state_inactive:
+            printf("  pay_i = %s", dat_get_payload_name(current_pay_i));
+            printf(", state = sta_pay_xxx_state_inactive \r\n");
+            break;
+        case sta_pay_xxx_state_active:
+            printf("  pay_i = %s", dat_get_payload_name(current_pay_i));
+            printf(", state = sta_pay_xxx_state_active \r\n");
+            break;
+        case sta_pay_xxx_state_run_init:
+            printf("  pay_i = %s", dat_get_payload_name(current_pay_i));
+            printf(", state = sta_pay_xxx_state_run_init \r\n");
+            break;
+        case sta_pay_xxx_state_run_take:
+            printf("  pay_i = %s", dat_get_payload_name(current_pay_i));
+            printf(", state = sta_pay_xxx_state_run_take \r\n");
+            break;
+        case sta_pay_xxx_state_run_stop:
+            printf("  pay_i = %s", dat_get_payload_name(current_pay_i));
+            printf(", state = sta_pay_xxx_state_run_stop \r\n");
+            break;
+        case sta_pay_xxx_state_waiting_tx:
+            printf("  pay_i = %s", dat_get_payload_name(current_pay_i));
+            printf(", state = sta_pay_xxx_state_waiting_tx \r\n");
+            break;
     }
-    return pay_sem;
-}
-void pay_currentStateLogic(PAY_State pay_sem_state, DAT_Payload_Buff pay_i){
-    int arg=0; //DAT_Payload arg_pay_i; /* WARNING, Revisar */
+    return;
 
-    //logica del estado
-    switch(pay_sem_state){
-        case pay_state_pre_init:
-            //No se hacen cosas aca (independientemente del pay_i).
-            //Esa es la idea de este estado
-            #if (_VERBOSE_>=1)
-                printf("pay_state_pre_init..\r\n");
-            #endif
-        break;
-        case pay_state_init:
-            //Init de Payloads
-            switch(pay_i){
-                case dat_pay_sensTemp:      
-                    pay_init_sensTemp( (void*)&arg );
-                break;
-                case dat_pay_lagmuirProbe:
-                    pay_init_lagmuirProbe( (void*)&arg );
-                break;
-                case dat_pay_gps:
-                    pay_init_gps( (void*)&arg );
-                break;
-                case dat_pay_expFis:
-                    pay_init_expFis( (void*)&arg );
-                break;
-                case dat_pay_camera:
-                    pay_init_camera( (void*)&arg );
-                break;
-                case dat_pay_gyro:
-                    pay_init_gyro( (void*)&arg );
-                break;
-                case dat_pay_tmEstado:
-                    pay_init_tmEstado( (void*)&arg );
-                break;
-                case dat_pay_battery:
-                    pay_init_battery( (void*)&arg );
-                break;
-                case dat_pay_debug:
-                    pay_init_debug( (void*)&arg );
-                break;
-                default:
-                break;
-            }
-        break;
-        case pay_state_take:
-            //ejecuccion de de Payloads
-            switch(pay_i){
-                case dat_pay_sensTemp:
-                    pay_take_sensTemp( (void*)&arg );
-                break;
-                case dat_pay_lagmuirProbe:
-                    pay_take_lagmuirProbe( (void*)&arg );
-                break;
-                case dat_pay_gps:
-                    pay_take_gps( (void*)&arg );
-                break;
-                case dat_pay_expFis:
-                    pay_take_expFis( (void*)&arg );
-                break;
-                case dat_pay_camera:
-                    pay_take_camera( (void*)&arg );
-                break;
-                case dat_pay_gyro:
-                    pay_take_gyro( (void*)&arg );
-                break;
-                case dat_pay_tmEstado:
-                    pay_take_tmEstado( (void*)&arg );
-                break;
-                case dat_pay_battery:
-                    pay_take_battery( (void*)&arg );
-                break;
-                case dat_pay_debug:
-                    pay_take_debug( (void*)&arg );
-                break;
-                default:
-                break;
-            }
-        break;
-        case pay_state_stop:
-            //termino de Payloads
-            switch(pay_i){
-                case dat_pay_sensTemp:
-                    pay_stop_sensTemp( (void*)&arg );
-                break;
-                case dat_pay_lagmuirProbe:
-                    pay_stop_lagmuirProbe( (void*)&arg );
-                break;
-                case dat_pay_gps:
-                    pay_stop_gps( (void*)&arg );
-                break;
-                case dat_pay_expFis:
-                    pay_stop_expFis( (void*)&arg );
-                break;
-                case dat_pay_camera:
-                    pay_stop_camera( (void*)&arg );
-                break;
-                case dat_pay_gyro:
-                    pay_stop_gyro( (void*)&arg );
-                break;
-                case dat_pay_tmEstado:
-                    pay_stop_tmEstado( (void*)&arg );
-                break;
-                case dat_pay_battery:
-                    pay_stop_battery( (void*)&arg );
-                break;
-                case dat_pay_debug:
-                    pay_stop_debug( (void*)&arg );
-                break;
-                default:
-                break;
-            }
-            //parar ciclo de Payload
-            STA_StateVar dat_perfVar=sta_DAT_Payload_Buff_to_STA_StateVar(pay_i);
-            //sta_set_stateVar(dat_perfVar, SRP_PAY_XXX_STATE_INACTIVE );
-            //TODO: revisar
-
-
-            //debug
-            #if (_VERBOSE_>=1)
-                printf("pay_= %d ha pasado a estado: pay_state_stop\r\n", (int)(pay_i) );
-            #endif
-            #if (_VERBOSE_>=2)
-                arg_pay_i=pay_i;
-                drp_print_dat_PayloadVar( (void*)&arg_pay_i );
-            #endif
-        break;
+    switch(current_pay_i){
+        //excluyo casos particulares
+        case dat_pay_camera:
+            //do nothing
+            printf("dat_pay_tmEstado does not use FSM_default..\r\n");
+            break;
+        case dat_pay_expFis:
+            //do nothing
+            //printf("dat_pay_tmEstado does not use FSM_default..\r\n");
+            break;
         default:
-            printf("pay_currentStateLogic: en default !!!\r\n");
-        break;
+//            NewCmd.cmdId = pay_id_fp2_default_fsm;
+//            NewCmd.param = current_pay_i;
+//            xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
+            break;
+    }
+
+    //Si el actual es el ultimo, el proximo sera el primero
+    if( current_pay_i == (dat_pay_last_one-1) ){
+        current_pay_i=0;
+    }
+    else{
+        current_pay_i++;
     }
 }
 
+/**
+ * Check the payloads "simultaneouslly" and execute it in reentrant calling multiples
+ * @param dispatcherQueue
+ */
+void pay_fp2_simultaneous(void)
+{
+    //reviso payloads "simultaneamente" y ejecuto en multiplos de cada llamada reentrante
+    static long unsigned int exec_tick;
+    exec_tick++;
+    static unsigned int run_take_times_executed[dat_pay_last_one];    //all initialized to zero
+
+    DAT_Payload_Buff pay_i;
+    STA_Pay_xxx_State pay_i_state;
+    int pay_i_tick_rate;
+
+    //print time
+    rtc_print(NULL);
+
+    for(pay_i = 0; pay_i < dat_pay_last_one; pay_i++)
+    {
+        //continue if it's no time for pay_i yet
+        pay_i_tick_rate = pay_fp2_get_exec_rate(pay_i);
+        if( exec_tick%pay_i_tick_rate != 0 ){continue;}
+
+        #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+            printf("  pay_i = %d = %s \r\n", pay_i, dat_get_payload_name(pay_i) );
+            printf("  exec_tick = %lu \r\n", exec_tick);
+            printf("  pay_i_tick_rate = %d \r\n", pay_i_tick_rate);
+        #endif
+
+        pay_i_state = sta_get_stateVar(sta_DAT_Payload_Buff_to_STA_StateVar(pay_i));
+        switch(pay_i_state){
+        //**********************************************************************
+            case sta_pay_xxx_state_inactive:
+                #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                    printf("  state = sta_pay_xxx_state_inactive \r\n");
+                #endif
+
+                break;
+        //**********************************************************************
+            case sta_pay_xxx_state_active:
+                #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                    printf("  state = sta_pay_xxx_state_active \r\n");
+                #endif
+
+                //change state to sta_pay_xxx_state_run_init
+                pay_set_state(pay_i, sta_pay_xxx_state_run_init);
+
+                break;
+        //**********************************************************************
+            case sta_pay_xxx_state_run_init:
+                #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                    printf("  state = sta_pay_xxx_state_run_init \r\n");
+                #endif
+
+                //execute pay_xxx_init
+                printf("  pay_xxx_init \r\n");
+                pay_fp2_exec_run_xxx(pay_i, sta_pay_xxx_state_run_init);
+
+
+                //change state to sta_pay_xxx_state_run_take
+                pay_set_state(pay_i, sta_pay_xxx_state_run_take);
+
+                break;
+        //**********************************************************************
+            case sta_pay_xxx_state_run_take:
+                //increment
+                run_take_times_executed[pay_i]++;
+
+                #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                    printf("  state = sta_pay_xxx_state_run_take \r\n");
+                    printf("  run_take_times_executed[pay_i = %d] = %u \r\n", pay_i, run_take_times_executed[pay_i] );
+                    printf("  pay_fp2_get_run_take_num_exec_times(pay_i = %u) = %d \r\n", pay_i, pay_fp2_get_run_take_num_exec_times(pay_i) );
+                #endif
+
+                //execute pay_xxx_take
+                printf("  pay_xxx_take \r\n");
+                pay_fp2_exec_run_xxx(pay_i, sta_pay_xxx_state_run_take);
+
+                //change state to sta_pay_xxx_state_run_stop if current exec is the last
+                if( run_take_times_executed[pay_i] >= pay_fp2_get_run_take_num_exec_times(pay_i) ){
+                    pay_set_state(pay_i, sta_pay_xxx_state_run_stop);
+                    //reset times_executed[pay_i] for the next time
+                    run_take_times_executed[pay_i] = 0;
+                }
+                    
+                break;
+        //**********************************************************************
+            case sta_pay_xxx_state_run_stop:
+                #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                    printf("  state = sta_pay_xxx_state_run_stop \r\n");
+                #endif
+
+                //execute pay_xxx_stop
+                printf("  pay_xxx_stop \r\n");
+                pay_fp2_exec_run_xxx(pay_i, sta_pay_xxx_state_run_stop);
+
+                //change state to sta_pay_xxx_state_waiting_tx
+                pay_set_state(pay_i, sta_pay_xxx_state_waiting_tx);
+
+                break;
+        //**********************************************************************
+            case sta_pay_xxx_state_waiting_tx:
+                #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                    printf("  state = sta_pay_xxx_state_waiting_tx \r\n");
+                #endif
+
+                //change state to sta_pay_xxx_state_active only if pay_i TX is done
+                if(FALSE){
+                    pay_set_state(pay_i, sta_pay_xxx_state_active);
+                }
+
+                break;
+        //**********************************************************************
+            default:
+                #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                    printf("  state = [ERROR] Unknown State \r\n");
+                #endif
+                break;
+        //**********************************************************************
+        }
+
+        #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+            printf("---------------------------------------------\r\n");
+        #endif
+
+    }
+
+    //print time
+    rtc_print(NULL);
+}
+
+/**
+ * Return the number of tick before a pay_i is to be executed
+ * @param pay_i
+ * @return Return the number of tick before a pay_i is to be executed
+ */
+int pay_fp2_get_exec_rate(DAT_Payload_Buff pay_i){
+    switch(pay_i){
+        case dat_pay_tmEstado:
+            return 1;
+            break;
+        case dat_pay_battery:
+            return 2;
+            break;
+        case dat_pay_debug:
+            return 3;
+            break;
+        case dat_pay_lagmuirProbe:
+            return 4;
+            break;
+        case dat_pay_gps:
+            return 5;
+            break;
+        case dat_pay_camera:
+            return 6;
+            break;
+        case dat_pay_sensTemp:
+            return 7;
+            break;
+        case dat_pay_gyro:
+            return 8;
+            break;
+        case dat_pay_expFis:
+            return 9;
+            break;
+        case dat_pay_last_one:
+            //ignore
+            break;
+    }
+    return -1;
+}
+
+/**
+ * Return the number of times pay_i is to be executed
+ * @param pay_i
+ * @return Return TRUE = isDOne, FLASE = contiune pay_take
+ */
+unsigned int pay_fp2_get_run_take_num_exec_times(DAT_Payload_Buff pay_i){
+    unsigned int max_exec_times;
+
+    switch(pay_i){
+        case dat_pay_tmEstado:
+            max_exec_times = 9;
+            break;
+        case dat_pay_battery:
+            max_exec_times = 8;
+            break;
+        case dat_pay_debug:
+            max_exec_times = 7;
+            break;
+        case dat_pay_lagmuirProbe:
+            max_exec_times = 6;
+            break;
+        case dat_pay_gps:
+            max_exec_times = 5;
+            break;
+        case dat_pay_camera:
+            max_exec_times = 4;
+            break;
+        case dat_pay_sensTemp:
+            max_exec_times = 3;
+            break;
+        case dat_pay_gyro:
+            max_exec_times = 2;
+            break;
+        case dat_pay_expFis:
+            max_exec_times = 1;
+            break;
+        case dat_pay_last_one:
+            //ignore
+            max_exec_times = 0;
+            break;
+    }
+    return max_exec_times;
+}
+
+/**
+ * Exectutes the correspnding Cmd for each pay_i and sta_pay_xxx_state
+ * @param pay_i
+ * @param run_state
+ */
+void pay_fp2_exec_run_xxx(DAT_Payload_Buff pay_i, STA_Pay_xxx_State state){
+    int arg;
+    switch(pay_i){
+        case dat_pay_tmEstado:
+            switch (state){
+                case sta_pay_xxx_state_run_init:
+                    arg = 0;
+                    pay_init_tmEstado(&arg);
+                    break;
+                case sta_pay_xxx_state_run_take:
+                    pay_take_tmEstado(&arg);
+                    break;
+                case sta_pay_xxx_state_run_stop:
+                    pay_stop_tmEstado(&arg);
+                    break;
+                //ignore the rest of states
+                case sta_pay_xxx_state_active:
+                case sta_pay_xxx_state_inactive:
+                case sta_pay_xxx_state_waiting_tx:
+                    break;
+            }
+            break;
+        case dat_pay_battery:
+            switch (state){
+                case sta_pay_xxx_state_run_init:
+                    arg = 0;
+                    pay_init_battery(&arg);
+                    break;
+                case sta_pay_xxx_state_run_take:
+                    pay_take_battery(&arg);
+                    break;
+                case sta_pay_xxx_state_run_stop:
+                    pay_stop_battery(&arg);
+                    break;
+                //ignore the rest of states
+                case sta_pay_xxx_state_active:
+                case sta_pay_xxx_state_inactive:
+                case sta_pay_xxx_state_waiting_tx:
+                    break;
+            }
+            break;
+        case dat_pay_debug:
+            switch (state){
+                case sta_pay_xxx_state_run_init:
+                    arg = 0;
+                    pay_init_debug(&arg);
+                    break;
+                case sta_pay_xxx_state_run_take:
+                    pay_take_debug(&arg);
+                    break;
+                case sta_pay_xxx_state_run_stop:
+                    pay_stop_debug(&arg);
+                    break;
+                //ignore the rest of states
+                case sta_pay_xxx_state_active:
+                case sta_pay_xxx_state_inactive:
+                case sta_pay_xxx_state_waiting_tx:
+                    break;
+            }
+            break;
+        case dat_pay_lagmuirProbe:
+            switch (state){
+                case sta_pay_xxx_state_run_init:
+                    arg = 0;
+                    pay_init_lagmuirProbe(&arg);
+                    break;
+                case sta_pay_xxx_state_run_take:
+                    pay_take_lagmuirProbe(&arg);
+                    break;
+                case sta_pay_xxx_state_run_stop:
+                    pay_stop_lagmuirProbe(&arg);
+                    break;
+                //ignore the rest of states
+                case sta_pay_xxx_state_active:
+                case sta_pay_xxx_state_inactive:
+                case sta_pay_xxx_state_waiting_tx:
+                    break;
+            }
+            break;
+        case dat_pay_gps:
+            switch (state){
+                case sta_pay_xxx_state_run_init:
+                    arg = 0;
+                    pay_init_gps(&arg);
+                    break;
+                case sta_pay_xxx_state_run_take:
+                    pay_take_gps(&arg);
+                    break;
+                case sta_pay_xxx_state_run_stop:
+                    pay_stop_gps(&arg);
+                    break;
+                //ignore the rest of states
+                case sta_pay_xxx_state_active:
+                case sta_pay_xxx_state_inactive:
+                case sta_pay_xxx_state_waiting_tx:
+                    break;
+            }
+            break;
+        case dat_pay_camera:
+            switch (state){
+                case sta_pay_xxx_state_run_init:
+                    arg = 0;
+                    pay_init_camera(&arg);
+                    break;
+                case sta_pay_xxx_state_run_take:
+                    pay_take_camera(&arg);
+                    break;
+                case sta_pay_xxx_state_run_stop:
+                    pay_stop_camera(&arg);
+                    break;
+                //ignore the rest of states
+                case sta_pay_xxx_state_active:
+                case sta_pay_xxx_state_inactive:
+                case sta_pay_xxx_state_waiting_tx:
+                    break;
+            }
+            break;
+        case dat_pay_sensTemp:
+            switch (state){
+                case sta_pay_xxx_state_run_init:
+                    arg = 0;
+                    pay_init_sensTemp(&arg);
+                    break;
+                case sta_pay_xxx_state_run_take:
+                    pay_take_sensTemp(&arg);
+                    break;
+                case sta_pay_xxx_state_run_stop:
+                    pay_stop_sensTemp(&arg);
+                    break;
+                //ignore the rest of states
+                case sta_pay_xxx_state_active:
+                case sta_pay_xxx_state_inactive:
+                case sta_pay_xxx_state_waiting_tx:
+                    break;
+            }
+            break;
+        case dat_pay_gyro:
+            switch (state){
+                case sta_pay_xxx_state_run_init:
+                    arg = 0;
+                    pay_init_gyro(&arg);
+                    break;
+                case sta_pay_xxx_state_run_take:
+                    pay_take_gyro(&arg);
+                    break;
+                case sta_pay_xxx_state_run_stop:
+                    pay_stop_gyro(&arg);
+                    break;
+                //ignore the rest of states
+                case sta_pay_xxx_state_active:
+                case sta_pay_xxx_state_inactive:
+                case sta_pay_xxx_state_waiting_tx:
+                    break;
+            }
+            break;
+        case dat_pay_expFis:
+            switch (state){
+                case sta_pay_xxx_state_run_init:
+                    arg = 0;
+                    pay_init_expFis(&arg);
+                    break;
+                case sta_pay_xxx_state_run_take:
+                    pay_take_expFis(&arg);
+                    break;
+                case sta_pay_xxx_state_run_stop:
+                    pay_stop_expFis(&arg);
+                    break;
+                //ignore the rest of states
+                case sta_pay_xxx_state_active:
+                case sta_pay_xxx_state_inactive:
+                case sta_pay_xxx_state_waiting_tx:
+                    break;
+            }
+            break;
+        case dat_pay_last_one:
+            //ignore
+            break;
+    }
+}
+
+/**
+ * Set the state of pay_i. Used to control execution, by FP2 and others
+ * @param pay_i
+ * @param state
+ */
+void pay_set_state(DAT_Payload_Buff pay_i, STA_Pay_xxx_State state){
+    //change state
+    int arg_state = state;
+    switch(pay_i){
+        case dat_pay_tmEstado:
+            pay_set_state_tmEstado(&arg_state);
+            break;
+        case dat_pay_battery:
+            pay_set_state_battery(&arg_state);
+            break;
+        case dat_pay_debug:
+            pay_set_state_debug(&arg_state);
+            break;
+        case dat_pay_lagmuirProbe:
+            pay_set_state_lagmuirProbe(&arg_state);
+            break;
+        case dat_pay_gps:
+            pay_set_state_gps(&arg_state);
+            break;
+        case dat_pay_camera:
+            pay_set_state_camera(&arg_state);
+            break;
+        case dat_pay_sensTemp:
+            pay_set_state_sensTemp(&arg_state);
+            break;
+        case dat_pay_gyro:
+            pay_set_state_gyro(&arg_state);
+            break;
+        case dat_pay_expFis:
+            pay_set_state_expFis(&arg_state);
+            break;
+        case dat_pay_last_one:
+            //ignore
+//            state = state;
+            break;
+    }
+
+}

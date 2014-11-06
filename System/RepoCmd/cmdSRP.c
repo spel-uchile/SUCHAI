@@ -112,68 +112,68 @@ int srp_memEEPROM_initial_state(void * param){
 
     //PAYLOAD
     #if (SCH_PAY_LANGMUIR_ONBOARD==1)
-        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        arg = sta_pay_xxx_state_active;
         pay_set_state_lagmuirProbe(&arg);
     #else
-        sta_setstateVar(sta_pay_lagmuirarg = SRP_PAY_XXX_STATE_INACTIVE;
+        sta_setstateVar(sta_pay_lagmuirarg = sta_pay_xxx_state_inactive;
         pay_set_state_lagmuirProbe(&arg);
     #endif
     #if (SCH_PAY_SENSTEMP_ONBOARD==1)
-        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        arg = sta_pay_xxx_state_active;
         pay_set_state_sensTemp(&arg);
     #else
-        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        arg = sta_pay_xxx_state_inactive;
         pay_set_state_sensTemp(&arg);
     #endif
     #if (SCH_PAY_GPS_ONBOARD==1)
-        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        arg = sta_pay_xxx_state_active;
         pay_set_state_gps(&arg);
     #else
-        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        arg = sta_pay_xxx_state_inactive;
         pay_set_state_gps(&arg);
     #endif
     #if (SCH_PAY_FIS_ONBOARD==1)
-        //arg = SRP_PAY_XXX_STATE_ACTIVE;
-        arg = SRP_PAY_XXX_STATE_INACTIVE;   //special case, not executed by FP2
+        //arg = sta_pay_xxx_state_active;
+        arg = sta_pay_xxx_state_inactive;   //special case, not executed by FP2
         pay_set_state_expFis(&arg);
     #else
-        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        arg = sta_pay_xxx_state_inactive;
         pay_set_state_expFis(&arg);
     #endif
     #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
-        //  arg = SRP_PAY_XXX_STATE_ACTIVE;
-        arg = SRP_PAY_XXX_STATE_INACTIVE;   //special case, not executed by FP2
+        //  arg = sta_pay_xxx_state_active;
+        arg = sta_pay_xxx_state_inactive;   //special case, not executed by FP2
         pay_set_state_camera(&arg);
     #else
-        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        arg = sta_pay_xxx_state_inactive;
         pay_set_state_camera(&arg);
     #endif
     #if (SCH_PAY_GYRO_ONBOARD==1)
-        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        arg = sta_pay_xxx_state_active;
         pay_set_state_gyro(&arg);
     #else
-        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        arg = sta_pay_xxx_state_inactive;
         pay_set_state_gyro(&arg);
     #endif
     #if (SCH_PAY_TMESTADO_ONBOARD==1)
-        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        arg = sta_pay_xxx_state_active;
         pay_set_state_tmEstado(&arg);
     #else
-        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        arg = sta_pay_xxx_state_inactive;
         pay_set_state_tmEstado(&arg);
     #endif
     #if (SCH_PAY_BATTERY_ONBOARD==1)
-        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        arg = sta_pay_xxx_state_active;
         pay_set_state_battery(&arg);
     #else
-        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        arg = sta_pay_xxx_state_inactive;
         pay_set_state_battery(&arg);
     #endif
     #if (SCH_PAY_DEBUG_ONBOARD==1)
-        arg = SRP_PAY_XXX_STATE_ACTIVE;
+        arg = sta_pay_xxx_state_active;
         pay_set_state_debug(&arg);
     #else
-        arg = SRP_PAY_XXX_STATE_INACTIVE;
+        arg = sta_pay_xxx_state_inactive;
         pay_set_state_debug(&arg);
     #endif
 

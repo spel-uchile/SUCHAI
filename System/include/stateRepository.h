@@ -144,12 +144,20 @@ STA_StateVar sta_DAT_Payload_Buff_to_STA_StateVar(DAT_Payload_Buff pay_i);
 //debug funcitons
 char *sta_varToString(STA_StateVar var_i);
 
-#define SRP_PAY_XXX_STATE_INACTIVE    0x0000
-#define SRP_PAY_XXX_STATE_ACTIVE      0x0001
-#define SRP_PAY_XXX_STATE_RUN_INIT    0x0002
-#define SRP_PAY_XXX_STATE_RUN_TAKE    0x0003
-#define SRP_PAY_XXX_STATE_RUN_STOP    0x0004
-#define SRP_PAY_XXX_STATE_WAITING_TX  0x0005
+typedef enum{
+    sta_pay_xxx_state_inactive=0,
+    sta_pay_xxx_state_active,
+    sta_pay_xxx_state_run_init,
+    sta_pay_xxx_state_run_take,
+    sta_pay_xxx_state_run_stop,
+    sta_pay_xxx_state_waiting_tx
+}STA_Pay_xxx_State;
+//#define SRP_PAY_XXX_STATE_INACTIVE    0x0000
+//#define SRP_PAY_XXX_STATE_ACTIVE      0x0001
+//#define SRP_PAY_XXX_STATE_RUN_INIT    0x0002
+//#define SRP_PAY_XXX_STATE_RUN_TAKE    0x0003
+//#define SRP_PAY_XXX_STATE_RUN_STOP    0x0004
+//#define SRP_PAY_XXX_STATE_WAITING_TX  0x0005
 
 #endif // STATE_REPO_H
 

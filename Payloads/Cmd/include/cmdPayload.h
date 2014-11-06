@@ -38,7 +38,7 @@
 typedef enum{
     pay_id_test_dataRepo=((unsigned int)(SCH_CMD_PAY)*0x100), ///< @cmd_first
 
-    pay_id_FSM_default, ///< @cmd
+    pay_id_fp2_default_fsm, ///< @cmd
 
     pay_id_isAlive_tmEstado, ///< @cmd
     pay_id_get_state_tmEstado, ///< @cmd
@@ -128,14 +128,11 @@ typedef enum{
                             ///< configuraciones de termino y post procesamiento
 }PAY_State;
 
-PAY_State pay_nextStateLogic(PAY_State pay_sem, DAT_Payload_Buff pay_i);
-void pay_currentStateLogic(PAY_State pay_sem_state, DAT_Payload_Buff pay_i);
-
 //Comandos
 //Debug
 int pay_test_dataRepo(void *param);
 //comandos para inicializar/realizar los experimientos
-int pay_FSM_default(void *param);
+int pay_fp2_default_fsm(void *param);
 //battery
 int pay_isAlive_battery(void *param);
 int pay_get_state_battery(void *param);
@@ -211,6 +208,14 @@ int pay_stop_gps(void *param);
 //aux functions
 BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type);
 int pay_camera_get_1int_from_2bytes(void);
+
+//FP2
+void pay_fp2_multiplexed(void);
+void pay_fp2_simultaneous(void);
+int pay_fp2_get_exec_rate(DAT_Payload_Buff pay_i);
+unsigned int pay_fp2_get_run_take_num_exec_times(DAT_Payload_Buff pay_i);
+void pay_fp2_exec_run_xxx(DAT_Payload_Buff pay_i, STA_Pay_xxx_State state);
+void pay_set_state(DAT_Payload_Buff pay_i, STA_Pay_xxx_State state);
 
 #endif	/* CMDPAYLOAD_H */
 

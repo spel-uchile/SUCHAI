@@ -142,21 +142,21 @@ void clear_overflow_SPI_1(void);				//borra el bit SPIROV para proximos seteos (
 int TXB_SPI_1(void);							//1=>TXB is full, transmit not yet started. 0=>TXB is empty, transmit started
 int RXB_SPI_1(void);							//1=>RXB is full, receive complete. 0=>RXB is empty, receive  is not complete
 unsigned char SPI_1_transfer(unsigned char a);	//transmite "a" y devuelve el registro leido
-void Abrir_SPI_1_default(void);					//Abre SPI1 con la configuracion "mas estandar"
+void Open_SPI_1_default(void);					//Abre SPI1 con la configuracion "mas estandar"
 //-------------------------------------------------------------------------------------------------------------------------------
 int overflow_SPI_2(void);						//devuelve 1 si hubo overflow, 0 si no.
 void clear_overflow_SPI_2(void);
 int TXB_SPI_2(void);							//1=>TXB is full, transmit not yet started. 0=>TXB is empty, transmit started
 int RXB_SPI_2(void);							//1=>RXB is full, receive complete. 0=>RXB is empty, receive  is not complete
 unsigned char SPI_2_transfer(unsigned char a);	//transmite "a" y devuelve el registro leido
-void Abrir_SPI_2_default(void);					//Abre SPI1 con la configuracion "mas estandar"
+void Open_SPI_2_default(void);					//Abre SPI1 con la configuracion "mas estandar"
 //-------------------------------------------------------------------------------------------------------------------------------
 int overflow_SPI_3(void);						//devuelve 1 si hubo overflow, 0 si no.
 void clear_overflow_SPI_3(void);
 int TXB_SPI_3(void);							//1=>TXB is full, transmit not yet started. 0=>TXB is empty, transmit started
 int RXB_SPI_3(void);							//1=>RXB is full, receive complete. 0=>RXB is empty, receive  is not complete
 unsigned char SPI_3_transfer(unsigned char a);	//transmite "a" y devuelve el registro leido
-void Abrir_SPI_3_default(void);					//Abre SPI1 con la configuracion "mas estandar"
+void Open_SPI_3_default(void);					//Abre SPI1 con la configuracion "mas estandar"
 //-------------------------------------------------------------------------------------------------------------------------------
 
 #endif

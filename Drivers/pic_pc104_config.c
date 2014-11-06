@@ -457,7 +457,7 @@ void GPIO_PPM_init(void)
         // pin 83	C3INB/CN15/RD6	=> pin es RD6 (nWP)
         _TRISD6=0;			//pin 0-output 1-input
 
-        Abrir_SPI_1_default();
+        Open_SPI_1_default();
         //SPI_SDI_1	//SDO en nomenclatura Pumpkin's
         //SPI_SCK_1	//SCK en nomenclatura Pumpkin's
         //SPI_SDO_1	//SDI en nomenclatura Pumpkin's
@@ -650,7 +650,7 @@ void GPIO_PC104_init(void)
         _TRISG9=0; 			//pin 0-output 1-input.
         _LATG9=0;			//parte en 0
 
-        Abrir_SPI_1_default();
+        Open_SPI_1_default();
         SPI_nSS_1=1;	//nCS de la camara
 
     #else
@@ -721,7 +721,7 @@ void GPIO_PC104_init(void)
         _TRISE5=0;			//pin 0-output 1-input
         SPI_nSS_2=1;
 
-        Abrir_SPI_2_default();
+        Open_SPI_2_default();
         //SPI_SDI_2
         //SPI_SCK_2
         //SPI_SDO_2
@@ -906,7 +906,7 @@ void GPIO_PC104_init(void)
         iPPSOutput(OUT_PIN_PPS_RP8,OUT_FN_PPS_SDO3);
         //_LATB8=0;			//parte en 0
             
-        Abrir_SPI_3_default();
+        Open_SPI_3_default();
         //SPI_SDI_3 no existe
         //SPI_SCK_3
         //SPI_SDO_3

@@ -489,39 +489,41 @@ void dat_reset_Payload_Buff(DAT_Payload_Buff pay_i, unsigned int lenBuff, int mo
 //        printf("reseteo de payload completo\n");
 //    #endif
 }
-void dat_print_payload_name(DAT_Payload_Buff pay_i){
+char* dat_get_payload_name(DAT_Payload_Buff pay_i){
+    char* result;
     switch(pay_i){
         case dat_pay_lagmuirProbe:
-            printf("dat_pay_lagmuirProbe");
+            result = "dat_pay_lagmuirProbe";
         break;
         case dat_pay_sensTemp:
-            printf("dat_pay_sensTemp");
+            result = "dat_pay_sensTemp";
         break;
         case dat_pay_gps:
-            printf("dat_pay_gps");
+            result = "dat_pay_gps";
         break;
         case dat_pay_gyro:
-            printf("dat_pay_gyro");
+            result = "dat_pay_gyro";
         break;
         case dat_pay_expFis:
-            printf("dat_pay_expFis");
+            result = "dat_pay_expFis";
         break;
         case dat_pay_camera:
-            printf("dat_pay_camera");
+            result = "dat_pay_camera";
         break;
         case dat_pay_tmEstado:
-            printf("dat_pay_tmEstado");
+            result = "dat_pay_tmEstado";
         break;
         case dat_pay_battery:
-            printf("dat_pay_battery");
+            result = "dat_pay_battery";
         break;
         case dat_pay_debug:
-            printf("dat_pay_debug");
+            result = "dat_pay_debug";
         break;
         default:
-            printf("No payload name %d", pay_i);
+            result = "No payload name (Bad pay_i index";
         break;
     }
+    return result;
 }
 //******************************************************************************
 // DAT_AuxBuff

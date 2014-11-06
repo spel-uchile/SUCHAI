@@ -48,7 +48,7 @@ int overflow_SPI_1(void){
 void clear_overflow_SPI_1(void){
 	SPI1STAT=SPI1STAT&0xffbf; //borra el bit SPIROV para proximos setes (cuando haya overflow nuevamente)
 }
-void Abrir_SPI_1_default(void){
+void Open_SPI_1_default(void){
     unsigned int spi1con1, spi1con2, spi1stat;
     spi1con1=ENABLE_SCK_PIN&ENABLE_SDO_PIN&SPI_MODE16_OFF&SPI_SMP_OFF&SPI_CKE_ON&SLAVE_ENABLE_OFF&CLK_POL_ACTIVE_HIGH&
     MASTER_ENABLE_ON&SEC_PRESCAL_8_1&PRI_PRESCAL_1_1 ;//SPIxCON1
@@ -89,7 +89,7 @@ int overflow_SPI_2(void){
 void clear_overflow_SPI_2(void){
 	SPI2STAT=SPI2STAT&0xffbf; //borra el bit SPIROV para proximos setes (cuando haya overflow nuevamente)
 }
-void Abrir_SPI_2_default(void){
+void Open_SPI_2_default(void){
 	unsigned int spi1con1, spi1con2, spi1stat;
 	spi1con1=ENABLE_SCK_PIN&ENABLE_SDO_PIN&SPI_MODE16_OFF&SPI_SMP_OFF&SPI_CKE_ON&SLAVE_ENABLE_OFF&CLK_POL_ACTIVE_HIGH&
 	MASTER_ENABLE_ON&SEC_PRESCAL_3_1&PRI_PRESCAL_1_1 ;//SPIxCON1
@@ -128,7 +128,7 @@ int overflow_SPI_3(void){
 void clear_overflow_SPI_3(void){
 	SPI3STAT=SPI3STAT&0xffbf; //borra el bit SPIROV para proximos setes (cuando haya overflow nuevamente)
 }
-void Abrir_SPI_3_default(void){
+void Open_SPI_3_default(void){
 	unsigned int spi1con1, spi1con2, spi1stat;
 	spi1con1=ENABLE_SCK_PIN&ENABLE_SDO_PIN&SPI_MODE16_OFF&SPI_SMP_OFF&SPI_CKE_ON&SLAVE_ENABLE_OFF&CLK_POL_ACTIVE_HIGH&
 	MASTER_ENABLE_ON&SEC_PRESCAL_1_1&PRI_PRESCAL_1_1 ;//SPIxCON1

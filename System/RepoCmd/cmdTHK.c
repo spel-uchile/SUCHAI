@@ -247,7 +247,13 @@ int thk_suchai_deployment(void *param)
     rtc_print(NULL);
 
     //deploy langmuir
-    //..
+    #if (SCH_ANTENNA_ONBOARD==1)
+        if( sta_get_stateVar(sta_pay_lagmuirProbe_isDeployed)==0 ){
+            pay_deploy_langmuirProbe();
+            //set var lang dep = 1
+        }
+    #endif
+
     //other "only once"-tasks
     //..
 
@@ -508,7 +514,8 @@ int thk_silent_time_and_pictures(void *param){
     pay_take_camera(&arg);
     pay_stop_camera(NULL);
    //parar ciclo de Payload
-    int cam_state = SRP_PAY_XXX_STATE_INACTIVE;
+    //int cam_state = SRP_PAY_XXX_STATE_INACTIVE;
+    STA_Pay_xxx_State cam_state = sta_pay_xxx_state_inactive;
     pay_set_state_camera(&cam_state);
 
     //3) duermo el SUCHAI por 30min

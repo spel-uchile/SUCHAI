@@ -130,59 +130,60 @@ int tcm_sendTM_pay_i(void *param){
     int res = tcm_sendTM_PayloadVar(mode, pay_i);
     if(res!=0x0000){
         //inicia nuevamente el ciclo del Payload
-        int arg, pay_state;
+        int arg;
+        STA_Pay_xxx_State pay_state;
 
         pay_state =  pay_get_state_lagmuirProbe(NULL);
-        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
-            arg = SRP_PAY_XXX_STATE_ACTIVE;
+        if(pay_state == sta_pay_xxx_state_waiting_tx ){
+            arg = sta_pay_xxx_state_active;
             pay_set_state_lagmuirProbe(&arg);
         }
 
         pay_state =  pay_get_state_sensTemp(NULL);
-        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
-            arg = SRP_PAY_XXX_STATE_ACTIVE;
+        if(pay_state == sta_pay_xxx_state_waiting_tx ){
+            arg = sta_pay_xxx_state_active;
             pay_set_state_sensTemp(&arg);
         }
         
         pay_state =  pay_get_state_gps(NULL);
-        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
-            arg = SRP_PAY_XXX_STATE_ACTIVE;
+        if(pay_state == sta_pay_xxx_state_waiting_tx ){
+            arg = sta_pay_xxx_state_active;
             pay_set_state_gps(&arg);
         }
         
         pay_state =  pay_get_state_expFis(NULL);
-        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
-            arg = SRP_PAY_XXX_STATE_ACTIVE;
+        if(pay_state == sta_pay_xxx_state_waiting_tx ){
+            arg = sta_pay_xxx_state_active;
             pay_set_state_expFis(&arg);
         }
         
         pay_state =  pay_get_state_camera(NULL);
-        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
-            arg = SRP_PAY_XXX_STATE_ACTIVE;
+        if(pay_state == sta_pay_xxx_state_waiting_tx ){
+            arg = sta_pay_xxx_state_active;
             pay_set_state_camera(&arg);
         }
 
         pay_state =  pay_get_state_gyro(NULL);
-        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
-            arg = SRP_PAY_XXX_STATE_ACTIVE;
+        if(pay_state == sta_pay_xxx_state_waiting_tx ){
+            arg = sta_pay_xxx_state_active;
             pay_set_state_gyro(&arg);
         }
         
         pay_state =  pay_get_state_tmEstado(NULL);
-        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
-            arg = SRP_PAY_XXX_STATE_ACTIVE;
+        if(pay_state == sta_pay_xxx_state_waiting_tx ){
+            arg = sta_pay_xxx_state_active;
             pay_set_state_tmEstado(&arg);
         }
 
         pay_state =  pay_get_state_battery(NULL);
-        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
-            arg = SRP_PAY_XXX_STATE_ACTIVE;
+        if(pay_state == sta_pay_xxx_state_waiting_tx ){
+            arg = sta_pay_xxx_state_active;
             pay_set_state_battery(&arg);
         }
 
         pay_state =  pay_get_state_debug(NULL);
-        if(pay_state == SRP_PAY_XXX_STATE_WAITING_TX ){
-            arg = SRP_PAY_XXX_STATE_ACTIVE;
+        if(pay_state == sta_pay_xxx_state_waiting_tx ){
+            arg = sta_pay_xxx_state_active;
             pay_set_state_debug(&arg);
         }
         

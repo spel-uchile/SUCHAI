@@ -246,7 +246,10 @@ int thk_suchai_deployment(void *param)
     // print rtc time
     rtc_print(NULL);
 
-    //deploy langmuir
+    __delay_ms(60000);  //delay 60sec to avoid drain-out the EPS
+
+    /* Ceploy langmuir should NOT be here, but there is no way
+     * to check deployment, so its included here */
     #if (SCH_ANTENNA_ONBOARD==1)
         if( sta_get_stateVar(sta_pay_lagmuirProbe_isDeployed)==0 ){
             pay_deploy_langmuirProbe();
@@ -262,7 +265,7 @@ int thk_suchai_deployment(void *param)
 
 #define THK_SILENT_TIME_MIN 30          ///< cuantos "minutos" (65,535[s]) estara en inactividad antes de iniciarse
 #define THK_MAX_TRIES_ANT_DEPLOY 10               ///< cuantas veces tratara desplegar la antena antes de anunciar fracaso
-#define THK_DEPLOY_TIME 45311          ///< 2*THK_DEPLOY_TIME/1000 indica cuantos "s" estara activo el bus de 3.3V quemando el nilon
+#define THK_DEPLOY_TIME 45311          ///< 2*THK_DEPLOY_TIME/1000 indica cuantos "ms" estara activo el bus de 3.3V quemando el nilon
 #define THK_REST_DEPLOY_TIME 5000       ///< cuantos "ms" estara inactivo el bus de 3.3V descanzando de tratar de quemar el nilon
 #define THK_RECHECK_TIME 2000           ///< despues de cuantos "ms" RE-chequeara que efectivamente se desplego la antena
 /**

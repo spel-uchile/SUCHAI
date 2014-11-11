@@ -620,23 +620,98 @@ int RTC_set_seconds(int ss)
 }
 
 
-unsigned long int RTC_get_seconds_since2000(void){
-//    int base_year = 2000;
-//    int base_month = 1;
-//    int base_day = 1;
-//    int base_hours = 00;
-//    int base_minutes = 00;
-//    int base_seconds = 00;
-//
-//    int curr_year = RTC_get_year();
-//    int curr_month = RTC_get_month();
-//    int curr_day = RTC_get_day_num();
-//    int curr_hours = RTC_get_hours();
-//    int curr_minutes = RTC_get_minutes();
-//    int curr_seconds = RTC_get_seconds();
-//
-//    //como calcular dif de meses con 28, 30 y 31 dias??
-//    unsigned long int diff = (curr_year-base_year)*365*24*60*60 + (curr_month-base_month)*1 ;
+unsigned long int RTC_encode_datetime(int year, int month, int day, int hours, int min, int sec){
 
-    return 0;
+//    int year = RTC_get_year();
+//    int month = RTC_get_month();
+//    int day = RTC_get_day_num();
+//    int hours = RTC_get_hours();
+//    int minutes = RTC_get_minutes();
+//    int seconds = RTC_get_seconds();
+
+    //clean any extra bit
+    //              7654321076543210
+    year =   year&0b0000000000111111;
+    //              7654321076543210
+    month = month&0b0000000000001111;
+    //              7654321076543210
+    day =     day&0b0000000000011111;
+    //              7654321076543210
+    hours = hours&0b0000000000011111;
+    //              7654321076543210
+    min =     min&0b0000000000111111;
+    //              7654321076543210
+    sec =     sec&0b0000000000111111;
+
+    unsigned long int tmp = 0, date_time = 0;
+    //include year,  6 bits
+    tmp = (unsigned long int)year;
+    date_time = date_time<<0;
+    date_time = date_time|tmp;
+    //include month,  4 bits
+    tmp  = (unsigned long int)month;
+    date_time = date_time<<4;
+    date_time = date_time|tmp;
+    //include day,  5 bits
+    tmp  = (unsigned long int)day;
+    date_time = date_time<<5;
+    date_time = date_time|tmp;
+    //include hours,  5 bits
+    tmp  = (unsigned long int)hours;
+    date_time = date_time<<5;
+    date_time = date_time|tmp;
+    //include minutes, 6 bits
+    tmp  = (unsigned long int)min;
+    date_time = date_time<<6;
+    date_time = date_time|tmp;
+    //include seconds, 6 bits
+    tmp  = (unsigned long int)sec;
+    date_time = date_time<<6;
+    date_time = date_time|tmp;
+    
+
+    return date_time;
+}
+
+int RTC_decode_datetime(unsigned long int date_time, int decode_mode){
+    
+    //                      76543210765432107654321076543210
+    int yy   = (date_time&0b11111100000000000000000000000000)>>26 ;
+    //                      76543210765432107654321076543210
+    int mo   = (date_time&0b00000011110000000000000000000000)>>22 ;
+    //                      76543210765432107654321076543210
+    int dd   = (date_time&0b00000000001111100000000000000000)>>17 ;
+    //                      76543210765432107654321076543210
+    int hour = (date_time&0b00000000000000011111000000000000)>>12 ;
+    //                      76543210765432107654321076543210
+    int min  = (date_time&0b00000000000000000000111111000000)>>6 ;
+    //                      76543210765432107654321076543210
+    int sec  = (date_time&0b00000000000000000000000000111111)>>0 ;
+
+    int resp;
+    switch( decode_mode){
+        case 1:
+            resp = yy;
+            break;
+        case 2:
+            resp = mo;
+            break;
+        case 3:
+            resp = dd;
+            break;
+        case 4:
+            resp = hour;
+            break;
+        case 5:
+            resp = min;
+            break;
+        case 6:
+            resp = sec;
+            break;
+        default:
+            printf(">> date_time = %lu <=> %d/%d/%d %d:%d:%d\n", date_time, dd, mo, yy, hour, min, sec);
+            resp = -1;
+            break;
+    }
+    return resp;
 }

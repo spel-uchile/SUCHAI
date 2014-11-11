@@ -139,6 +139,9 @@ int rtc_print(void *param)
 
     printf(">> %d/%d/%d %d:%d:%d\n", dd, mo, yy, hour, min, sec);
 
+//    unsigned long int date_time = RTC_encode_datetime(yy, mo, dd, hour, min, sec);
+//    RTC_decode_datetime(date_time, 0);
+
     return 1;
 }
 

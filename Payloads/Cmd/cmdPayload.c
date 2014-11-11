@@ -731,6 +731,22 @@ int pay_init_tmEstado(void *param){
 int pay_take_tmEstado(void *param){
     printf("pay_take_tmEstado()  ..\r\n");
 
+    int sec, min, hour, mo, dd, yy;
+    sec = RTC_get_seconds();
+    min = RTC_get_minutes();
+    hour = RTC_get_hours();
+    mo = RTC_get_month();
+    dd = RTC_get_day_num();
+    yy = RTC_get_year();
+    unsigned long int date_time = RTC_encode_datetime(yy, mo, dd, hour, min, sec);
+    RTC_decode_datetime(date_time, 0);
+
+    unsigned int dt1, dt2;
+    dt1 = (unsigned int )(date_time>>0);
+    dt2 = (unsigned int )(date_time>>16);
+    dat_set_Payload_Buff(dat_pay_tmEstado, dt1, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_tmEstado, dt2, DAT_PAYBUFF_MODE_NO_MAXINDX);
+
     STA_StateVar indxVar; int var;
     for(indxVar=0; indxVar<sta_stateVar_last_one; indxVar++){
         var = sta_get_stateVar(indxVar);

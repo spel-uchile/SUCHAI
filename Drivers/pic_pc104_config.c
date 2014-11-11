@@ -680,7 +680,8 @@ void GPIO_PC104_init(void)
     iPPSOutput(OUT_PIN_PPS_RP17,OUT_FN_PPS_U1TX);
 
     //UART1 - CONSOLA SERIAL - 19200, 8, N, 1 */
-    ConfigRS232(51, RS2_M_UART1);
+    //ConfigRS232(51, RS2_M_UART1);   //19200
+    ConfigRS232(25, RS2_M_UART1);   //38400
     EnableIntU1RX;
     SetPriorityIntU1RX(5);
 

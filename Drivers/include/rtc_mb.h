@@ -64,6 +64,8 @@ int RTC_set_hour(int hh);
 int RTC_set_minutes(int mi);
 int RTC_set_seconds(int ss);
 
-unsigned long int RTC_get_seconds_since2000(void);
+//unsigned long int RTC_encode_datetime(void);
+unsigned long int RTC_encode_datetime(int year, int month, int day, int hours, int minutes, int seconds);
+int RTC_decode_datetime(unsigned long int date_time, int decode_mode);
 
 #endif

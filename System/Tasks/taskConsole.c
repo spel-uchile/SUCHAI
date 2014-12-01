@@ -72,7 +72,7 @@ void taskConsole(void *param)
 
     while(1)
     {
-        vTaskDelay(Delayms);
+        vTaskDelay(Delayms);     //just delay is enough
         //vTaskDelayUntil(&xLastWakeTime, Delayms);
 
         /* Parsing command - return CmdDisp structure*/

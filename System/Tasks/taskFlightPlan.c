@@ -34,7 +34,7 @@ void taskFlightPlan(void *param)
     portTickType xDelayms = (30 * 1000 / portTICK_RATE_MS);
 #else
     /* Resolution = 10[s] */
-    const unsigned int xDelayms = (10 * 1000) / portTICK_RATE_MS; 
+    const unsigned int xDelay_ticks = (10 * 1000) / portTICK_RATE_MS;
 #endif
     portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
 
@@ -59,7 +59,17 @@ void taskFlightPlan(void *param)
 
     while(1)
     {
-        vTaskDelayUntil(&xLastWakeTime, xDelayms);
+        vTaskDelayUntil(&xLastWakeTime, xDelay_ticks);
+        /* Check if the next tick to wake has already
+         * expired (*pxPreviousWakeTime = xTimeToWake;)
+         * This avoids multiple reentries on vTaskDelayUntil */
+        portTickType curr_tick = xTaskGetTickCount();
+        if( xLastWakeTime + xDelay_ticks < curr_tick ){
+            xLastWakeTime = xTaskGetTickCount();
+            #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                printf("[FlightPlan] xTimeToWake < curr_tick, update wakeup time \r\n");
+            #endif
+        }
 
         /* Map hh:mm to MM minutues of the day to obtain the
          * index of the next command to read from fligh plan */

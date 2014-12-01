@@ -58,19 +58,28 @@ void taskFlightPlan2(void *param)
     {
         /* min_check_period_ms actions */
         vTaskDelayUntil(&xLastWakeTime, check_time);
+        /* Check if the next tick to wake has already
+         * expired (*pxPreviousWakeTime = xTimeToWake;)
+         * This avoids multiple reentries on vTaskDelayUntil */
+        portTickType curr_tick = xTaskGetTickCount();
+        if( xLastWakeTime + check_time < curr_tick ){
+            xLastWakeTime = xTaskGetTickCount();
+            #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                printf("[FlightPlan2] xTimeToWake < curr_tick, update wakeup time \r\n");
+            #endif
+        }
+
         //Add commands below ..
 
         #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
             printf("[FlightPlan2] min_check_period_ms (%d) actions ..\r\n", min_check_period_ms);
         #endif
 
-        /* Should help avoid the acumulation of commands while
-         *  the SUCHAI is TX RX, or another heavy duty
-         *  commnad (dispatched by another task) .. */
         if(sta_get_stateVar(sta_ppc_opMode)==STA_PPC_OPMODE_NORMAL){
             NewCmd.cmdId = pay_id_fp2_default_fsm;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
-        }           
+        }
+
     }
 }

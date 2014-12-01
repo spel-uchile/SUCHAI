@@ -355,7 +355,7 @@ BOOL dat_get_Payload_Buff(DAT_Payload_Buff pay_i, unsigned int indx, int *value)
    // Descarta si pay_i invalido
     if(pay_i>=dat_pay_last_one){
         #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-            printf("dat_get_Payload_Buff: payload invalido\n");
+            printf("dat_get_Payload_Buff: invalid payload\n");
         #endif
         return FALSE;   //payload invalido
     }
@@ -489,6 +489,7 @@ void dat_reset_Payload_Buff(DAT_Payload_Buff pay_i, unsigned int lenBuff, int mo
 //        printf("reseteo de payload completo\n");
 //    #endif
 }
+
 char* dat_get_payload_name(DAT_Payload_Buff pay_i){
     char* result;
     switch(pay_i){

@@ -104,12 +104,10 @@ int tcm_resend(void *param)
  */
 int tcm_sendTM_all_pay_i(void *param){
 
-    //envio TM de payload
     DAT_Payload_Buff pay_i;
     for(pay_i=0; pay_i<dat_pay_last_one; pay_i++)
     {
         tcm_sendTM_pay_i( (void *)(&pay_i) );
-        ClrWdt();
     }
 
     return 1;
@@ -127,66 +125,17 @@ int tcm_sendTM_pay_i(void *param){
     DAT_Payload_Buff pay_i = *((DAT_Payload_Buff*)param);
     int mode=2;
 
-    int res = tcm_sendTM_PayloadVar(mode, pay_i);
+    //send pay_i data, regardless of it's pay_i_state
+    int res = tcm_sendTM_payload(mode, pay_i);
+    res = 0;
+
+    //If successfull reinit payload
     if(res!=0x0000){
-        //inicia nuevamente el ciclo del Payload
-        int arg;
         STA_Pay_xxx_State pay_state;
-
-        pay_state =  pay_get_state_lagmuirProbe(NULL);
+        pay_state = pay_get_state(pay_i);
         if(pay_state == sta_pay_xxx_state_waiting_tx ){
-            arg = sta_pay_xxx_state_active;
-            pay_set_state_lagmuirProbe(&arg);
-        }
-
-        pay_state =  pay_get_state_sensTemp(NULL);
-        if(pay_state == sta_pay_xxx_state_waiting_tx ){
-            arg = sta_pay_xxx_state_active;
-            pay_set_state_sensTemp(&arg);
-        }
-        
-        pay_state =  pay_get_state_gps(NULL);
-        if(pay_state == sta_pay_xxx_state_waiting_tx ){
-            arg = sta_pay_xxx_state_active;
-            pay_set_state_gps(&arg);
-        }
-        
-        pay_state =  pay_get_state_expFis(NULL);
-        if(pay_state == sta_pay_xxx_state_waiting_tx ){
-            arg = sta_pay_xxx_state_active;
-            pay_set_state_expFis(&arg);
-        }
-        
-        pay_state =  pay_get_state_camera(NULL);
-        if(pay_state == sta_pay_xxx_state_waiting_tx ){
-            arg = sta_pay_xxx_state_active;
-            pay_set_state_camera(&arg);
-        }
-
-        pay_state =  pay_get_state_gyro(NULL);
-        if(pay_state == sta_pay_xxx_state_waiting_tx ){
-            arg = sta_pay_xxx_state_active;
-            pay_set_state_gyro(&arg);
-        }
-        
-        pay_state =  pay_get_state_tmEstado(NULL);
-        if(pay_state == sta_pay_xxx_state_waiting_tx ){
-            arg = sta_pay_xxx_state_active;
-            pay_set_state_tmEstado(&arg);
-        }
-
-        pay_state =  pay_get_state_battery(NULL);
-        if(pay_state == sta_pay_xxx_state_waiting_tx ){
-            arg = sta_pay_xxx_state_active;
-            pay_set_state_battery(&arg);
-        }
-
-        pay_state =  pay_get_state_debug(NULL);
-        if(pay_state == sta_pay_xxx_state_waiting_tx ){
-            arg = sta_pay_xxx_state_active;
-            pay_set_state_debug(&arg);
-        }
-        
+            pay_set_state(pay_i, sta_pay_xxx_state_active);
+        }        
     }
     return res;
 }
@@ -528,8 +477,8 @@ int tcm_set_sysreq(void *param)
  * @param pay_i Payload id
  * @return 0 (Tx fail) - 1 (Tx OK)
  */
-int tcm_sendTM_PayloadVar(int mode, DAT_Payload_Buff pay_i){
-    con_printf("tcm_sendTM_PayloadVar...\r\n");
+int tcm_sendTM_payload(int mode, DAT_Payload_Buff pay_i){
+    printf("tcm_sendTM_payload ..\r\n");
 
     int tm_id, nfrm;
 
@@ -539,40 +488,36 @@ int tcm_sendTM_PayloadVar(int mode, DAT_Payload_Buff pay_i){
     nfrm = trx_tm_addtoframe(&tm_id, 1, CMD_ADDFRAME_START); /* New empty start frame */
 
     /* Read info and append to the frame */
-    //Add Payload Indxs info
-    unsigned int maxIndx = dat_get_MaxPayIndx( pay_i);
-    unsigned int nextIndx = dat_get_NextPayIndx( pay_i);
 
-    nfrm = trx_tm_addtoframe( (int *)&maxIndx, 1, CMD_ADDFRAME_ADD);
+    //Add pay_i metadata
+    //unsigned int maxIndx = dat_get_MaxPayIndx( pay_i);
+    unsigned int nextIndx = dat_get_NextPayIndx(pay_i);
+    int pay_i_state = pay_get_state(pay_i);
+
+    //nfrm = trx_tm_addtoframe( (int *)&maxIndx, 1, CMD_ADDFRAME_ADD);
     nfrm = trx_tm_addtoframe( (int *)&nextIndx, 1, CMD_ADDFRAME_ADD);
+    nfrm = trx_tm_addtoframe( (int *)&pay_i_state, 1, CMD_ADDFRAME_ADD);
 
     #if (SCH_CMDTCM_VERBOSE>=1)
-        printf("pay_i = %d  state:  %d/%d, [nextIndx/maxIndx] \r\n", (unsigned int)pay_i, nextIndx, maxIndx );
+        printf("    pay_i = %d, pay_i_state = %d, nextIndx = %u \r\n", (unsigned int)pay_i, pay_i_state, nextIndx);
     #endif
 
-    //Add Payload Data
+    //Add pay_i data
     unsigned int indx; int val;
-    for(indx=0; indx<=maxIndx; indx++)
+    for(indx=0; indx<nextIndx; indx++)
     {
         dat_get_Payload_Buff(pay_i, indx, &val);
         nfrm = trx_tm_addtoframe(&val, 1, CMD_ADDFRAME_ADD);
 
-        #if (SCH_CMDTCM_VERBOSE>=2)
-            char buffer[10];
-            con_printf("dat_getPayloadVar[");
-            //itoa(buffer, (unsigned int)indxVar, 10);
-            sprintf( buffer, "%d", (unsigned int)indx );
-            con_printf(buffer); con_printf("]=");
-            //itoa(buffer,(unsigned int)sta_getstateVar(indxVar), 10);
-            sprintf( buffer, "0x%X", (unsigned int)val );
-            con_printf(buffer); con_printf("\r\n");
+        #if (SCH_CMDTCM_VERBOSE>=1)
+            printf("    dat_get_Payload_Buff(pay_i=%d, indx=%u, &val=%d) \r\n", pay_i, indx, val);
         #endif
 
 
         ClrWdt();
     }
 
-    // Close session
+    /* Close session */
     // data = trx_tm_addtoframe(&data, 0, CMD_ADDFRAME_STOP);     /* Empty stop frame */
     //nfrm = trx_tm_addtoframe(&tm_id, 0, CMD_ADDFRAME_FIN);      /* End session */
     trx_tm_addtoframe(&tm_id, 0, CMD_ADDFRAME_FIN);      /* End session */

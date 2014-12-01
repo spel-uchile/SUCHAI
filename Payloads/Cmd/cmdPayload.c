@@ -372,6 +372,9 @@ int pay_init_expFis(void *param){
     return res;
 }
 int pay_take_expFis(void *param){
+
+    //pay_save_date_time_to_Payload_Buff(dat_pay_expFis);   //save date_time in 2ints
+
     if( fis_iterate() ){
         //fis_print_sens_buff();
         //fis_get_sens_buff_i(indx);
@@ -556,6 +559,8 @@ int pay_init_battery(void *param){
 int pay_take_battery(void *param){
     printf("pay_take_test1()  ..\r\n");
 
+    pay_save_date_time_to_Payload_Buff(dat_pay_battery);   //save date_time in 2ints
+
     int i, val;
     for(i=0;i<34;i++){
         val = eps_readreg( (void *)(&i) );
@@ -602,6 +607,8 @@ int pay_init_debug(void *param){
 }
 int pay_take_debug(void *param){
     printf("pay_take_debug()  ..\r\n");
+
+    pay_save_date_time_to_Payload_Buff(dat_pay_debug);   //save date_time in 2ints
 
     pay_debug_cnt++;
     dat_set_Payload_Buff(dat_pay_debug, pay_debug_cnt, DAT_PAYBUFF_MODE_NO_MAXINDX);
@@ -673,6 +680,8 @@ int pay_init_gyro(void *param){
 int pay_take_gyro(void *param){
     printf("pay_take_gyro()  ..\r\n");
 
+    pay_save_date_time_to_Payload_Buff(dat_pay_gyro);   //save date_time in 2ints
+
     //in case of failure
     if( pay_isAlive_gyro(NULL) == 0){
         dat_set_Payload_Buff(dat_pay_gyro ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);      
@@ -728,24 +737,11 @@ int pay_init_tmEstado(void *param){
 
     return res_isAlive;
 }
+
 int pay_take_tmEstado(void *param){
     printf("pay_take_tmEstado()  ..\r\n");
 
-    int sec, min, hour, mo, dd, yy;
-    sec = RTC_get_seconds();
-    min = RTC_get_minutes();
-    hour = RTC_get_hours();
-    mo = RTC_get_month();
-    dd = RTC_get_day_num();
-    yy = RTC_get_year();
-    unsigned long int date_time = RTC_encode_datetime(yy, mo, dd, hour, min, sec);
-    RTC_decode_datetime(date_time, 0);
-
-    unsigned int dt1, dt2;
-    dt1 = (unsigned int )(date_time>>0);
-    dt2 = (unsigned int )(date_time>>16);
-    dat_set_Payload_Buff(dat_pay_tmEstado, dt1, DAT_PAYBUFF_MODE_NO_MAXINDX);
-    dat_set_Payload_Buff(dat_pay_tmEstado, dt2, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    pay_save_date_time_to_Payload_Buff(dat_pay_tmEstado);   //save date_time in 2ints
 
     STA_StateVar indxVar; int var;
     for(indxVar=0; indxVar<sta_stateVar_last_one; indxVar++){
@@ -804,9 +800,6 @@ int pay_set_state_camera(void *param){
 int pay_init_camera(void *param){
     printf("pay_init_camera\r\n");
 
-    //configure Payload_Buff
-    //nothing to do..
-
     //switch camera on
     printf("  PPC_CAM_SWITCH = %d\r\n", PPC_CAM_SWITCH_CHECK);
     PPC_CAM_SWITCH=1;
@@ -831,6 +824,9 @@ int pay_init_camera(void *param){
 }
 int pay_take_camera(void *param){
     printf("pay_take_camera()\r\n");
+
+    //save date time of the photo
+    //pay_save_date_time_to_Payload_Buff(dat_pay_camera);   //save date_time in 2ints
 
     //in case of failure
     if( sta_get_stateVar(sta_pay_camera_isAlive)==0 ){
@@ -864,6 +860,7 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
         printf("    Photo length = %u\r\n", photo_byte_length);
     #endif
 
+    //in case of errors
     if(photo_byte_length == 0){
         printf(" Error: No photo was taken ..\r\n");
         dat_set_Payload_Buff(dat_pay_camera ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
@@ -940,16 +937,19 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
     return TRUE;
 }
 int pay_takePhoto_camera(void *param){
-    printf("pay_takePhoto_camera ..");
+    printf("pay_takePhoto_camera ..\r\n");
+
+//    int asd = *( (int *)param );
+//    __delay_ms(asd);
+//    asd = STA_PPC_OPMODE_CAMERA;
+//    ppc_set_opMode(&asd);
+//    return 1;
 
     pay_init_camera(NULL);
-    //int arg = CAM_MODE_VERBOSE;
-    //int arg = CAM_MODE_BOTH;
-    int arg = CAM_MODE_SAVE_SD;
-    int st = pay_take_camera(&arg);
+    int st = pay_take_camera(NULL);
     pay_stop_camera(NULL);
-    //parar ciclo de Payload
-    //int cam_state = SRP_PAY_XXX_STATE_INACTIVE;
+
+    //parar Payload (por si acaso)
     STA_Pay_xxx_State cam_state = sta_pay_xxx_state_inactive;
     pay_set_state_camera(&cam_state);
             
@@ -1013,6 +1013,8 @@ int pay_init_gps(void *param){
 }
 int pay_take_gps(void *param){
     printf("pay_take_gps\r\n");
+
+    pay_save_date_time_to_Payload_Buff(dat_pay_gps);   //save date_time in 2ints
 
     //in case of failure
     if( pay_isAlive_gps(NULL) == 0 ){
@@ -1091,6 +1093,8 @@ int pay_init_lagmuirProbe(void *param){
 
 int pay_take_lagmuirProbe(void *param){
     printf("pay_take_lagmuirProbe\r\n");
+
+    pay_save_date_time_to_Payload_Buff(dat_pay_lagmuirProbe);   //save date_time in 2ints
 
     dat_set_Payload_Buff(dat_pay_lagmuirProbe, 0x01, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
@@ -1278,6 +1282,8 @@ int pay_init_sensTemp(void *param){
 }
 int pay_take_sensTemp(void *param){
     printf("pay_take_sensTemp\r\n");
+
+    pay_save_date_time_to_Payload_Buff(dat_pay_sensTemp);   //save date_time in 2ints
 
     //in case of failure
     if( pay_isAlive_sensTemp(NULL) == 0){
@@ -1779,6 +1785,49 @@ void pay_fp2_exec_run_xxx(DAT_Payload_Buff pay_i, STA_Pay_xxx_State state){
 }
 
 /**
+ * Get pay_i execution state
+ * @param pay_i
+ * @param state
+ */
+STA_Pay_xxx_State pay_get_state(DAT_Payload_Buff pay_i){
+    STA_Pay_xxx_State pay_i_state;
+    switch(pay_i){
+        case dat_pay_tmEstado:
+            pay_i_state = pay_get_state_tmEstado(NULL);
+            break;
+        case dat_pay_battery:
+            pay_i_state = pay_get_state_battery(NULL);
+            break;
+        case dat_pay_debug:
+            pay_i_state = pay_get_state_debug(NULL);
+            break;
+        case dat_pay_lagmuirProbe:
+            pay_i_state = pay_get_state_lagmuirProbe(NULL);
+            break;
+        case dat_pay_gps:
+            pay_i_state = pay_get_state_gps(NULL);
+            break;
+        case dat_pay_camera:
+            pay_i_state = pay_get_state_camera(NULL);
+            break;
+        case dat_pay_sensTemp:
+            pay_i_state = pay_get_state_sensTemp(NULL);
+            break;
+        case dat_pay_gyro:
+            pay_i_state = pay_get_state_gyro(NULL);
+            break;
+        case dat_pay_expFis:
+            pay_i_state = pay_get_state_expFis(NULL);
+            break;
+        case dat_pay_last_one:
+            //ignore
+            pay_i_state = -1;
+            break;
+    }
+    return pay_i_state;
+}
+
+/**
  * Set the state of pay_i. Used to control execution, by FP2 and others
  * @param pay_i
  * @param state
@@ -1820,4 +1869,28 @@ void pay_set_state(DAT_Payload_Buff pay_i, STA_Pay_xxx_State state){
             break;
     }
 
+}
+
+/**
+ * 
+ * @param pay_i
+ */
+void pay_save_date_time_to_Payload_Buff(DAT_Payload_Buff pay_i){
+    int sec, min, hour, mo, dd, yy;
+    sec = RTC_get_seconds();
+    min = RTC_get_minutes();
+    hour = RTC_get_hours();
+    mo = RTC_get_month();
+    dd = RTC_get_day_num();
+    yy = RTC_get_year();
+    unsigned long int date_time = RTC_encode_datetime(yy, mo, dd, hour, min, sec);
+
+    //print date time
+    RTC_decode_datetime(date_time, 0);
+
+    unsigned int dt1, dt2;
+    dt1 = (unsigned int )(date_time>>0);
+    dt2 = (unsigned int )(date_time>>16);
+    dat_set_Payload_Buff(pay_i, dt1, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(pay_i, dt2, DAT_PAYBUFF_MODE_NO_MAXINDX);
 }

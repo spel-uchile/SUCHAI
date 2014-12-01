@@ -33,7 +33,7 @@ typedef enum{
     tcm_id_sendTM_stateVar, ///< @cmd
     //Payload
     tcm_id_sendTM_all_pay_i, ///< @cmd
-    tcm_id_sendTM_pay_i, ///< @cmd
+    tcm_id_sendTM_pay_i, ///< @cmd  0x8005
     //Debug
     tcm_id_set_sysreq, ///< @cmd
 
@@ -62,7 +62,7 @@ int tcm_update_beacon(void *param);
 int tcm_set_sysreq(void *param);
 
 //funciones aux
-int tcm_sendTM_PayloadVar(int mode, DAT_Payload_Buff pay_i);
+int tcm_sendTM_payload(int mode, DAT_Payload_Buff pay_i);
 
 #endif
 

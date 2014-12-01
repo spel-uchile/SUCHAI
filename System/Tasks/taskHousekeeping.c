@@ -76,6 +76,18 @@ void taskHouskeeping(void *param)
         /* 1 seconds actions */
         vTaskDelayUntil(&xLastWakeTime, delay_ticks); //Suspend task
         elapsed_sec += delay_ms/1000; //Update seconds counts
+
+        /* Check if the next tick to wake has already
+         * expired (*pxPreviousWakeTime = xTimeToWake;)
+         * This avoids multiple reentries on vTaskDelayUntil */
+        portTickType curr_tick = xTaskGetTickCount();
+        if( xLastWakeTime + delay_ticks < curr_tick ){
+            xLastWakeTime = xTaskGetTickCount();
+            #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                printf("[Housekeeping] xTimeToWake < curr_tick, update wakeup time \r\n");
+            #endif
+        }
+
         //Add commands below ..
 
         /* 20 seconds actions */

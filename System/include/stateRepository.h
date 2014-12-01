@@ -20,10 +20,10 @@
 
 
 //***STATUS REPOSITORY**********************************************************
-#define STA_PPC_OPMODE_NORMAL   (0) /* Operacion normal*/
-#define STA_PPC_OPMODE_TRX_TX   (1) /* Transceiver is TX */
-#define STA_PPC_OPMODE_EXPFIS   (1) /* expFis is running*/
-#define STA_PPC_OPMODE_CAMERA   (1) /* Camera is running */
+#define STA_PPC_OPMODE_NORMAL       (0) /* Operacion normal*/
+#define STA_PPC_OPMODE_SENDING_TM   (1) /* Transceiver is TX */
+#define STA_PPC_OPMODE_EXPFIS       (1) /* expFis is running*/
+#define STA_PPC_OPMODE_CAMERA       (1) /* Camera is running */
 
 /**
  * Cubesat's State Variables

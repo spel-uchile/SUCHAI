@@ -208,6 +208,7 @@ int pay_stop_gps(void *param);
 //aux functions
 BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type);
 int pay_camera_get_1int_from_2bytes(void);
+void pay_save_date_time_to_Payload_Buff(DAT_Payload_Buff pay_i);
 
 //FP2
 void pay_fp2_multiplexed(void);
@@ -216,6 +217,7 @@ int pay_fp2_get_exec_rate(DAT_Payload_Buff pay_i);
 unsigned int pay_fp2_get_run_take_num_exec_times(DAT_Payload_Buff pay_i);
 void pay_fp2_exec_run_xxx(DAT_Payload_Buff pay_i, STA_Pay_xxx_State state);
 void pay_set_state(DAT_Payload_Buff pay_i, STA_Pay_xxx_State state);
+STA_Pay_xxx_State pay_get_state(DAT_Payload_Buff pay_i);
 
 #endif	/* CMDPAYLOAD_H */
 

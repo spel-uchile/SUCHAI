@@ -55,11 +55,12 @@ void taskComunications(void *param)
     unsigned int type_cnt = 0; /* Identificador del tipo de beacon siguiente */
 
     /* Comienza el ciclo de la tarea */
-    portTickType xLastWakeTime = xTaskGetTickCount();
+    //portTickType xLastWakeTime = xTaskGetTickCount();
     while(1)
     {
         /* Tarea periodica cada 1 Segundos*/
-        vTaskDelayUntil(&xLastWakeTime, delay_ticks);
+        //vTaskDelayUntil(&xLastWakeTime, delay_ticks);
+        vTaskDelay(delay_ticks);  //just delay is enough
         seconds_cnt += xsec;
 
         /* Recibir datos a traves de I2C */

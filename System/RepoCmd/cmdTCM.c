@@ -120,16 +120,15 @@ int tcm_sendTM_all_pay_i(void *param){
  * @return 1 succes, 0 failure
  */
 int tcm_sendTM_pay_i(void *param){
-    con_printf("tcm_sendTM_pay_i\r\n");
+    printf("tcm_sendTM_pay_i ..\r\n");
     
     DAT_Payload_Buff pay_i = *((DAT_Payload_Buff*)param);
     int mode=2;
 
     //send pay_i data, regardless of it's pay_i_state
     int res = tcm_sendTM_payload(mode, pay_i);
-    res = 0;
 
-    //If successfull reinit payload
+    //If successfull reinit payloads that were waiting state
     if(res!=0x0000){
         STA_Pay_xxx_State pay_state;
         pay_state = pay_get_state(pay_i);

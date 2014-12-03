@@ -29,8 +29,8 @@ void taskHouskeeping(void *param)
         printf(">>[Houskeeping] Started\r\n");
     #endif
 
-    portTickType delay_ms    = 1000;    //Task period in [ms]
-    portTickType delay_ticks = delay_ms / portTICK_RATE_MS; //Task period in ticks
+    portTickType delay_ms    = 10000;    //Task period in [ms]
+    portTickType xDelay_ticks = delay_ms / portTICK_RATE_MS; //Task period in ticks
 
 #if (SCH_THK_REALTIME == 1)
     unsigned int elapsed_sec = 0;       // Seconds counter
@@ -73,18 +73,18 @@ void taskHouskeeping(void *param)
     portTickType xLastWakeTime = xTaskGetTickCount();
     while(TRUE)
     {
-        /* 1 seconds actions */
-        vTaskDelayUntil(&xLastWakeTime, delay_ticks); //Suspend task
+        vTaskDelayUntil(&xLastWakeTime, xDelay_ticks); //Suspend task
         elapsed_sec += delay_ms/1000; //Update seconds counts
-
         /* Check if the next tick to wake has already
          * expired (*pxPreviousWakeTime = xTimeToWake;)
          * This avoids multiple reentries on vTaskDelayUntil */
-        portTickType curr_tick = xTaskGetTickCount();
-        if( xLastWakeTime + delay_ticks < curr_tick ){
-            xLastWakeTime = xTaskGetTickCount();
+        BOOL xShouldDelay = shouldDelayTask(&xLastWakeTime, xDelay_ticks);
+        if( xShouldDelay == FALSE )
+        {
+             xLastWakeTime = xTaskGetTickCount();
             #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
-                printf("[Housekeeping] xTimeToWake < curr_tick, update wakeup time \r\n");
+                printf("[Housekeeping] xLastWakeTime + xDelay_ticks < xTickCount, "
+                        "update xLastWakeTime to xTickCount ..\r\n");
             #endif
         }
 

@@ -30,11 +30,11 @@ void taskFlightPlan2(void *param)
 
 #if SCH_FLIGHTPLAN2_REALTIME
     unsigned int min_check_period_ms = 10000;      /* check every x ms  */
-    portTickType check_time = (min_check_period_ms) / portTICK_RATE_MS;
+    portTickType xDelay_ticks = (min_check_period_ms) / portTICK_RATE_MS;
     portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
 #else
     unsigned int min_check_period_ms = 1000;      /* check every 2sec  */
-    portTickType check_time = (min_check_period_ms) / portTICK_RATE_MS;
+    portTickType xDelay_ticks = (min_check_period_ms) / portTICK_RATE_MS;
     portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
 #endif
 
@@ -57,17 +57,26 @@ void taskFlightPlan2(void *param)
     while(1)
     {
         /* min_check_period_ms actions */
-        vTaskDelayUntil(&xLastWakeTime, check_time);
+        vTaskDelayUntil(&xLastWakeTime, xDelay_ticks);
         /* Check if the next tick to wake has already
          * expired (*pxPreviousWakeTime = xTimeToWake;)
          * This avoids multiple reentries on vTaskDelayUntil */
-        portTickType curr_tick = xTaskGetTickCount();
-        if( xLastWakeTime + check_time < curr_tick ){
-            xLastWakeTime = xTaskGetTickCount();
+        BOOL xShouldDelay = shouldDelayTask(&xLastWakeTime, xDelay_ticks);
+        if( xShouldDelay == FALSE )
+        {
+             xLastWakeTime = xTaskGetTickCount();
             #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
-                printf("[FlightPlan2] xTimeToWake < curr_tick, update wakeup time \r\n");
+                printf("[FlightPlan2] xLastWakeTime + xDelay_ticks < xTickCount, "
+                        "update xLastWakeTime to xTickCount ..\r\n");
             #endif
         }
+//        if( (xLastWakeTime + xDelay_ticks) < curr_tick ){
+//            xLastWakeTime = curr_tick;
+//            #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+//                printf("[FlightPlan2] xLastWakeTime + xDelay_ticks < curr_tick,"
+//                        " update xLastWakeTime to curr_tick ..\r\n");
+//            #endif
+//        }
 
         //Add commands below ..
 
@@ -82,4 +91,55 @@ void taskFlightPlan2(void *param)
         }
 
     }
+}
+
+BOOL shouldDelayTask( portTickType * const pxPreviousWakeTime, portTickType xTimeIncrement)
+{
+    portTickType xTickCount = xTaskGetTickCount();
+
+//    printf("  [shouldDelayTask] xLastWakeTime = %u, xDelay_ticks = %u, "
+//            "xTickCount = %u \r\n", *pxPreviousWakeTime,
+//            xTimeIncrement, xTickCount);
+
+
+    portTickType xTimeToWake;
+    BOOL xShouldDelay = FALSE;
+
+    /* Generate the tick time at which the task wants to wake. */
+    xTimeToWake = *pxPreviousWakeTime + xTimeIncrement;
+
+    if( xTickCount < *pxPreviousWakeTime )
+    {
+            /* The tick count has overflowed since this function was
+            lasted called.  In this case the only time we should ever
+            actually delay is if the wake time has also	overflowed,
+            and the wake time is greater than the tick time.  When this
+            is the case it is as if neither time had overflowed. */
+            if( ( xTimeToWake < *pxPreviousWakeTime ) && ( xTimeToWake > xTickCount ) )
+            {
+                    xShouldDelay = TRUE;
+                    //printf(" asdasd 1\r\n");
+            }
+    }
+    else
+    {
+            /* The tick time has not overflowed.  In this case we will
+            delay if either the wake time has overflowed, and/or the
+            tick time is less than the wake time. */
+            if( ( xTimeToWake < *pxPreviousWakeTime ) || ( xTimeToWake > xTickCount ) )
+            {
+                    xShouldDelay = TRUE;
+                    //printf(" asdasd 2\r\n");
+            }
+    }
+
+//    /* Update the wake time ready for the next call. */
+//    *pxPreviousWakeTime = xTimeToWake;
+
+    if( xShouldDelay != FALSE )
+    {
+
+    }
+
+    return xShouldDelay;
 }

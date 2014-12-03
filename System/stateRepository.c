@@ -333,8 +333,8 @@ void sta_onReset_stateRepo(void)
     int param, res;
 
     // Set to default
-    param = STA_PPC_OPMODE_NORMAL;
-    ppc_set_opMode(&param);
+    //param = STA_PPC_OPMODE_NORMAL;
+    //ppc_set_opMode(&param);
 
     // Increment reset counter
     param = ppc_get_resetCounter(NULL);

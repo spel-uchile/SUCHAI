@@ -41,7 +41,7 @@ void taskConsole(void *param)
     printf(">>[Console] Started\r\n");
 #endif
 
-    char ret[10];
+    //char ret[10];
 
     const unsigned int Delayms = 250 / portTICK_RATE_MS;
     DispCmd NewCmd;
@@ -81,13 +81,14 @@ void taskConsole(void *param)
         /* cmdId = 0xFFFF means no new command */
         if(NewCmd.cmdId != CMD_CMDNULL)
         {
-            con_printf("\r\n");
+            printf("\r\n");
 
             #if (SCH_TASKCONSOLE_VERBOSE >=1)
                 /* Print the command code */
-                sprintf( ret, "0x%X", (unsigned int)NewCmd.cmdId );
-                con_printf("[Console] Se genera comando: ");
-                con_printf(ret); con_printf("\n\0");
+//                sprintf( ret, "0x%X", (unsigned int)NewCmd.cmdId );
+//                con_printf("[Console] Se genera comando: ");
+//                con_printf(ret); con_printf("\n\0");
+                printf("[Console] Se genera comando: 0x%X \r\n", (unsigned int)NewCmd.cmdId);
             #endif
 
             /* Queue NewCmd - Blocking */

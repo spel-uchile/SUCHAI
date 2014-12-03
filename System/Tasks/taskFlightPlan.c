@@ -63,11 +63,13 @@ void taskFlightPlan(void *param)
         /* Check if the next tick to wake has already
          * expired (*pxPreviousWakeTime = xTimeToWake;)
          * This avoids multiple reentries on vTaskDelayUntil */
-        portTickType curr_tick = xTaskGetTickCount();
-        if( xLastWakeTime + xDelay_ticks < curr_tick ){
-            xLastWakeTime = xTaskGetTickCount();
+        BOOL xShouldDelay = shouldDelayTask(&xLastWakeTime, xDelay_ticks);
+        if( xShouldDelay == FALSE )
+        {
+             xLastWakeTime = xTaskGetTickCount();
             #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
-                printf("[FlightPlan] xTimeToWake < curr_tick, update wakeup time \r\n");
+                printf("[FlightPlan] xLastWakeTime + xDelay_ticks < xTickCount, "
+                        "update xLastWakeTime to xTickCount ..\r\n");
             #endif
         }
 

@@ -373,7 +373,9 @@ int pay_init_expFis(void *param){
 }
 int pay_take_expFis(void *param){
 
-    //pay_save_date_time_to_Payload_Buff(dat_pay_expFis);   //save date_time in 2ints
+    //save date_time in 2ints
+    //pay_save_date_time_to_Payload_Buff(dat_pay_expFis);
+    return 1;
 
     if( fis_iterate() ){
         //fis_print_sens_buff();
@@ -559,10 +561,12 @@ int pay_init_battery(void *param){
 int pay_take_battery(void *param){
     printf("pay_take_test1()  ..\r\n");
 
-    pay_save_date_time_to_Payload_Buff(dat_pay_battery);   //save date_time in 2ints
+    //save date_time in 2ints
+    pay_save_date_time_to_Payload_Buff(dat_pay_battery);
 
+    //save data
     int i, val;
-    for(i=0;i<34;i++){
+    for(i=0; i<34; i++){
         val = eps_readreg( (void *)(&i) );
         dat_set_Payload_Buff(dat_pay_battery, val, DAT_PAYBUFF_MODE_NO_MAXINDX);
     }
@@ -608,8 +612,10 @@ int pay_init_debug(void *param){
 int pay_take_debug(void *param){
     printf("pay_take_debug()  ..\r\n");
 
-    pay_save_date_time_to_Payload_Buff(dat_pay_debug);   //save date_time in 2ints
+    //save date_time in 2ints
+    pay_save_date_time_to_Payload_Buff(dat_pay_debug);
 
+    //save data
     pay_debug_cnt++;
     dat_set_Payload_Buff(dat_pay_debug, pay_debug_cnt, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
@@ -680,7 +686,8 @@ int pay_init_gyro(void *param){
 int pay_take_gyro(void *param){
     printf("pay_take_gyro()  ..\r\n");
 
-    pay_save_date_time_to_Payload_Buff(dat_pay_gyro);   //save date_time in 2ints
+    //save date_time in 2ints
+    pay_save_date_time_to_Payload_Buff(dat_pay_gyro);
 
     //in case of failure
     if( pay_isAlive_gyro(NULL) == 0){
@@ -688,6 +695,7 @@ int pay_take_gyro(void *param){
         return 1;
     }
 
+    //save data
     GYR_DATA res_data;
     gyr_take_samples(FALSE, &res_data);
     dat_set_Payload_Buff(dat_pay_gyro, res_data.a_x, DAT_PAYBUFF_MODE_NO_MAXINDX);
@@ -741,8 +749,10 @@ int pay_init_tmEstado(void *param){
 int pay_take_tmEstado(void *param){
     printf("pay_take_tmEstado()  ..\r\n");
 
-    pay_save_date_time_to_Payload_Buff(dat_pay_tmEstado);   //save date_time in 2ints
+    //save date_time in 2ints
+    pay_save_date_time_to_Payload_Buff(dat_pay_tmEstado);
 
+    //save data
     STA_StateVar indxVar; int var;
     for(indxVar=0; indxVar<sta_stateVar_last_one; indxVar++){
         var = sta_get_stateVar(indxVar);
@@ -852,9 +862,9 @@ int pay_stop_camera(void *param){
     return 1;
 }
 BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
-    printf("pay_takeAndSave_photo()\r\n");
+    printf("pay_takeAndSave_photo ..\r\n");
 
-    printf(" Taking photo..\r\n");
+    printf(" Taking photo ..\r\n");
     unsigned int photo_byte_length= cam_photo(resolution, qual, pic_type);
     #if (_VERBOSE_>=1)
         printf("    Photo length = %u\r\n", photo_byte_length);
@@ -867,7 +877,7 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
         return FALSE;
     }
 
-    printf("  Saving photo ..\r\n");
+    //calculate  length in ints
     unsigned int photo_int_length = photo_byte_length/2;    //se guardan 2byten en 1int
     printf("  Debug info: photo_int_length = %u, photo_byte_length = %d\r\n",
             photo_int_length, photo_byte_length);
@@ -875,11 +885,8 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
     //Inicializa la estructura de data payload
     dat_reset_Payload_Buff(dat_pay_camera, photo_int_length, 0);
 
+    //prepara variables para guardar foto
     unsigned int int_r[10];
-
-    // print rtc time
-    rtc_print(NULL);
-
     unsigned int num_10sections, rest_10sections;
 
     num_10sections = photo_int_length/10;
@@ -888,6 +895,10 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
     printf("  Debug info: num_10sections = %d, rest_10sections = %d\r\n",
             num_10sections, rest_10sections);
 
+    //warn about duration
+    printf("    Saving data (this might take up tp 15 min) ..\r\n");
+    rtc_print(NULL);
+    
     unsigned int iter;
     for(iter = 0; iter<num_10sections; iter++)
     {
@@ -915,6 +926,8 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
         dat_set_Payload_Buff( dat_pay_camera, (int)int_r[9], DAT_PAYBUFF_MODE_NO_MAXINDX);
 
         ClrWdt();
+//        printf("  Debug info: saving [%d/%d] ..\r\n",
+//                            iter, num_10sections);
     }
 
     for(iter = 0; iter<rest_10sections; iter++)
@@ -939,11 +952,11 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
 int pay_takePhoto_camera(void *param){
     printf("pay_takePhoto_camera ..\r\n");
 
-//    int asd = *( (int *)param );
-//    __delay_ms(asd);
-//    asd = STA_PPC_OPMODE_CAMERA;
-//    ppc_set_opMode(&asd);
-//    return 1;
+    //int asd = *( (int *)param );
+    //__delay_ms(asd);
+    //int asd = STA_PPC_OPMODE_CAMERA;
+    //ppc_set_opMode(&asd);
+    //return 1;
 
     pay_init_camera(NULL);
     int st = pay_take_camera(NULL);
@@ -997,24 +1010,26 @@ int pay_init_gps(void *param){
     lenBuff = (unsigned int)(200);   //(1440)  //numero de 10-minutos en un dia
     dat_reset_Payload_Buff(pay_i, lenBuff, 1);
 
-    //configure Payload
-    int res;
-    res = 0;    //not implemented yet => always dead ..
-
-    //check SW and CHECK pins (not definitive)
-    PPC_GPS_SWITCH = 0;
-    printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
-    PPC_GPS_SWITCH = 1;
-    __delay_ms(50); //wait while port write takes effect
-    printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
-    printf("  sta_pay_gps_isAlive = %d \r\n", sta_get_stateVar(sta_pay_gps_isAlive) );
-
-    return pay_isAlive_gps(NULL);
+    return 0;
+//    //configure Payload
+//    int res;
+//    res = 0;    //not implemented yet => always dead ..
+//
+//    //check SW and CHECK pins (not definitive)
+//    PPC_GPS_SWITCH = 0;
+//    printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
+//    PPC_GPS_SWITCH = 1;
+//    __delay_ms(50); //wait while port write takes effect
+//    printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
+//    printf("  sta_pay_gps_isAlive = %d \r\n", sta_get_stateVar(sta_pay_gps_isAlive) );
+//
+//    return pay_isAlive_gps(NULL);
 }
 int pay_take_gps(void *param){
     printf("pay_take_gps\r\n");
 
-    pay_save_date_time_to_Payload_Buff(dat_pay_gps);   //save date_time in 2ints
+    //save date_time in 2ints
+    pay_save_date_time_to_Payload_Buff(dat_pay_gps);
 
     //in case of failure
     if( pay_isAlive_gps(NULL) == 0 ){
@@ -1024,6 +1039,8 @@ int pay_take_gps(void *param){
         PPC_GPS_SWITCH = 0;
         return 0;
     }
+
+    //save data
 
     return 1;
 }
@@ -1094,8 +1111,10 @@ int pay_init_lagmuirProbe(void *param){
 int pay_take_lagmuirProbe(void *param){
     printf("pay_take_lagmuirProbe\r\n");
 
-    pay_save_date_time_to_Payload_Buff(dat_pay_lagmuirProbe);   //save date_time in 2ints
+    //save date_time in 2ints
+    pay_save_date_time_to_Payload_Buff(dat_pay_lagmuirProbe);
 
+    //save data
     dat_set_Payload_Buff(dat_pay_lagmuirProbe, 0x01, DAT_PAYBUFF_MODE_NO_MAXINDX);
 
 ////    int verbose = *(int *)param;
@@ -1283,7 +1302,8 @@ int pay_init_sensTemp(void *param){
 int pay_take_sensTemp(void *param){
     printf("pay_take_sensTemp\r\n");
 
-    pay_save_date_time_to_Payload_Buff(dat_pay_sensTemp);   //save date_time in 2ints
+    //save date_time in 2ints
+    pay_save_date_time_to_Payload_Buff(dat_pay_sensTemp);
 
     //in case of failure
     if( pay_isAlive_sensTemp(NULL) == 0){
@@ -1292,6 +1312,7 @@ int pay_take_sensTemp(void *param){
         return 0;
     }
 
+    //save data
     int val;
     val=sensTemp_take(ST1_ADDRESS, FALSE);
     dat_set_Payload_Buff(dat_pay_sensTemp, val, DAT_PAYBUFF_MODE_NO_MAXINDX);

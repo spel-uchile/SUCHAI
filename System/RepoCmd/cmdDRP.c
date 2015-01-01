@@ -28,7 +28,6 @@ void drp_onResetCmdDRP(){
     int i;
     for(i=0; i<DRP_NCMD; i++) drp_sysReq[i] = CMD_SYSREQ_MIN;
 
-    drpFunction[(unsigned char)drp_id_print_dat_TelecmdBuff] = drp_print_dat_TelecmdBuff;
     drpFunction[(unsigned char)drp_id_print_dat_FlightPlan] = drp_print_dat_FlightPlan;
     drpFunction[(unsigned char)drp_id_print_dat_PayloadIndxs] = drp_print_dat_PayloadIndxs;
     drpFunction[(unsigned char)drp_id_print_dat_PayloadVar] = drp_print_dat_PayloadVar;
@@ -41,33 +40,6 @@ void drp_onResetCmdDRP(){
     drpFunction[(unsigned char)drp_id_fpl_set_index] = drp_fpl_set_index;
     drpFunction[(unsigned char)drp_id_fpl_set_cmd] = drp_fpl_set_cmd;
     drpFunction[(unsigned char)drp_id_fpl_set_param] = drp_fpl_set_param;
-}
-
-//******************************************************************************
-int drp_print_dat_TelecmdBuff(void *param)
-{
-    char buffer[10];
-
-    con_printf("===================================\r\n");
-    con_printf("Reading sta_TelecmdBuff Buffer\r\n");
-    con_printf("===================================\r\n");
-
-    // Cmd buffer control
-    itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_newTcFrame), 10);
-    con_printf("drp_trx_newTcFrame= "); con_printf(buffer); con_printf("\r\n");
-    itoa(buffer,  (unsigned int)sta_get_stateVar(sta_trx_newCmdBuff), 10);
-    con_printf("drp_trx_newCmdBuff= "); con_printf(buffer); con_printf("\r\n");
-
-    con_printf("Contenido del sta_telecmdBuff:\r\n");
-    int i;
-    for(i=0; i<DAT_MAX_BUFF_TELECMD; i++)
-    {
-        itoa(buffer,  (unsigned int)dat_get_TeleCmd_Buff(i), 10);
-        con_printf("sta_telecmdBuff["); itoa(buffer, (unsigned int)i, 10);
-        con_printf(buffer); con_printf("]= "); con_printf(buffer); con_printf("\r\n");
-
-    }
-    return 1;
 }
 
 int drp_print_dat_FlightPlan(void *param){
@@ -557,12 +529,3 @@ void drp_DAT_FlightPlan_EBF(void){
         }
     }
 }
-
-void drp_DAT_TeleCmd_Buff_EBF(void){
-    #if (SCH_CMDDRP_VERBOSE>=1)
-        printf("    Setting TeleCmdBuff in launch configuration..\n");
-    #endif
-
-    dat_erase_TeleCmd_Buff();
-}
-

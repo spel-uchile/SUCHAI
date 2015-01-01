@@ -31,7 +31,6 @@ typedef enum{
     drp_id_debug=((unsigned int)SCH_CMD_DRP*0x100), ///< @cmd_first
 
     //De display
-    drp_id_print_dat_TelecmdBuff, ///< @cmd
     drp_id_print_dat_FlightPlan, ///< @cmd
     drp_id_print_dat_PayloadIndxs, ///< @cmd
     drp_id_print_dat_PayloadVar, ///< @cmd
@@ -59,7 +58,6 @@ void drp_onResetCmdDRP();
 //Comandos
 //****************************************************
 // command's to print
-int drp_print_dat_TelecmdBuff(void *param);
 int drp_print_dat_FlightPlan(void *param);
 int drp_print_dat_PayloadIndxs(void *param);
 int drp_print_dat_PayloadVar(void *param);
@@ -73,14 +71,10 @@ int drp_fpl_set_cmd(void *param);
 int drp_fpl_set_param(void *param);
 int drp_fpl_get_index(void* param);
 int drp_fpl_set_index(void* param);
-//de TRX
-int drp_trx_newTcFrame(void *param);
-int drp_trx_newCmdBuff(void *param);
 
 //funciones auxiliares
 //****************************************************
 void drp_DAT_FlightPlan_EBF(void);
-void drp_DAT_TeleCmd_Buff_EBF(void);
 void drp_DAT_Payload_Buff_EBF(void);
 
 void drp_debug1(void);

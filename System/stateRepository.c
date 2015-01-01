@@ -54,7 +54,6 @@ extern xSemaphoreHandle statusRepositorySem;
 /**
  * Funcion para obtener una variable de estado
  * @param indxVar. Variable de estado que quiero modificar
- * @param value. Valor a asignar a la variable de estado
  */
 int sta_get_stateVar(STA_StateVar indxVar){
     portBASE_TYPE semStatus = xSemaphoreTake( statusRepositorySem, portMAX_DELAY );
@@ -271,10 +270,6 @@ int sta_get_stateVar(STA_StateVar indxVar){
                 break;
             case sta_trx_day_last_tc:
                 value = trx_get_day_last_tc(NULL);
-                break;
-            case sta_trx_newTcFrame:
-                break;
-            case sta_trx_newCmdBuff:
                 break;
         #endif
         //PAY => (Payload subsystem)

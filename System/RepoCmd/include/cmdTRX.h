@@ -57,30 +57,24 @@
  * Lista de comandos disponibles.
  */
 typedef enum{
-    trx_id_send_beacon=((unsigned int)(SCH_CMD_TRX)*0x100), ///< @cmd_first
-    trx_id_readconf, ///< @cmd
-    trx_id_isAlive, ///< @cmd
+    trx_id_isAlive=((unsigned int)(SCH_CMD_TRX)*0x100), ///< @cmd_first
+    trx_id_get_operation_mode, ///< @cmd
+    trx_id_set_operation_mode, ///< @cmd
     trx_id_get_count_tm, ///< @cmd
     trx_id_set_count_tm, ///< @cmd
     trx_id_get_count_tc, ///< @cmd
     trx_id_set_count_tc, ///< @cmd
     trx_id_get_day_last_tc, ///< @cmd
     trx_id_set_day_last_tc, ///< @cmd
+
+    trx_id_set_conf, ///< @cmd
+    trx_id_read_conf, ///< @cmd
     trx_id_ping, ///< @cmd
     trx_id_getstatus, ///< @cmd
     trx_id_set_beacon, ///< @cmd
     trx_id_initialize, ///< @cmd
-    trx_id_setmode, ///< @cmd
-    trx_id_asknewtc, ///< @cmd
-    trx_id_parsetcframe, ///< @cmd
     trx_id_set_tx_baud, ///< @cmd
     trx_id_set_rx_baud, ///< @cmd
-    trx_id_read_tcframe, ///< @cmd
-    trx_id_tm_trxstatus, ///< @cmd
-    trx_id_write_reg, ///< @cmd
-    trx_id_set_reg_val, ///< @cmd
-    trx_id_resend, ///< @cmd
-    trx_id_reset_tm_pointer, ///< @cmd
     trx_id_set_beacon_level, ///< @cmd
 
     //*********************
@@ -90,15 +84,12 @@ typedef enum{
 #define TRX_NCMD ((unsigned char)trx_id_last_one)
 
 
-
 void trx_onResetCmdTRX(void);
 
-//cmds
-int trx_set_conf(void *param);
-int trx_send_beacon(void *param);
-int trx_read_conf(void *param);
-
+// Status repo
 int trx_isAlive(void *param);
+int trx_get_operation_mode(void *param);
+int trx_set_operation_mode(void *param);
 int trx_get_count_tm(void *param);
 int trx_set_count_tm(void *param);
 int trx_get_count_tc(void *param);
@@ -106,24 +97,19 @@ int trx_set_count_tc(void *param);
 int trx_get_day_last_tc(void *param);
 int trx_set_day_last_tc(void *param);
 
+// Commands
+int trx_set_conf(void *param);
+int trx_read_conf(void *param);
 int trx_ping(void *param);
 int trx_testframe(void *param);
 int trx_getstatus(void *param);
 int trx_set_beacon(void *param);
 int trx_initialize(void *param);
-int trx_setmode(void *param);
-int trx_asknewtc(void *param);
-int trx_parsetcframe(void *param);
 int trx_set_tx_baud(void *param);
 int trx_set_rx_baud(void *param);
-int trx_read_tcframe(void *param);
-int trx_tm_trxstatus(void *param);
-int trx_write_reg(void *param);
-int trx_set_reg_val(void *param);
-int trx_resend(void *param);
-int trx_reset_tm_pointer(void *param);
 int trx_set_beacon_level(void *param);
 
+// Auxiliary
 int trx_tm_addtoframe(int *data, int len, int mode);
 
 #endif /* CMD_TRX_H */

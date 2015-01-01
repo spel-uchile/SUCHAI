@@ -103,18 +103,9 @@ typedef enum{
 
     //TRX => (Communication subsystem)
     sta_trx_opmode,           // Operation mode
-    sta_trx_temp_hpa,         // Temp of HPA
-    sta_trx_temp_mcu,         // Temp of MCU
-    sta_trx_rssi,             // RSSI, Signal level
-    sta_trx_rssi_mean,        // RSSI_MEAN
-    sta_trx_status_tc,        // Status Register of TC
     sta_trx_count_tm,         // number of sended TM
     sta_trx_count_tc,         // number of received TC
     sta_trx_day_last_tc,      // day of the last received tc (since 1/1/00)
-    // Cmd buffer control
-    sta_trx_newTcFrame,       // Exist any unprocessed TcFram?
-    sta_trx_newCmdBuff,       // Exist unprocessed CMD in the external buffer
-    //trx_repo_telecmd[STA_MAX_BUFF_TELECMD],   // Assuming that each Telecommand is of the form: [cmdId | param]
 
     //PAYLOAD
     sta_pay_lagmuirProbe_state,

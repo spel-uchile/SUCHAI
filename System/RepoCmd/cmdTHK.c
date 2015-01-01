@@ -507,7 +507,7 @@ int thk_silent_time_and_pictures(void *param){
         #endif
 
         int trx_mode = 2; //TODO: Implement trx_setmode
-        trx_setmode( (void *)&trx_mode );
+        trx_set_operation_mode( (void *)&trx_mode );
     #endif
 
     //2) tomo foto
@@ -569,7 +569,7 @@ int thk_silent_time_and_pictures(void *param){
         #endif
 
         trx_mode = 5; //TODO: Implement trx_setmode
-        trx_setmode( (void *)&trx_mode );
+        trx_set_operation_mode( (void *)&trx_mode );
     #endif
 
     return 1;

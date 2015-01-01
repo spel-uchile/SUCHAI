@@ -199,7 +199,7 @@ DispCmd con_cmd_handler(void)
        {
            if(con_arg_count == 0)
            {
-                newCmd.cmdId=trx_id_readconf;
+                newCmd.cmdId=trx_id_read_conf;
                 newCmd.param = 0;
            }
            else

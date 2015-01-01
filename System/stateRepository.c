@@ -250,17 +250,7 @@ int sta_get_stateVar(STA_StateVar indxVar){
         #if (SCH_TRX_ONBOARD==1)
             //TRX => (Communication subsystem)
             case sta_trx_opmode:
-                //printf("TRX => (Communication subsystem)\r\n");
-                break;
-            case sta_trx_temp_hpa:
-                break;
-            case sta_trx_temp_mcu:
-                break;
-            case sta_trx_rssi:
-                break;
-            case sta_trx_rssi_mean:
-                break;
-            case sta_trx_status_tc:
+                value = trx_get_operation_mode(NULL);
                 break;
             case sta_trx_count_tm:
                 value = trx_get_count_tm(NULL);
@@ -629,21 +619,6 @@ char* sta_varToString(STA_StateVar var_i){
         case sta_trx_opmode:           // Operation mode
             pc = "sta_trx_opmode";
      	    break;
-        case sta_trx_temp_hpa:         // Temp of HPA
-            pc = "sta_trx_temp_hpa";
-     	    break;
-        case sta_trx_temp_mcu:         // Temp of MCU
-            pc = "sta_trx_temp_mcu";
-     	    break;
-        case sta_trx_rssi:             // RSSI: Signal level
-            pc = "sta_trx_rssi";
-     	    break;
-        case sta_trx_rssi_mean:        // RSSI_MEAN
-            pc = "sta_trx_rssi_mean";
-     	    break;
-        case sta_trx_status_tc:        // Status Register of TC
-            pc = "sta_trx_status_tc";
-     	    break;
         case sta_trx_count_tm:         // number of sended TM
             pc = "sta_trx_count_tm";
      	    break;
@@ -653,14 +628,6 @@ char* sta_varToString(STA_StateVar var_i){
         case sta_trx_day_last_tc:      // day of the last received tc (since 1/1/00)
             pc = "sta_trx_lastcmd_day";
      	    break;
-        // Cmd buffer control
-        case sta_trx_newTcFrame:       // Exist any unprocessed TcFram?
-            pc = "sta_trx_newTcFrame";
-     	    break;
-        case sta_trx_newCmdBuff:       // Exist unprocessed CMD in the external buffer
-            pc = "sta_trx_newCmdBuff";
-     	    break;
-        //trx_repo_telecmd[STA_MAX_BUFF_TELECMD]:   // Assuming that each Telecommand is of the form: [cmdId | param]
 
         //PAYLOAD
         case sta_pay_lagmuirProbe_state:

@@ -24,7 +24,6 @@
 static int trx_tm_send(uint16_t *data, int len);
 
 /* Auxiliary variables */
-int16_t TRX_REG_VAL = -1; /*Current value to write in trx_write_reg*/
 nanocom_conf_t TRX_CONFIG; /*Stores TRX configuration*/
 static uint16_t com_timeout = 2000;
 
@@ -37,38 +36,138 @@ void trx_onResetCmdTRX(void){
     int i;
     for(i=0; i<TRX_NCMD; i++) trx_sysReq[i] = CMD_SYSREQ_MIN;
     
-    trxFunction[(unsigned char)trx_id_send_beacon] = trx_send_beacon;
-    trxFunction[(unsigned char)trx_id_readconf] = trx_read_conf;
     trxFunction[(unsigned char)trx_id_isAlive] = trx_isAlive;
-    trxFunction[(unsigned char)trx_id_get_count_tc] = trx_get_count_tc;
-    trxFunction[(unsigned char)trx_id_set_count_tc] = trx_set_count_tc;
+    trxFunction[(unsigned char)trx_id_get_operation_mode] = trx_get_operation_mode;
+    trxFunction[(unsigned char)trx_id_set_operation_mode] = trx_set_operation_mode;
     trxFunction[(unsigned char)trx_id_get_count_tm] = trx_get_count_tm;
     trxFunction[(unsigned char)trx_id_set_count_tm] = trx_set_count_tm;
+    trxFunction[(unsigned char)trx_id_get_count_tc] = trx_get_count_tc;
+    trxFunction[(unsigned char)trx_id_set_count_tc] = trx_set_count_tc;
     trxFunction[(unsigned char)trx_id_get_day_last_tc] = trx_get_day_last_tc;
     trxFunction[(unsigned char)trx_id_set_day_last_tc] = trx_set_day_last_tc;
 
+    trxFunction[(unsigned char)trx_id_set_conf] = trx_set_conf;
+    trxFunction[(unsigned char)trx_id_read_conf] = trx_read_conf;
     trxFunction[(unsigned char)trx_id_ping] = trx_ping;
     trxFunction[(unsigned char)trx_id_getstatus] = trx_getstatus;
     trxFunction[(unsigned char)trx_id_set_beacon] = trx_set_beacon;
     trxFunction[(unsigned char)trx_id_initialize] = trx_initialize;
-    trxFunction[(unsigned char)trx_id_setmode] = trx_setmode;
-    trxFunction[(unsigned char)trx_id_asknewtc] = trx_asknewtc;
-    trxFunction[(unsigned char)trx_id_parsetcframe] = trx_parsetcframe;
     trxFunction[(unsigned char)trx_id_set_tx_baud] = trx_set_tx_baud;
     trxFunction[(unsigned char)trx_id_set_rx_baud] = trx_set_rx_baud;
-    trxFunction[(unsigned char)trx_id_read_tcframe] = trx_read_tcframe;
-
-    trxFunction[(unsigned char)trx_id_write_reg] = trx_write_reg;
-    trxFunction[(unsigned char)trx_id_set_reg_val] = trx_set_reg_val;
-    trxFunction[(unsigned char)trx_id_reset_tm_pointer] = trx_reset_tm_pointer;
     trxFunction[(unsigned char)trx_id_set_beacon_level] = trx_set_beacon_level;
 
     //Power budget restriction
-    trxFunction[(unsigned char)trx_id_resend] = trx_resend;
-    trx_sysReq[(unsigned char)trx_id_resend]  = CMD_SYSREQ_MIN+3; /* CMD_SYSREQ_MIN+3 */
-    trxFunction[(unsigned char)trx_id_tm_trxstatus] = trx_tm_trxstatus;
-    trx_sysReq[(unsigned char)trx_id_tm_trxstatus]  = CMD_SYSREQ_MIN+2;
+    // Ej. trx_sysReq[(unsigned char)trx_id_tm_trxstatus]  = CMD_SYSREQ_MIN+2;
 }
+
+/* Status repository commands */
+
+/**
+ * Check if the TRX is working normally
+ * @param param not used
+ * @return 1 Ok, 0 Fail
+ */
+int trx_isAlive(void *param){
+    int arg = NODE_COM;
+    return trx_ping(&arg);
+}
+
+/**
+ * Returns TRX current operation mode
+ * @param param Not used
+ * @return 1(Normal), 0(ERROR)
+ */
+int trx_get_operation_mode(void *param)
+{
+    // TODO: Implement operation mode report (normal, silent, etc)
+    // Probably don't need to store values in EEPROM
+    return 1;
+}
+
+/**
+ * Set TRX mode
+ * @param param (0)RESET, (1)SYSRESET, (2)SILENT, (3)ONLYBEACON, (4)NOBEACON, (5)NOMINAL
+ * @return 1 - OK; 0 - Fail
+ */
+int trx_set_operation_mode(void *param)
+{
+    int mode = *(int *)param;
+
+    //TODO: Implement
+
+    return mode;
+}
+
+/**
+ * Get current TM count (from status repository)
+ * @param param Not used
+ * @return TM count
+ */
+int trx_get_count_tm(void *param){
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tm;
+    int res = readIntEEPROM1(mem_eeprom_var);
+    return res;
+}
+
+/**
+ * Set current TM count to status repository
+ * @param param (int *) current TM count
+ * @return 1(Ok)
+ */
+int trx_set_count_tm(void *param){
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tm;
+    int value = *((int*)param);
+    writeIntEEPROM1(mem_eeprom_var, value);
+    return 1;
+}
+
+/**
+ * Get current TC count
+ * @param param Not used
+ * @return TC count
+ */
+int trx_get_count_tc(void *param){
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tc;
+    int res = readIntEEPROM1(mem_eeprom_var);
+    return res;
+}
+
+/**
+ * Set current TC count to status repository
+ * @param param (int *) TC count
+ * @return 1 (Ok)
+ */
+int trx_set_count_tc(void *param){
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tc;
+    int value = *((int*)param);
+    writeIntEEPROM1(mem_eeprom_var, value);
+    return 1;
+}
+
+/**
+ * Get the day of the last received TC from status repo.
+ * @param param Not used
+ * @return Day of the last TC
+ */
+int trx_get_day_last_tc(void *param){
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_day_last_tc;
+    int res = readIntEEPROM1(mem_eeprom_var);
+    return res;
+}
+
+/**
+ * Set the day of the last received TC to status repo.
+ * @param param (int *) Day of las TC
+ * @return 1 (Ok)
+ */
+int trx_set_day_last_tc(void *param){
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_day_last_tc;
+    int value = *((int*)param);
+    writeIntEEPROM1(mem_eeprom_var, value);
+    return 1;
+}
+
+/* TRX commands */
 
 /**
  * Upload current configuration into TRX
@@ -106,7 +205,7 @@ int trx_read_conf(void *param)
 /**
  * Set the standart beacon: 00SUCHAI00
  * @sa tcm_send_beacon()
- * 
+ *
  * @param param (0)SUCHAI beacon. (1)Test beacon 1. (2)Test beacon 2.
  * @return 1 - OK
  */
@@ -144,66 +243,6 @@ int trx_set_beacon(void *param)
     int result = trx_set_conf(NULL);
 
     return result;
-}
-
-/**
- * Triggers the beacon
- *
- * @param param (1)Verbose. (0)No Verbose
- * @return 1 - OK
- * @deprecated
- */
-int trx_send_beacon(void *param)
-{
-#if SCH_CMDTRX_VERBOSE
-    printf("[DEPRECATED] (NOT) Sending beacon...\n");
-#endif
-    
-    return 0;
-}
-
-/**
- * Check if the TRX is working normally
- * @param param not used
- * @return 1 Ok, 0 Fail
- */
-int trx_isAlive(void *param){
-    int arg = NODE_COM;
-    return trx_ping(&arg);
-}
-
-int trx_get_count_tm(void *param){
-    MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tm;
-    int res = readIntEEPROM1(mem_eeprom_var);
-    return res;
-}
-int trx_set_count_tm(void *param){
-    MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tm;
-    int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;   //se asume operacion exitosa
-}
-int trx_get_count_tc(void *param){
-    MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tc;
-    int res = readIntEEPROM1(mem_eeprom_var);
-    return res;
-}
-int trx_set_count_tc(void *param){
-    MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tc;
-    int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;   //se asume operacion exitosa
-}
-int trx_get_day_last_tc(void *param){
-    MemEEPROM_Vars mem_eeprom_var = mem_trx_day_last_tc;
-    int res = readIntEEPROM1(mem_eeprom_var);
-    return res;
-}
-int trx_set_day_last_tc(void *param){
-    MemEEPROM_Vars mem_eeprom_var = mem_trx_day_last_tc;
-    int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;   //se asume operacion exitosa
 }
 
 /**
@@ -252,42 +291,9 @@ int trx_getstatus(void *param)
     return result;
 }
 
-
-/**
- * Resend the telemetry buffer, from the base to the index of the last sended
- * TM Frame
- *
- * @param param (1)Verbose, (0)No Verbose
- * @return 1 - OK; 0 - Fail
- * @deprecated
- */
-int trx_resend(void *param)
-{
-    int result = 0;
-#if SCH_CMDTRX_VERBOSE
-    printf("[DEPRECATED]\n");
-#endif
-    return result;
-}
-
-/**
- * Resets the tm buffer pointer to 0, both TMTF_OUT and TMTF_IN
- *
- * @param param 1-verboso, 0-no verbose
- * @return 1-success, 0-fail
- * @deprecated
- */
-int trx_reset_tm_pointer(void *param)
-{
-    int result = 0;
-#if SCH_CMDTRX_VERBOSE
-    printf("[DEPRECATED]\n");
-#endif
-    return result;
-}
-
 /**
  * Initializes TRX main parameters
+ * @todo: Read parameters from status repo
  * 
  * @param param Is deployed?
  * @return 1 - OK; 0 - Fail
@@ -337,251 +343,6 @@ int trx_initialize(void *param)
 }
 
 /**
- * Set TRX mode
- *
- * @param param (0)RESET, (1)SYSRESET, (2)SILENT, (3)ONLYBEACON, (4)NOBEACON, (5)NOMINAL
- * @return 1 - OK; 0 - Fail
- */
-int trx_setmode(void *param)
-{
-    int mode = *(int *)param;
-
-    //TODO: Implement
-
-    return mode;
-}
-
-/**
- * Ask if new telecommand has not been read. Sets lascmd_day and new_tcframe
- * flags in data repository
- *
- * @param param (0) No verbose, (1) Verbose
- * @return 1 - OK; 0 - Fail
- * @deprecated
- */
-int trx_asknewtc(void *param)
-{
-    int new_cmd_buff;
-    printf("[ServerCSP Started]\n");
-
-    /* Get the socket used for port CSP_ANY */
-    csp_socket_t *sock = csp_port_get_socket(CSP_ANY);
-
-    /* Pointer to current connection and packet */
-    csp_conn_t *conn;
-    csp_packet_t *packet;
-
-    /* Process ONE incoming connection (if any) */
-//        printf("[SRV] Waiting connection\n");
-
-    /* Wait for connection, 250 ms timeout */
-    if ((conn = csp_accept(sock, 250)) == NULL)
-    {
-        /* Setting status in data repository */
-        //sta_setstateVar(sta_trx_newTcFrame, 0); //No new TC
-        //return 1;
-    }
-
-//        printf("[SRV] New connection\n");
-    /* Read packets. Timout is 1000 ms */
-    //TODO: Update status variables and process frame
-    while ((packet = csp_read(conn, 1000)) != NULL)
-    {
-        switch (csp_conn_dport(conn))
-        {
-            case SCH_TRX_PORT_TC:
-                /* Print data in this port */
-                printf("[New packet] ");
-
-                 /* Setting status in data repository */
-                //TODO: Check if function is still correct
-                //sta_setstateVar(sta_trx_newTcFrame, 1);
-                //new_cmd_buff = sta_getstateVar(sta_trx_newCmdBuff);
-                new_cmd_buff = 1;
-
-                if(new_cmd_buff == 0)
-                    trx_parsetcframe((void *)packet->data16); //TODO: Check frame lenght
-                else
-                    return 0;
-
-                break;
-
-            default:
-                /* Let the service handler reply pings, buffer use, etc. */
-                csp_service_handler(conn, packet);
-
-                /* Setting status in data repository */
-                //sta_setstateVar(sta_trx_newTcFrame, 0);
-                break;
-        }
-    }
-
-    /* Close current connection, and handle next */
-    csp_close(conn);
-//        printf("[SRV] Connection closed\n");
-
-
-    return 1;
-}
-
-/**
- * Read one tc frame from trx and parse incoming tcs
- * TC Frame Format    :
- * @code
- *                      |  CMD1 |  ARG1 | ..... |  CMDN | ARGN  | STOP  |
- *                      |MSB|LSB|MSB|LSB| ..... |MSB|LSB|MSB|LSB|MSB|LSB|
- * @endcode
- * 
- * @param param (0) No verbose, (1) Verbose
- * @return Number of TC read.
- * @deprecated
- */
-int trx_parsetcframe(void *param)
-{
-#if SCH_CMDTRX_VERBOSE
-    printf("[DEPRECATED]\n");
-#endif
-    return 0;
-
-//    uint16_t *tcframe = (uint16_t *)param;
-//    int count = 0;
-//    int step = 2;
-//    int result = 0;
-//
-//    if(tcframe != NULL)
-//    {
-//        int parserindex = 0;
-//        result = 0;
-//
-//        /* Parsing the TCTF in SUCHAI's commands */
-//        //TODO: Check the frame lenght
-//        for(count=0; count < TRX_TMFRAMELEN8/2; count+=step)
-//        {
-//            /* BIG ENDIAN [MSB]<<8 | [LSB] */
-//            int cmdid = tcframe[count];
-//            int cmdarg = tcframe[count+1];
-//
-//            /* Check for stop bytes, then add new cmd */
-//            if((cmdid != CMD_STOP) && (cmdarg != CMD_STOP))
-//            {
-//                /* Save TC and ARG into repo_telecmd */
-//                dat_set_TeleCmdBuff(parserindex++,cmdid);
-//                dat_set_TeleCmdBuff(parserindex++,cmdarg);
-//                result++;
-//            }
-//            /* Stop bytes detected, end parsing */
-//            else
-//            {
-//                break;
-//            }
-//        }
-//
-//        /* Fill remaining buffer space */
-//        while(parserindex < SCH_DATAREPOSITORY_MAX_BUFF_TELECMD)
-//        {
-//            dat_set_TeleCmdBuff(parserindex++, CMD_CMDNULL);
-//        }
-//    }
-//
-//#if SCH_CMDTRX_VERBOSE
-//    printf("Number of read TC: %d\n", result);
-//#endif
-//
-//    if(result)
-//    {
-//        /* Aumentar el contador de TC recibidos */
-//        result += sta_getstateVar(sta_trx_count_tc);
-//        sta_setstateVar(sta_trx_count_tc, result);
-//
-//        /* Indicar que hay comandos que procesar en el buffer de Cmd */
-//        sta_setstateVar(sta_trx_newCmdBuff, 1);
-//    }
-//
-//    return result;
-}
-
-/**
- * Read one tc frame from trx.
- * Debug only
- *
- * @param param (0) No verbose, (1) Verbose
- * @return 1 - OK; 0 - Fail
- * @deprecated
- */
-int trx_read_tcframe(void *param)
-{
-//    TODO: Implement
-//    /* Se lee un frame de telecomandos */
-//    char tc_frame[TRX_TCFRAMELEN];
-//    int result = TRX_ReadTelecomadFrame(tc_frame);
-//
-//    /* Se muestra en consola si corresponde */
-//    if(*(int *)param)
-//        SendRS232((unsigned char*)tc_frame, TRX_TCFRAMELEN, RS2_M_UART1);
-
-    return 0;
-}
-
-/**
- * Reads and transmit telemetry ralated to trx's status
- * TMID: 0x000A
- *
- * @param param 0 - Only store, 1 - Only Send, 2 - Store and send @deprecated
- * @return 0 (Tx fail) - 1 (Tx OK)
- * @deprecated
- */
-int trx_tm_trxstatus(void *param)
-{
-#if SCH_CMDTRX_VERBOSE
-    printf("[DEPRECATED]\n");
-#endif
-    return 0;
-
-    /*Toopazo: Funcion del TRX antiguo, ocupaba "PPC_nTX_FLAG, PPC_nRX_FLAG" que ahora no existen */
-
-//    int data_len = 0x36;
-//    int data = 0;
-//    unsigned char status[data_len];
-//
-//    int mode = *((int *)param);
-//
-//    if((mode == 0) || (mode == 2))
-//    {
-//        /* Start a new session (Single or normal) */
-//        data = 0x000A; /* TM ID */
-//        trx_tm_addtoframe(&data, 0, CMD_ADDFRAME_FIN);   /* Close previos sessions */
-//        trx_tm_addtoframe(&data, 1, CMD_ADDFRAME_START); /* New empty start frame */
-//
-//        /* Read info and append to the frame */
-////        TRX_GetStatus(status);
-//        /*To int*/
-//        int data_int[data_len]; int i;
-//        for(i=0; i<data_len;i++) {data_int[i] = (int)status[i];}
-//        /* Add data */
-//        trx_tm_addtoframe(data_int, data_len, CMD_ADDFRAME_ADD);
-//
-//        // Close session
-//        // data = trx_tm_addtoframe(&data, 0, CMD_ADDFRAME_STOP);     /* Empty stop frame */
-//        data = trx_tm_addtoframe(&data, 0, CMD_ADDFRAME_FIN);      /* End session */
-//    }
-//
-//    if((mode == 1) || (mode == 2))
-//    {
-//        /* Evitar enviar el comando transmitir si los flags nTX o nRX estan activos */
-//        while(!(PPC_nTX_FLAG && PPC_nRX_FLAG))
-//        {
-//            long i;
-//            for(i=0; i<0xFFFFFF; i++);
-//        }
-//
-//        /* Transmmit info */
-////        data = TRX_SendTelemetry();
-//    }
-//
-//    return data;
-}
-
-/**
  * Sets baudrate for telemetry
  *
  * @param param RX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
@@ -628,50 +389,6 @@ int trx_set_rx_baud(void *param)
 
     result = trx_set_conf(NULL);
     return result;
-}
-
-/**
- * Sets any TRX register with the value set in TRX_REG_VAL
- * @note Prior to use this cmd, user must set the value to write with the
- * trx_set_reg_val command.
- *
- * @param param register to write
- * @return 1 - OK; 0 - Fail
- * @deprecated
- */
-int trx_write_reg(void *param)
-{
-#if SCH_CMDTRX_VERBOSE
-    printf("[DEPRECATED]\n");
-#endif
-    
-//    int reg = *((int *)param);
-//    int val = TRX_REG_VAL;
-//
-//    if((reg > 0x00FF) || (val > 0x00FF))
-//        return 0;
-
-//    TODO: TRX_WriteRegister((unsigned char)reg, (unsigned char)val);
-
-    return 0;
-}
-
-/**
- * Sets the current value in TRX_REG_VAL. This value is saved in the reg, when
- * trx_write_reg is called.
- * @sa trx_write_reg()
- *
- * @param param value to store
- * @return 0 (fail) - 1 (OK)
- * @deprecated
- */
-int trx_set_reg_val(void *param)
-{
-#if SCH_CMDTRX_VERBOSE
-    printf("[DEPRECATED]\n");
-#endif
-//    TRX_REG_VAL = *((int *)param);
-    return 0;
 }
 
 /**

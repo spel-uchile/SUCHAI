@@ -45,6 +45,14 @@ void trx_onResetCmdTRX(void){
     trxFunction[(unsigned char)trx_id_set_count_tc] = trx_set_count_tc;
     trxFunction[(unsigned char)trx_id_get_day_last_tc] = trx_get_day_last_tc;
     trxFunction[(unsigned char)trx_id_set_day_last_tc] = trx_set_day_last_tc;
+    trxFunction[(unsigned char)trx_id_get_tx_baud] = trx_get_tx_baud;
+    trxFunction[(unsigned char)trx_id_set_tx_baud] = trx_set_tx_baud;
+    trxFunction[(unsigned char)trx_id_get_rx_baud] = trx_get_rx_baud;
+    trxFunction[(unsigned char)trx_id_set_rx_baud] = trx_set_rx_baud;
+    trxFunction[(unsigned char)trx_id_get_beacon_level] = trx_get_beacon_level;
+    trxFunction[(unsigned char)trx_id_set_beacon_level] = trx_set_beacon_level;
+    trxFunction[(unsigned char)trx_id_get_beacon_period] = trx_get_beacon_period;
+    trxFunction[(unsigned char)trx_id_set_beacon_period] = trx_set_beacon_period;
 
     trxFunction[(unsigned char)trx_id_set_conf] = trx_set_conf;
     trxFunction[(unsigned char)trx_id_read_conf] = trx_read_conf;
@@ -52,9 +60,6 @@ void trx_onResetCmdTRX(void){
     trxFunction[(unsigned char)trx_id_getstatus] = trx_getstatus;
     trxFunction[(unsigned char)trx_id_set_beacon] = trx_set_beacon;
     trxFunction[(unsigned char)trx_id_initialize] = trx_initialize;
-    trxFunction[(unsigned char)trx_id_set_tx_baud] = trx_set_tx_baud;
-    trxFunction[(unsigned char)trx_id_set_rx_baud] = trx_set_rx_baud;
-    trxFunction[(unsigned char)trx_id_set_beacon_level] = trx_set_beacon_level;
 
     //Power budget restriction
     // Ej. trx_sysReq[(unsigned char)trx_id_tm_trxstatus]  = CMD_SYSREQ_MIN+2;
@@ -166,6 +171,174 @@ int trx_set_day_last_tc(void *param){
     writeIntEEPROM1(mem_eeprom_var, value);
     return 1;
 }
+
+/**
+ * Sets baudrate for telemetry
+ *
+ * @param param RX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
+ * @return 1 - OK; 0 - Fail
+ */
+int trx_set_tx_baud(void *param)
+{
+    int result;
+    int baud = *((int *)param);
+
+    if(!((baud==12) || (baud==24) || (baud==48)))
+        return 0;
+
+    result = trx_read_conf(NULL);
+    if(!result)
+        return 0;
+
+    TRX_CONFIG.tx_baud = baud;
+
+    // Save changes to status repo
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_tx_baud;
+    writeIntEEPROM1(mem_eeprom_var, baud);
+
+    // Save changes to device
+    result = trx_set_conf(NULL);
+    return result;
+
+}
+
+/**
+ * Read tx baudrate from device config
+ * @param param Not used
+ * @return tx baudrate
+ */
+int trx_get_tx_baud(void *param)
+{
+    int result = trx_read_conf(NULL);
+    if(!result)
+        return 0;
+
+    result = (int)TRX_CONFIG.tx_baud;
+    return result;
+}
+
+/**
+ * Sets baudrate for telecomand reception
+ *
+ * @param param RX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
+ * @return 1 - OK; 0 - Fail
+ */
+int trx_set_rx_baud(void *param)
+{
+    int result;
+    int baud = *((int *)param);
+
+    if(!((baud==12) || (baud==24) || (baud==48)))
+        return 0;
+
+    result = trx_read_conf(NULL);
+    if(!result)
+        return 0;
+
+    TRX_CONFIG.rx_baud = baud;
+
+    // Save changes to status repo
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_rx_baud;
+    writeIntEEPROM1(mem_eeprom_var, baud);
+
+    // Save changes to device
+    result = trx_set_conf(NULL);
+    return result;
+}
+
+/**
+ * Get rx baudrate from device config
+ * @param param Not used
+ * @return rx baudrate
+ */
+int trx_get_rx_baud(void *param)
+{
+    int result = trx_read_conf(NULL);
+    if(!result)
+        return 0;
+
+    result = (int)TRX_CONFIG.rx_baud;
+    return result;
+}
+
+/**
+ * Sets beacon battery level. If battery is below this level, trx doesn't send
+ * beacons
+ * @param param *uint16_t Beacon battery level
+ * @return 1 Ok, 0 Fail
+ */
+int trx_set_beacon_level(void* param)
+{
+    uint16_t beacon_level = *((uint16_t *)param);
+
+    int result = trx_read_conf(NULL);
+    if(!result)
+        return 0;
+
+    // Save changes to status repo
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_beacon_bat_lvl;
+    writeIntEEPROM1(mem_eeprom_var, (int)beacon_level);
+
+    // Save changes to device
+    TRX_CONFIG.morse_bat_level = beacon_level;
+    return trx_set_conf(NULL);
+}
+
+/**
+ * Get beacon level from device config
+ * @param param Not used
+ * @return beacon level
+ */
+int trx_get_beacon_level(void *param)
+{
+    int result = trx_read_conf(NULL);
+    if(!result)
+        return 0;
+
+    result = (int)TRX_CONFIG.morse_bat_level;
+    return result;
+}
+
+/**
+ * Sets beacon period in seconds.
+ * @param param *uint16_t Beacon period in seconds
+ * @return 1 Ok, 0 Fail
+ */
+int trx_set_beacon_period(void* param)
+{
+    uint16_t beacon_period = *((uint16_t *)param);
+
+    int result = trx_read_conf(NULL);
+    if(!result)
+        return 0;
+
+    // Save changes to status repo
+    MemEEPROM_Vars mem_eeprom_var = mem_trx_beacon_period;
+    writeIntEEPROM1(mem_eeprom_var, (int)beacon_period);
+
+    // Save changes to device
+    TRX_CONFIG.morse_inter_delay = beacon_period;
+    return trx_set_conf(NULL);
+}
+
+/**
+ * Get beacon period from device configuration
+ * @param param Not used
+ * @return beacon period
+ */
+int trx_get_beacon_period(void *param)
+{
+    int result;
+
+    result = trx_read_conf(NULL);
+    if(!result)
+        return 0;
+
+    result = (int)TRX_CONFIG.morse_inter_delay;
+    return result;
+}
+
+
 
 /* TRX commands */
 
@@ -292,8 +465,7 @@ int trx_getstatus(void *param)
 }
 
 /**
- * Initializes TRX main parameters
- * @todo: Read parameters from status repo
+ * Initializes TRX main parameters keeping modifications
  * 
  * @param param Is deployed?
  * @return 1 - OK; 0 - Fail
@@ -306,11 +478,23 @@ int trx_initialize(void *param)
     else
         deployed = 0;
 
+    // Reading settings from status repo
+    MemEEPROM_Vars mem_eeprom_var;
+    mem_eeprom_var = mem_trx_beacon_period;
+    uint16_t morse_inter_delay = (uint16_t)readIntEEPROM1(mem_eeprom_var);
+    mem_eeprom_var = mem_trx_beacon_bat_lvl;
+    uint16_t morse_bat_level = (uint16_t)readIntEEPROM1(mem_eeprom_var);
+    mem_eeprom_var = mem_trx_rx_baud;
+    uint8_t rx_baud = (uint8_t)readIntEEPROM1(mem_eeprom_var);
+    mem_eeprom_var = mem_trx_tx_baud;
+    uint8_t tx_baud = (uint8_t)readIntEEPROM1(mem_eeprom_var);
+
+    // Generating trx settings
     TRX_CONFIG.do_random = 1;
     TRX_CONFIG.do_rs = 1;
     TRX_CONFIG.do_viterbi = 1;
     TRX_CONFIG.hk_interval = 5;
-    TRX_CONFIG.morse_bat_level = SCH_TRX_BEACON_BAT_LVL;
+    TRX_CONFIG.morse_bat_level = morse_bat_level;
     TRX_CONFIG.morse_cycle = 1;
     TRX_CONFIG.morse_en_rf_err = 1;
     TRX_CONFIG.morse_en_rssi = 1;
@@ -320,14 +504,14 @@ int trx_initialize(void *param)
     TRX_CONFIG.morse_en_tx_count = 1;
     TRX_CONFIG.morse_en_voltage = 1;
     TRX_CONFIG.morse_enable = 1;
-    TRX_CONFIG.morse_inter_delay = SCH_TRX_BEACON_PERIOD;
+    TRX_CONFIG.morse_inter_delay = morse_inter_delay;
     TRX_CONFIG.morse_mode = SCH_TRX_BEACON_MODE;
     TRX_CONFIG.morse_pospone = SCH_TRX_BEACON_POSPONE_NOM;
 //    TRX_CONFIG.morse_text = "00SUCHAI00"; //Use command
     TRX_CONFIG.morse_wpm = SCH_TRX_BEACON_WPM;
     TRX_CONFIG.preamble_length = 75;
-    TRX_CONFIG.rx_baud = SCH_TRX_RX_BAUD;
-    TRX_CONFIG.tx_baud = SCH_TRX_TX_BAUD;
+    TRX_CONFIG.rx_baud = rx_baud;
+    TRX_CONFIG.tx_baud = tx_baud;
     TRX_CONFIG.tx_max_temp = 60;
 
     if(!deployed)
@@ -340,68 +524,6 @@ int trx_initialize(void *param)
     int result = trx_set_beacon((void *)(&beacon)); //Also call trx_set_conf
 
     return result;
-}
-
-/**
- * Sets baudrate for telemetry
- *
- * @param param RX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
- * @return 1 - OK; 0 - Fail
- */
-int trx_set_tx_baud(void *param)
-{
-    int result;
-    int baud = *((int *)param);
-
-    if(!((baud==12) || (baud==24) || (baud==48)))
-        return 0;
-
-    result = trx_read_conf(NULL);
-    if(!result)
-        return 0;
-
-    TRX_CONFIG.tx_baud = baud;
-
-    result = trx_set_conf(NULL);
-    return result;
-
-}
-
-/**
- * Sets baudrate for telecomand reception
- *
- * @param param RX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
- * @return 1 - OK; 0 - Fail
- */
-int trx_set_rx_baud(void *param)
-{
-    int result;
-    int baud = *((int *)param);
-
-    if(!((baud==12) || (baud==24) || (baud==48)))
-        return 0;
-
-    result = trx_read_conf(NULL);
-    if(!result)
-        return 0;
-
-    TRX_CONFIG.rx_baud = baud;
-
-    result = trx_set_conf(NULL);
-    return result;
-}
-
-/**
- * Sets beacon battery level. If battery is below this level, trx doesn't send
- * beacons
- * @param param *uint16_t Beacon battery level
- * @return 1 Ok, 0 Fail
- */
-int trx_set_beacon_level(void* param)
-{
-    uint16_t beacon_level = *((uint16_t *)param);
-    TRX_CONFIG.morse_bat_level = beacon_level;
-    return trx_set_conf(NULL);
 }
 
 /**

@@ -63,14 +63,12 @@ int srp_increment_STA_stateVar_hoursAlive(void *param){
     return 1;
 }
 int srp_increment_STA_stateVar_nSended_tm(void *param){
-    //solo debe ser llamada cada 1hora
     int arg = sta_get_stateVar(sta_trx_count_tm)+1;
     trx_set_count_tm(&arg);
 
     return 1;
 }
 int srp_increment_STA_stateVar_nReceived_tc(void *param){
-    //solo debe ser llamada cada 1hora
     int arg = sta_get_stateVar(sta_trx_count_tc)+1;
     trx_set_count_tc(&arg);
     return 1;
@@ -179,11 +177,21 @@ int srp_memEEPROM_initial_state(void * param){
 
     //TRX
     arg = 0;
+    trx_set_operation_mode(&arg);
+    arg = 0;
     trx_set_count_tc(&arg);
     arg = 0;
     trx_set_count_tm(&arg);
     arg = 0;
     trx_set_day_last_tc(&arg);
+    arg = SCH_TRX_BEACON_PERIOD;
+    trx_set_beacon_period(&arg);
+    arg = SCH_TRX_BEACON_BAT_LVL;
+    trx_set_beacon_level(&arg);
+    arg = SCH_TRX_RX_BAUD;
+    trx_set_rx_baud(&arg);
+    arg = SCH_TRX_TX_BAUD;
+    trx_set_tx_baud(&arg);
 
     return 1;
 }
@@ -235,76 +243,6 @@ int srp_debug(void *param){
 //------------------------------------------------------------------------------
 //Aux functions
 //------------------------------------------------------------------------------
-
-/*------------------------------------------------------------------------------
- *		 	DRP TRX RSSI_MEAN
- *------------------------------------------------------------------------------
- * Description        : Update TRX RSSI status in data repository
- * Arguments          : void
- * Return Value       : 1 - OK, 0 - FAIL
- * ID                 : 0x5015
- *----------------------------------------------------------------------------*/
-
-#define SRP_RSSI_LIST_LEN   20  /*!< Largo del buffer de datos para calcular rssi promedio */
-#define SRP_RSSI_MEAN_INIT  99 /*|< Aca hay que tener cuidado de que (RSSI_MEAN_INIT)*(RSSI_LIST_LEN)
-                            no porvoque overflow, por eso extendi el tipo de RSSI_LIST[] a long */
-
-#define SRP_RSSI_CNT_MAX   600  /*!< Segundos que RSSI_CNT puede pasar sin que se actualice RSSI_MEAN */
-
-static long SRP_RSSI_LIST[SRP_RSSI_LIST_LEN];
-static int srp_rssi_list_p = 0;
-//static int SRP_RSSI_MEAN = SRP_RSSI_MEAN_INIT;
-
-/**
- * Calcular el promedio del nivel de RSSI sobre la lista de datos disponiblea.
- * Retorna el valor actualizado al desechar mediciones antiguas
- *
- * @param new_value Nuevo valor para agregar a la lista y actualizar el promedio
- * @return Promedio del nivel de RSSI sobre los datos disponibles
- */
-static int srp_update_rssi_mean(int new_value){
-    srp_rssi_list_p = (srp_rssi_list_p < SRP_RSSI_LIST_LEN) ? srp_rssi_list_p : 0;
-    SRP_RSSI_LIST[srp_rssi_list_p] = new_value;
-    srp_rssi_list_p++; int res;
-
-    #if (SCH_CMDSRP_VERBOSE >=2)
-        itoa(buf, new_value, 10);
-        con_printf("new_value= "); con_printf(buf); con_printf("\r\n");
-        itoa(buf, rssi_list_p, 10);
-        con_printf("rssi_list_p= "); con_printf(buf); con_printf("\r\n");
-    #endif
-
-    int i; long sum = 0;
-    for(i=0; i<SRP_RSSI_LIST_LEN; i++)
-    {
-        sum+=SRP_RSSI_LIST[i];
-    }
-
-    res=sum/SRP_RSSI_LIST_LEN;
-
-    #if (SCH_CMDSRP_VERBOSE >=2)
-        itoa(buf, res,10);
-        con_printf("res= "); con_printf(buf); con_printf("\r\n");
-    #endif
-
-    return res;
-}
-int srp_trx_rssi_mean(int arg){
-    static int init;
-
-    if(init==0){
-        /* Inicializar el buffer de valores de RSSI */
-        int i, rssi_list_init=SRP_RSSI_MEAN_INIT;
-        for(i=0; i<SRP_RSSI_LIST_LEN; i++)
-        {
-            SRP_RSSI_LIST[i] = rssi_list_init;
-        }
-        init++;
-    }
-
-    int res=srp_update_rssi_mean(arg);
-    return res;
-}
 
 void srp_debug4(void){
     unsigned int address=0;

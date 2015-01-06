@@ -66,6 +66,14 @@ typedef enum{
     trx_id_set_count_tc, ///< @cmd
     trx_id_get_day_last_tc, ///< @cmd
     trx_id_set_day_last_tc, ///< @cmd
+    trx_id_get_tx_baud, ///< @cmd
+    trx_id_set_tx_baud, ///< @cmd
+    trx_id_get_rx_baud, ///< @cmd
+    trx_id_set_rx_baud, ///< @cmd
+    trx_id_get_beacon_level, ///< @cmd
+    trx_id_set_beacon_level, ///< @cmd
+    trx_id_get_beacon_period, ///< @cmd
+    trx_id_set_beacon_period, ///< @cmd
 
     trx_id_set_conf, ///< @cmd
     trx_id_read_conf, ///< @cmd
@@ -73,9 +81,6 @@ typedef enum{
     trx_id_getstatus, ///< @cmd
     trx_id_set_beacon, ///< @cmd
     trx_id_initialize, ///< @cmd
-    trx_id_set_tx_baud, ///< @cmd
-    trx_id_set_rx_baud, ///< @cmd
-    trx_id_set_beacon_level, ///< @cmd
 
     //*********************
     trx_id_last_one    //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
@@ -96,6 +101,14 @@ int trx_get_count_tc(void *param);
 int trx_set_count_tc(void *param);
 int trx_get_day_last_tc(void *param);
 int trx_set_day_last_tc(void *param);
+int trx_get_tx_baud(void *param);
+int trx_set_tx_baud(void *param);
+int trx_get_rx_baud(void *param);
+int trx_set_rx_baud(void *param);
+int trx_get_beacon_level(void *param);
+int trx_set_beacon_level(void *param);
+int trx_get_beacon_period(void *param);
+int trx_set_beacon_period(void *param);
 
 // Commands
 int trx_set_conf(void *param);
@@ -105,9 +118,6 @@ int trx_testframe(void *param);
 int trx_getstatus(void *param);
 int trx_set_beacon(void *param);
 int trx_initialize(void *param);
-int trx_set_tx_baud(void *param);
-int trx_set_rx_baud(void *param);
-int trx_set_beacon_level(void *param);
 
 // Auxiliary
 int trx_tm_addtoframe(int *data, int len, int mode);

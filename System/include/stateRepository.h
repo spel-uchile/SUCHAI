@@ -106,6 +106,10 @@ typedef enum{
     sta_trx_count_tm,         // number of sended TM
     sta_trx_count_tc,         // number of received TC
     sta_trx_day_last_tc,      // day of the last received tc (since 1/1/00)
+    sta_trx_beacon_period,    // Beacon period in seconds
+    sta_trx_beacon_bat_lvl,   // Batery voltage required to transmit beacon
+    sta_trx_rx_baud,          // RX baudrate
+    sta_trx_tx_baud,          // TX baudrate
 
     //PAYLOAD
     sta_pay_lagmuirProbe_state,

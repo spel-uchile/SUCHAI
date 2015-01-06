@@ -21,6 +21,7 @@
 #include "cmdRTC.h"
 #include "cmdPayload.h"
 #include "include/cmdIncludes.h"
+#include "include/stateRepository.h"
 
 #define SCH_DATAREPOSITORY_VERBOSEMEMSD_ 0
 
@@ -261,6 +262,19 @@ int sta_get_stateVar(STA_StateVar indxVar){
             case sta_trx_day_last_tc:
                 value = trx_get_day_last_tc(NULL);
                 break;
+            case sta_trx_beacon_bat_lvl:
+                value = trx_get_beacon_level(NULL);
+                break;
+            case sta_trx_beacon_period:
+                value = trx_get_beacon_period(NULL);
+                break;
+            case sta_trx_rx_baud:
+                value = trx_get_rx_baud(NULL);
+                break;
+            case sta_trx_tx_baud:
+                value = trx_get_tx_baud(NULL);
+                break;
+
         #endif
         //PAY => (Payload subsystem)
         case sta_pay_lagmuirProbe_state:
@@ -628,6 +642,19 @@ char* sta_varToString(STA_StateVar var_i){
         case sta_trx_day_last_tc:      // day of the last received tc (since 1/1/00)
             pc = "sta_trx_lastcmd_day";
      	    break;
+        case sta_trx_beacon_period:
+            pc = "sta_trx_beacon_period";
+            break;
+        case sta_trx_beacon_bat_lvl:
+            pc = "sta_trx_beacon_bat_lvl";
+            break;
+        case sta_trx_rx_baud:
+            pc = "sta_trx_rx_baud";
+            break;
+        case sta_trx_tx_baud:
+            pc = "sta_trx_tx_baud";
+            break;
+
 
         //PAYLOAD
         case sta_pay_lagmuirProbe_state:

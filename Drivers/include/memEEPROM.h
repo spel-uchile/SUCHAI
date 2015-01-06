@@ -53,6 +53,10 @@ typedef enum{
     mem_trx_count_tm,
     mem_trx_count_tc,
     mem_trx_day_last_tc,
+    mem_trx_beacon_period,
+    mem_trx_beacon_bat_lvl,
+    mem_trx_rx_baud,
+    mem_trx_tx_baud,
 
     //*************
     mem_last_one     //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo

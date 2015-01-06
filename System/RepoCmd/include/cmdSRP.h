@@ -95,12 +95,6 @@ void srp_eps_soc(void);
 void srp_eps_socss(void);
 void srp_eps_state_flag(void);
 void srp_eps_charging(void);
-//TRX
-void srp_trx_opmode(void);
-void srp_trx_temp_hpa(void);
-void srp_trx_temp_mcu(void);
-void srp_trx_status_tc(void);
-int srp_trx_rssi_mean(int arg);
 
 //**********************************************************************************
 //Estas no son comandos , pero si funciones llamadas SOLO desde taskDeployment

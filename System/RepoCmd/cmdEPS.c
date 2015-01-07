@@ -64,10 +64,11 @@ int eps_update_internal_vars(void *param){
 int eps_print_all_reg(void *param){
     int i;
 
-    con_printf("Reading EPS regs..\r\n");
+    printf("Reading EPS regs ..\r\n");
     rtc_print(NULL);
+
     for(i=0;i<34;i++){
-        eps_readreg( (void *)(&i) );
+        printf("reg[%d] = %d \r\n", i, eps_readreg( (void *)(&i) ) );
     }
 
     return 1;
@@ -81,44 +82,48 @@ int eps_print_all_reg(void *param){
  *                                   CS-1UEPS2-NB-10 data sheet)
  *                              32   Display the EPS status register
  *                              33   Display the EPS version
- * Return Value       : 1 - OK
+ * Return Value       : readed value
  *----------------------------------------------------------------------------*/
 int  eps_readreg(void *param)
 {
-#if SCH_CMDEPS_VERBOSE
     unsigned char argu = *((unsigned char *)(param));
     int lectura;
-    char buffer[40];
+    #if(SCH_CMDEPS_VERBOSE > 1)
+        char buffer[40];
+    #endif
 
     if(argu<32){
         lectura = (int)ADCReadEPS(argu);
-        sprintf (buffer, "Lectura ADC: reg[%d]=", argu);
-        con_printf(buffer);
+        #if(SCH_CMDEPS_VERBOSE > 1)
+            sprintf (buffer, "Lectura ADC: reg[%d]=", argu);
+            con_printf(buffer);
+        #endif
     }
     else if(argu==32){
             lectura = (int)StatusReadEPS();
-            con_printf("Lectura Status:");
+            #if(SCH_CMDEPS_VERBOSE > 1)
+                con_printf("Lectura Status:");
+            #endif
     }
     else if(argu==33){
         lectura = (int)VersionReadEPS();
-        con_printf("Lectura Version:");
+        #if(SCH_CMDEPS_VERBOSE > 1)
+            con_printf("Lectura Version:");
+        #endif
     }
     else {
         lectura = (int)readEPSvars(EPS_ID_current_dir_est);
-        con_printf("Estimacion Current Direction (0-Ch, 1-Disch):");
+        #if(SCH_CMDEPS_VERBOSE > 1)
+            con_printf("Estimacion Current Direction (0-Ch, 1-Disch):");
+        #endif
     }
 
-    //itoa(buffer, lectura, 10);
-    //con_printf(buffer);
-
-    //con_printf(" 0x");
-    //utoa(buffer, lectura, 16);
-    sprintf (buffer, "%d (dec), 0x%X (hex)\r\n", lectura, lectura);
-    con_printf(buffer);
-
-#endif
+    #if(SCH_CMDEPS_VERBOSE > 1)
+        sprintf (buffer, "%d (dec), 0x%X (hex)\r\n", lectura, lectura);
+        con_printf(buffer);
+    #endif
     
-    return 1;
+    return lectura;
 
 }
 

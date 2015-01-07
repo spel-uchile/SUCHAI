@@ -128,7 +128,7 @@ int tcm_sendTM_pay_i(void *param){
     //send pay_i data, regardless of it's pay_i_state
     int res = tcm_sendTM_payload(mode, pay_i);
 
-    //If successfull reinit payloads that were waiting state
+    //If successfull reinit payloads that were in waiting_tx state
     if(res!=0x0000){
         STA_Pay_xxx_State pay_state;
         pay_state = pay_get_state(pay_i);

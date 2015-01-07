@@ -252,7 +252,8 @@ int thk_suchai_deployment(void *param)
      * to check deployment, so its included here */
     #if (SCH_ANTENNA_ONBOARD==1)
         if( sta_get_stateVar(sta_pay_lagmuirProbe_isDeployed)==0 ){
-            pay_deploy_langmuirProbe();
+            int rt_mode = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
+            pay_deploy_langmuirProbe(rt_mode);    //realtime mode
             //set var lang dep = 1
         }
     #endif
@@ -647,7 +648,7 @@ int thk_debug2(void *param){
 }
 //------------------------------------------------------------------------------
 int thk_executeBeforeFlight(void *param){
-    con_printf("thk_executeBeforeFlight()..\n");
+    printf("thk_executeBeforeFlight()..\n");
 
     drp_executeBeforeFlight(NULL);
     srp_executeBeforeFlight(NULL);

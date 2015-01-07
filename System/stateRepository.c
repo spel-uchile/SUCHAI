@@ -392,9 +392,9 @@ void sta_onReset_stateRepo(void)
     /*
      * Comment all this block ONLY after all var have a callable function "get"
      */
-    printf("[sta_onResetStatRepo] All STA_StateVar variables:\r\n");
-    //print all SatatusVars
-    srp_print_STA_stateVar(NULL);
+//    printf("[sta_onResetStatRepo] All STA_StateVar variables:\r\n");
+//    //print all SatatusVars
+//    srp_print_STA_stateVar(NULL);
 }
 
 /**
@@ -640,7 +640,7 @@ char* sta_varToString(STA_StateVar var_i){
             pc = "sta_trx_count_tc";
      	    break;
         case sta_trx_day_last_tc:      // day of the last received tc (since 1/1/00)
-            pc = "sta_trx_lastcmd_day";
+            pc = "sta_trx_day_last_tc";
      	    break;
         case sta_trx_beacon_period:
             pc = "sta_trx_beacon_period";

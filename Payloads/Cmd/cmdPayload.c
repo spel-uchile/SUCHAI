@@ -559,7 +559,7 @@ int pay_init_battery(void *param){
     return pay_isAlive_battery(NULL);
 }
 int pay_take_battery(void *param){
-    printf("pay_take_test1()  ..\r\n");
+    printf("pay_take_battery()  ..\r\n");
 
     //save date_time in 2ints
     pay_save_date_time_to_Payload_Buff(dat_pay_battery);
@@ -756,9 +756,9 @@ int pay_take_tmEstado(void *param){
     STA_StateVar indxVar; int var;
     for(indxVar=0; indxVar<sta_stateVar_last_one; indxVar++){
         var = sta_get_stateVar(indxVar);
-        dat_set_Payload_Buff(dat_pay_tmEstado, var, DAT_PAYBUFF_MODE_NO_MAXINDX);
-        #if (_VERBOSE_>=2)
-            printf("sta_get_stateVar[%d] = %d\r\n", indxVar, var);
+        //dat_set_Payload_Buff(dat_pay_tmEstado, var, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        #if (_VERBOSE_>=1)
+            printf("sta_get_stateVar[%s] = %d\r\n", sta_varToString(indxVar), var);
         #endif
     }
 
@@ -1055,7 +1055,7 @@ int pay_stop_gps(void *param){
     return 1;
 }
 //******************************************************************************
-BOOL pay_deploy_langmuirProbe(void){
+BOOL pay_deploy_langmuirProbe(int realtime){
     printf("******************************\r\n");
     printf("Deployng LangmuirProbe\r\n");
     printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );
@@ -1063,10 +1063,15 @@ BOOL pay_deploy_langmuirProbe(void){
     __delay_ms(50); //wait while port write takes effect
     printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );
 
-    __delay_ms(30000); //wait 30sec to burn nylon
-    __delay_ms(30000); //wait 30sec to burn nylon
-    ClrWdt();
-    __delay_ms(30000); //wait 30sec to burn nylon
+    if(realtime==1){
+        __delay_ms(30000); //wait 30sec to burn nylon
+        __delay_ms(30000); //wait 30sec to burn nylon
+        ClrWdt();
+        __delay_ms(30000); //wait 30sec to burn nylon
+    }
+    else{
+        __delay_ms(3000); //wait 30sec to burn nylon
+    }
 
     PPC_LANGMUIR_DEP_SWITCH = 0;
     __delay_ms(50); //wait while port write takes effect

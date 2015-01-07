@@ -483,7 +483,7 @@ int drp_executeBeforeFlight(void *param){
     #endif
 
     drp_DAT_FlightPlan_EBF();
-    drp_DAT_Payload_Buff_EBF();
+    //drp_DAT_Payload_Buff_EBF();
 
 //    int mode=*((int *)param);
 //    if(mode==1){return 1;}

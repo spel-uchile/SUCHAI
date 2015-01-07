@@ -98,6 +98,12 @@ void taskHouskeeping(void *param)
             #endif
             //Add commands below ..
 
+            //test trx ping
+//            sta_get_stateVar(sta_TRX_isAlive);
+//            NewCmd.cmdId = trx_id_isAlive;
+//            NewCmd.param = 0;
+//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+
             //update SOC and other stuctures
             #if (SCH_EPS_ONBOARD==1)
                 NewCmd.cmdId = eps_id_update_internal_vars;

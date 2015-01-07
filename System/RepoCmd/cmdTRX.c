@@ -209,11 +209,11 @@ int trx_set_tx_baud(void *param)
  */
 int trx_get_tx_baud(void *param)
 {
-    int result = trx_read_conf(NULL);
-    if(!result)
-        return 0;
+//    int result = trx_read_conf(NULL);
+//    if(!result)
+//        return 0;
 
-    result = (int)TRX_CONFIG.tx_baud;
+    int result = (int)TRX_CONFIG.tx_baud;
     return result;
 }
 
@@ -253,11 +253,11 @@ int trx_set_rx_baud(void *param)
  */
 int trx_get_rx_baud(void *param)
 {
-    int result = trx_read_conf(NULL);
-    if(!result)
-        return 0;
+//    int result = trx_read_conf(NULL);
+//    if(!result)
+//        return 0;
 
-    result = (int)TRX_CONFIG.rx_baud;
+    int result = (int)TRX_CONFIG.rx_baud;
     return result;
 }
 
@@ -291,11 +291,11 @@ int trx_set_beacon_level(void* param)
  */
 int trx_get_beacon_level(void *param)
 {
-    int result = trx_read_conf(NULL);
-    if(!result)
-        return 0;
+//    int result = trx_read_conf(NULL);
+//    if(!result)
+//        return 0;
 
-    result = (int)TRX_CONFIG.morse_bat_level;
+    int result = (int)TRX_CONFIG.morse_bat_level;
     return result;
 }
 
@@ -330,9 +330,9 @@ int trx_get_beacon_period(void *param)
 {
     int result;
 
-    result = trx_read_conf(NULL);
-    if(!result)
-        return 0;
+//    result = trx_read_conf(NULL);
+//    if(!result)
+//        return 0;
 
     result = (int)TRX_CONFIG.morse_inter_delay;
     return result;

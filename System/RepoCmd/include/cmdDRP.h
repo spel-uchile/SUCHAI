@@ -44,10 +44,6 @@ typedef enum{
     drp_id_fpl_set_cmd, ///< @cmd
     drp_id_fpl_set_param, ///< @cmd
 
-//    //De TRX
-//    drp_id_trx_newTcFrame, ///< @cmd
-//    drp_id_trx_newCmdBuff, ///< @cmd
-
     //*************
     drp_id_last_one    //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
 }DRP_CmdIndx;

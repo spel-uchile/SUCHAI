@@ -1,22 +1,27 @@
 import sys
 
-cmd_init = {'CMD_PPC':0x1000,
-            'CMD_CON':0x2000,
-            'CMD_TRX':0x3000,
-            'CMD_EPS':0x4000,
-            'CMD_DRP':0x5000,
-            'CMD_PAY':0x6000,
-            'CMD_RTC':0x7000,
-            'CMD_TCM':0x8000,
+cmd_init = {'SCH_CMD_PPC':0x1000,
+            'SCH_CMD_CON':0x2000,
+            'SCH_CMD_TRX':0x3000,
+            'SCH_CMD_EPS':0x4000,
+            'SCH_CMD_DRP':0x5000,
+            'SCH_CMD_PAY':0x6000,
+            'SCH_CMD_RTC':0x7000,
+            'SCH_CMD_TCM':0x8000,
+            'SCH_CMD_SRP':0x9000,
+            'SCH_CMD_THK':0xA000
             }
 
 f_name = sys.argv[1]
 f = open(f_name, 'r')
 cmd = 0
 
-log = open("cmd_log.txt", 'a')
+log = open("cmd_list.txt", 'a')
 
 for line in f:
+    if line.startswith("//"):
+        continue
+    
     if not cmd:
         if line.find('@cmd_first') != -1:
             for _key in cmd_init.keys():
@@ -27,8 +32,8 @@ for line in f:
                     enum = line[:line.find('=')]
                     enum = enum.replace('_id_','_')
                     line = line[:-1] + ', referencia: @ref ' + enum + '\n'
-                    cmd +=1
                     log.write("{0},{1}\n".format(str(hex(cmd)), enum.strip()))
+                    cmd +=1
     else:        
         if line.find('@cmd') != -1:
             line = line.replace('@cmd', str(hex(cmd)))
@@ -36,8 +41,8 @@ for line in f:
             enum = line[:line.find(',')]
             enum = enum.replace('_id_','_')
             line = line[:-1] + ', referencia: @ref ' + enum + '\n'
-            cmd +=1
             log.write("{0},{1}\n".format(str(hex(cmd)), enum.strip()))
+            cmd +=1
     
     print line[:-1]
 

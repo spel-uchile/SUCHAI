@@ -193,6 +193,10 @@ int srp_memEEPROM_initial_state(void * param){
     arg = SCH_TRX_TX_BAUD;
     trx_set_tx_baud(&arg);
 
+    /* Save configuration to TRX, to make the available to the next TRX wakeup */
+    arg = 0;    //not deployed
+    trx_initialize(&arg);
+
     return 1;
 }
 

@@ -67,10 +67,12 @@ typedef enum{
     trx_id_get_day_last_tc, ///< @cmd
     trx_id_set_day_last_tc, ///< @cmd
     trx_id_get_tx_baud, ///< @cmd
+    //next is 0xA
     trx_id_set_tx_baud, ///< @cmd
     trx_id_get_rx_baud, ///< @cmd
     trx_id_set_rx_baud, ///< @cmd
     trx_id_get_beacon_level, ///< @cmd
+    //next is 0xE
     trx_id_set_beacon_level, ///< @cmd
     trx_id_get_beacon_period, ///< @cmd
     trx_id_set_beacon_period, ///< @cmd

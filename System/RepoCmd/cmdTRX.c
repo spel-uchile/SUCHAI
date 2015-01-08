@@ -357,7 +357,7 @@ int trx_get_beacon_period(void *param)
  */
 int trx_set_conf(void *param)
 {
-    #if SCH_CMDTRX_VERBOSE > 1
+    #if SCH_CMDTRX_VERBOSE >= 1
         printf("Uploading TRX configuration\n");
         com_print_conf(&TRX_CONFIG);
     #endif

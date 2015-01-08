@@ -198,7 +198,7 @@ int trx_set_tx_baud(void *param)
     if(!result)
         return 0;
 
-    TRX_CONFIG.tx_baud = baud;
+    TRX_CONFIG.tx_baud = (uint8_t)baud;
 
     // Save changes to status repo
     MemEEPROM_Vars mem_eeprom_var = mem_trx_tx_baud;
@@ -243,7 +243,7 @@ int trx_set_rx_baud(void *param)
     if(!result)
         return 0;
 
-    TRX_CONFIG.rx_baud = baud;
+    TRX_CONFIG.rx_baud = (uint8_t)baud;
 
     // Save changes to status repo
     MemEEPROM_Vars mem_eeprom_var = mem_trx_rx_baud;

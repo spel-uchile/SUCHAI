@@ -15,6 +15,7 @@
 #include "dataRepository.h"
 #include "cmdIncludes.h"    //para CMD_XXX
 #include "DebugIncludes.h"  //para con_printf
+#include "cmdRepository.h"
 
 /* Necesarios para update */
 #include "cmdPPC.h"
@@ -43,6 +44,7 @@ typedef enum{
     drp_id_fpl_get_index, ///< @cmd
     drp_id_fpl_set_cmd, ///< @cmd
     drp_id_fpl_set_param, ///< @cmd
+    drp_id_fpl_check_and_exec, ///< @cmd
 
     //*************
     drp_id_last_one    //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
@@ -67,6 +69,7 @@ int drp_fpl_set_cmd(void *param);
 int drp_fpl_set_param(void *param);
 int drp_fpl_get_index(void* param);
 int drp_fpl_set_index(void* param);
+int drp_fpl_check_and_exec(void* param);
 
 //funciones auxiliares
 //****************************************************

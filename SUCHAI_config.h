@@ -27,8 +27,9 @@
 #define SCH_THK_SILENT_REALTIME             (0)  ///< 1=Realtime 0=Debugtime
 #define SCH_THK_ANTENNA_REALTIME            (0)  ///< 1=Realtime 0=Debugtime
 #define SCH_THK_REALTIME                    (1)  ///< 1=Realtime 0=Debugtime
-#define SCH_TASKFLIGHTPLAN_REALTIME         (0)  ///< 1=Realtime 0=Debugtime
+#define SCH_TASKFLIGHTPLAN_REALTIME         (1)  ///< 1=Realtime 0=Debugtime
 #define SCH_FLIGHTPLAN2_REALTIME            (1)  ///< 1=Realtime 0=Debugtime
+#define SCH_FLIGHTPLAN3_REALTIME            (1)  ///< 1=Realtime 0=Debugtime
 
 /* Bus Onboard */
 #define SCH_SYSBUS_ONBOARD                  (1)  //< Onboard => I2C1 en uso
@@ -84,12 +85,11 @@
 #define SCH_NUM_CMDXXX                          (10)    //< Numero maximo de repositorios de comando que pueden ser agregados (min 3)
 #define SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE  (0)     ///< 1=Activo ( EPS montada ) 0= Inactivo ( EPS no montada SOC se lleva a MAX_SOC )
 #define SCH_TASKEXECUTER_INSIDE_TASKDISPATCHER  (1)     //< 0=taskExecuter como tarea separada 1=taskExecuter como parte de taskDispatcher
-#define SCH_FLIGHTPLAN_TYPE                     (0)     ///< 0=ninguno, 1=taskFligthPlan 2=taskFlightPlan2 3=ambos
-#define SCH_FLIGHTPLAN_RESOLUTION               (10)    ///< [MINUTES] Resolucion de tiempo del flight plan
+#define SCH_FLIGHTPLAN_RESOLUTION               (1)    ///< [MINUTES] Resolucion de tiempo del flight plan
 #define SCH_FLIGHTPLAN_N_CMD                    ((24 * 60) / SCH_FLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]
 #define SCH_FLIGHTPLAN_EXTMEMORY                (1)     ///< (0) buffer en  RAM, (1) en memoria SD
-#define SCH_USE_FLIGHTPLAN                      (0)     ///< 1 = use it, 0 = do not use it
-#define SCH_USE_FLIGHTPLAN2                     (1)     ///< 1 = use it, 0 = do not use it
+#define SCH_FLIGHTPLAN_TYPE                     (3)     ///< 0 = do not use it, 1 = FP, 2 = FP2, 3 = FP3
+//#define SCH_USE_FLIGHTPLAN2                     (1)     ///< 1 = use it, 0 = do not use it
 #define SCH_USE_HOUSEKEEPING                    (1)     ///< 1 = use it, 0 = do not use it
 
 /**
@@ -141,6 +141,7 @@
 #define SCH_TASKEXECUTER_VERBOSE            (1)  ///< 1=verboso 0=austero
 #define SCH_TASKFLIGHTPLAN_VERBOSE          (1)  ///< 1=verboso 0=austero
 #define SCH_FLIGHTPLAN2_VERBOSE             (1)  ///< 1=verboso 0=austero
+#define SCH_FLIGHTPLAN3_VERBOSE             (1)  ///< 1=verboso 0=austero
 #define SCH_TASKHOUSEKEEPING_VERBOSE        (1)  ///< 1=verboso 0=austero
 
 #endif	/* SUCHAI_CONFIG_H */

@@ -40,6 +40,7 @@ void drp_onResetCmdDRP(){
     drpFunction[(unsigned char)drp_id_fpl_set_index] = drp_fpl_set_index;
     drpFunction[(unsigned char)drp_id_fpl_set_cmd] = drp_fpl_set_cmd;
     drpFunction[(unsigned char)drp_id_fpl_set_param] = drp_fpl_set_param;
+    drpFunction[(unsigned char)drp_id_fpl_check_and_exec] = drp_fpl_check_and_exec;
 }
 
 int drp_print_dat_FlightPlan(void *param){
@@ -47,41 +48,42 @@ int drp_print_dat_FlightPlan(void *param){
     con_printf("Reading sta_FligthPlan Buffer\r\n");
     con_printf("===================================\r\n");
 
-    int i; char buffer[10];
+    int i;
+//    char buffer[10];
     for(i=0; i<SCH_FLIGHTPLAN_N_CMD; i++)
     {
         DispCmd dcmd = dat_get_FlightPlan(i);
-        con_printf("sta_FlightPlan[");
-        itoa(buffer, (unsigned int)i, 10); con_printf(buffer); con_printf("]: cmdId=");
-        itoa(buffer,  (unsigned int)dcmd.cmdId, 10); con_printf(buffer); con_printf(" param=");
-        itoa(buffer,  (unsigned int)dcmd.param, 10); con_printf(buffer); con_printf("\r\n");
+        printf("sta_FlightPlan[%d]: cmdId = 0x%X, param = %d", i , dcmd.cmdId, dcmd.param);
+//        itoa(buffer, (unsigned int)i, 10); con_printf(buffer); con_printf("]: cmdId=");
+//        itoa(buffer,  (unsigned int)dcmd.cmdId, 10); con_printf(buffer); con_printf(" param=");
+//        itoa(buffer,  (unsigned int)dcmd.param, 10); con_printf(buffer); con_printf("\r\n");
     }
     return 1;
 }
 
 int drp_print_dat_PayloadIndxs(void *param){
-    con_printf("===================================\r\n");
-    con_printf("Reading sta_PayloadIndxs Block\r\n");
-    con_printf("===================================\r\n");
+    printf("===================================\r\n");
+    printf("Reading sta_PayloadIndxs Block\r\n");
+    printf("===================================\r\n");
 
-    char buffer[10];
+//    char buffer[10];
     DAT_Payload_Buff pay_i;
     for(pay_i=0; pay_i<dat_pay_last_one; pay_i++)
     {
         unsigned int max = dat_get_MaxPayIndx( pay_i);
         unsigned int next = dat_get_NextPayIndx( pay_i);
         
-        con_printf("pay_i=");
-        itoa(buffer, (unsigned int)pay_i,10);
-        con_printf(buffer); con_printf("\r\n");
-        con_printf("    MaxIndx=");
-        //itoa(buffer, (unsigned int)max,10);
-        sprintf (buffer, "0x%X", (unsigned int)max);
-        con_printf(buffer); con_printf("\r\n");
-        con_printf("    NextIndx=");
-        //itoa(buffer, (unsigned int)next,10);
-        sprintf (buffer, "0x%X", (unsigned int)next);
-        con_printf(buffer); con_printf("\r\n");
+        printf("pay_i = %u | maxIndx = %d | next = %d \r\n", (unsigned int)pay_i, max, next);
+//        itoa(buffer, (unsigned int)pay_i,10);
+//        con_printf(buffer); con_printf("\r\n");
+//        con_printf("    MaxIndx=");
+//        itoa(buffer, (unsigned int)max,10);
+//        sprintf (buffer, "0x%X", (unsigned int)max);
+//        con_printf(buffer); con_printf("\r\n");
+//        con_printf("    NextIndx=");
+//        //itoa(buffer, (unsigned int)next,10);
+//        sprintf (buffer, "0x%X", (unsigned int)next);
+//        con_printf(buffer); con_printf("\r\n");
     }
     return 1;
 }
@@ -97,16 +99,16 @@ int drp_print_dat_PayloadVar(void *param){
     char buffer[10];
     DAT_Payload_Buff pay_i=pay_i2;
     if(pay_i>=dat_pay_last_one){
-        con_printf("pay_i=");
-        itoa(buffer, (unsigned int)pay_i,10);
-        con_printf(buffer);
-        con_printf(" NO existe. Nada que imprimir\r\n");
+        printf("pay_i= %d NO existe, nada que imprimir\r\n", pay_i);
+//        itoa(buffer, (unsigned int)pay_i,10);
+//        con_printf(buffer);
+//        con_printf(" NO existe. Nada que imprimir\r\n");
         return 0;
     }
 
-    con_printf("pay_i=");
-    itoa(buffer, (unsigned int)pay_i,10);
-    con_printf(buffer); con_printf("\r\n");
+    printf("pay_i = %d\r\n", pay_i);
+//    itoa(buffer, (unsigned int)pay_i,10);
+//    con_printf(buffer); con_printf("\r\n");
 
     unsigned int indx; unsigned int max = dat_get_MaxPayIndx(pay_i); int val;
     for(indx=0; indx<=max; indx++)
@@ -193,10 +195,87 @@ int drp_fpl_set_param(void *param)
     return result;
 }
 
+int drp_fpl_check_and_exec(void *param){
+    //FP, programmed actions
+    unsigned int index, current_hour, current_mins;
+    static unsigned int last_index; //to enter the first try, then check every time
+
+    DispCmd NewCmd;
+    NewCmd.idOrig = 0;
+    NewCmd.cmdId = CMD_CMDNULL;
+    NewCmd.param = 0;
+
+    ExeCmd exeCmd; /* The cmd to executer */
+    int cmdParam;
+    int cmdResult;
+
+    /* Map hh:mm to MM minutues of the day to obtain the
+     * index of the next command to read from fligh plan */
+    current_hour = sta_get_stateVar(sta_rtc_hours);
+    current_mins = sta_get_stateVar(sta_rtc_minutes);
+    index = current_hour*60 + current_mins;
+    index = index / SCH_FLIGHTPLAN_RESOLUTION;
+    
+    #if SCH_TASKFLIGHTPLAN_VERBOSE
+        /* Debug info */
+        printf("  [drp_fpl_check_and_exec] index = %d = (%d*60+%d)/SCH_FP_RESOLUTION \n  last_index=%d | SCH_FP_N_CMD=%d\r\n",
+                index, current_hour, current_mins, last_index, SCH_FLIGHTPLAN_N_CMD);
+    #endif
+
+    /* If check time is less than flight plan resolution (as it should be)
+     *  we need to prevent an index repetition */
+    if(last_index != index)
+    {
+        /* Update last_index */
+        last_index = index;
+
+        /* Get the next command from flight plan */
+        NewCmd = dat_get_FlightPlan(index); //get cmdId and param
+        //NewCmd.idOrig = CMD_IDORIG_TFLIGHTPLAN3;
+
+        /* Check if valid cmd */
+        if(NewCmd.cmdId == CMD_CMDNULL){
+            #if SCH_TASKFLIGHTPLAN_VERBOSE
+                printf("    [drp_fpl_check_and_exec] Se extrae CMD_CMDNULL, se omite\r\n");
+            #endif
+            return 0;
+        }
+
+        #if SCH_TASKFLIGHTPLAN_VERBOSE
+            /* Print the command code */
+            printf("    [drp_fpl_check_and_exec] Se extrae cmdId = 0x%X, param = %d, ejecutando .. \r\n",
+                    (unsigned int)NewCmd.cmdId, (unsigned int)NewCmd.param);
+        #endif
+
+        /* Queue NewCmd - Blocking */
+        //xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+
+        /* Check if command is executable */
+        //not performed
+
+        /* Fill the executer command */
+        exeCmd.fnct = repo_getFunction(NewCmd.cmdId);
+        exeCmd.param = NewCmd.param;
+
+        /* Execute the command */
+        cmdParam = exeCmd.param;
+        cmdResult = exeCmd.fnct((void *)&cmdParam);
+    }
+    else{
+        #if(SCH_TASKFLIGHTPLAN_VERBOSE >= 1)
+            /* Print the command code */
+            printf("    [drp_fpl_check_and_exec] (last_index==index) => NO se genera comando\r\n");
+        #endif
+        return 1;
+    }
+
+    return cmdResult;
+}
+
 int drp_debug(void *param){
     int ind=*((int*)param);
 
-    printf("calling drp_debug(%d)..\n", ind);
+    printf("drp_debug(%d)..\n", ind);
 
     switch(ind){
         case 1:
@@ -222,47 +301,48 @@ int drp_debug(void *param){
     return 1;
 }
 void drp_debug1(void){
-    int i;
-
-    con_printf("Testing rand()\r\n");
-    for(i=0;i<0xFFFF;i++){
-        unsigned char c= rand();
-        con_printf("rand()=");
-        char buffer[6];
-        itoa(buffer,  (unsigned int)c, 10);
-        con_printf(buffer); con_printf("\r\n");
-        ClrWdt();
-    }
+//    int i;
+//    con_printf("Testing rand()\r\n");
+//    for(i=0;i<0xFFFF;i++){
+//        unsigned char c= rand();
+//        con_printf("rand()=");
+//        char buffer[6];
+//        itoa(buffer,  (unsigned int)c, 10);
+//        con_printf(buffer); con_printf("\r\n");
+//        ClrWdt();
+//    }
 
 }
 
 void drp_debug2(void){
-    char buffer[10];
+//    char buffer[10];
     int value=0, res=0;
     unsigned char index;
     long block;
 
     con_printf("(Destructive) Testing -1block r/w- memSD\r\n");
     for(block=0;block<1024;block++){
-        con_printf("testing block j="); itoa(buffer, block,10); con_printf(buffer); con_printf("\n");
+        printf("testing block = %lu \r\n",block);
 
         value=0xA000;
         for(index=0;index<=0xFF;index++, value++){
 
             con_printf("writing: ");
             msd_setVar_1BlockExtMem( block, index, value);
-            itoa(buffer, index,10); con_printf("value["); con_printf(buffer); con_printf("]=");
-            itoa(buffer, value,10); con_printf(buffer); con_printf("    |    ");
+            printf("value[%d] = 0x%X | ", index, value);
+//            itoa(buffer, index,10); con_printf(buffer); con_printf("]=");
+//            itoa(buffer, value,10); con_printf(buffer); con_printf("    |    ");
 
             con_printf("reading: ");
             msd_getVar_1BlockExtMem( block, index, &res);
-            itoa(buffer, index,10); con_printf("value["); con_printf(buffer); con_printf("]=");
-            itoa(buffer, res,10); con_printf(buffer); con_printf("    |    ");
+            printf("value[%d] = 0x%X | ", index, res);
+//            itoa(buffer, index,10); con_printf("value["); con_printf(buffer); con_printf("]=");
+//            itoa(buffer, res,10); con_printf(buffer); con_printf("    |    ");
 
-            con_printf("comparing: ");
-            if(value==res){ con_printf("ok"); }
-            else{ con_printf("fail"); }
-            con_printf("\n");
+            printf("comparing: ");
+            if(value==res){ printf("ok"); }
+            else{ printf("fail"); }
+            printf("\n");
 
             //con_printf("ClrWdt()\r\n");
             ClrWdt();
@@ -485,21 +565,6 @@ int drp_executeBeforeFlight(void *param){
     drp_DAT_FlightPlan_EBF();
     //drp_DAT_Payload_Buff_EBF();
 
-//    int mode=*((int *)param);
-//    if(mode==1){return 1;}
-//
-//    con_printf("****************************************************\r\n");
-//    con_printf("drp_executeBeforeFlight finalizo\r\n");
-//    con_printf("Para quedar en config de vuelo, se\r\n");
-//    con_printf("DEBE apagar el SUCHAI, hagalo ANTES de:\r\n");
-//    con_printf("****************************************************\r\n");
-//
-//    int i;
-//    for(i=20;i>=1;i--){
-//        __delay_ms(1000);
-//        printf("%d segundos..\r\n", i);
-//    }
-
     return 1;
 }
 void drp_DAT_Payload_Buff_EBF(void){
@@ -512,19 +577,22 @@ void drp_DAT_FlightPlan_EBF(void){
     #if (SCH_CMDDRP_VERBOSE>=1)
         printf("    Setting FligthPlan in launch configuration..\n");
     #endif
-
-    dat_erase_FlightPlan();
     
     #if (SCH_CMDDRP_VERBOSE>=1)
         printf("    Setting initial commands in FligthPlan..\n");
     #endif
+
     //aca debe ir la configuracion inicial del FligthPlan
     //esta es la configuracion a cargar antes del lanzamiento
-    int i;
-    for(i=0;i<1440;i++){
-        if(i%2==0){
-            //sta_setFlightPlan_cmd(i, 0x1002);
-            //sta_setFlightPlan_param(i, 0x0000);
+    int index;
+    for(index=0; index<SCH_FLIGHTPLAN_N_CMD; index++){
+        if(index%2==0){
+            dat_set_FlightPlan_cmd(index, ppc_id_get_osc);
+            dat_set_FlightPlan_param(index, index);
+        }
+        else{
+            dat_set_FlightPlan_cmd(index, rtc_id_print);
+            dat_set_FlightPlan_param(index, index);
         }
     }
 }

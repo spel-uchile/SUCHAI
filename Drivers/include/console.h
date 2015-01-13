@@ -20,11 +20,10 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
-#include <string.h>
+//#include <string.h>
 #include <stdlib.h>
 
-#include "rs232_suchai.h"
-#include "DebugIncludes.h"  //para con_printf
+#include "DebugIncludes.h"  //para printf
 
 /* Add commands definitions*/
 #include "cmdTCM.h"
@@ -36,7 +35,6 @@
 #include "cmdDRP.h"
 #include "cmdSRP.h"
 #include "cmdTHK.h"
-#include "cmdPayload.h"
 
 
 #define CON_BUF_WIDTH 32

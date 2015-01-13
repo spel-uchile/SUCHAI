@@ -2,6 +2,7 @@
 #define _FIS_PAYLOAD_
 
 #include <adc.h>
+#include <stdlib.h> //rand, itoa
 
 #include "interfaz_SPI.h"
 #include "DebugIncludes.h"  //para con_printf

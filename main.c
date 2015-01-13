@@ -38,7 +38,7 @@ xSemaphoreHandle statusRepositorySem, consolePrintfSem, rtcPrintSem;
 
 xTaskHandle taskDeploymentHandle, taskDispatcherHandle;
 xTaskHandle taskComunicationsHandle, taskConsoleHandle, taskFlightPlanHandle,
-            taskFlightPlan2Handle, taskHouskeepingHandle;
+            taskFlightPlan2Handle, taskFlightPlan3Handle, taskHouskeepingHandle;
 
 int main(void)
 {
@@ -147,4 +147,55 @@ void mon_putc(char ch)
         return;
 #endif
     putcUART1(ch);
+}
+
+BOOL shouldDelayTask( portTickType * const pxPreviousWakeTime, portTickType xTimeIncrement)
+{
+    portTickType xTickCount = xTaskGetTickCount();
+
+//    printf("  [shouldDelayTask] xLastWakeTime = %u, xDelay_ticks = %u, "
+//            "xTickCount = %u \r\n", *pxPreviousWakeTime,
+//            xTimeIncrement, xTickCount);
+
+
+    portTickType xTimeToWake;
+    BOOL xShouldDelay = FALSE;
+
+    /* Generate the tick time at which the task wants to wake. */
+    xTimeToWake = *pxPreviousWakeTime + xTimeIncrement;
+
+    if( xTickCount < *pxPreviousWakeTime )
+    {
+            /* The tick count has overflowed since this function was
+            lasted called.  In this case the only time we should ever
+            actually delay is if the wake time has also	overflowed,
+            and the wake time is greater than the tick time.  When this
+            is the case it is as if neither time had overflowed. */
+            if( ( xTimeToWake < *pxPreviousWakeTime ) && ( xTimeToWake > xTickCount ) )
+            {
+                    xShouldDelay = TRUE;
+                    //printf(" asdasd 1\r\n");
+            }
+    }
+    else
+    {
+            /* The tick time has not overflowed.  In this case we will
+            delay if either the wake time has overflowed, and/or the
+            tick time is less than the wake time. */
+            if( ( xTimeToWake < *pxPreviousWakeTime ) || ( xTimeToWake > xTickCount ) )
+            {
+                    xShouldDelay = TRUE;
+                    //printf(" asdasd 2\r\n");
+            }
+    }
+
+//    /* Update the wake time ready for the next call. */
+//    *pxPreviousWakeTime = xTimeToWake;
+
+    if( xShouldDelay != FALSE )
+    {
+
+    }
+
+    return xShouldDelay;
 }

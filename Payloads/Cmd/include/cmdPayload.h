@@ -19,18 +19,25 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 
+//payloads
 #include "langmuir.h"
 #include "fis_payload.h"
 #include "camera.h"
-//#include "CameraC329.h"
 #include "dig_gyro.h"
 #include "sensTemp.h"
+#include "eps_suchai.h"
+#include "memEEPROM.h"
 
-#include "console.h"
+//#include "console.h"
 
 #include "cmdIncludes.h"
 #include "dataRepository.h"
 #include "stateRepository.h"
+
+//cmdXXX
+#include "cmdEPS.h"
+#include "cmdRTC.h"
+
 
 /**
  * Lista de comandos disponibles.
@@ -120,13 +127,22 @@ typedef enum{
 void pay_onResetCmdPAY(void);
 
 
+//typedef enum{
+//    pay_state_pre_init=0,   ///< estado de partida (condicion inicial), no hace cosas
+//    pay_state_init,         ///< estado de config del Payload, lo inicializa (init)
+//    pay_state_take,         ///< estado de operacion nominal del Payload, toma datos
+//    pay_state_stop,         ///< estado de termino del ciclo del Payload,
+//                            ///< configuraciones de termino y post procesamiento
+//}PAY_State;
+
 typedef enum{
-    pay_state_pre_init=0,   ///< estado de partida (condicion inicial), no hace cosas
-    pay_state_init,         ///< estado de config del Payload, lo inicializa (init)
-    pay_state_take,         ///< estado de operacion nominal del Payload, toma datos
-    pay_state_stop,         ///< estado de termino del ciclo del Payload,
-                            ///< configuraciones de termino y post procesamiento
-}PAY_State;
+    pay_xxx_state_inactive=0,
+    pay_xxx_state_active,
+    pay_xxx_state_run_init,
+    pay_xxx_state_run_take,
+    pay_xxx_state_run_stop,
+    pay_xxx_state_waiting_tx
+}PAY_xxx_State;
 
 //Comandos
 //Debug
@@ -215,9 +231,9 @@ void pay_fp2_multiplexed(void);
 void pay_fp2_simultaneous(void);
 int pay_fp2_get_exec_rate(DAT_Payload_Buff pay_i);
 unsigned int pay_fp2_get_run_take_num_exec_times(DAT_Payload_Buff pay_i);
-void pay_fp2_exec_run_xxx(DAT_Payload_Buff pay_i, STA_Pay_xxx_State state);
-void pay_set_state(DAT_Payload_Buff pay_i, STA_Pay_xxx_State state);
-STA_Pay_xxx_State pay_get_state(DAT_Payload_Buff pay_i);
+void pay_fp2_exec_run_xxx(DAT_Payload_Buff pay_i, PAY_xxx_State state);
+void pay_set_state(DAT_Payload_Buff pay_i, PAY_xxx_State state);
+PAY_xxx_State pay_get_state(DAT_Payload_Buff pay_i);
 
 #endif	/* CMDPAYLOAD_H */
 

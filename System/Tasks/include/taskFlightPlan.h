@@ -17,10 +17,13 @@
 #include "queue.h"
 #include "task.h"
 
-#include "pic_pc104_config.h"
+//#include "pic_pc104_config.h"
 #include "cmdIncludes.h"
 #include "stateRepository.h"
-#include "dataRepository.h"
+//#include "dataRepository.h"
+
+//#include "cmdRepository.h"
+#include "cmdDRP.h"
 
 void taskFlightPlan(void *param);
 

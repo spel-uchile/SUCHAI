@@ -39,16 +39,8 @@
 #include "i2c_comm.h"
 #include "rs232_suchai.h"
 #include "interfaz_SPI.h"
-//#include "rtcc_suchai.h"
-//Perifericos
-#include "rtc_mb.h"
-#include "memFlash.h"
-#include "memSD.h"
-#include "memEEPROM.h"
-#include "eps_suchai.h"
-
-//Comandos
-//#include "cmdPPC.h"
+//Otros
+#include "DebugIncludes.h"  //para con_printf
 
 
 /**

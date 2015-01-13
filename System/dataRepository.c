@@ -123,8 +123,9 @@ DispCmd dat_get_FlightPlan(unsigned int index)
 {
     DispCmd NewCmd;
     NewCmd.cmdId = CMD_CMDNULL;
-    NewCmd.idOrig = CMD_IDORIG_TFLIGHTPLAN;
     NewCmd.param = 0;
+    NewCmd.idOrig = -1;
+    NewCmd.sysReq = -1;
 
     if(index < SCH_FLIGHTPLAN_N_CMD)
     {

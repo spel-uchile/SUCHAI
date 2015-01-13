@@ -25,6 +25,7 @@ extern xTaskHandle taskDispatcherHandle;
 extern xTaskHandle taskConsoleHandle;
 extern xTaskHandle taskFlightPlanHandle;
 extern xTaskHandle taskFlightPlan2Handle;
+extern xTaskHandle taskFlightPlan3Handle;
 extern xTaskHandle taskHouskeepingHandle;
 extern xQueueHandle dispatcherQueue;
 
@@ -343,18 +344,25 @@ void dep_init_suchai_tasks(void)
 
     if( sta_get_stateVar(sta_MemSD_isAlive) == 1 )
     {
-        #if (SCH_USE_FLIGHTPLAN == 1)
+        #if (SCH_FLIGHTPLAN_TYPE == 1)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
                     printf("    * Creating taskFlightPlan\r\n");
             #endif
             xTaskCreate(taskFlightPlan, (signed char *)"flightplan", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlanHandle);
             __delay_ms(300);
         #endif
-        #if (SCH_USE_FLIGHTPLAN2 == 1)
+        #if (SCH_FLIGHTPLAN_TYPE == 2)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
                     printf("    * Creating taskFlightPlan2\r\n");
             #endif
             xTaskCreate(taskFlightPlan2, (signed char *)"flightplan2", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlan2Handle);
+            __delay_ms(300);
+        #endif
+        #if (SCH_FLIGHTPLAN_TYPE == 3)
+            #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+                    printf("    * Creating taskFlightPlan3\r\n");
+            #endif
+            xTaskCreate(taskFlightPlan3, (signed char *)"flightplan2", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlan3Handle);
             __delay_ms(300);
         #endif
     }

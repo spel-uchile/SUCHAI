@@ -16,6 +16,5 @@
 #include "queue.h"
 
 #include "cmdIncludes.h"
-#include "pic_pc104_config.h"
 
 void taskExecuter(void *param);

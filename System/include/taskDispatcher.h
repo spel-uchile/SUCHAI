@@ -15,9 +15,8 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 
-#include "cmdIncludes.h"
-#include "cmdRepository.h"
-#include "dataRepository.h"
+#include "cmdIncludes.h"    //DispCmd 
+#include "cmdRepository.h"  //repo_getsysReq
 
 void taskDispatcher(void *param);
 BOOL check_if_executable(DispCmd *newCmd);

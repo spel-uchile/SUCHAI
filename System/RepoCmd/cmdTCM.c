@@ -26,7 +26,7 @@ void tcm_onResetCmdTCM(void){
     tcmFunction[(unsigned char)tcm_id_sendTM_pay_i] = tcm_sendTM_pay_i;
 
     //dat_stateVar
-    tcmFunction[(unsigned char)tcm_id_sendTM_stateVar] = tcm_sendTM_stateVar;
+    tcmFunction[(unsigned char)tcm_id_sendTM_tmEstado] = tcm_sendTM_tmEstado;
 
     //Beacon
     tcmFunction[(unsigned char)tcm_id_update_beacon] = tcm_update_beacon;
@@ -130,10 +130,10 @@ int tcm_sendTM_pay_i(void *param){
 
     //If successfull reinit payloads that were in waiting_tx state
     if(res!=0x0000){
-        STA_Pay_xxx_State pay_state;
+        PAY_xxx_State pay_state;
         pay_state = pay_get_state(pay_i);
-        if(pay_state == sta_pay_xxx_state_waiting_tx ){
-            pay_set_state(pay_i, sta_pay_xxx_state_active);
+        if(pay_state == pay_xxx_state_waiting_tx ){
+            pay_set_state(pay_i, pay_xxx_state_active);
         }        
     }
     return res;
@@ -150,12 +150,12 @@ int tcm_sendTM_pay_i(void *param){
  * @param param 0 - Only store, 1 - Only Send, 2 - Store and send @deprecated @sa trx_tm_addtoframe()
  * @return 0 (Tx fail) - 1 (Tx OK)
  */
-int tcm_sendTM_stateVar(void *param)
+int tcm_sendTM_tmEstado(void *param)
 {
     int tm_id = 0x0009;
 
     /* Start a new session (Single or normal) */
-    tm_id = dat_pay_last_one; /* TM ID */ /*Para distingur stateVar de los Paylaods*/
+    tm_id = dat_pay_tmEstado; /* TM ID */ 
     trx_tm_addtoframe(&tm_id, 0, CMD_ADDFRAME_FIN);   /* Close previos sessions */
     trx_tm_addtoframe(&tm_id, 1, CMD_ADDFRAME_START); /* New empty start frame */
 

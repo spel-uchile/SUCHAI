@@ -25,7 +25,7 @@ static int trx_tm_send(uint16_t *data, int len);
 
 /* Auxiliary variables */
 nanocom_conf_t TRX_CONFIG; /*Stores TRX configuration*/
-static uint16_t com_timeout = 2000;
+static uint16_t com_timeout = 5000; //average time is 3000ms
 
 cmdFunction trxFunction[TRX_NCMD];
 int trx_sysReq[TRX_NCMD];

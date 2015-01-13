@@ -51,7 +51,7 @@ void msd_blockErase(unsigned long block_address){
 
 //****************************************************************************
 BOOL msd_setVar_256BlockExtMem(unsigned long block_i, unsigned int indx, int value){
-    // MAX(indx)=2^16 => 2^16 variables por setear. Si hay 256 variables por bloque, entonces
+    // MAX(indx)=2^16 => 2^16 = 65536 variables por setear. Si hay 256 variables por bloque, entonces
     // habrá que tener (2^16)/256=256 bloques para poder guardar 2^16 variables.
 
     unsigned int i; unsigned int indx2; BOOL resp;
@@ -64,8 +64,8 @@ BOOL msd_setVar_256BlockExtMem(unsigned long block_i, unsigned int indx, int val
 
     return resp;
 }
-BOOL msd_getVar_256BlockExtMem(unsigned long block_i, unsigned int indx, int *value){
-    // MAX(indx)=2^16 => 2^16 variables por setear. Si hay 256 variables por bloque, entonces
+ BOOL msd_getVar_256BlockExtMem(unsigned long block_i, unsigned int indx, int *value){
+    // MAX(indx)=2^16 => 2^16 = 65536 variables por setear. Si hay 256 variables por bloque, entonces
     // habrá que tener (2^16)/256=256 bloques para poder guardar 2^16 variables.
 
     unsigned int i; unsigned int indx2; BOOL resp;

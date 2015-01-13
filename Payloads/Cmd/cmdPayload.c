@@ -123,137 +123,6 @@ int pay_fp2_default_fsm(void *param){
     return 1;
 }
 //******************************************************************************
-int pay_debugPay(void *param){
-    DAT_Payload_Buff pay_i = *((DAT_Payload_Buff*)param);
-    int res;
-
-    printf("debugPay:\r\n");
-    switch(pay_i){
-        case dat_pay_lagmuirProbe:
-            printf("dat_pay_lagmuirProbe:\r\n");
-        break;
-        case dat_pay_debug:
-            printf("dat_pay_debug\r\n");
-        break;
-        case dat_pay_gps:
-            printf("dat_pay_gps\r\n");
-        break;
-        case dat_pay_camera:
-            printf("dat_pay_camera\r\n");
-            int issync;
-
-            //encender camera
-            PPC_CAM_SWITCH=1;
-            printf("PPC_CAM_SWITCH = %d\n", PPC_CAM_SWITCH_CHECK);
-            
-            // Wait for the camera to be ready
-            cam_wait_hold_wtimeout(TRUE);
-
-            //initialize camera          
-            issync = cam_sync(TRUE);
-            printf("SYNC() arrojo: issync = 0x%X\n", issync);
-
-            if(issync!=0x0000){
-                printf("issync!=0x0000()\r\n");
-                printf("Camera is broken (once again)\r\n");
-            }
-
-            //unsigned int larg= cam_photo(0x01, 0x00, 0x05);
-            unsigned int larg= cam_photo(0x07, 0x00, 0x05);
-            #if (_VERBOSE_>=1)
-                char ret[6];
-                printf("cam_photo() retorno ");
-                sprintf (ret, "0x%X", (unsigned int)larg);
-                printf(ret); printf("\r\n");
-            #endif
-
-            //int mode=CAM_MODE_BOTH;
-            //int mode=CAM_MODE_SAVE_SD;
-            int mode=CAM_MODE_VERBOSE;
-            cam_receivePhoto(larg, mode);
-
-            //apagar camera
-            PPC_CAM_SWITCH=0;
-            printf("PPC_CAM_SWITCH = %d\n", PPC_CAM_SWITCH_CHECK);
-            
-        break;
-        case dat_pay_sensTemp:
-            printf("dat_pay_sensTemp 1\r\n");
-            sensTemp_init(ST1_ADDRESS);
-            res = sensTemp_take(ST1_ADDRESS, TRUE);
-            printf("dat_pay_sensTemp 2\r\n");
-            sensTemp_init(ST2_ADDRESS);
-            res = sensTemp_take(ST2_ADDRESS, TRUE);
-            printf("dat_pay_sensTemp 3\r\n");
-            sensTemp_init(ST3_ADDRESS);
-            res = sensTemp_take(ST3_ADDRESS, TRUE);
-            printf("dat_pay_sensTemp 4\r\n");
-            sensTemp_init(ST4_ADDRESS);
-            res = sensTemp_take(ST4_ADDRESS, TRUE);
-        break;
-        case dat_pay_gyro:
-            printf("dat_pay_gyro\r\n");
-            //config gyro
-            gyr_init_config();
-            GYR_DATA res_data;
-            gyr_take_samples(FALSE, &res_data);
-            printf ("a_x = %d\n", res_data.a_x);
-            printf ("a_y = %d\n", res_data.a_y);
-            printf ("a_z = %d\n", res_data.a_z);
-        break;
-        case dat_pay_tmEstado:
-            printf("dat_pay_tmEstado\n");
-        break;
-        case dat_pay_battery:
-            printf("dat_pay_test1\n");
-        break;
-        case dat_pay_expFis:
-            printf("dat_pay_expFis\n");
-            /*
-             * Se usa T4 para escribir_DAC y T5 para leer_ADC,
-             * para conservar Nyquist se hace que Periodo_T4=Periodo_T5*3
-             * Asi se lee 3 veces por cada esritura del DAC.
-             *
-             * En resumen, la variable controlada es Periodo_T5 que es igual a
-             * Periodo leer_ADC = Fosc/2*256*value = (1/16Mhz)/256*value [s],
-             * con value una variable entera (unsigned int)
-             */
-//            fis_erase_sens_buff();
-//            unsigned int ADC_period = 20000;
-//            fis_start_expFis(ADC_period); //DAC is always 3*(pay_ADCperiod)
-//            fis_wait_busy_wtimeout();
-//            fis_print_sens_buff();
-
-            static int ft;
-            if(ft==0){
-                ft = 1;
-                static unsigned int ADC_period[] = {10000, 5000, 1000, 500, 100, 50, 10};
-                int len = 7;
-                int rounds_per_ADC_period = 3;
-                fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
-            }
-            if( fis_iterate() ){
-                //fis_print_sens_buff();
-                //fis_get_sens_buff_i(indx);
-            }
-            if( fis_iterate_isComplete() ){
-                printf("fis_iterate_isComplete() return TRUE\n");
-                ft = 0; //repeat it over
-            }
-        break;
-        default:
-            printf("dafault\n");
-        break;
-    }
-
-//    printf("=>FIFO buffer check:\r\n");
-//    unsigned int i, indx; int value=0xAA00, val; BOOL stat; char ret[10];
-//    indx = dat_getNextPayIndx(pay_i);
-//    printf("indx = dat_getNextPayIndx(pay_i);\r\nindx = ");
-//    sprintf (ret, "0x%X", (unsigned int)indx);
-//    printf(ret); printf("\r\n");
-    return 1;
-}
 int pay_test_dataRepo(void *param){
 
     DAT_Payload_Buff pay_i=0;
@@ -963,7 +832,7 @@ int pay_takePhoto_camera(void *param){
     pay_stop_camera(NULL);
 
     //parar Payload (por si acaso)
-    STA_Pay_xxx_State cam_state = sta_pay_xxx_state_inactive;
+    PAY_xxx_State cam_state = pay_xxx_state_inactive;
     pay_set_state_camera(&cam_state);
             
     return st;
@@ -1353,29 +1222,29 @@ void pay_fp2_multiplexed(){
         printf("pay_fp2_i_multiplexing => pay_i = %d\r\n", (unsigned int)current_pay_i);
     #endif
 
-    STA_Pay_xxx_State pay_i_state = sta_get_stateVar(sta_DAT_Payload_Buff_to_STA_StateVar(current_pay_i));
+    PAY_xxx_State pay_i_state = sta_get_stateVar(sta_DAT_Payload_Buff_to_STA_StateVar(current_pay_i));
     switch(pay_i_state){
-        case sta_pay_xxx_state_inactive:
+        case pay_xxx_state_inactive:
             printf("  pay_i = %s", dat_get_payload_name(current_pay_i));
             printf(", state = sta_pay_xxx_state_inactive \r\n");
             break;
-        case sta_pay_xxx_state_active:
+        case pay_xxx_state_active:
             printf("  pay_i = %s", dat_get_payload_name(current_pay_i));
             printf(", state = sta_pay_xxx_state_active \r\n");
             break;
-        case sta_pay_xxx_state_run_init:
+        case pay_xxx_state_run_init:
             printf("  pay_i = %s", dat_get_payload_name(current_pay_i));
             printf(", state = sta_pay_xxx_state_run_init \r\n");
             break;
-        case sta_pay_xxx_state_run_take:
+        case pay_xxx_state_run_take:
             printf("  pay_i = %s", dat_get_payload_name(current_pay_i));
             printf(", state = sta_pay_xxx_state_run_take \r\n");
             break;
-        case sta_pay_xxx_state_run_stop:
+        case pay_xxx_state_run_stop:
             printf("  pay_i = %s", dat_get_payload_name(current_pay_i));
             printf(", state = sta_pay_xxx_state_run_stop \r\n");
             break;
-        case sta_pay_xxx_state_waiting_tx:
+        case pay_xxx_state_waiting_tx:
             printf("  pay_i = %s", dat_get_payload_name(current_pay_i));
             printf(", state = sta_pay_xxx_state_waiting_tx \r\n");
             break;
@@ -1420,7 +1289,7 @@ void pay_fp2_simultaneous(void)
     static unsigned int run_take_times_executed[dat_pay_last_one];    //all initialized to zero
 
     DAT_Payload_Buff pay_i;
-    STA_Pay_xxx_State pay_i_state;
+    PAY_xxx_State pay_i_state;
     int pay_i_tick_rate;
 
     //print time
@@ -1441,39 +1310,39 @@ void pay_fp2_simultaneous(void)
         pay_i_state = sta_get_stateVar(sta_DAT_Payload_Buff_to_STA_StateVar(pay_i));
         switch(pay_i_state){
         //**********************************************************************
-            case sta_pay_xxx_state_inactive:
+            case pay_xxx_state_inactive:
                 #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
                     printf("  state = sta_pay_xxx_state_inactive \r\n");
                 #endif
 
                 break;
         //**********************************************************************
-            case sta_pay_xxx_state_active:
+            case pay_xxx_state_active:
                 #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
                     printf("  state = sta_pay_xxx_state_active \r\n");
                 #endif
 
                 //change state to sta_pay_xxx_state_run_init
-                pay_set_state(pay_i, sta_pay_xxx_state_run_init);
+                pay_set_state(pay_i, pay_xxx_state_run_init);
 
                 break;
         //**********************************************************************
-            case sta_pay_xxx_state_run_init:
+            case pay_xxx_state_run_init:
                 #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
                     printf("  state = sta_pay_xxx_state_run_init \r\n");
                 #endif
 
                 //execute pay_xxx_init
                 printf("  pay_xxx_init \r\n");
-                pay_fp2_exec_run_xxx(pay_i, sta_pay_xxx_state_run_init);
+                pay_fp2_exec_run_xxx(pay_i, pay_xxx_state_run_init);
 
 
                 //change state to sta_pay_xxx_state_run_take
-                pay_set_state(pay_i, sta_pay_xxx_state_run_take);
+                pay_set_state(pay_i, pay_xxx_state_run_take);
 
                 break;
         //**********************************************************************
-            case sta_pay_xxx_state_run_take:
+            case pay_xxx_state_run_take:
                 //increment
                 run_take_times_executed[pay_i]++;
 
@@ -1485,39 +1354,39 @@ void pay_fp2_simultaneous(void)
 
                 //execute pay_xxx_take
                 printf("  pay_xxx_take \r\n");
-                pay_fp2_exec_run_xxx(pay_i, sta_pay_xxx_state_run_take);
+                pay_fp2_exec_run_xxx(pay_i, pay_xxx_state_run_take);
 
                 //change state to sta_pay_xxx_state_run_stop if current exec is the last
                 if( run_take_times_executed[pay_i] >= pay_fp2_get_run_take_num_exec_times(pay_i) ){
-                    pay_set_state(pay_i, sta_pay_xxx_state_run_stop);
+                    pay_set_state(pay_i, pay_xxx_state_run_stop);
                     //reset times_executed[pay_i] for the next time
                     run_take_times_executed[pay_i] = 0;
                 }
                     
                 break;
         //**********************************************************************
-            case sta_pay_xxx_state_run_stop:
+            case pay_xxx_state_run_stop:
                 #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
                     printf("  state = sta_pay_xxx_state_run_stop \r\n");
                 #endif
 
                 //execute pay_xxx_stop
                 printf("  pay_xxx_stop \r\n");
-                pay_fp2_exec_run_xxx(pay_i, sta_pay_xxx_state_run_stop);
+                pay_fp2_exec_run_xxx(pay_i, pay_xxx_state_run_stop);
 
                 //change state to sta_pay_xxx_state_waiting_tx
-                pay_set_state(pay_i, sta_pay_xxx_state_waiting_tx);
+                pay_set_state(pay_i, pay_xxx_state_waiting_tx);
 
                 break;
         //**********************************************************************
-            case sta_pay_xxx_state_waiting_tx:
+            case pay_xxx_state_waiting_tx:
                 #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
                     printf("  state = sta_pay_xxx_state_waiting_tx \r\n");
                 #endif
 
                 //change state to sta_pay_xxx_state_active only if pay_i TX is done
                 if(FALSE){
-                    pay_set_state(pay_i, sta_pay_xxx_state_active);
+                    pay_set_state(pay_i, pay_xxx_state_active);
                 }
 
                 break;
@@ -1630,177 +1499,177 @@ unsigned int pay_fp2_get_run_take_num_exec_times(DAT_Payload_Buff pay_i){
  * @param pay_i
  * @param run_state
  */
-void pay_fp2_exec_run_xxx(DAT_Payload_Buff pay_i, STA_Pay_xxx_State state){
+void pay_fp2_exec_run_xxx(DAT_Payload_Buff pay_i, PAY_xxx_State state){
     int arg;
     switch(pay_i){
         case dat_pay_tmEstado:
             switch (state){
-                case sta_pay_xxx_state_run_init:
+                case pay_xxx_state_run_init:
                     arg = 0;
                     pay_init_tmEstado(&arg);
                     break;
-                case sta_pay_xxx_state_run_take:
+                case pay_xxx_state_run_take:
                     pay_take_tmEstado(&arg);
                     break;
-                case sta_pay_xxx_state_run_stop:
+                case pay_xxx_state_run_stop:
                     pay_stop_tmEstado(&arg);
                     break;
                 //ignore the rest of states
-                case sta_pay_xxx_state_active:
-                case sta_pay_xxx_state_inactive:
-                case sta_pay_xxx_state_waiting_tx:
+                case pay_xxx_state_active:
+                case pay_xxx_state_inactive:
+                case pay_xxx_state_waiting_tx:
                     break;
             }
             break;
         case dat_pay_battery:
             switch (state){
-                case sta_pay_xxx_state_run_init:
+                case pay_xxx_state_run_init:
                     arg = 0;
                     pay_init_battery(&arg);
                     break;
-                case sta_pay_xxx_state_run_take:
+                case pay_xxx_state_run_take:
                     pay_take_battery(&arg);
                     break;
-                case sta_pay_xxx_state_run_stop:
+                case pay_xxx_state_run_stop:
                     pay_stop_battery(&arg);
                     break;
                 //ignore the rest of states
-                case sta_pay_xxx_state_active:
-                case sta_pay_xxx_state_inactive:
-                case sta_pay_xxx_state_waiting_tx:
+                case pay_xxx_state_active:
+                case pay_xxx_state_inactive:
+                case pay_xxx_state_waiting_tx:
                     break;
             }
             break;
         case dat_pay_debug:
             switch (state){
-                case sta_pay_xxx_state_run_init:
+                case pay_xxx_state_run_init:
                     arg = 0;
                     pay_init_debug(&arg);
                     break;
-                case sta_pay_xxx_state_run_take:
+                case pay_xxx_state_run_take:
                     pay_take_debug(&arg);
                     break;
-                case sta_pay_xxx_state_run_stop:
+                case pay_xxx_state_run_stop:
                     pay_stop_debug(&arg);
                     break;
                 //ignore the rest of states
-                case sta_pay_xxx_state_active:
-                case sta_pay_xxx_state_inactive:
-                case sta_pay_xxx_state_waiting_tx:
+                case pay_xxx_state_active:
+                case pay_xxx_state_inactive:
+                case pay_xxx_state_waiting_tx:
                     break;
             }
             break;
         case dat_pay_lagmuirProbe:
             switch (state){
-                case sta_pay_xxx_state_run_init:
+                case pay_xxx_state_run_init:
                     arg = 0;
                     pay_init_lagmuirProbe(&arg);
                     break;
-                case sta_pay_xxx_state_run_take:
+                case pay_xxx_state_run_take:
                     pay_take_lagmuirProbe(&arg);
                     break;
-                case sta_pay_xxx_state_run_stop:
+                case pay_xxx_state_run_stop:
                     pay_stop_lagmuirProbe(&arg);
                     break;
                 //ignore the rest of states
-                case sta_pay_xxx_state_active:
-                case sta_pay_xxx_state_inactive:
-                case sta_pay_xxx_state_waiting_tx:
+                case pay_xxx_state_active:
+                case pay_xxx_state_inactive:
+                case pay_xxx_state_waiting_tx:
                     break;
             }
             break;
         case dat_pay_gps:
             switch (state){
-                case sta_pay_xxx_state_run_init:
+                case pay_xxx_state_run_init:
                     arg = 0;
                     pay_init_gps(&arg);
                     break;
-                case sta_pay_xxx_state_run_take:
+                case pay_xxx_state_run_take:
                     pay_take_gps(&arg);
                     break;
-                case sta_pay_xxx_state_run_stop:
+                case pay_xxx_state_run_stop:
                     pay_stop_gps(&arg);
                     break;
                 //ignore the rest of states
-                case sta_pay_xxx_state_active:
-                case sta_pay_xxx_state_inactive:
-                case sta_pay_xxx_state_waiting_tx:
+                case pay_xxx_state_active:
+                case pay_xxx_state_inactive:
+                case pay_xxx_state_waiting_tx:
                     break;
             }
             break;
         case dat_pay_camera:
             switch (state){
-                case sta_pay_xxx_state_run_init:
+                case pay_xxx_state_run_init:
                     arg = 0;
                     pay_init_camera(&arg);
                     break;
-                case sta_pay_xxx_state_run_take:
+                case pay_xxx_state_run_take:
                     pay_take_camera(&arg);
                     break;
-                case sta_pay_xxx_state_run_stop:
+                case pay_xxx_state_run_stop:
                     pay_stop_camera(&arg);
                     break;
                 //ignore the rest of states
-                case sta_pay_xxx_state_active:
-                case sta_pay_xxx_state_inactive:
-                case sta_pay_xxx_state_waiting_tx:
+                case pay_xxx_state_active:
+                case pay_xxx_state_inactive:
+                case pay_xxx_state_waiting_tx:
                     break;
             }
             break;
         case dat_pay_sensTemp:
             switch (state){
-                case sta_pay_xxx_state_run_init:
+                case pay_xxx_state_run_init:
                     arg = 0;
                     pay_init_sensTemp(&arg);
                     break;
-                case sta_pay_xxx_state_run_take:
+                case pay_xxx_state_run_take:
                     pay_take_sensTemp(&arg);
                     break;
-                case sta_pay_xxx_state_run_stop:
+                case pay_xxx_state_run_stop:
                     pay_stop_sensTemp(&arg);
                     break;
                 //ignore the rest of states
-                case sta_pay_xxx_state_active:
-                case sta_pay_xxx_state_inactive:
-                case sta_pay_xxx_state_waiting_tx:
+                case pay_xxx_state_active:
+                case pay_xxx_state_inactive:
+                case pay_xxx_state_waiting_tx:
                     break;
             }
             break;
         case dat_pay_gyro:
             switch (state){
-                case sta_pay_xxx_state_run_init:
+                case pay_xxx_state_run_init:
                     arg = 0;
                     pay_init_gyro(&arg);
                     break;
-                case sta_pay_xxx_state_run_take:
+                case pay_xxx_state_run_take:
                     pay_take_gyro(&arg);
                     break;
-                case sta_pay_xxx_state_run_stop:
+                case pay_xxx_state_run_stop:
                     pay_stop_gyro(&arg);
                     break;
                 //ignore the rest of states
-                case sta_pay_xxx_state_active:
-                case sta_pay_xxx_state_inactive:
-                case sta_pay_xxx_state_waiting_tx:
+                case pay_xxx_state_active:
+                case pay_xxx_state_inactive:
+                case pay_xxx_state_waiting_tx:
                     break;
             }
             break;
         case dat_pay_expFis:
             switch (state){
-                case sta_pay_xxx_state_run_init:
+                case pay_xxx_state_run_init:
                     arg = 0;
                     pay_init_expFis(&arg);
                     break;
-                case sta_pay_xxx_state_run_take:
+                case pay_xxx_state_run_take:
                     pay_take_expFis(&arg);
                     break;
-                case sta_pay_xxx_state_run_stop:
+                case pay_xxx_state_run_stop:
                     pay_stop_expFis(&arg);
                     break;
                 //ignore the rest of states
-                case sta_pay_xxx_state_active:
-                case sta_pay_xxx_state_inactive:
-                case sta_pay_xxx_state_waiting_tx:
+                case pay_xxx_state_active:
+                case pay_xxx_state_inactive:
+                case pay_xxx_state_waiting_tx:
                     break;
             }
             break;
@@ -1815,8 +1684,8 @@ void pay_fp2_exec_run_xxx(DAT_Payload_Buff pay_i, STA_Pay_xxx_State state){
  * @param pay_i
  * @param state
  */
-STA_Pay_xxx_State pay_get_state(DAT_Payload_Buff pay_i){
-    STA_Pay_xxx_State pay_i_state;
+PAY_xxx_State pay_get_state(DAT_Payload_Buff pay_i){
+    PAY_xxx_State pay_i_state;
     switch(pay_i){
         case dat_pay_tmEstado:
             pay_i_state = pay_get_state_tmEstado(NULL);
@@ -1858,7 +1727,7 @@ STA_Pay_xxx_State pay_get_state(DAT_Payload_Buff pay_i){
  * @param pay_i
  * @param state
  */
-void pay_set_state(DAT_Payload_Buff pay_i, STA_Pay_xxx_State state){
+void pay_set_state(DAT_Payload_Buff pay_i, PAY_xxx_State state){
     //change state
     int arg_state = state;
     switch(pay_i){

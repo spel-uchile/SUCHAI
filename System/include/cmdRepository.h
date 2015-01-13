@@ -11,26 +11,15 @@
 #ifndef CMD_REPO_H
 #define CMD_REPO_H
 
-#include "cmdIncludes.h"
+#include "cmdIncludes.h"    //for CmdFunction
 #include "DebugIncludes.h"
 #include "SUCHAI_config.h"
-
-///* Add ommands definitions*/
-//#include "cmdTCM.h"
-//#include "cmdCON.h"
-//#include "cmdPPC.h"
-//#include "cmdTRX.h"
-//#include "cmdEPS.h"
-//#include "cmdRTC.h"
-//#include "cmdDRP.h"
-//#include "cmdSRP.h"
-//#include "cmdTHK.h"
-//#include "cmdPayload.h"
 
 /*
 extern cmdFunction tcmFunction[];
 extern int trx_sysReq[];
  */
+
 typedef struct{
     unsigned char cmdOwn;
     unsigned int nCmd;

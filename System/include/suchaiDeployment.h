@@ -46,6 +46,7 @@
 #include "taskHouskeeping.h"
 #include "taskFlightPlan.h"
 #include "taskFlightPlan2.h"
+#include "taskFlightPlan3.h"
 #include "taskComunications.h"
 
 #include "csp.h"

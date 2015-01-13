@@ -403,8 +403,8 @@ void sta_onReset_stateRepo(void)
  * @param pay_i DAT_Payload del que quiero obtener el DAT_StateVar
  * @return DAT_StateVar dat_pay_xxx_perform
  */
-//STA_StateVar dat_pay_i_to_performVar(DAT_Payload pay_i){
 STA_StateVar sta_DAT_Payload_Buff_to_STA_StateVar(DAT_Payload_Buff pay_i){
+//STA_StateVar sta_DAT_Payload_Buff_to_STA_StateVar(int pay_i){
     STA_StateVar dat_pay_xxx_state;
 
     switch(pay_i){

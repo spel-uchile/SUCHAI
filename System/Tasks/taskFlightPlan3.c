@@ -18,28 +18,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "taskFlightPlan.h"
+#include "taskFlightPlan3.h"
 
 extern xQueueHandle dispatcherQueue;
 
-void taskFlightPlan(void *param)
+void taskFlightPlan3(void *param)
 {
-#if SCH_TASKFLIGHTPLAN_VERBOSE
-    con_printf(">>[FlightPlan] Started\r\n");
+#if (SCH_FLIGHTPLAN3_VERBOSE)
+        printf(">>[FlightPlan3] Started\r\n");
 #endif
 
-#if SCH_TASKFLIGHTPLAN_REALTIME
-    /* Resolution = 30[s] */
-    const portTickType xDelay_ticks = (30 * 1000 / portTICK_RATE_MS);
-#else
-    /* Resolution = 10[s] */
-    const unsigned int xDelay_ticks = (10 * 1000) / portTICK_RATE_MS;
-#endif
+#if SCH_FLIGHTPLAN3_REALTIME
+    unsigned int min_check_period_ms = 10000;      /* check every x ms  */
+    portTickType xDelay_ticks = (min_check_period_ms) / portTICK_RATE_MS;
     portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
-    
+#else
+    unsigned int min_check_period_ms = 1000;      /* check every 2sec  */
+    portTickType xDelay_ticks = (min_check_period_ms) / portTICK_RATE_MS;
+    portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
+#endif
+
     DispCmd NewCmd;
+    NewCmd.idOrig = CMD_IDORIG_TFLIGHTPLAN3;
     NewCmd.cmdId = CMD_CMDNULL;
-    NewCmd.idOrig = CMD_IDORIG_TFLIGHTPLAN;
     NewCmd.param = 0;
 
     /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
@@ -55,7 +56,9 @@ void taskFlightPlan(void *param)
 
     while(1)
     {
+        /* min_check_period_ms actions */
         vTaskDelayUntil(&xLastWakeTime, xDelay_ticks);
+        
         /* Check if the next tick to wake has already
          * expired (*pxPreviousWakeTime = xTimeToWake;)
          * This avoids multiple reentries on vTaskDelayUntil */
@@ -63,15 +66,30 @@ void taskFlightPlan(void *param)
         if( xShouldDelay == FALSE )
         {
              xLastWakeTime = xTaskGetTickCount();
-            #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
-                printf("[FlightPlan] xLastWakeTime + xDelay_ticks < xTickCount, "
+            #if (SCH_FLIGHTPLAN3_VERBOSE>=1)
+                printf("[FlightPlan3] xLastWakeTime + xDelay_ticks < xTickCount, "
                         "update xLastWakeTime to xTickCount ..\r\n");
             #endif
+        }
+
+        //Add commands below ..
+
+        #if (SCH_FLIGHTPLAN3_VERBOSE>=1)
+            printf("[FlightPlan3] min_check_period_ms (%d) actions ..\r\n", min_check_period_ms);
+        #endif
+
+        //execute regular/cyclic payloads ..
+        if(sta_get_stateVar(sta_ppc_opMode)==STA_PPC_OPMODE_NORMAL){
+            NewCmd.cmdId = pay_id_fp2_default_fsm;
+            NewCmd.param = 0;
+            xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
         }
 
         //execute programmed/itinerary actions ..
         NewCmd.cmdId = drp_id_fpl_check_and_exec;
         NewCmd.param = 0;
         xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
+
     }
 }
+

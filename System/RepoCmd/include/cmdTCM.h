@@ -19,6 +19,9 @@
 #include "cmdIncludes.h"    //para CMD_XXX
 #include "DebugIncludes.h"  //para con_printf
 #include "dataRepository.h"
+#include "stateRepository.h"
+
+//cmdXXX
 #include "cmdTRX.h"
 
 /**
@@ -30,7 +33,7 @@ typedef enum{
     //Beacon
     tcm_id_update_beacon, ///< @cmd
     //stateVar
-    tcm_id_sendTM_stateVar, ///< @cmd
+    tcm_id_sendTM_tmEstado, ///< @cmd
     //Payload
     tcm_id_sendTM_all_pay_i, ///< @cmd
     tcm_id_sendTM_pay_i, ///< @cmd  0x8005
@@ -50,13 +53,13 @@ int tcm_resend(void *param);
 int tcm_testframe(void *param);
 int tcm_sendTM_all_pay_i(void *param);
 int tcm_sendTM_pay_i(void *param);
-int tcm_sendTM_stateVar(void *param);
-int tcm_sendTM_expFis(void *param);
-int tcm_sendTM_gyro(void *param);
-int tcm_sendTM_camera(void *param);
-int tcm_sendTM_gps(void *param);
-int tcm_sendTM_lagmuirProbe(void *param);
-int tcm_sendTM_temp(void *param);
+int tcm_sendTM_tmEstado(void *param);
+//int tcm_sendTM_expFis(void *param);
+//int tcm_sendTM_gyro(void *param);
+//int tcm_sendTM_camera(void *param);
+//int tcm_sendTM_gps(void *param);
+//int tcm_sendTM_lagmuirProbe(void *param);
+//int tcm_sendTM_temp(void *param);
 int tcm_update_beacon(void *param);
 
 int tcm_set_sysreq(void *param);

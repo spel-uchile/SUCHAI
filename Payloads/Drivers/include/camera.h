@@ -16,7 +16,9 @@ v2.01 (01/06/2012)	:Updated from camera.c file
 v2.02 (15/06/2012)	:Minor changes.
 ==========================================================================================*/
 #include "DebugIncludes.h"  //para con_printf
-#include "dataRepository.h" //para usar buffers de pay_i=camera
+
+#include "interfaz_SPI.h"   //SPI_nSS_1
+#include "pic_pc104_config.h"   //PPC_CAM_HOLD_CHECK
 
 #define CAM_MODE_VERBOSE    0
 #define CAM_MODE_SAVE_SD    1

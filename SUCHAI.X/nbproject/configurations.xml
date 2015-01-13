@@ -100,6 +100,7 @@
             <itemPath>../System/Tasks/include/taskComunications.h</itemPath>
             <itemPath>../System/Tasks/include/taskTest.h</itemPath>
             <itemPath>../System/Tasks/include/taskConsole.h</itemPath>
+            <itemPath>../System/Tasks/include/taskFlightPlan3.h</itemPath>
           </logicalFolder>
         </logicalFolder>
         <itemPath>../System/include/cmdIncludes.h</itemPath>
@@ -229,6 +230,7 @@
           <itemPath>../System/Tasks/taskFlightPlan2.c</itemPath>
           <itemPath>../System/Tasks/taskComunications.c</itemPath>
           <itemPath>../System/Tasks/taskTest.c</itemPath>
+          <itemPath>../System/Tasks/taskFlightPlan3.c</itemPath>
         </logicalFolder>
         <itemPath>../System/taskDispatcher.c</itemPath>
         <itemPath>../System/taskExecuter.c</itemPath>

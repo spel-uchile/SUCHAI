@@ -18,8 +18,10 @@
 #include "nanocom.h"
 
 #include "cmdIncludes.h"    //para CMD_XXX
-#include "dataRepository.h"
-#include "DebugIncludes.h"  //para con_printf
+#include "DebugIncludes.h"  //para printf
+
+#include "memEEPROM.h"
+
 
 #define CMD_ADDFRAME_START      (0)
 #define CMD_ADDFRAME_CONT       (1)

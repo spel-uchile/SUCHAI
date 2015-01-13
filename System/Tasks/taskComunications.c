@@ -20,9 +20,6 @@
 
 #include "taskComunications.h"
 
-#include "csp.h"
-#include "csp_port.h"
-#include "csp_i2c.h"
 
 extern xQueueHandle dispatcherQueue; /* Commands queue */
 extern xQueueHandle i2cRxQueue;

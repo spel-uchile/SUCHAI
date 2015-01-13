@@ -12,19 +12,19 @@
 #include "FreeRTOS.h" //vTaskDelay
 #include "task.h"
 
-#include "dataRepository.h"
-//#include "cmdIncludes.h"    //para CMD_XXX
+#include "cmdIncludes.h"    //cmdFunction
 #include "DebugIncludes.h"  //para printf
 
-/* Necesarios para update */
-#include "cmdPPC.h"
-#include "cmdTRX.h"
-#include "cmdEPS.h"
+#include "stateRepository.h"
+#include "dataRepository.h"
+
+//cmdXXX
 #include "cmdRTC.h"
 #include "cmdDRP.h"
 #include "cmdSRP.h"
 #include "cmdPayload.h"
 
+#include "memEEPROM.h"
 
 /**
  * Lista de comandos disponibles.

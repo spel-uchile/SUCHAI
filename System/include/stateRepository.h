@@ -16,7 +16,13 @@
 #include "memEEPROM.h"
 
 #include "cmdIncludes.h"
-#include "dataRepository.h"
+//#include "dataRepository.h"
+
+//cmdXXX
+#include "cmdTRX.h"
+//#include "cmdDRP.h"
+#include "cmdTHK.h"
+#include "cmdPPC.h"
 
 
 //***STATUS REPOSITORY**********************************************************
@@ -132,21 +138,12 @@ int sta_get_stateVar(STA_StateVar indxVar);
 void sta_onReset_stateRepo(void);
 
 
-//STA_StateVar dat_pay_i_to_performVar(DAT_Payload pay_i);
 STA_StateVar sta_DAT_Payload_Buff_to_STA_StateVar(DAT_Payload_Buff pay_i);
-//STA_StateVar sta_get_pay_state(int pay_i);
+//STA_StateVar sta_DAT_Payload_Buff_to_STA_StateVar(int pay_i);
 
 //debug funcitons
 char *sta_varToString(STA_StateVar var_i);
 
-typedef enum{
-    sta_pay_xxx_state_inactive=0,
-    sta_pay_xxx_state_active,
-    sta_pay_xxx_state_run_init,
-    sta_pay_xxx_state_run_take,
-    sta_pay_xxx_state_run_stop,
-    sta_pay_xxx_state_waiting_tx
-}STA_Pay_xxx_State;
 //#define SRP_PAY_XXX_STATE_INACTIVE    0x0000
 //#define SRP_PAY_XXX_STATE_ACTIVE      0x0001
 //#define SRP_PAY_XXX_STATE_RUN_INIT    0x0002

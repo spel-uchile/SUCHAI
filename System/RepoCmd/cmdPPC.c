@@ -268,7 +268,7 @@ int ppc_get_osc(void *param)
             ps = "Oscillator is PRIMARY_OSC_WITH_PLL\r\n";
         break;
         case 4:
-            ps = "Oscillator is SECONDRY_OSC\r\n";
+            ps = "Oscillator is SECONDARY_OSC\r\n";
         break;
         case 5:
             ps = "Oscillator is LOW_POWER_RC\r\n";

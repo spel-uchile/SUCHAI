@@ -21,6 +21,7 @@
 #include "cmdEPS.h"
 #include "cmdRTC.h"
 #include "cmdDRP.h"
+#include "cmdTHK.h"
 
 
 /**

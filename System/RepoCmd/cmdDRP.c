@@ -582,8 +582,7 @@ void drp_DAT_FlightPlan_EBF(void){
         printf("    Setting initial commands in FligthPlan..\n");
     #endif
 
-    //aca debe ir la configuracion inicial del FligthPlan
-    //esta es la configuracion a cargar antes del lanzamiento
+    //Initial configuration of FP (after EBF)
     int index;
     for(index=0; index<SCH_FLIGHTPLAN_N_CMD; index++){
         if(index%2==0){

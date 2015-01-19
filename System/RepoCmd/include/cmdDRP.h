@@ -39,7 +39,7 @@ typedef enum{
     //De EBF
     drp_id_executeBeforeFlight, ///< @cmd
     
-    //Flight Plan
+    //Flight Plan, first is 0x5005
     drp_id_fpl_set_index, ///< @cmd
     drp_id_fpl_get_index, ///< @cmd
     drp_id_fpl_set_cmd, ///< @cmd

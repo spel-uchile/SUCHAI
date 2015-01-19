@@ -31,7 +31,7 @@ void taskFlightPlan3(void *param)
 #if SCH_FLIGHTPLAN3_REALTIME
     unsigned int min_check_period_ms = 10000;      /* check every x ms  */
     portTickType xDelay_ticks = (min_check_period_ms) / portTICK_RATE_MS;
-    portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
+
 #else
     unsigned int min_check_period_ms = 1000;      /* check every 2sec  */
     portTickType xDelay_ticks = (min_check_period_ms) / portTICK_RATE_MS;
@@ -46,6 +46,7 @@ void taskFlightPlan3(void *param)
     /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
     portTickType xLastWakeTime = xTaskGetTickCount();
     #if (SCH_USE_HOUSEKEEPING == 1)
+    portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
         while( TRUE ){
             if( sta_get_stateVar(sta_dep_ant_deployed)==1 ){
                 break;

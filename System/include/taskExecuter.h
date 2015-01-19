@@ -16,5 +16,6 @@
 #include "queue.h"
 
 #include "cmdIncludes.h"
+#include "DebugIncludes.h"
 
 void taskExecuter(void *param);

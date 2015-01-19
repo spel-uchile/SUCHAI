@@ -21,6 +21,7 @@
 #include "cmdRTC.h"
 #include "cmdPayload.h"
 #include "cmdIncludes.h"
+#include "memFlash.h"
 
 #define SCH_DATAREPOSITORY_VERBOSEMEMSD_ 0
 
@@ -157,6 +158,7 @@ DispCmd dat_get_FlightPlan(unsigned int index)
  */
 int dat_set_FlightPlan_cmd(unsigned int index, unsigned int cmdID)
 {
+    printf("[dat_set_FlightPlan_cmd] index = %d, cmdId = 0x%X\r\n", index, cmdID);
     if(index < SCH_FLIGHTPLAN_N_CMD)
     {
         #if (SCH_FLIGHTPLAN_EXTMEMORY == 1)
@@ -166,8 +168,9 @@ int dat_set_FlightPlan_cmd(unsigned int index, unsigned int cmdID)
         #endif
         return 1;
     }
-    else
+    else{
         return 0;
+    }
 }
 
 /**
@@ -178,6 +181,7 @@ int dat_set_FlightPlan_cmd(unsigned int index, unsigned int cmdID)
  */
 int dat_set_FlightPlan_param(unsigned int index, int param)
 {
+    printf("[dat_set_FlightPlan_cmd] index = %d, param = %d\r\n", index, param);
     if(index < SCH_FLIGHTPLAN_N_CMD)
     {
         #if (SCH_FLIGHTPLAN_EXTMEMORY == 1)

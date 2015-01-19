@@ -362,7 +362,7 @@ void dep_init_suchai_tasks(void)
             #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
                     printf("    * Creating taskFlightPlan3\r\n");
             #endif
-            xTaskCreate(taskFlightPlan3, (signed char *)"flightplan2", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlan3Handle);
+            xTaskCreate(taskFlightPlan3, (signed char *)"flightplan3", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlan3Handle);
             __delay_ms(300);
         #endif
     }
@@ -375,7 +375,7 @@ void dep_init_suchai_tasks(void)
 int dep_init_sysbus_hw(void *param)
 {
     int resp;
-    STA_StateVar hw_isAlive;
+    //STA_StateVar hw_isAlive;
 
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
         printf("\n[dep_init_bus_hw] Initializig external hardware...\r\n");

@@ -16,15 +16,15 @@
 /* RTOS Includes */
 #include "FreeRTOSConfig.h"
 #include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-#include "list.h"
+//#include "task.h"
+//#include "queue.h"
+//#include "list.h"
 
-#include "pic_pc104_config.h"
-
-#include "cmdIncludes.h"
+//#include "cmdIncludes.h"
 #include "cmdRepository.h"
 #include "dataRepository.h"
+#include "stateRepository.h"
+
 /* Add ommands definitions*/
 #include "cmdTCM.h"
 #include "cmdCON.h"
@@ -39,7 +39,6 @@
 
 
 //FreeRTOS tasks
-#include "taskTest.h"
 #include "taskDispatcher.h"
 #include "taskConsole.h"
 #include "taskExecuter.h"
@@ -49,9 +48,9 @@
 #include "taskFlightPlan3.h"
 #include "taskComunications.h"
 
-#include "csp.h"
-#include "csp_if_i2c.h"
-#include "taskTest.h"
+//#include "csp.h"
+//#include "csp_if_i2c.h"
+//#include "taskTest.h"
 
 void dep_init_suchai_hw(void);
 void dep_init_suchai_repos(void);

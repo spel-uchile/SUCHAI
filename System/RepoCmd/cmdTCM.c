@@ -16,7 +16,7 @@ void tcm_onResetCmdTCM(void){
     printf("        tcm_onResetCmdTCM\n");
 
     int i;
-    for(i=0; i<TCM_NCMD; i++) tcm_sysReq[i] = CMD_SYSREQ_MIN+SCH_TCM_SYS_REQ;
+    for(i=0; i<TCM_NCMD; i++) tcm_sysReq[i] = CMD_SYSREQ_MIN+SCH_TCTM_SYS_REQ;
 
     tcmFunction[(unsigned char)tcm_id_testframe] = tcm_testframe;
     tcmFunction[(unsigned char)tcm_id_resend] = tcm_resend;
@@ -107,6 +107,17 @@ int tcm_sendTM_all_pay_i(void *param){
     DAT_Payload_Buff pay_i;
     for(pay_i=0; pay_i<dat_pay_last_one; pay_i++)
     {
+        // Do not send TM if payloads are not onbard
+        if(SCH_PAY_FIS_ONBOARD==0 && pay_i==dat_pay_expFis){continue;}
+        if(SCH_PAY_GPS_ONBOARD==0 && pay_i==dat_pay_gps){continue;}
+        if(SCH_PAY_BATTERY_ONBOARD==0 && pay_i==dat_pay_battery){continue;}
+        if(SCH_PAY_DEBUG_ONBOARD==0 && pay_i==dat_pay_debug){continue;}
+        if(SCH_PAY_GYRO_ONBOARD==0 && pay_i==dat_pay_gyro){continue;}
+        if(SCH_PAY_LANGMUIR_ONBOARD==0 && pay_i==dat_pay_lagmuirProbe){continue;}
+        if(SCH_PAY_TMESTADO_ONBOARD==0 && pay_i==dat_pay_tmEstado){continue;}
+        if(SCH_PAY_SENSTEMP_ONBOARD==0 && pay_i==dat_pay_sensTemp){continue;}
+        if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==0 && pay_i==dat_pay_camera){continue;}
+        printf("sending pay_i = %s", dat_get_payload_name(pay_i));
         tcm_sendTM_pay_i( (void *)(&pay_i) );
     }
 
@@ -446,7 +457,7 @@ int tcm_set_sysreq(void *param)
     if(new_sysreq < 0)
     {
         //Default
-        for(i=0; i<TCM_NCMD; i++) tcm_sysReq[i] = CMD_SYSREQ_MIN+SCH_TCM_SYS_REQ;
+        for(i=0; i<TCM_NCMD; i++) tcm_sysReq[i] = CMD_SYSREQ_MIN+SCH_TCTM_SYS_REQ;
 
         //Special cases
         tcm_sysReq[(unsigned char)tcm_id_update_beacon]  = CMD_SYSREQ_MIN+SCH_BCN_SYS_REQ;
@@ -498,7 +509,7 @@ int tcm_sendTM_payload(int mode, DAT_Payload_Buff pay_i){
     nfrm = trx_tm_addtoframe( (int *)&pay_i_state, 1, CMD_ADDFRAME_ADD);
 
     #if (SCH_CMDTCM_VERBOSE>=1)
-        printf("    pay_i = %d, pay_i_state = %d, nextIndx = %u \r\n", (unsigned int)pay_i, pay_i_state, nextIndx);
+        printf("    pay_i = %s, pay_i_state = %d, nextIndx = %u \r\n", dat_get_payload_name(pay_i), pay_i_state, nextIndx);
     #endif
 
     //Add pay_i data
@@ -509,7 +520,7 @@ int tcm_sendTM_payload(int mode, DAT_Payload_Buff pay_i){
         nfrm = trx_tm_addtoframe(&val, 1, CMD_ADDFRAME_ADD);
 
         #if (SCH_CMDTCM_VERBOSE>=1)
-            printf("    dat_get_Payload_Buff(pay_i=%d, indx=%u, &val=%d) \r\n", pay_i, indx, val);
+            printf("    dat_get_Payload_Buff(pay_i=%s, indx=%u, &val=%d) \r\n", dat_get_payload_name(pay_i), indx, val);
         #endif
 
 

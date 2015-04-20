@@ -29,6 +29,7 @@ void srp_onResetCmdSRP(){
     int i;
     for(i=0; i<SRP_NCMD; i++) srp_sysReq[i] = CMD_SYSREQ_MIN;
 
+    srpFunction[(unsigned char)srp_id_debug] = srp_debug;
     //De display
     srpFunction[(unsigned char)srp_id_print_STA_stateVar] = srp_print_STA_stateVar;
     //De update en general en sta_stateVar
@@ -138,7 +139,7 @@ int srp_memEEPROM_initial_state(void * param){
         arg = pay_xxx_state_inactive;
         pay_set_state_expFis(&arg);
     #endif
-    #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
+    #if (SCH_PAY_CAM_nMEMFLASH_ONBOARD==1)
         //  arg = sta_pay_xxx_state_active;
         arg = pay_xxx_state_inactive;   //special case, not executed by FP2
         pay_set_state_camera(&arg);

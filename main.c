@@ -16,13 +16,6 @@
 #include "pic_pc104_config.h"
 
 /* Task includes */
-//#include "taskTest.h"
-//#include "taskDispatcher.h"
-//#include "taskConsole.h"
-//#include "taskExecuter.h"
-//#include "taskHouskeeping.h"
-//#include "taskFlightPlan.h"
-//#include "taskComunications.h"
 #include "suchaiDeployment.h"
 
 /* Command Includes */

@@ -58,12 +58,9 @@ void dep_init_suchai_repos(void){
 int dep_init_stateRepo(void *param)
 {
     #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
-        printf("\n[dep_init_statusRepo] Initializing status repository...\r\n");
+        printf("\n[dep_init_stateRepo] Initializing state repository ..\r\n");
     #endif
 
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
-        printf("    * Status rep.\r\n");
-    #endif
     sta_onReset_stateRepo();
 
     return 1;
@@ -497,7 +494,7 @@ int dep_init_sysbus_hw(void *param)
             else{
                 printf("Fail (NOT Deployed)\r\n");
             }
-            printf("Antenna Deployment will be carried-out by Task Housekeeping\r\n");
+            printf("Antenna Deployment is carried out (if pending) by Task Housekeeping\r\n");
             //check_deploy_antenna();
         #endif
 

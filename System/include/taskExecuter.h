@@ -17,4 +17,6 @@
 
 #include "cmdIncludes.h"
 
+#include "DebugIncludes.h"  //para con_printf
+
 void taskExecuter(void *param);

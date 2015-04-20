@@ -68,7 +68,7 @@ void GPIO_PC104_init(void);
 #if (SCH_MGN_ONBOARD==1)
     #define PPC_MGN_SWITCH _LATA3
 #endif
-#if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
+#if (SCH_PAY_CAM_nMEMFLASH_ONBOARD==1)
     #define PPC_CAM_SWITCH          _LATA2
     #define PPC_CAM_SWITCH_CHECK    _RA2
     #define PPC_CAM_HOLD_CHECK      _RD12
@@ -88,7 +88,9 @@ void GPIO_PC104_init(void);
     #define PPC_GPS_SWITCH_CHECK    _RD15
     #define PPC_GPS_nRESET          _LATD4
 #else
-    #define PPC_GPS_SWITCH_CHECK    (-1)
+    #define PPC_GPS_SWITCH          _LATD15
+    #define PPC_GPS_SWITCH_CHECK    _RD15
+    #define PPC_GPS_nRESET          _LATD4
 #endif
 #if (SCH_ANTENNA_ONBOARD==1)
     #define PPC_ANT12_SWITCH    _LATG1

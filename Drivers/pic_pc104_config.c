@@ -434,7 +434,7 @@ void GPIO_PPM_init(void)
     _TRISF6=0;			//pin 0-output 1-input
     _LATF6=0;			// parte en 0
 
-    #if SCH_PAYCAM_nMEMFLASH_ONBOARD == 1
+    #if SCH_PAY_CAM_nMEMFLASH_ONBOARD == 1
         //SPI_1 es configurado para la Camara en los pines (H1.13 al H1.16)
     #else
         //Pines para la mem flash de 64 Mbit con SPI-1 (SCK1, SDI1, SDO1 nSS1 y nWP)
@@ -559,7 +559,7 @@ void GPIO_PC104_init(void)
         _LATA3=0;             	//parte en 0
     #endif
 //------------------------------------------------------------------------------
-    #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
+    #if (SCH_PAY_CAM_nMEMFLASH_ONBOARD==1)
         // H1.04	SCL2/CN35/RA2 (Pin 58) => pin es RA2
         _TRISA2=0; 			//pin 0-output 1-input.
         PPC_CAM_SWITCH=0;       	//parte en 0
@@ -581,7 +581,7 @@ void GPIO_PC104_init(void)
         _LATD4=0;              	//parte en 0
     #endif
 //------------------------------------------------------------------------------
-    #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
+    #if (SCH_PAY_CAM_nMEMFLASH_ONBOARD==1)
         // H1.06	RPI42/CN57/RD12 (Pin 79) => pin es RD12
         _TRISD12=1;			//pin 0-output 1-input.
         PPC_CAM_HOLD_CHECK;
@@ -631,7 +631,7 @@ void GPIO_PC104_init(void)
         _LATD15=0;                 	//parte en 0
     #endif
 //------------------------------------------------------------------------------
-    #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
+    #if (SCH_PAY_CAM_nMEMFLASH_ONBOARD==1)
         //Pines para la Camara con SPI-1 (SCK1, SDI1, SDO1 nSS1 y nWP)
         // H1.13	C1IND/RP21/CN8/PMA5/RG6 (Pin 10) => pin es RP21 (SCK)
         //iPPSOutput(OUT_PIN_PPS_RP21,OUT_FN_PPS_SCK1);

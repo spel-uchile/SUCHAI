@@ -560,7 +560,8 @@ int pay_take_gyro(void *param){
 
     //in case of failure
     if( pay_isAlive_gyro(NULL) == 0){
-        dat_set_Payload_Buff(dat_pay_gyro ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);      
+        dat_set_Payload_Buff(dat_pay_gyro ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        printf("pay_take_gyro() failure\r\n");
         return 1;
     }
 
@@ -929,20 +930,24 @@ BOOL pay_deploy_langmuirProbe(int realtime){
     printf("Deployng LangmuirProbe\r\n");
     printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );
     PPC_LANGMUIR_DEP_SWITCH = 1;
+    ClrWdt();
     __delay_ms(50); //wait while port write takes effect
     printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );
 
     if(realtime==1){
+        ClrWdt();
         __delay_ms(30000); //wait 30sec to burn nylon
         __delay_ms(30000); //wait 30sec to burn nylon
         ClrWdt();
         __delay_ms(30000); //wait 30sec to burn nylon
     }
     else{
+        ClrWdt();
         __delay_ms(3000); //wait 30sec to burn nylon
     }
 
     PPC_LANGMUIR_DEP_SWITCH = 0;
+    ClrWdt();
     __delay_ms(50); //wait while port write takes effect
     printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );
 
@@ -1410,38 +1415,38 @@ void pay_fp2_simultaneous(void)
 }
 
 /**
- * Return the number of tick before a pay_i is to be executed
+ * Return the number of tick before a pay_i is executed
  * @param pay_i
- * @return Return the number of tick before a pay_i is to be executed
+ * @return Return the number of ticks before a pay_i is executed
  */
 int pay_fp2_get_exec_rate(DAT_Payload_Buff pay_i){
     switch(pay_i){
         case dat_pay_tmEstado:
-            return 1;
-            break;
-        case dat_pay_battery:
-            return 2;
-            break;
-        case dat_pay_debug:
-            return 3;
-            break;
-        case dat_pay_lagmuirProbe:
-            return 4;
-            break;
-        case dat_pay_gps:
-            return 5;
-            break;
-        case dat_pay_camera:
             return 6;
             break;
+        case dat_pay_battery:
+            return 6*4;
+            break;
+        case dat_pay_debug:
+            return 9999;
+            break;
+        case dat_pay_lagmuirProbe:
+            return 6;
+            break;
+        case dat_pay_gps:
+            return 9999;
+            break;
+        case dat_pay_camera:
+            return 9999;
+            break;
         case dat_pay_sensTemp:
-            return 7;
+            return 6;
             break;
         case dat_pay_gyro:
-            return 8;
+            return 9999;
             break;
         case dat_pay_expFis:
-            return 9;
+            return 9999;
             break;
         case dat_pay_last_one:
             //ignore
@@ -1460,31 +1465,31 @@ unsigned int pay_fp2_get_run_take_num_exec_times(DAT_Payload_Buff pay_i){
 
     switch(pay_i){
         case dat_pay_tmEstado:
-            max_exec_times = 9;
+            max_exec_times = 7000;
             break;
         case dat_pay_battery:
-            max_exec_times = 8;
+            max_exec_times = 7000;
             break;
         case dat_pay_debug:
-            max_exec_times = 7;
+            max_exec_times = 0;
             break;
         case dat_pay_lagmuirProbe:
-            max_exec_times = 6;
+            max_exec_times = 7000;
             break;
         case dat_pay_gps:
-            max_exec_times = 5;
+            max_exec_times = 0;
             break;
         case dat_pay_camera:
-            max_exec_times = 4;
+            max_exec_times = 0;
             break;
         case dat_pay_sensTemp:
-            max_exec_times = 3;
+            max_exec_times = 7000;
             break;
         case dat_pay_gyro:
-            max_exec_times = 2;
+            max_exec_times = 0;
             break;
         case dat_pay_expFis:
-            max_exec_times = 1;
+            max_exec_times = 0;
             break;
         case dat_pay_last_one:
             //ignore

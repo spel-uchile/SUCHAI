@@ -92,7 +92,7 @@ int ppc_get_lastResetSource(void* param){
     }
 
     if(verb == 1){
-        printf("    * ppc_get_lastResetSource: ");
+        printf("        * ppc_get_lastResetSource: ");
         switch ( lreset )
         {
             case POWER_ON_Reset:
@@ -281,7 +281,7 @@ int ppc_get_osc(void *param)
         break;
     }
     if(verbose==1){
-        printf("    * ppc_get_osc: ");
+        printf("        * ppc_get_osc: ");
         printf(ps);
     }
 

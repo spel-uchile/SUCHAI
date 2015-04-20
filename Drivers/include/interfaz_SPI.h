@@ -18,9 +18,9 @@
 #define SPI_SDI_1 _RD10		//SDO en nomenclatura Pumpkin's
 #define SPI_SCK_1 _RD11		//SCK en nomenclatura Pumpkin's
 #define SPI_SDO_1 _RD0		//SDI en nomenclatura Pumpkin's
-#if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
+#if (SCH_PAY_CAM_nMEMFLASH_ONBOARD==1)
     #define SPI_nSS_1 _LATG9	//nCS para la  Camara
-#elif (SCH_PAYCAM_nMEMFLASH_ONBOARD==0)
+#elif (SCH_PAY_CAM_nMEMFLASH_ONBOARD==0)
     #define SPI_nSS_1 _LATD13	//nCS en nomenclatura Pumpkin's
 #endif
 #define SPI_nWP_1 _LATD6	//nWP en nomenclatura Pumpkin's

@@ -25,7 +25,7 @@
 
 /* Realtime config */
 #define SCH_THK_SILENT_REALTIME             (0)  ///< 1=Realtime 0=Debugtime
-#define SCH_THK_ANTENNA_REALTIME            (0)  ///< 1=Realtime 0=Debugtime
+#define SCH_THK_ANT_DEP_REALTIME            (0)  ///< 1=Realtime 0=Debugtime
 #define SCH_THK_REALTIME                    (1)  ///< 1=Realtime 0=Debugtime
 #define SCH_TASKFLIGHTPLAN_REALTIME         (1)  ///< 1=Realtime 0=Debugtime
 #define SCH_FLIGHTPLAN2_REALTIME            (1)  ///< 1=Realtime 0=Debugtime
@@ -38,21 +38,21 @@
 #define SCH_TRX_ONBOARD                     (1) ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
 #define SCH_RTC_ONBOARD                     (1) ///< 1 = Onboard 0 = Not Onboard
 #define SCH_MEMEEPROM_ONBOARD               (1) ///< 1 = Onboard 0 = Not Onboard
-#define SCH_EPS_ONBOARD                     (0) ///< Onboard => I2C1 en uso
+#define SCH_EPS_ONBOARD                     (1) ///< Onboard => I2C1 en uso
 #define SCH_MEMSD_ONBOARD                   (1) ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_MGN_ONBOARD                     (0)  ///< Onboard => 1 pin(es) en modo Switch
 
 /* Payloads Onboard */
 //#define SCH_PAYLOADS_ONBOARD                (0) ///< 0 = no payloads is onboard
-#define SCH_PAY_LANGMUIR_ONBOARD            (1) ///< Ocupa UART3_en_H1.19_y_H1.20
-#define SCH_PAY_FIS_ONBOARD                 (1)  ///<
-#define SCH_PAY_GYRO_ONBOARD                (1)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
-#define SCH_PAY_SENSTEMP_ONBOARD            (1)  ///<
-#define SCH_PAY_GPS_ONBOARD                 (1)  ///< Onboard => UART4 en uso, 1 pin(es) en modo Switch
-#define SCH_PAYCAM_nMEMFLASH_ONBOARD        (1)  ///< Onboard => SPI-1 asignado a la Camara. Offboard => SPI-1 asignado a memFlash
+#define SCH_PAY_LANGMUIR_ONBOARD            (1)  ///< Ocupa UART3_en_H1.19_y_H1.20
+#define SCH_PAY_SENSTEMP_ONBOARD            (1)  ///< 1 = Onboard 0 = Offboard
 #define SCH_PAY_TMESTADO_ONBOARD            (1)  ///< 1 = Onboard 0 = Offboard
 #define SCH_PAY_BATTERY_ONBOARD             (1)  ///< 1 = Onboard 0 = Offboard
-#define SCH_PAY_DEBUG_ONBOARD               (1)  ///< 1 = Onboard 0 = Offboard
+#define SCH_PAY_GYRO_ONBOARD                (0)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
+#define SCH_PAY_GPS_ONBOARD                 (0)  ///< Onboard => UART4 en uso, 1 pin(es) en modo Switch
+#define SCH_PAY_CAM_nMEMFLASH_ONBOARD       (0)  ///< Onboard => SPI-1 asignado a la Camara. Offboard => SPI-1 asignado a memFlash
+#define SCH_PAY_DEBUG_ONBOARD               (0)  ///< 1 = Onboard 0 = Offboard
+#define SCH_PAY_FIS_ONBOARD                 (0)  ///< 1 = Onboard 0 = Offboard
 
 /* Command Repo configs */
 #define SCH_CMD_PPC         (0x10)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
@@ -69,7 +69,7 @@
 /* TRX and COMM configs */
 #define SCH_TRX_BEACON_PERIOD              (4*60)   ///< [s] Periodo del beacon en segundos (UINT16)
 #define SCH_TRX_BEACON_WPM                 (20)     ///< Velocidad del beacon en palabras por minuto 1-255
-#define SCH_TRX_BEACON_BAT_LVL             (750)    ///< Nivel de bateria minimo para transmitir beacon
+#define SCH_TRX_BEACON_BAT_LVL             (630)    ///< Nivel de bateria minimo para transmitir beacon
 #define SCH_TRX_BEACON_MODE                (2)      ///< Tipo de beacon 0=CW, 1=Cw+FM, 2=FM
 #define SCH_TRX_BEACON_POSPONE_PRE         (30*60)  ///< [s] Periodo de inactividad del beacon luego del 1er encendido (silencio radial) (UINT16)
 #define SCH_TRX_BEACON_POSPONE_NOM         (1*60)   ///< [s] Periodo de inactividad del beacon luego de cada reinicio (excepto el 1ero) (UINT16)
@@ -89,7 +89,6 @@
 #define SCH_FLIGHTPLAN_N_CMD                    ((24 * 60) / SCH_FLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]
 #define SCH_FLIGHTPLAN_EXTMEMORY                (1)     ///< (0) buffer en  RAM, (1) en memoria SD
 #define SCH_FLIGHTPLAN_TYPE                     (3)     ///< 0 = do not use it, 1 = FP, 2 = FP2, 3 = FP3
-//#define SCH_USE_FLIGHTPLAN2                     (1)     ///< 1 = use it, 0 = do not use it
 #define SCH_USE_HOUSEKEEPING                    (1)     ///< 1 = use it, 0 = do not use it
 
 /**
@@ -101,9 +100,9 @@
  */
 #define SCH_DATAREPOSITORY_MAX_BUFF_TELECMD (10*2)
 #define SCH_TC_BUFF_EXTMEMORY               (1)   ///< 1=buffer en la memSD 0=buff en mem RAM
-#define SCH_TCM_SYS_REQ                     (3)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de telemetria
+#define SCH_TCTM_SYS_REQ                    (1)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de telemetria
 #define SCH_BCN_SYS_REQ                     (2)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de beacon
-#define SCH_DEP_SYS_REQ                     (2)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de antenna deployment
+#define SCH_DEPLOYMENT_SYS_REQ              (0)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de antenna deployment
 #define SCH_PAY_GPS_SYS_REQ                 (2)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de PAY del GPS
 
 /* Drivers config VERBOSE */

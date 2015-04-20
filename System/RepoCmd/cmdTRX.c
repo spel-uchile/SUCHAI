@@ -277,6 +277,7 @@ int trx_get_rx_baud(void *param)
  */
 int trx_set_beacon_level(void* param)
 {
+    printf("trx_set_beacon_level ..\n");
     uint16_t beacon_level = *((uint16_t *)param);
 
     int result = trx_read_conf(NULL);

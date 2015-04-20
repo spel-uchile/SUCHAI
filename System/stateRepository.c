@@ -342,16 +342,16 @@ void sta_onReset_stateRepo(void)
     
 
     //print important StatusVars
-    printf("[sta_onResetStatRepo] Important STA_StateVar variables:\r\n");
+    printf("    [sta_onResetStatRepo] Important STA_StateVar variables:\r\n");
 
     res = ppc_get_resetCounter(NULL);
-    printf("    * ppc_get_resetCounter: %d\r\n", res);
+    printf("        * ppc_get_resetCounter: %d\r\n", res);
     #if (SCH_DATAREPOSITORY_VERBOSE>=1)
         if(res == 0){
-            printf("        * First time on, resetCounter = %d\n", res);
+            printf("            * First time on, resetCounter = %d\n", res);
         }
         else{
-            printf("        * NOT the First time on, resetCounter = %d\n", res);
+            printf("            * NOT the First time on, resetCounter = %d\n", res);
         }
     #endif
 
@@ -359,13 +359,13 @@ void sta_onReset_stateRepo(void)
     ppc_get_lastResetSource(&param);
 
     res = ppc_get_hoursAlive(NULL);
-    printf("    * ppc_get_hoursAlive: %d\r\n", res);
+    printf("        * ppc_get_hoursAlive: %d\r\n", res);
 
     res = ppc_get_hoursWithoutReset(NULL);
-    printf("    * ppc_get_hoursWithoutReset: %d\r\n", res);
+    printf("        * ppc_get_hoursWithoutReset: %d\r\n", res);
 
     res = ppc_get_wdt_state(NULL);
-    printf("    * ppc_get_wdt_state: %d\r\n", res);
+    printf("        * ppc_get_wdt_state: %d\r\n", res);
 
     param = 1;  //verbose
     res = ppc_get_osc(&param);
@@ -373,19 +373,19 @@ void sta_onReset_stateRepo(void)
     //Antenna
     param = 1000;
     res = thk_get_AntSwitch_isOpen(&param);
-    printf("    * thk_get_AntSwitch_isOpen: %d\r\n", res);
+    printf("        * thk_get_AntSwitch_isOpen: %d\r\n", res);
     #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-        printf("        * Antenna Deployment rely on this var AND others\r\n");
+        printf("            * Antenna Deployment rely on this var AND others\r\n");
     #endif
 
     res = thk_get_dep_ant_deployed(NULL);
-    printf("    * thk_get_dep_ant_deployed: %d\r\n", res);
+    printf("        * thk_get_dep_ant_deployed: %d\r\n", res);
     #if (SCH_DATAREPOSITORY_VERBOSE>=1)
         if(res == 0){
-            printf("        * Antenna Deployment is pending\r\n");
+            printf("            * Antenna Deployment is pending\r\n");
         }
         else{
-            printf("        * Antenna Deployment was successfully completed\r\n");
+            printf("            * Antenna Deployment was successfully completed\r\n");
         }
     #endif
 

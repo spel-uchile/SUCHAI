@@ -50,9 +50,9 @@ void thk_onResetCmdTHK(){
 
     //Power budget restriction
     thkFunction[(unsigned char)thk_id_deploy_antenna] = thk_deploy_antenna;
-    thk_sysReq[(unsigned char)thk_id_deploy_antenna]  = CMD_SYSREQ_MIN + SCH_DEP_SYS_REQ;
+    thk_sysReq[(unsigned char)thk_id_deploy_antenna]  = CMD_SYSREQ_MIN + SCH_DEPLOYMENT_SYS_REQ;
     thkFunction[(unsigned char)thk_id_suchai_deployment] = thk_suchai_deployment;
-    thk_sysReq[(unsigned char)thk_id_suchai_deployment]  = CMD_SYSREQ_MIN + SCH_DEP_SYS_REQ;
+    thk_sysReq[(unsigned char)thk_id_suchai_deployment]  = CMD_SYSREQ_MIN + SCH_DEPLOYMENT_SYS_REQ;
 
 }
 
@@ -212,7 +212,7 @@ int thk_suchai_deployment(void *param)
     rtc_print(NULL);
 
     //take picture
-    #if(SCH_PAYCAM_nMEMFLASH_ONBOARD==1 )
+    #if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==1 )
         #if(SCH_THK_SILENT_REALTIME==1)
             pay_takePhoto_camera(NULL); //takes 10min to complete
         #else
@@ -223,15 +223,19 @@ int thk_suchai_deployment(void *param)
     // print rtc time
     rtc_print(NULL);
 
+    unsigned int elapsed_mins = 0;
     while(TRUE){
         unsigned long int cu_tick_10ms = xTaskGetTickCount();
-        if( cu_tick_10ms >= final_tick_10ms ){
-            printf("[thk_suchai_deployment] Waiting timeout, cu_tick_10ms = %lu\r\n", cu_tick_10ms);
+        if( cu_tick_10ms >= final_tick_10ms || elapsed_mins>35 ){
+            printf("[thk_suchai_deployment] Waiting timeout, cu_tick_10ms = %lu, elapsed_mins = %d\r\n", cu_tick_10ms, elapsed_mins);
             break;
         }
-        printf("[thk_suchai_deployment] Waiting for timeout, cu_tick_10ms = %lu\r\n", cu_tick_10ms);
+        printf("[thk_suchai_deployment] Waiting for timeout, cu_tick_10ms = %lu, elapsed_mins = %d\r\n", cu_tick_10ms, elapsed_mins);
         //vTaskDelayUntil(&xLastWakeTime, delay_tick_60s); //Suspend task 60 sec
+        ClrWdt();
         __delay_ms(60000);  //delay 60sec
+        elapsed_mins++;
+
     }
 
     // print rtc time
@@ -239,20 +243,21 @@ int thk_suchai_deployment(void *param)
 
     /* Deploy Antena */
     #if (SCH_ANTENNA_ONBOARD==1)
-        int rt_mode = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
+        int rt_mode = SCH_THK_ANT_DEP_REALTIME; /* 1=Real Time, 0=Debug Time */
         thk_deploy_antenna(&rt_mode);
     #endif
 
     // print rtc time
     rtc_print(NULL);
 
+    ClrWdt();
     __delay_ms(60000);  //delay 60sec to avoid drain-out the EPS
 
     /* Ceploy langmuir should NOT be here, but there is no way
      * to check deployment, so its included here */
-    #if (SCH_ANTENNA_ONBOARD==1)
+    #if (SCH_ANTENNA_ONBOARD==1 && SCH_PAY_LANGMUIR_ONBOARD==1)
         if( sta_get_stateVar(sta_pay_lagmuirProbe_isDeployed)==0 ){
-            int rt_mode = SCH_THK_ANTENNA_REALTIME; /* 1=Real Time, 0=Debug Time */
+            int rt_mode = SCH_THK_ANT_DEP_REALTIME; /* 1=Real Time, 0=Debug Time */
             pay_deploy_langmuirProbe(rt_mode);    //realtime mode
             //set var lang dep = 1
         }
@@ -613,7 +618,7 @@ int thk_debug2(void *param){
         pay_init_gyro(NULL);
         pay_stop_gyro(NULL);
     #endif
-    #if (SCH_PAYCAM_nMEMFLASH_ONBOARD==1)
+    #if (SCH_PAY_CAM_nMEMFLASH_ONBOARD==1)
         pay_init_camera(NULL);
         pay_stop_camera(NULL);
 
@@ -628,7 +633,7 @@ int thk_debug2(void *param){
     #endif
     #if (SCH_PAY_BATTERY_ONBOARD==1)
         pay_init_battery(NULL);
-        printf("  sta_pay_test1_isAlive = %d \r\n", sta_get_stateVar(sta_pay_battery_isAlive) );
+        printf("  sta_pay_battery_isAlive = %d \r\n", sta_get_stateVar(sta_pay_battery_isAlive) );
     #endif
     #if (SCH_PAY_DEBUG_ONBOARD==1)
         pay_init_debug(NULL);
@@ -669,563 +674,3 @@ int thk_executeBeforeFlight(void *param){
 
     return 1;
 }
-//------------------------------------------------------------------------------
-//int thk_periodicUpdate_STA_stateVar(void *param){
-//    #if (SCH_CMDDRP_VERBOSE>=1)
-//        printf("thk_periodicUpdate_STA_stateVar()..\r\n");
-//    #endif
-//
-//    #if (SCH_EPS_ONBOARD==1)
-//        updateSOCEPS();
-//        updateStatusEPS();
-//    #else
-//        sta_setstateVar(sta_eps_soc, CMD_SYSREQ_MAX);
-//    #endif
-//
-//    int res, nVarUpdt=0;
-//    STA_stateVar indxVar;
-//    for(indxVar=0;indxVar<sta_stateVar_last_one;indxVar++){
-//        res = thk_stateVar_update(indxVar);
-//        if(res == 1){ nVarUpdt++; }
-//    }
-//    printf("  updated state variables (STA_stateVar) = %d/%d\r\n", nVarUpdt, sta_stateVar_last_one);
-//
-//    return 1;
-//}
-//int thk_stateVar_update(int indxVar){
-//    int res;
-//
-//    /* Aquellas variables que no se actualicen aca son aquellas que:
-//    * 1) Se actualizan solo en la inicializacion del sistema (taskDeployment o en algun onReset anidado)
-//    * 2) Son actualizadas por alguna tarea (taskComunication, taskHousekeeping, taskFlightPlan..)
-//    */
-//
-//    switch(indxVar){
-//        //PPC => (C&DH subsystem)
-//        case sta_ppc_wdt: // 1=WDT Active, 0=WDT Inactive
-//            thk_ppc_enwdt();
-//            res = 1;
-//            break;
-//        case sta_ppc_osc: // holds Current Oscillator
-//            thk_ppc_osc();
-//            res = 1;
-//            break;
-//        case sta_ppc_MB_nOE_USB_nINT_stat:
-//            thk_ppc_MB_nOE_USB_nINT_stat();
-//            res = 1;
-//            break;
-//        case sta_ppc_MB_nOE_MHX_stat:
-//            thk_ppc_MB_nOE_MHX_stat();
-//            res = 1;
-//            break;
-//        case sta_ppc_MB_nON_MHX_stat:
-//            thk_ppc_MB_nON_MHX_stat();
-//            res = 1;
-//            break;
-//        case sta_ppc_MB_nON_SD_stat:
-//            thk_ppc_MB_nON_SD_stat();
-//            res = 1;
-//            break;
-//
-//        //RTC => (C&DH subsystem)
-//        case sta_rtc_year:
-//            thk_rtc_year();
-//            res = 1;
-//            break;
-//        case sta_rtc_month:
-//            thk_rtc_month();
-//            res = 1;
-//            break;
-//        case sta_rtc_week_day:
-//            thk_rtc_week_day();
-//            res = 1;
-//            break;
-//        case sta_rtc_day_number:
-//            thk_rtc_day_number();
-//            res = 1;
-//            break;
-//        case sta_rtc_hours:
-//            thk_rtc_hours();
-//            res = 1;
-//            break;
-//        case sta_rtc_minutes:
-//            thk_rtc_minutes();
-//            res = 1;
-//            break;
-//        case sta_rtc_seconds:
-//            thk_rtc_seconds();
-//            res = 1;
-//            break;
-//
-//        //EPS => (Energy subsystem)
-//    #if SCH_EPS_ONBOARD==1
-//        case sta_eps_bat0_voltage:
-//            thk_eps_bat0_voltage();
-//            res = 1;
-//            break;
-//        case sta_eps_bat0_current:
-//            thk_eps_bat0_current();
-//            res = 1;
-//            break;
-//        case sta_eps_bus5V_current:
-//            thk_eps_bus5V_current();
-//            res = 1;
-//            break;
-//        case sta_eps_bus3V_current:
-//            thk_eps_bus3V_current();
-//            res = 1;
-//            break;
-//        case sta_eps_bus_battery_current:
-//            thk_eps_bus_battery_current();
-//            res = 1;
-//            break;
-//        case sta_eps_bat0_temp:
-//            thk_eps_bat0_temp();
-//            res = 1;
-//            break;
-//        case sta_eps_panel_pwr:
-//            thk_eps_panel_pwr();
-//            res = 1;
-//            break;
-//        case sta_eps_status:
-//            thk_eps_status();
-//            res = 1;
-//            break;
-//        case sta_eps_soc:
-//            thk_eps_soc();
-//            res = 1;
-//            break;
-//        case sta_eps_socss:
-//            thk_eps_socss();
-//            res = 1;
-//            break;
-//        case sta_eps_state_flag:
-//            thk_eps_state_flag();
-//            res = 1;
-//            break;
-//        case sta_eps_charging:
-//            thk_eps_charging();
-//            res = 1;
-//            break;
-//    #endif
-//
-//    #if (SCH_TRX_ONBOARD==1)
-//        //TRX => (Communication subsystem)
-//        case sta_trx_opmode:
-//            thk_trx_opmode();
-//            res = 1;
-//            break;           // Operation mode
-//        case sta_trx_temp_hpa:
-//            thk_trx_temp_hpa();
-//            res = 1;
-//            break;         // Temp of HPA
-//        case sta_trx_temp_mcu:
-//            thk_trx_temp_mcu();
-//            res = 1;
-//            break;         // Temp of MCU
-//        case sta_trx_rssi:
-//            thk_trx_rssi();
-//            res = 1;
-//            break;             // RSSI Signal level
-//        case sta_trx_status_tc:
-//            thk_trx_status_tc();
-//            res = 1;
-//            break;        // Status Register of TC
-//    #endif
-//
-//        //On default (para aquellos que no tienen un periodicUpdate asociado)
-//        default:
-//            //do nothing on default
-//            res = 0;
-//            break;
-//    }
-//
-//    return res;
-//}
-//
-////------------------------------------------------------------------------------
-//
-///*------------------------------------------------------------------------------
-// *                                  DRP PPC ENWDT
-// *------------------------------------------------------------------------------
-// * Description        : Update the state of the WDT
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_ppc_enwdt(void)
-//{
-//    /* Leer el registro de los CONFIGWORD no es directo
-//     * (esta "beyond user visibility pages"). Asi es que la
-//     * implementacion de este comando es asumir que se parte en WDT_ENABLE
-//     *  y luego registrar las desactivaciones/activaciones del WDT a traves
-//     * de ppc_enwdt (ojo: no es lo mismo que thk_ppc_enwdt )*/
-//}
-///*------------------------------------------------------------------------------
-// *                                  DRP PPC OSC
-// *------------------------------------------------------------------------------
-// * Description        : Update current oscillator
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_ppc_osc(void)
-//{
-//    /* FRC_OSC                           0x0000 //Internal oscillator
-//    *  FRC_OSC_WITH_POSTSCALER_PLL       0x0001 //Internal oscillator with Postscalar PLL enabled
-//    *  PRIMARY_OSC                       0x0002 //Primary oscillator
-//    *  PRIMARY_OSC_WITH_PLL              0x0003 //Primary oscillator with PLL
-//    *  SECONDRY_OSC                      0x0004 //Secondary oscillator
-//    *  LOW_POWER_RC                      0x0005 //Low Power RC oscillator
-//    *  FRC_OSC_WITH_POSTSCALER           0x0007 //Internal oscillator with postscalar
-//     */
-//    sta_setstateVar(sta_ppc_osc, (int)Current_OSCILLATOR() );
-//}
-///*------------------------------------------------------------------------------
-// *                                  PPC LAST RESET SOURCE
-// *------------------------------------------------------------------------------
-// * Description        : Updates the state of the PIC-controlled signals of Pumkins's MB
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_ppc_MB_nOE_USB_nINT_stat(void)
-//{
-//    if(PPC_MB_nOE_USB_nINT_CHECK)
-//    {
-//        sta_setstateVar(sta_ppc_MB_nOE_USB_nINT_stat, 1);
-//    }
-//    else
-//    {
-//        sta_setstateVar(sta_ppc_MB_nOE_USB_nINT_stat, 0);
-//    }
-//}
-///*------------------------------------------------------------------------------
-// *                                  thk_ppc_MB_nOE_MHX_stat
-// *------------------------------------------------------------------------------
-// * Description        : Updates the state of the PIC-controlled signals of Pumkins's MB
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_ppc_MB_nOE_MHX_stat(void)
-//{
-//    if(PPC_MB_nOE_MHX_CHECK)
-//    {
-//        sta_setstateVar(sta_ppc_MB_nOE_MHX_stat, 1);
-//    }
-//    else
-//    {
-//        sta_setstateVar(sta_ppc_MB_nOE_MHX_stat, 0);
-//    }
-//
-//}
-///*------------------------------------------------------------------------------
-// *                                  thk_ppc_MB_nON_MHX_stat
-// *------------------------------------------------------------------------------
-// * Description        : Updates the state of the PIC-controlled signals of Pumkins's MB
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_ppc_MB_nON_MHX_stat(void)
-//{
-//    if(PPC_MB_nON_MHX_CHECK)
-//    {
-//        sta_setstateVar(sta_ppc_MB_nON_MHX_stat, 1);
-//    }
-//    else
-//    {
-//        sta_setstateVar(sta_ppc_MB_nON_MHX_stat, 0);
-//    }
-//
-//}
-///*------------------------------------------------------------------------------
-// *                                  thk_ppc_MB_nON_SD_stat
-// *------------------------------------------------------------------------------
-// * Description        : Updates the state of the PIC-controlled signals of Pumkins's MB
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_ppc_MB_nON_SD_stat(void)
-//{
-//    if(PPC_MB_nON_SD_CHECK)
-//    {
-//        sta_setstateVar(sta_ppc_MB_nON_SD_stat, 1);
-//    }
-//    else
-//    {
-//        sta_setstateVar(sta_ppc_MB_nON_SD_stat, 0);
-//    }
-//
-//}
-///*------------------------------------------------------------------------------
-// *                                  thk_rtc_year
-// *------------------------------------------------------------------------------
-// * Description        : Updates the RTC structure inside Cubestat
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_rtc_year(void)
-//{
-//    sta_setstateVar(sta_rtc_year, RTC_get_year() );
-//}
-//void thk_rtc_month(void)
-//{
-//    sta_setstateVar(sta_rtc_month, RTC_get_month() );
-//}
-//void thk_rtc_week_day(void)
-//{
-//    sta_setstateVar(sta_rtc_week_day, RTC_get_week_day() );
-//}
-//void thk_rtc_day_number(void)
-//{
-//    sta_setstateVar(sta_rtc_day_number, RTC_get_day_num() );
-//}
-//void thk_rtc_hours(void)
-//{
-//    sta_setstateVar(sta_rtc_hours, RTC_get_hours() );
-//}
-//void thk_rtc_minutes(void)
-//{
-//    sta_setstateVar(sta_rtc_minutes, RTC_get_minutes() );
-//}
-//void thk_rtc_seconds(void)
-//{
-//    sta_setstateVar(sta_rtc_seconds, RTC_get_seconds() );
-//}
-///*------------------------------------------------------------------------------
-// *                                  thk_eps_bat0_voltage
-// *------------------------------------------------------------------------------
-// * Description        : Updates the battery voltage based on the last meassurement
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_eps_bat0_voltage(void)
-//{
-//    sta_setstateVar(sta_eps_bat0_voltage, readEPSvars(EPS_ID_bat0_voltage));
-//
-//}
-//
-///*------------------------------------------------------------------------------
-// *                                  thk_eps_bat0_current
-// *------------------------------------------------------------------------------
-// * Description        : Updates the battery current based on the last meassurement
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_eps_bat0_current(void)
-//{
-//    sta_setstateVar(sta_eps_bat0_current, readEPSvars(EPS_ID_bat0_current));
-//}
-///*------------------------------------------------------------------------------
-// *                                  thk_eps_bus5V_current
-// *------------------------------------------------------------------------------
-// * Description        : Updates the 5V bus current based on the last meassurement
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_eps_bus5V_current(void)
-//{
-//    sta_setstateVar(sta_eps_bus5V_current, readEPSvars(EPS_ID_bus5V_current));
-//}
-///*------------------------------------------------------------------------------
-// *                                   thk_eps_bus3V_current
-// *------------------------------------------------------------------------------
-// * Description        : Updates the 3V bus current based on the last meassurement
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_eps_bus3V_current(void)
-//{
-//    sta_setstateVar(sta_eps_bus3V_current, readEPSvars(EPS_ID_bus3V_current));
-//}
-///*------------------------------------------------------------------------------
-// *                                  thk_eps_bus_battery_current
-// *------------------------------------------------------------------------------
-// * Description        : Updates the battery bus current based on the last meassurement
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_eps_bus_battery_current(void)
-//{
-//    sta_setstateVar(sta_eps_bus_battery_current, readEPSvars(EPS_ID_bus_battery_current));
-//}
-///*------------------------------------------------------------------------------
-// *                                  thk_eps_bat0_temp
-// *------------------------------------------------------------------------------
-// * Description        : Updates the battery temp based on the last meassurement
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_eps_bat0_temp(void)
-//{
-//    sta_setstateVar(sta_eps_bat0_temp, readEPSvars(EPS_ID_bat0_temp));
-//}
-///*------------------------------------------------------------------------------
-// *                                  thk_eps_panel_pwr
-// *------------------------------------------------------------------------------
-// * Description        : Updates the power sourced by the panels based on the last meassurement
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_eps_panel_pwr(void)
-//{
-//    sta_setstateVar(sta_eps_panel_pwr, readEPSvars(EPS_ID_panel_pwr));
-//}
-///*------------------------------------------------------------------------------
-// *                                  thk_eps_status
-// *------------------------------------------------------------------------------
-// * Description        : Updates the EPS status based on the last meassurement
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_eps_status(void)
-//{
-//    sta_setstateVar(sta_eps_status, readEPSvars(EPS_ID_status));
-//}
-///*------------------------------------------------------------------------------
-// *                                  thk_eps_soc
-// *------------------------------------------------------------------------------
-// * Description        : Updates the battery soc estimation based on the last meassurement
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_eps_soc(void)
-//{
-//    int soc = readEPSvars(EPS_ID_soc);
-//    sta_setstateVar(sta_eps_soc, soc);
-//
-//    #if (SCH_CMDDRP_VERBOSE >=1)
-//        char buf[10];
-//        itoa(buf, soc, 10);
-//        con_printf("SOC= "); con_printf(buf); con_printf("\r\n");
-//    #endif
-//}
-///*------------------------------------------------------------------------------
-// *                                  thk_eps_socss
-// *------------------------------------------------------------------------------
-// * Description        : Updates the battery "steady state" soc estimation based
-// *                      on the last meassurement
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_eps_socss(void)
-//{
-//    sta_setstateVar(sta_eps_socss, readEPSvars(EPS_ID_socss));
-//}
-///*------------------------------------------------------------------------------
-// *                                  thk_eps_state_flag
-// *------------------------------------------------------------------------------
-// * Description        : Updates the state flag that have the following meaning
-// *                      state_flag = 1 : max DOD was reached so high current
-// *                                       commands won't be excecuted.
-// *                      state_flag = 2 : After a state_flag=1, a safe DOD was
-// *                                       reached so high current commands are
-// *                                       allowed
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_eps_state_flag(void)
-//{
-//    sta_setstateVar(sta_eps_state_flag, readEPSvars(EPS_ID_state_flag));
-//}
-///*------------------------------------------------------------------------------
-// *                                  thk_eps_charging
-// *------------------------------------------------------------------------------
-// * Description        : Updates the battery "charging state"
-// * Arguments          : None
-// * Return Value       : int: 1=Always successfull
-// *----------------------------------------------------------------------------*/
-//void thk_eps_charging(void)
-//{
-//    int i_value = readEPSvars(EPS_ID_current_dir);
-//    i_value = i_value < 256 ? 1:0;
-//    sta_setstateVar(sta_eps_charging, i_value);
-//}
-///*------------------------------------------------------------------------------
-// *		 	DRP TRX OPMODE
-// *------------------------------------------------------------------------------
-// * Description        : Update TRX Operation Mode status in data repository
-// * Arguments          : void
-// * Return Value       : 1 - OK, 0 - FAIL
-// * ID                 : 0x5013
-// *----------------------------------------------------------------------------*/
-//void thk_trx_opmode(void)
-//{
-//    /* TODO: Reading OP_MODE */
-//    char char_value = 0;
-////    char_value = TRX_ReadRegister(TRX_MODE);
-//    /* Writing TRX_FTX to repo */
-//    sta_setstateVar(sta_trx_opmode, (int)char_value);
-//
-//
-//}
-///*------------------------------------------------------------------------------
-// *		 	DRP TRX TEMP
-// *------------------------------------------------------------------------------
-// * Description        : Update TRX TEMP_MCU and TEMP_HPA status in data
-// *                      repository
-// * Arguments          : void
-// * Return Value       : 1 - OK, 0 - FAIL
-// * ID                 : 0x5014
-// *----------------------------------------------------------------------------*/
-//void thk_trx_temp_hpa(void)
-//{
-//    int int_value = -1;
-//
-//    /*TODO: Reading TEMP_HPA */
-////    int_value = (int)TRX_ReadRegister(TRX_TEMPHPA_H)<<8;
-////    int_value = int_value | (int)TRX_ReadRegister(TRX_TEMPHPA_L);
-//    /* Writing TEMP_HPA to repo */
-//    sta_setstateVar(sta_trx_temp_hpa, int_value);
-//
-//}
-///*------------------------------------------------------------------------------
-// *		 	DRP TRX TEMP_MCU
-// *------------------------------------------------------------------------------
-// * Description        : Update TRX TEMP_MCU and TEMP_HPA status in data
-// *                      repository
-// * Arguments          : void
-// * Return Value       : 1 - OK, 0 - FAIL
-// * ID                 : 0x5014
-// *----------------------------------------------------------------------------*/
-//void thk_trx_temp_mcu(void)
-//{
-//    int int_value = -1;
-//
-//    /* TODO: Reading TEMP_MCU */
-////    int_value = (int)TRX_ReadRegister(TRX_TEMPMCU_H)<<8;
-////    int_value = int_value | (int)TRX_ReadRegister(TRX_TEMPMCU_L);
-//    /* Writing TEMP_MCU to repo */
-//    sta_setstateVar(sta_trx_temp_mcu, int_value);
-//
-//
-//}
-///*------------------------------------------------------------------------------
-// *		 	DRP TRX RSSI
-// *------------------------------------------------------------------------------
-// * Description        : Update TRX RSSI status in data repository
-// * Arguments          : void
-// * Return Value       : 1 - OK, 0 - FAIL
-// * ID                 : 0x5015
-// *----------------------------------------------------------------------------*/
-//void thk_trx_rssi(void)
-//{
-//    srp_update_STA_stateVar_trx_rssi(NULL);
-//}
-///*------------------------------------------------------------------------------
-// *		 	DRP TRX STATUS TC
-// *------------------------------------------------------------------------------
-// * Description        : Update TRX FRX status in data repository
-// * Arguments          : void
-// * Return Value       : 1 - OK, 0 - FAIL
-// * ID                 : 0x5018
-// *----------------------------------------------------------------------------*/
-//void thk_trx_status_tc(void)
-//{
-//    int value = 0;
-//    /* TODO: Reading STATUS_TC */
-////    value = TRX_CheckNewTC();
-//    /* Writing BEACON_PWR to repo */
-//    sta_setstateVar(sta_trx_status_tc, value);
-//}
-//
-////------------------------------------------------------------------------------
-//
-//

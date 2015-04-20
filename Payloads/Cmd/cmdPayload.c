@@ -423,6 +423,7 @@ int pay_init_battery(void *param){
     pay_i = dat_pay_battery;
     lenBuff = (unsigned int)(500*4);   //desde 0x00 a 0xFF
     dat_reset_Payload_Buff(pay_i, lenBuff, 1);
+    //agrego un comentario
 
 
     return pay_isAlive_battery(NULL);

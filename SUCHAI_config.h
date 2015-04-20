@@ -51,8 +51,8 @@
 #define SCH_PAY_GYRO_ONBOARD                (0)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_PAY_GPS_ONBOARD                 (0)  ///< Onboard => UART4 en uso, 1 pin(es) en modo Switch
 #define SCH_PAY_CAM_nMEMFLASH_ONBOARD       (0)  ///< Onboard => SPI-1 asignado a la Camara. Offboard => SPI-1 asignado a memFlash
-#define SCH_PAY_DEBUG_ONBOARD               (0)  ///< 1 = Onboard 0 = Offboard
 #define SCH_PAY_FIS_ONBOARD                 (0)  ///< 1 = Onboard 0 = Offboard
+#define SCH_PAY_DEBUG_ONBOARD               (0)  ///< 1 = Onboard 0 = Offboard
 
 /* Command Repo configs */
 #define SCH_CMD_PPC         (0x10)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar

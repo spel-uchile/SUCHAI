@@ -100,6 +100,7 @@ typedef enum{
     pay_id_init_battery, ///< @cmd
     pay_id_take_battery, ///< @cmd
     pay_id_stop_battery, ///< @cmd
+    pay_id_execute_experiment_battery,  ///<@cmd
 
     pay_id_isAlive_debug, ///< @cmd
     pay_id_get_state_debug, ///< @cmd

@@ -150,6 +150,29 @@ int tcm_sendTM_pay_i(void *param){
     return res;
 }
 
+int tcm_sendTM_battery(void *param){
+    printf("tcm_sendTM_battery ..\r\n");
+    //param minutos de descarga del payload battery
+
+    DAT_Payload_Buff pay_i = dat_pay_battery;
+    int mode = 2;
+    int time=(70*(int)param*60);/*descarga de 75 muestras por segundo por tiempo de descarga en segundos*/
+
+    //send pay_i data, regardless of it's pay_i_state
+    int res = tcm_sendTM_payload_battery(mode,time,pay_i);
+
+    //If successfull reinit payloads that were in waiting_tx state
+    if(res!=0x0000){
+        PAY_xxx_State pay_state;
+        pay_state = pay_get_state(pay_i);
+        if(pay_state == pay_xxx_state_waiting_tx ){
+            pay_set_state(pay_i, pay_xxx_state_active);
+        }
+    }
+    return res;
+}
+
+
 /**
  * Reads and transmit telemetry ralated to satellite's status
  *
@@ -525,6 +548,63 @@ int tcm_sendTM_payload(int mode, DAT_Payload_Buff pay_i){
 
 
         ClrWdt();
+    }
+
+    /* Close session */
+    // data = trx_tm_addtoframe(&data, 0, CMD_ADDFRAME_STOP);     /* Empty stop frame */
+    //nfrm = trx_tm_addtoframe(&tm_id, 0, CMD_ADDFRAME_FIN);      /* End session */
+    trx_tm_addtoframe(&tm_id, 0, CMD_ADDFRAME_FIN);      /* End session */
+
+    return nfrm;
+}
+
+int tcm_sendTM_payload_battery(int mode, int param, DAT_Payload_Buff pay_i)
+{
+    printf("tcm_sendTM_payload_battery ..\r\n");
+
+    int tm_id, nfrm;
+
+    /* Start a new session (Single or normal) */
+    tm_id = (int)pay_i; /* TM ID */
+    nfrm = trx_tm_addtoframe(&tm_id, 0, CMD_ADDFRAME_FIN);   /* Close previos sessions */
+    nfrm = trx_tm_addtoframe(&tm_id, 1, CMD_ADDFRAME_START); /* New empty start frame */
+
+    /* Read info and append to the frame */
+
+    //Add pay_i metadata
+    //unsigned int maxIndx = dat_get_MaxPayIndx( pay_i);
+    unsigned long nextIndx = dat_get_NextPayIndx(pay_i); //valor de la siguiente ultima posicion
+    int pay_i_state = pay_get_state(pay_i);
+
+    //nfrm = trx_tm_addtoframe( (int *)&maxIndx, 1, CMD_ADDFRAME_ADD);
+    nfrm = trx_tm_addtoframe( (int *)&nextIndx, 1, CMD_ADDFRAME_ADD);
+    nfrm = trx_tm_addtoframe( (int *)&pay_i_state, 1, CMD_ADDFRAME_ADD);
+
+    #if (SCH_CMDTCM_VERBOSE>=1)
+        printf("    pay_i = %d, pay_i_state = %d, nextIndx = %u \r\n", (unsigned int)pay_i, pay_i_state, nextIndx);
+    #endif
+
+    //Add pay_i data
+    unsigned int indx;
+    int val = NULL;
+
+    while (val=NULL);
+    {
+        indx++;
+        dat_get_Payload_Buff(pay_i, indx, &val);
+    }
+
+    for(indx=0; indx<param; indx++)
+    {
+        dat_get_Payload_Buff(pay_i, indx, &val);
+        nfrm = trx_tm_addtoframe(&val, 1, CMD_ADDFRAME_ADD);
+
+        #if (SCH_CMDTCM_VERBOSE>=1)
+            printf("    dat_get_Payload_Buff(pay_i=%d, indx=%u, &val=%d) \r\n", pay_i, indx, val);
+        #endif
+
+        ClrWdt();
+        // aca va una funcion que tome guarde NULL en la posicion indx del lugar donde esta guardado los valores de la bateria
     }
 
     /* Close session */

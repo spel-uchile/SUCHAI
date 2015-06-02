@@ -157,6 +157,7 @@ int pay_set_state_battery(void *param);
 int pay_init_battery(void *param);
 int pay_take_battery(void *param);
 int pay_stop_battery(void *param);
+int pay_execute_experiment_battery(void *param);
 //debug
 int pay_isAlive_debug(void *param);
 int pay_get_state_debug(void *param);

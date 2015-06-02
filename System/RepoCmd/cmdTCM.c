@@ -24,6 +24,7 @@ void tcm_onResetCmdTCM(void){
     //sendTM Payload
     tcmFunction[(unsigned char)tcm_id_sendTM_all_pay_i] = tcm_sendTM_all_pay_i;
     tcmFunction[(unsigned char)tcm_id_sendTM_pay_i] = tcm_sendTM_pay_i;
+    tcmFunction[(unsigned char)tcm_id_sendTM_battery] = tcm_sendTM_battery;
 
     //dat_stateVar
     tcmFunction[(unsigned char)tcm_id_sendTM_tmEstado] = tcm_sendTM_tmEstado;
@@ -154,19 +155,20 @@ int tcm_sendTM_battery(void *param){
     printf("tcm_sendTM_battery ..\r\n");
     //param minutos de descarga del payload battery
 
-    DAT_Payload_Buff pay_i = dat_pay_battery;
     int mode = 2;
-    int time=(70*(int)param*60);/*descarga de 75 muestras por segundo por tiempo de descarga en segundos*/
+    int aux = *(int*)param;
+    int time=(75*aux*60); /*descarga de 75 muestras por segundo por tiempo de descarga en segundos*/
+    //75=velocidad de descarga:tamaño muestras=1200 bit/s : 16bits //
 
     //send pay_i data, regardless of it's pay_i_state
-    int res = tcm_sendTM_payload_battery(mode,time,pay_i);
+    int res = tcm_sendTM_payload_battery(mode,time);
 
     //If successfull reinit payloads that were in waiting_tx state
     if(res!=0x0000){
         PAY_xxx_State pay_state;
-        pay_state = pay_get_state(pay_i);
+        pay_state = pay_get_state(dat_pay_battery);
         if(pay_state == pay_xxx_state_waiting_tx ){
-            pay_set_state(pay_i, pay_xxx_state_active);
+            pay_set_state(dat_pay_battery, pay_xxx_state_active);
         }
     }
     return res;
@@ -558,14 +560,14 @@ int tcm_sendTM_payload(int mode, DAT_Payload_Buff pay_i){
     return nfrm;
 }
 
-int tcm_sendTM_payload_battery(int mode, int param, DAT_Payload_Buff pay_i)
+int tcm_sendTM_payload_battery(int mode, int param)
 {
     printf("tcm_sendTM_payload_battery ..\r\n");
 
     int tm_id, nfrm;
 
     /* Start a new session (Single or normal) */
-    tm_id = (int)pay_i; /* TM ID */
+    tm_id = (int)dat_pay_battery; /* TM ID */
     nfrm = trx_tm_addtoframe(&tm_id, 0, CMD_ADDFRAME_FIN);   /* Close previos sessions */
     nfrm = trx_tm_addtoframe(&tm_id, 1, CMD_ADDFRAME_START); /* New empty start frame */
 
@@ -573,38 +575,39 @@ int tcm_sendTM_payload_battery(int mode, int param, DAT_Payload_Buff pay_i)
 
     //Add pay_i metadata
     //unsigned int maxIndx = dat_get_MaxPayIndx( pay_i);
-    unsigned long nextIndx = dat_get_NextPayIndx(pay_i); //valor de la siguiente ultima posicion
-    int pay_i_state = pay_get_state(pay_i);
+    unsigned long nextIndx = dat_get_NextPayIndx(dat_pay_battery); //valor de la  ultima posicion
+    int pay_battery_state = pay_get_state(dat_pay_battery);
 
     //nfrm = trx_tm_addtoframe( (int *)&maxIndx, 1, CMD_ADDFRAME_ADD);
     nfrm = trx_tm_addtoframe( (int *)&nextIndx, 1, CMD_ADDFRAME_ADD);
-    nfrm = trx_tm_addtoframe( (int *)&pay_i_state, 1, CMD_ADDFRAME_ADD);
+    nfrm = trx_tm_addtoframe( (int *)&pay_battery_state, 1, CMD_ADDFRAME_ADD);
 
     #if (SCH_CMDTCM_VERBOSE>=1)
-        printf("    pay_i = %d, pay_i_state = %d, nextIndx = %u \r\n", (unsigned int)pay_i, pay_i_state, nextIndx);
+        printf("    pay_i = %d, pay_i_state = %d, nextIndx = %lu \r\n", (unsigned int)dat_pay_battery, pay_battery_state, nextIndx);
     #endif
 
     //Add pay_i data
-    unsigned int indx;
+    unsigned int indx=0;
     int val = NULL;
 
-    while (val=NULL);
+    while(val==NULL);
     {
         indx++;
-        dat_get_Payload_Buff(pay_i, indx, &val);
+        dat_get_Payload_Buff(dat_pay_battery, indx, &val);
     }
 
     for(indx=0; indx<param; indx++)
     {
-        dat_get_Payload_Buff(pay_i, indx, &val);
+        dat_get_Payload_Buff(dat_pay_battery, indx, &val);
         nfrm = trx_tm_addtoframe(&val, 1, CMD_ADDFRAME_ADD);
 
         #if (SCH_CMDTCM_VERBOSE>=1)
-            printf("    dat_get_Payload_Buff(pay_i=%d, indx=%u, &val=%d) \r\n", pay_i, indx, val);
+            printf("    dat_get_Payload_Buff(pay_i=%d, indx=%u, &val=%d) \r\n", dat_pay_battery, indx, val);
         #endif
 
         ClrWdt();
-        // aca va una funcion que tome guarde NULL en la posicion indx del lugar donde esta guardado los valores de la bateria
+        // aca va una funcion que guarde NULL en la posicion indx del lugar donde esta guardado los valores de la bateria
+        //converse con tomas y esta funcion la hara el
     }
 
     /* Close session */

@@ -37,6 +37,7 @@ typedef enum{
     //Payload
     tcm_id_sendTM_all_pay_i, ///< @cmd
     tcm_id_sendTM_pay_i, ///< @cmd  0x8005
+    tcm_id_sendTM_battery,
     //Debug
     tcm_id_set_sysreq, ///< @cmd
 
@@ -53,6 +54,7 @@ int tcm_resend(void *param);
 int tcm_testframe(void *param);
 int tcm_sendTM_all_pay_i(void *param);
 int tcm_sendTM_pay_i(void *param);
+int tcm_sendTM_battery(void *param);
 int tcm_sendTM_tmEstado(void *param);
 //int tcm_sendTM_expFis(void *param);
 //int tcm_sendTM_gyro(void *param);
@@ -66,6 +68,6 @@ int tcm_set_sysreq(void *param);
 
 //funciones aux
 int tcm_sendTM_payload(int mode, DAT_Payload_Buff pay_i);
-
+int tcm_sendTM_payload_battery(int mode, int param);
 #endif
 

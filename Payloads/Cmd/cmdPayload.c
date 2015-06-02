@@ -438,9 +438,9 @@ int pay_take_battery(void *param){
     pay_save_date_time_to_Payload_Buff(dat_pay_battery);
 
     //save data
-    lectura1 = (int)readEPSvars(EPS_ID_bat0_voltage);
-    lectura2 = (int)readEPSvars(EPS_ID_bat0_current);
-    lectura3 = (int)readEPSvars(EPS_ID_bat0_temp);
+    lectura1 = (int)readEPSvars(EPS_ID_bat0_voltage)+0b1111000000000000;
+    lectura2 = (int)readEPSvars(EPS_ID_bat0_current)+0b1111000000000000;
+    lectura3 = (int)readEPSvars(EPS_ID_bat0_temp)+0b1111000000000000;
     //guarda tres lecturas voltaje, corriente y temperatura de la bateria
     dat_set_Payload_Buff(dat_pay_battery,lectura1,DAT_PAYBUFF_MODE_NO_MAXINDX);
     dat_set_Payload_Buff(dat_pay_battery,lectura2,DAT_PAYBUFF_MODE_NO_MAXINDX);
@@ -452,8 +452,8 @@ int pay_take_battery(void *param){
 int pay_execute_experiment_battery(void *param){ //comando para iniciar medicion bateria
     printf("pay_ejecutar_medicion_battery()  ..\r\n");
 
-    unsigned long i;
-    unsigned long timemed=95*60*10;
+    unsigned long int i;
+    unsigned long int timemed=57000; //95*60*10 = 57000
     //una orbita=95minutos, 60segundos, 10 muestras por segundo (sensor de 100ms)
 
     for (i=0; i<=timemed ; i++)

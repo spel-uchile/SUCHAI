@@ -432,10 +432,9 @@ int pay_init_battery(void *param){
 int pay_take_battery(void *param){
     printf("pay_take_battery()  ..\r\n");
 
-    printf("pay_take_battery()  ..\r\n");
     unsigned int lectura1, lectura2, lectura3;
     //save date_time in 2ints
-    pay_save_date_time_to_Payload_Buff(dat_pay_battery);
+    //pay_save_date_time_to_Payload_Buff(dat_pay_battery);
 
     //save data
     lectura1 = (int)readEPSvars(EPS_ID_bat0_voltage)+0b1111000000000000;
@@ -458,7 +457,7 @@ int pay_execute_experiment_battery(void *param){ //comando para iniciar medicion
 
     for (i=0; i<=timemed ; i++)
     {
-        pay_take_battery(param);
+        pay_take_battery(NULL);
         __delay_ms(100); //muestras cada 100ms
     }
     return 1;

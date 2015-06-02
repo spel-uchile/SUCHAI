@@ -560,7 +560,7 @@ int tcm_sendTM_payload(int mode, DAT_Payload_Buff pay_i){
     return nfrm;
 }
 
-int tcm_sendTM_payload_battery(int mode, int param)
+int tcm_sendTM_payload_battery(int mode, int num_samples)
 {
     printf("tcm_sendTM_payload_battery ..\r\n");
 
@@ -592,11 +592,12 @@ int tcm_sendTM_payload_battery(int mode, int param)
 
     while(val==NULL);
     {
-        indx++;
         dat_get_Payload_Buff(dat_pay_battery, indx, &val);
+        indx++;
     }
 
-    for(indx=0; indx<param; indx++)
+    int next_indx = indx;
+    for(indx=0; indx<num_samples; indx++)
     {
         dat_get_Payload_Buff(dat_pay_battery, indx, &val);
         nfrm = trx_tm_addtoframe(&val, 1, CMD_ADDFRAME_ADD);
@@ -608,6 +609,8 @@ int tcm_sendTM_payload_battery(int mode, int param)
         ClrWdt();
         // aca va una funcion que guarde NULL en la posicion indx del lugar donde esta guardado los valores de la bateria
         //converse con tomas y esta funcion la hara el
+        unsigned int set_indx = (next_indx + indx);
+        dat_set_Payload_Buff_at_indx(dat_pay_battery, NULL, set_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
     }
 
     /* Close session */

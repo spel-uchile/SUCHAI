@@ -349,6 +349,47 @@ BOOL dat_set_Payload_Buff(DAT_Payload_Buff pay_i, int value, int mode){
     return TRUE;
 }
 
+BOOL dat_set_Payload_Buff_at_indx(DAT_Payload_Buff pay_i, int value, unsigned int indx, int mode){
+    // guarda "value" en la sgte posicion libre del buffer,
+    // y retorna si lo logro o no (buffer lleno, payload invalido)
+    unsigned int nextIndx;
+
+   // Descarta si pay_i invalido
+    if(pay_i>=dat_pay_last_one){
+        #if (SCH_DATAREPOSITORY_VERBOSE>=1)
+            printf("dat_set_Payload_Buff: payload invalido\n");
+        #endif
+        return FALSE;
+    }
+
+    if(mode == DAT_PAYBUFF_MODE_USE_MAXINDX){
+        printf("dat_set_PayloadBuff: Using MAXINDX mode\n");
+        // Descarta si pay_i esta lleno
+        if( dat_isFull_Payload_Buff(pay_i)==TRUE){
+            #if (SCH_DATAREPOSITORY_VERBOSE>=1)
+                printf("dat_set_PayloadBuff: nextIndx > maxIndx\n");
+            #endif
+            return FALSE;
+        }
+    }
+
+    //Obtiene nextIndx (posicion a la que guardar)
+    nextIndx = indx;
+
+    #if (SCH_DATAREPOSITORY_VERBOSE>=2)
+        printf("setPayloadVar [%04d] = %0x%X\n", nextIndx, value);
+    #endif
+
+    //guardo el valor de value
+    unsigned long block = dat_pay_i_to_block(pay_i);
+    msd_setVar_256BlockExtMem(block, nextIndx, value);
+
+    //actualizo nextIndx
+    dat_set_NextPayIndx(pay_i, nextIndx+1);
+
+    return TRUE;
+}
+
 //Retorna FALSE si el indiex es invalido, TRUE si todo OK
 BOOL dat_get_Payload_Buff(DAT_Payload_Buff pay_i, unsigned int indx, int *value){
     unsigned int desiredIndx, maxIndx;

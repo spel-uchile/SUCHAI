@@ -1423,10 +1423,10 @@ void pay_fp2_simultaneous(void)
 int pay_fp2_get_exec_rate(DAT_Payload_Buff pay_i){
     switch(pay_i){
         case dat_pay_tmEstado:
-            return 6;
+            return 6;       //tick_rate in taskHousekeeping is 10sec => every 60 sec = 1min
             break;
         case dat_pay_battery:
-            return 6*4;
+            return 6*15;     //tick_rate in taskHousekeeping is 10sec => every 60*15 sec = 15min
             break;
         case dat_pay_debug:
             return 9999;

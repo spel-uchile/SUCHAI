@@ -93,6 +93,7 @@ void pay_onResetCmdPAY(void){
     payFunction[(unsigned char)pay_id_init_battery] = pay_init_battery;
     payFunction[(unsigned char)pay_id_take_battery] = pay_take_battery;
     payFunction[(unsigned char)pay_id_stop_battery] = pay_stop_battery;
+    payFunction[(unsigned char)pay_id_execute_experiment_battery] = pay_execute_experiment_battery;
 
     payFunction[(unsigned char)pay_id_isAlive_debug] = pay_isAlive_debug;
     payFunction[(unsigned char)pay_id_get_state_debug] = pay_get_state_debug;
@@ -431,18 +432,40 @@ int pay_init_battery(void *param){
 int pay_take_battery(void *param){
     printf("pay_take_battery()  ..\r\n");
 
+    printf("pay_take_battery()  ..\r\n");
+    unsigned int lectura1, lectura2, lectura3;
     //save date_time in 2ints
     pay_save_date_time_to_Payload_Buff(dat_pay_battery);
 
     //save data
-    int i, val;
-    for(i=0; i<34; i++){
-        val = eps_readreg( (void *)(&i) );
-        dat_set_Payload_Buff(dat_pay_battery, val, DAT_PAYBUFF_MODE_NO_MAXINDX);
-    }
+    lectura1 = (int)readEPSvars(EPS_ID_bat0_voltage)+0b1111000000000000;
+    lectura2 = (int)readEPSvars(EPS_ID_bat0_current)+0b1111000000000000;
+    lectura3 = (int)readEPSvars(EPS_ID_bat0_temp)+0b1111000000000000;
+    //guarda tres lecturas voltaje, corriente y temperatura de la bateria
+    dat_set_Payload_Buff(dat_pay_battery,lectura1,DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_battery,lectura2,DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_battery,lectura3,DAT_PAYBUFF_MODE_NO_MAXINDX);
 
     return 1;
 }
+
+int pay_execute_experiment_battery(void *param){ //comando para iniciar medicion bateria
+    printf("pay_ejecutar_medicion_battery()  ..\r\n");
+
+    unsigned long int i;
+    unsigned long int timemed=57000; //95*60*10 = 57000
+    //una orbita=95minutos, 60segundos, 10 muestras por segundo (sensor de 100ms)
+
+    for (i=0; i<=timemed ; i++)
+    {
+        pay_take_battery(param);
+        __delay_ms(100); //muestras cada 100ms
+    }
+    return 1;
+
+}
+
+
 int pay_stop_battery(void *param){
     printf("pay_stop_battery()  ..\r\n");
     return 1;

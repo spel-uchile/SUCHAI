@@ -100,6 +100,7 @@ typedef enum{
     pay_id_init_battery, ///< @cmd
     pay_id_take_battery, ///< @cmd
     pay_id_stop_battery, ///< @cmd
+    pay_id_execute_experiment_battery,  ///<@cmd
 
     pay_id_isAlive_debug, ///< @cmd
     pay_id_get_state_debug, ///< @cmd
@@ -156,6 +157,7 @@ int pay_set_state_battery(void *param);
 int pay_init_battery(void *param);
 int pay_take_battery(void *param);
 int pay_stop_battery(void *param);
+int pay_execute_experiment_battery(void *param);
 //debug
 int pay_isAlive_debug(void *param);
 int pay_get_state_debug(void *param);

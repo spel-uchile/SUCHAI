@@ -588,9 +588,9 @@ int tcm_sendTM_payload_battery(int mode, int num_samples)
 
     //Add pay_i data
     unsigned int indx=0;
-    int val = NULL;
+    int val = 0;
 
-    while(val==NULL);
+    while(val==0);
     {
         dat_get_Payload_Buff(dat_pay_battery, indx, &val);
         indx++;
@@ -610,7 +610,7 @@ int tcm_sendTM_payload_battery(int mode, int num_samples)
         // aca va una funcion que guarde NULL en la posicion indx del lugar donde esta guardado los valores de la bateria
         //converse con tomas y esta funcion la hara el
         unsigned int set_indx = (next_indx + indx);
-        dat_set_Payload_Buff_at_indx(dat_pay_battery, NULL, set_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff_at_indx(dat_pay_battery, val, set_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
     }
 
     /* Close session */

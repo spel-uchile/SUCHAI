@@ -100,7 +100,7 @@ typedef enum{
     pay_id_init_battery, ///< @cmd
     pay_id_take_battery, ///< @cmd
     pay_id_stop_battery, ///< @cmd
-    pay_id_execute_experiment_battery,  ///<@cmd
+    pay_id_execute_experiment_battery,  ///<@cmd    49
 
     pay_id_isAlive_debug, ///< @cmd
     pay_id_get_state_debug, ///< @cmd
@@ -116,7 +116,7 @@ typedef enum{
     pay_id_take_lagmuirProbe, ///< @cmd
     pay_id_stop_lagmuirProbe, ///< @cmd
     pay_id_send_to_lagimur, ///< @cmd
-    pay_id_debug_langmuirProbe, ///< @cmd
+    pay_id_debug_langmuirProbe, ///< @cmd   63
             
     //*********************
     pay_id_last_one    //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo

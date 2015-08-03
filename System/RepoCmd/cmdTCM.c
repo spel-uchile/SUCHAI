@@ -157,10 +157,10 @@ int tcm_sendTM_battery(void *param){
 
     int mode = 2;
     int aux = *(int*)param;
-    int time=(75*aux*60); /*descarga de 75 muestras por segundo por tiempo de descarga en segundos*/
+    int time = aux;
+    //int time=(75*aux*60); /*descarga de 75 muestras por segundo por tiempo de descarga en segundos*/
     //75=velocidad de descarga:tamaño muestras=1200 bit/s : 16bits //
 
-    //send pay_i data, regardless of it's pay_i_state
     int res = tcm_sendTM_payload_battery(mode,time);
 
     //If successfull reinit payloads that were in waiting_tx state
@@ -171,6 +171,8 @@ int tcm_sendTM_battery(void *param){
             pay_set_state(dat_pay_battery, pay_xxx_state_active);
         }
     }
+
+    printf("fin tcm_sendtm_battery");
     return res;
 }
 
@@ -586,37 +588,53 @@ int tcm_sendTM_payload_battery(int mode, int num_samples)
         printf("    pay_i = %d, pay_i_state = %d, nextIndx = %lu \r\n", (unsigned int)dat_pay_battery, pay_battery_state, nextIndx);
     #endif
 
-    //Add pay_i data
-    unsigned int indx=0;
+    unsigned int indx=0; //indice
+    unsigned int set_indx;
+    int valNULL=0; // varable int con valor cero
+    unsigned int maxIndx = dat_get_MaxPayIndx(dat_pay_battery); //maximo valor del indice
+    printf("indx= %i , maxIndx = %i, ", indx , maxIndx);
     int val = 0;
+    printf("val=%d \r\n", val);
 
-    while(val==0);
+    while(val==0)
     {
+        printf("en while.. val=%d \r\n", val);
         dat_get_Payload_Buff(dat_pay_battery, indx, &val);
         indx++;
+        ClrWdt();
     }
 
+    printf("termina iteracion while \r\n");
     int next_indx = indx;
+    printf("next_indx=%d \r\n", indx);
+
     for(indx=0; indx<num_samples; indx++)
     {
-        dat_get_Payload_Buff(dat_pay_battery, indx, &val);
+        set_indx = (next_indx + indx)-1;
+        dat_get_Payload_Buff(dat_pay_battery, set_indx , &val);
         nfrm = trx_tm_addtoframe(&val, 1, CMD_ADDFRAME_ADD);
+        printf("set_indx = %i \r\n",set_indx);
 
         #if (SCH_CMDTCM_VERBOSE>=1)
-            printf("    dat_get_Payload_Buff(pay_i=%d, indx=%u, &val=%d) \r\n", dat_pay_battery, indx, val);
+            printf("    dat_get_Payload_Buff(pay_i=%d, indx=%u, val=%d) \r\n", dat_pay_battery, indx, val);
         #endif
 
-        ClrWdt();
         // aca va una funcion que guarde NULL en la posicion indx del lugar donde esta guardado los valores de la bateria
         //converse con tomas y esta funcion la hara el
-        unsigned int set_indx = (next_indx + indx);
-        dat_set_Payload_Buff_at_indx(dat_pay_battery, val, set_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
+
+
+        dat_set_Payload_Buff_at_indx(dat_pay_battery, valNULL, set_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        //dat_get_Payload_Buff(dat_pay_battery, set_indx , &val);
+        //printf("    dat_get_Payload_Buff(indx=%u, val=%d) \r\n", indx, val);
+        ClrWdt();
+
     }
 
     /* Close session */
     // data = trx_tm_addtoframe(&data, 0, CMD_ADDFRAME_STOP);     /* Empty stop frame */
     //nfrm = trx_tm_addtoframe(&tm_id, 0, CMD_ADDFRAME_FIN);      /* End session */
     trx_tm_addtoframe(&tm_id, 0, CMD_ADDFRAME_FIN);      /* End session */
+    printf("fin tcm_sendTM_payload_battery\n");
 
     return nfrm;
 }

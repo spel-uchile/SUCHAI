@@ -451,17 +451,33 @@ int pay_take_battery(void *param){
 int pay_execute_experiment_battery(void *param){ //comando para iniciar medicion bateria
     printf("pay_ejecutar_medicion_battery()  ..\r\n");
 
-    unsigned long int i;
-    unsigned long int timemed=57000; //95*60*10 = 57000
+    unsigned int timemed = *(int*)param; //95*60*10 = 57000
+    unsigned int i;
+    dat_reset_Payload_Buff(dat_pay_battery, dat_get_MaxPayIndx(dat_pay_battery), 2);
     //una orbita=95minutos, 60segundos, 10 muestras por segundo (sensor de 100ms)
 
-    for (i=0; i<=timemed ; i++)
+    //prueba
+    int val;
+    int j;
+    int indx=0;
+
+    //fin prueba
+    for (i=0; i<timemed ; i++)
     {
         pay_take_battery(NULL);
         __delay_ms(100); //muestras cada 100ms
+        ClrWdt();
+        //prueba
+        for (j=0; j<3; j++)
+        {
+            indx++;
+            dat_get_Payload_Buff(dat_pay_battery, indx , &val);
+            printf("indx=%d ; val=%d.. \r\n",indx,val);
+        }
+        //fin prueba
     }
+    printf("END battery %i..\r\n",i);
     return 1;
-
 }
 
 

@@ -44,7 +44,7 @@
 
 /* Payloads Onboard */
 //#define SCH_PAYLOADS_ONBOARD                (0) ///< 0 = no payloads is onboard
-#define SCH_PAY_LANGMUIR_ONBOARD            (1)  ///< Ocupa UART3_en_H1.19_y_H1.20
+#define SCH_PAY_LANGMUIR_ONBOARD            (0)  ///< Ocupa UART3_en_H1.19_y_H1.20
 #define SCH_PAY_SENSTEMP_ONBOARD            (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 #define SCH_PAY_TMESTADO_ONBOARD            (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 #define SCH_PAY_BATTERY_ONBOARD             (0)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
@@ -88,7 +88,7 @@
 #define SCH_FLIGHTPLAN_RESOLUTION               (1)    ///< [MINUTES] Resolucion de tiempo del flight plan
 #define SCH_FLIGHTPLAN_N_CMD                    ((24 * 60) / SCH_FLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]
 #define SCH_FLIGHTPLAN_EXTMEMORY                (1)     ///< (0) buffer en  RAM, (1) en memoria SD
-#define SCH_FLIGHTPLAN_TYPE                     (3)     ///< 0 = do not use it, 1 = FP, 2 = FP2, 3 = FP3
+#define SCH_FLIGHTPLAN_TYPE                     (0)     ///< 0 = do not use it, 1 = FP, 2 = FP2, 3 = FP3
 #define SCH_USE_HOUSEKEEPING                    (1)     ///< 1 = use it, 0 = do not use it
 
 /**

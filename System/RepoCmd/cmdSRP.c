@@ -114,7 +114,7 @@ int srp_memEEPROM_initial_state(void * param){
         arg = pay_xxx_state_active;
         pay_set_state_lagmuirProbe(&arg);
     #else
-        sta_setstateVar(sta_pay_lagmuirarg = pay_xxx_state_inactive;
+        arg = pay_xxx_state_inactive;
         pay_set_state_lagmuirProbe(&arg);
     #endif
     #if (SCH_PAY_SENSTEMP_ONBOARD==1)

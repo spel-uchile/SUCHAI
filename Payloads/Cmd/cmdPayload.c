@@ -430,20 +430,27 @@ int pay_init_battery(void *param){
     return pay_isAlive_battery(NULL);
 }
 int pay_take_battery(void *param){
-    printf("pay_take_battery()  ..\r\n");
+//    printf("pay_take_battery()  ..\r\n");
 
     unsigned int lectura1, lectura2, lectura3;
     //save date_time in 2ints
     //pay_save_date_time_to_Payload_Buff(dat_pay_battery);
+    unsigned int index = *(int*)param;
 
     //save data
     lectura1 = (int)readEPSvars(EPS_ID_bat0_voltage)+0b1111000000000000;
     lectura2 = (int)readEPSvars(EPS_ID_bat0_current)+0b1111000000000000;
     lectura3 = (int)readEPSvars(EPS_ID_bat0_temp)+0b1111000000000000;
     //guarda tres lecturas voltaje, corriente y temperatura de la bateria
-    dat_set_Payload_Buff(dat_pay_battery,lectura1,DAT_PAYBUFF_MODE_NO_MAXINDX);
-    dat_set_Payload_Buff(dat_pay_battery,lectura2,DAT_PAYBUFF_MODE_NO_MAXINDX);
-    dat_set_Payload_Buff(dat_pay_battery,lectura3,DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura1, index+0, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura2, index+1, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura3, index+2, DAT_PAYBUFF_MODE_NO_MAXINDX);
+
+    printf("writing ..\r\n");
+    printf("dat_pay_battery[%d] = %d \r\n", index+0, lectura1);
+    printf("dat_pay_battery[%d] = %d \r\n", index+1, lectura2);
+    printf("dat_pay_battery[%d] = %d \r\n", index+2, lectura3);
+    printf("-----------------------------\r\n");
 
     return 1;
 }
@@ -458,22 +465,33 @@ int pay_execute_experiment_battery(void *param){ //comando para iniciar medicion
 
     //prueba
     int val;
-    int j;
+//    int j;
     int indx=0;
 
     //fin prueba
     for (i=0; i<timemed ; i++)
     {
-        pay_take_battery(NULL);
+        pay_take_battery((void*)&indx);
         __delay_ms(100); //muestras cada 100ms
         ClrWdt();
         //prueba
-        for (j=0; j<3; j++)
-        {
-            indx++;
-            dat_get_Payload_Buff(dat_pay_battery, indx , &val);
-            printf("indx=%d ; val=%d.. \r\n",indx,val);
-        }
+//        for (j=0; j<3; j++)
+//        {
+//            dat_get_Payload_Buff(dat_pay_battery, indx , &val);
+//            printf("dat_pay_battery[%d] = %d \r\n", indx, val);
+//            indx++;
+//        }
+        printf("reading ..\r\n");
+        dat_get_Payload_Buff(dat_pay_battery, indx , &val);
+        printf("dat_pay_battery[%d] = %d \r\n", indx, val);
+        indx++;
+        dat_get_Payload_Buff(dat_pay_battery, indx , &val);
+        printf("dat_pay_battery[%d] = %d \r\n", indx, val);
+        indx++;
+        dat_get_Payload_Buff(dat_pay_battery, indx , &val);
+        printf("dat_pay_battery[%d] = %d \r\n", indx, val);
+        indx++;
+        printf("-----------------------------\r\n");
         //fin prueba
     }
     printf("END battery %i..\r\n",i);
@@ -968,7 +986,10 @@ BOOL pay_deploy_langmuirProbe(int realtime){
     printf("******************************\r\n");
     printf("Deployng LangmuirProbe\r\n");
     printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );
-    PPC_LANGMUIR_DEP_SWITCH = 1;
+
+    #if (SCH_PAY_LANGMUIR_ONBOARD==1)
+        PPC_LANGMUIR_DEP_SWITCH = 1;
+    #endif
     ClrWdt();
     __delay_ms(50); //wait while port write takes effect
     printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );
@@ -985,7 +1006,9 @@ BOOL pay_deploy_langmuirProbe(int realtime){
         __delay_ms(3000); //wait 30sec to burn nylon
     }
 
-    PPC_LANGMUIR_DEP_SWITCH = 0;
+    #if (SCH_PAY_LANGMUIR_ONBOARD==1)
+        PPC_LANGMUIR_DEP_SWITCH = 0;
+    #endif
     ClrWdt();
     __delay_ms(50); //wait while port write takes effect
     printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );

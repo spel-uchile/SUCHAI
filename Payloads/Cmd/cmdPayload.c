@@ -79,6 +79,17 @@ void pay_onResetCmdPAY(void){
     payFunction[(unsigned char)pay_id_stop_gps] = pay_stop_gps;
     pay_sysReq[(unsigned char)pay_id_stop_gps] =  CMD_SYSREQ_MIN + SCH_PAY_GPS_SYS_REQ;
 
+    payFunction[(unsigned char)pay_id_gps_model] = pay_gps_model;
+    pay_sysReq[(unsigned char)pay_id_gps_model] =  CMD_SYSREQ_MIN;
+    payFunction[(unsigned char)]pay_id_gps_serial = pay_gps_serial;
+    pay_sysReq[(unsigned char)pay_id_gps_serial] =  CMD_SYSREQ_MIN;
+    payFunction[(unsigned char)pay_id_gps_senddn] = pay_gps_senddn;
+    pay_sysReq[(unsigned char)pay_id_gps_senddn] =  CMD_SYSREQ_MIN;
+    payFunction[(unsigned char)pay_id_gps_jmesg] = pay_gps_jmesg;
+    pay_sysReq[(unsigned char)pay_id_gps_jmesg] =  CMD_SYSREQ_MIN;
+    payFunction[(unsigned char)pay_id_gps_jsat] = pay_gps_jsat;
+    pay_sysReq[(unsigned char)pay_id_gps_jsat] =  CMD_SYSREQ_MIN;
+
     payFunction[(unsigned char)pay_id_isAlive_expFis] = pay_isAlive_expFis;
     payFunction[(unsigned char)pay_id_get_state_expFis] = pay_get_state_expFis;
     payFunction[(unsigned char)pay_id_set_state_expFis] = pay_set_state_expFis;
@@ -981,6 +992,95 @@ int pay_stop_gps(void *param){
 
     return 1;
 }
+//       // FUNCTIONAL
+//       if((strcmp(con_cmd, "model") == 0) )
+int pay_gps_model(void *param){
+    con_printf("Model command returned: ");
+    unsigned char suc_model;
+    suc_model = gps_model();
+    __delay_ms(5);
+    //
+    con_printf("Exitcode: ");
+    __delay_ms(2);
+    con_putc(suc_model+0x30);
+    con_printf("\n\r");
+    __delay_ms(5);
+
+    gps_clear_buffer();
+    gps_clearUARTbuffer();
+}
+
+//       // FUNCTIONAL
+//       if(strcmp(con_cmd, "serialn") == 0)
+int pay_gps_serial(void *param){
+    con_printf("Serial number command returned: ");
+    unsigned char suc_sn;
+    suc_sn = gps_serialn();
+    __delay_ms(5);
+    con_printf("Exitcode: ");
+    __delay_ms(2);
+    con_putc(suc_sn+0x30);
+    con_printf("\n\r");
+    __delay_ms(5);
+
+    gps_clear_buffer();
+    gps_clearUARTbuffer();
+}
+
+//       // FUNCTIONAL
+//       if(strcmp(con_cmd, "senddm") == 0)
+int pay_gps_senddn(void *param){
+    con_printf("dm command returned: ");			// Turn off all periodic messages
+    unsigned char retdm;
+    retdm = gps_senddm();
+    __delay_ms(5);
+    con_printf("Exitcode: ");
+    __delay_ms(2);
+    con_putc(retdm+0x30);				// Put the exitcode
+    con_printf("\n\r");
+    __delay_ms(5);
+
+    gps_clear_buffer();
+    gps_clearUARTbuffer();
+
+}
+
+//       // BETA (NOT TOTALLY FUNCTIONAL)
+//       if(strcmp(con_cmd, "jmesg") == 0)
+int pay_gps_jmesg(void *param){
+    unsigned char pove;
+    con_printf("PO/VE ==========================================");
+    con_printf("\n\r");
+    pove = gps_jmsg();
+    __delay_ms(5);
+    con_printf("Exitcode: ");
+    __delay_ms(2);
+    con_putc(pove+0x30);
+    con_printf("\n\r");
+    __delay_ms(5);
+
+    gps_clear_buffer();
+    gps_clearUARTbuffer();
+}
+
+//       // BETA (NOT TOTALLY FUNCTIONAL)
+//       if(strcmp(con_cmd, "jsat") == 0)
+int pay_gps_jsat(void *param){
+    unsigned char np;
+    con_printf("STATUS =============================================");
+    con_printf("\n\r");
+    np = gps_jsat();
+    __delay_ms(5);
+    con_printf("Exitcode: ");
+    __delay_ms(2);
+    con_putc(np+0x30);
+    con_printf("\n\r");
+    __delay_ms(5);
+
+    gps_clear_buffer();
+    gps_clearUARTbuffer();
+}
+
 //******************************************************************************
 BOOL pay_deploy_langmuirProbe(int realtime){
     printf("******************************\r\n");

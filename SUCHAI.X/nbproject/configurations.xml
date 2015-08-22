@@ -73,6 +73,7 @@
           <itemPath>../Payloads/Drivers/include/fis_payload.h</itemPath>
           <itemPath>../Payloads/Drivers/include/sensTemp.h</itemPath>
           <itemPath>../Payloads/Drivers/include/langmuir.h</itemPath>
+          <itemPath>../Libcsp/include/gps.h</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f3" displayName="Portable" projectFiles="true">
@@ -204,6 +205,7 @@
           <itemPath>../Payloads/Drivers/fis_payload.c</itemPath>
           <itemPath>../Payloads/Drivers/sensTemp.c</itemPath>
           <itemPath>../Payloads/Drivers/langmuir.c</itemPath>
+          <itemPath>../Libcsp/include/gps.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f3" displayName="Portable" projectFiles="true">

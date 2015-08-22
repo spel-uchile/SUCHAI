@@ -85,6 +85,11 @@ typedef enum{
     pay_id_init_gps, ///< @cmd
     pay_id_take_gps, ///< @cmd
     pay_id_stop_gps, ///< @cmd
+    pay_id_gps_model, ///< @cmd
+    pay_id_gps_serial, ///< @cmd
+    pay_id_gps_senddn, ///< @cmd
+    pay_id_gps_jmesg, ///< @cmd
+    pay_id_gps_jsat, ///< @cmd
 
     pay_id_isAlive_expFis, ///< @cmd
     pay_id_get_state_expFis, ///< @cmd
@@ -222,6 +227,12 @@ int pay_set_state_gps(void *param);
 int pay_take_gps(void *param);
 int pay_init_gps(void *param);
 int pay_stop_gps(void *param);
+
+int pay_gps_model(void *param);
+int pay_gps_serial(void *param);
+int pay_gps_senddn(void *param);
+int pay_gps_jmesg(void *param);
+int pay_gps_jsat(void *param);
 
 //aux functions
 BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type);

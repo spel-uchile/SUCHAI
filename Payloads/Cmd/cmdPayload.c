@@ -1389,7 +1389,7 @@ void pay_fp2_multiplexed(){
     static DAT_Payload_Buff current_pay_i;
 
     //multiplexo pay_i por turnos
-    #if (SCH_FLIGHTPLAN2_VERBOSE>=2)
+    #if (SCH_TFLIGHTPLAN2_VERBOSE>=2)
         printf("pay_fp2_i_multiplexing => pay_i = %d\r\n", (unsigned int)current_pay_i);
     #endif
 
@@ -1472,7 +1472,7 @@ void pay_fp2_simultaneous(void)
         pay_i_tick_rate = pay_fp2_get_exec_rate(pay_i);
         if( exec_tick%pay_i_tick_rate != 0 ){continue;}
 
-        #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+        #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
             printf("  pay_i = %d = %s \r\n", pay_i, dat_get_payload_name(pay_i) );
             printf("  exec_tick = %lu \r\n", exec_tick);
             printf("  pay_i_tick_rate = %d \r\n", pay_i_tick_rate);
@@ -1482,14 +1482,14 @@ void pay_fp2_simultaneous(void)
         switch(pay_i_state){
         //**********************************************************************
             case pay_xxx_state_inactive:
-                #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
                     printf("  state = sta_pay_xxx_state_inactive \r\n");
                 #endif
 
                 break;
         //**********************************************************************
             case pay_xxx_state_active:
-                #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
                     printf("  state = sta_pay_xxx_state_active \r\n");
                 #endif
 
@@ -1499,7 +1499,7 @@ void pay_fp2_simultaneous(void)
                 break;
         //**********************************************************************
             case pay_xxx_state_run_init:
-                #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
                     printf("  state = sta_pay_xxx_state_run_init \r\n");
                 #endif
 
@@ -1517,7 +1517,7 @@ void pay_fp2_simultaneous(void)
                 //increment
                 run_take_times_executed[pay_i]++;
 
-                #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
                     printf("  state = sta_pay_xxx_state_run_take \r\n");
                     printf("  run_take_times_executed[pay_i = %d] = %u \r\n", pay_i, run_take_times_executed[pay_i] );
                     printf("  pay_fp2_get_run_take_num_exec_times(pay_i = %u) = %d \r\n", pay_i, pay_fp2_get_run_take_num_exec_times(pay_i) );
@@ -1537,7 +1537,7 @@ void pay_fp2_simultaneous(void)
                 break;
         //**********************************************************************
             case pay_xxx_state_run_stop:
-                #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
                     printf("  state = sta_pay_xxx_state_run_stop \r\n");
                 #endif
 
@@ -1551,7 +1551,7 @@ void pay_fp2_simultaneous(void)
                 break;
         //**********************************************************************
             case pay_xxx_state_waiting_tx:
-                #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
                     printf("  state = sta_pay_xxx_state_waiting_tx \r\n");
                 #endif
 
@@ -1563,14 +1563,14 @@ void pay_fp2_simultaneous(void)
                 break;
         //**********************************************************************
             default:
-                #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+                #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
                     printf("  state = [ERROR] Unknown State \r\n");
                 #endif
                 break;
         //**********************************************************************
         }
 
-        #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+        #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
             printf("---------------------------------------------\r\n");
         #endif
 

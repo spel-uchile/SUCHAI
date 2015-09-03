@@ -25,14 +25,14 @@ extern xQueueHandle dispatcherQueue; /* Commands queue */
 
 void taskHouskeeping(void *param)
 {
-    #if SCH_TASKHOUSEKEEPING_VERBOSE
+    #if SCH_THOUSEKEEPING_VERBOSE
         printf(">>[Houskeeping] Started\r\n");
     #endif
 
     portTickType delay_ms    = 10000;    //Task period in [ms]
     portTickType xDelay_ticks = delay_ms / portTICK_RATE_MS; //Task period in ticks
 
-#if (SCH_THK_REALTIME == 1)
+#if (SCH_THOUSEKEEPING_REALTIME == 1)
     unsigned int elapsed_sec = 0;       // Seconds counter
     unsigned int elapsed_hrs = 0;       // Hours counter
     unsigned int check_20sec = 20;     //20[s] condition
@@ -51,14 +51,14 @@ void taskHouskeeping(void *param)
 #endif
 
     DispCmd NewCmd;
-    NewCmd.idOrig = CMD_IDORIG_THOUSEKEEPING; /* Housekeeping */
+    NewCmd.idOrig = SCH_THOUSEKEEPING_IDORIG; /* Housekeeping */
     NewCmd.cmdId = CMD_CMDNULL;
     NewCmd.param = 0;
 
     //deploy if necessary
     if( sta_get_stateVar(sta_dep_ant_deployed) == 0 ){
 
-        #if (SCH_THK_SILENT_REALTIME==1)
+        #if (SCH_THOUSEKEEPING_SILENT_REALTIME==1)
             NewCmd.cmdId = thk_id_suchai_deployment;
             NewCmd.param = 31;  //in minutes
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
@@ -82,7 +82,7 @@ void taskHouskeeping(void *param)
         if( xShouldDelay == FALSE )
         {
              xLastWakeTime = xTaskGetTickCount();
-            #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+            #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
                 printf("[Housekeeping] xLastWakeTime + xDelay_ticks < xTickCount, "
                         "update xLastWakeTime to xTickCount ..\r\n");
             #endif
@@ -93,7 +93,7 @@ void taskHouskeeping(void *param)
         /* 20 seconds actions */
         if((elapsed_sec % check_20sec) == 0)
         {
-            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
+            #if (SCH_THOUSEKEEPING_VERBOSE>=1)
                 printf("[Houskeeping]:  20[s] actions ..\r\n");
             #endif
             //Add commands below ..
@@ -118,7 +118,7 @@ void taskHouskeeping(void *param)
                 xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
             #endif
 
-            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=2)
+            #if (SCH_THOUSEKEEPING_VERBOSE>=2)
                 NewCmd.cmdId = srp_id_print_STA_stateVar;
                 NewCmd.param = 0;
                 xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
@@ -128,7 +128,7 @@ void taskHouskeeping(void *param)
         /* 1 minute actions */
         if((elapsed_sec % check_1min) == 0)
         {
-            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
+            #if (SCH_THOUSEKEEPING_VERBOSE>=1)
                 printf("[Houskeeping]:    1[min] actions ..\r\n");
             #endif
             //Add commands below ..
@@ -137,7 +137,7 @@ void taskHouskeeping(void *param)
         /* 5 minutes actions */
         if((elapsed_sec % check_5min) == 0)
         {
-            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
+            #if (SCH_THOUSEKEEPING_VERBOSE>=1)
                 printf("[Houskeeping]:    5[min] actions ..\r\n");
             #endif
             //Add commands below ..
@@ -149,7 +149,7 @@ void taskHouskeeping(void *param)
             elapsed_hrs++;
             elapsed_sec = 0; //Prevent overflow
 
-            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
+            #if (SCH_THOUSEKEEPING_VERBOSE>=1)
                 printf("[Houskeeping]:      1[hr] actions ..\r\n");
             #endif
             //Add commands below ..
@@ -169,7 +169,7 @@ void taskHouskeeping(void *param)
         /* codigo para _1day_check */
         if( (elapsed_hrs % check_1day == 0) && (elapsed_hrs != 0) )
         {
-            #if (SCH_TASKHOUSEKEEPING_VERBOSE>=1)
+            #if (SCH_THOUSEKEEPING_VERBOSE>=1)
                 printf("[Houskeeping]:        1[day] actions ..\r\n");
             #endif
             elapsed_hrs = 0;  //Prevent overflow

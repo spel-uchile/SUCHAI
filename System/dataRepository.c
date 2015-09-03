@@ -28,8 +28,8 @@
     int DAT_CMD_BUFF[DAT_MAX_BUFF_TELECMD];
 #endif
 
-#if (SCH_FLIGHTPLAN_EXTMEMORY == 0 || SCH_SYSBUS_ONBOARD==0)
-    int DAT_FPLAN_BUFF[SCH_FLIGHTPLAN_N_CMD*2];
+#if (SCH_TFLIGHTPLAN_EXTMEMORY == 0 || SCH_SYSBUS_ONBOARD==0)
+    int DAT_FPLAN_BUFF[SCH_TFLIGHTPLAN_N_CMD*2];
 #endif
 
 //variables y buffers para almacenar los block de memoria de pada estructura a guardar en la memSD
@@ -73,7 +73,7 @@ int dat_get_TeleCmd_Buff(int indx){
         return 0;
     }
     else{
-        #if (SCH_FLIGHTPLAN_EXTMEMORY == 0 || SCH_SYSBUS_ONBOARD==0)
+        #if (SCH_TFLIGHTPLAN_EXTMEMORY == 0 || SCH_SYSBUS_ONBOARD==0)
             data = DAT_CMD_BUFF[indx];
         #else
             msd_getVar_256BlockExtMem(dat_gpb_TeleCmd_256Block, indx, &data);
@@ -92,7 +92,7 @@ void dat_set_TeleCmd_Buff(int indx, int data)
         return;
     }
     else{
-        #if (SCH_FLIGHTPLAN_EXTMEMORY == 0 || SCH_SYSBUS_ONBOARD==0)
+        #if (SCH_TFLIGHTPLAN_EXTMEMORY == 0 || SCH_SYSBUS_ONBOARD==0)
             DAT_CMD_BUFF[indx] = data;
         #else
             msd_setVar_256BlockExtMem(dat_gpb_TeleCmd_256Block, indx, data);
@@ -127,19 +127,19 @@ DispCmd dat_get_FlightPlan(unsigned int index)
     NewCmd.idOrig = -1;
     NewCmd.sysReq = -1;
 
-    if(index < SCH_FLIGHTPLAN_N_CMD)
+    if(index < SCH_TFLIGHTPLAN_N_CMD)
     {
         int cmd_id, cmd_param;
 
         // La organizacion de los datos en la SD es
         // Primera mitad comandos, segunda mitad parametros
 
-#if (SCH_FLIGHTPLAN_EXTMEMORY == 1)
+#if (SCH_TFLIGHTPLAN_EXTMEMORY == 1)
         msd_getVar_256BlockExtMem(dat_gpb_FlightPlan_256Block, index, &cmd_id);
         msd_getVar_256BlockExtMem(dat_gpb_FlightPlan_256Block, 0xFFFF - index, &cmd_param);
-#elif (SCH_FLIGHTPLAN_EXTMEMORY == 0)
+#elif (SCH_TFLIGHTPLAN_EXTMEMORY == 0)
         cmd_id = DAT_FPLAN_BUFF[index];//Comandos
-        cmd_param = DAT_FPLAN_BUFF[index+SCH_FLIGHTPLAN_N_CMD]; //Parametros
+        cmd_param = DAT_FPLAN_BUFF[index+SCH_TFLIGHTPLAN_N_CMD]; //Parametros
 #endif
 
         NewCmd.cmdId = cmd_id;
@@ -157,11 +157,11 @@ DispCmd dat_get_FlightPlan(unsigned int index)
  */
 int dat_set_FlightPlan_cmd(unsigned int index, unsigned int cmdID)
 {
-    if(index < SCH_FLIGHTPLAN_N_CMD)
+    if(index < SCH_TFLIGHTPLAN_N_CMD)
     {
-        #if (SCH_FLIGHTPLAN_EXTMEMORY == 1)
+        #if (SCH_TFLIGHTPLAN_EXTMEMORY == 1)
             msd_setVar_256BlockExtMem( dat_gpb_FlightPlan_256Block, index, cmdID);
-        #elif (SCH_FLIGHTPLAN_EXTMEMORY == 0)
+        #elif (SCH_TFLIGHTPLAN_EXTMEMORY == 0)
             DAT_FPLAN_BUFF[index] = cmdID;
         #endif
         return 1;
@@ -178,12 +178,12 @@ int dat_set_FlightPlan_cmd(unsigned int index, unsigned int cmdID)
  */
 int dat_set_FlightPlan_param(unsigned int index, int param)
 {
-    if(index < SCH_FLIGHTPLAN_N_CMD)
+    if(index < SCH_TFLIGHTPLAN_N_CMD)
     {
-        #if (SCH_FLIGHTPLAN_EXTMEMORY == 1)
+        #if (SCH_TFLIGHTPLAN_EXTMEMORY == 1)
             msd_setVar_256BlockExtMem( dat_gpb_FlightPlan_256Block, 0xFFFF-index, param);
-        #elif (SCH_FLIGHTPLAN_EXTMEMORY == 0)
-            DAT_FPLAN_BUFF[index+SCH_FLIGHTPLAN_N_CMD] = param;
+        #elif (SCH_TFLIGHTPLAN_EXTMEMORY == 0)
+            DAT_FPLAN_BUFF[index+SCH_TFLIGHTPLAN_N_CMD] = param;
         #endif
         return 1;
     }
@@ -218,14 +218,14 @@ int dat_onReset_FlightPlan(void)
  */
 void dat_erase_FlightPlan(void){
 
-#if (SCH_FLIGHTPLAN_EXTMEMORY == 1)
+#if (SCH_TFLIGHTPLAN_EXTMEMORY == 1)
     #if (SCH_DATAREPOSITORY_VERBOSE>=1)
         printf("  dat_erase_FlightPlanBuff()..\n");
     #endif
 
     unsigned long i;
     int cmdid, param;
-    for(i=0; i < SCH_FLIGHTPLAN_N_CMD; i++)
+    for(i=0; i < SCH_TFLIGHTPLAN_N_CMD; i++)
     {
         cmdid = CMD_CMDNULL;
         param = 0;
@@ -233,12 +233,12 @@ void dat_erase_FlightPlan(void){
         dat_set_FlightPlan_cmd(i, cmdid);
         dat_set_FlightPlan_param(i, param);
     }
-#elif (SCH_FLIGHTPLAN_EXTMEMORY == 0)
+#elif (SCH_TFLIGHTPLAN_EXTMEMORY == 0)
     int i=0;
-    for(i=0; i<SCH_FLIGHTPLAN_N_CMD; i++)
+    for(i=0; i<SCH_TFLIGHTPLAN_N_CMD; i++)
     {
         DAT_FPLAN_BUFF[i] = CMD_CMDNULL; //Comandos
-        DAT_FPLAN_BUFF[i+SCH_FLIGHTPLAN_N_CMD]=0; //Parametros
+        DAT_FPLAN_BUFF[i+SCH_TFLIGHTPLAN_N_CMD]=0; //Parametros
     }
 #endif
 }

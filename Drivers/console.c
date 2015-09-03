@@ -60,7 +60,7 @@ BOOL con_cmd_toolong_flag;
 DispCmd con_cmd_handler(void)
 {
     DispCmd newCmd;
-    newCmd.idOrig = CMD_IDORIG_TCONSOLE;
+    newCmd.idOrig = SCH_TCONSOLE_IDORIG;
     newCmd.sysReq = CMD_SYSREQ_MIN;
     newCmd.cmdId = CMD_CMDNULL;  /* cmdNULL */
     newCmd.param = 0;

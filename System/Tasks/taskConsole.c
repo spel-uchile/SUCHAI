@@ -37,7 +37,7 @@ ______________________________________________________________________________\n
 
 void taskConsole(void *param)
 {
-#if (SCH_TASKCONSOLE_VERBOSE)
+#if (SCH_TCONSOLE_VERBOSE)
     printf(">>[Console] Started\r\n");
 #endif
 
@@ -45,12 +45,12 @@ void taskConsole(void *param)
 
     const unsigned int Delayms = 250 / portTICK_RATE_MS;
     DispCmd NewCmd;
-    NewCmd.idOrig = CMD_IDORIG_TCONSOLE; /* Consola */
+    NewCmd.idOrig = SCH_TCONSOLE_IDORIG; /* Consola */
     NewCmd.cmdId = CMD_CMDNULL;  /* cmdNULL */
     NewCmd.param = 0;
 
     /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
-    #if (SCH_USE_HOUSEKEEPING == 1)
+    #if (SCH_THOUSEKEEPING_USE == 1)
         portTickType xLastWakeTime = xTaskGetTickCount();
         portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
         while( TRUE ){
@@ -64,7 +64,7 @@ void taskConsole(void *param)
     /* Initializing console */
     con_init();
 
-#if (SCH_TASKCONSOLE_VERBOSE>=1)
+#if (SCH_TCONSOLE_VERBOSE>=1)
     __delay_ms(500);    //helps printing a cleaner banner (avoid interruption)
     printf((char *)console_baner);
 #endif
@@ -82,7 +82,7 @@ void taskConsole(void *param)
         {
             printf("\r\n");
 
-            #if (SCH_TASKCONSOLE_VERBOSE >=1)
+            #if (SCH_TCONSOLE_VERBOSE >=1)
                 /* Print the command code */
 //                sprintf( ret, "0x%X", (unsigned int)NewCmd.cmdId );
 //                con_printf("[Console] Se genera comando: ");

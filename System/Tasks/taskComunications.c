@@ -30,7 +30,7 @@ static void com_receive_cmd(csp_packet_t *packet);
 
 void taskComunications(void *param)
 {
-#if (SCH_TASKCOMUNICATIONS_VERBOSE)
+#if (SCH_TCOMUNICATIONS_VERBOSE)
     con_printf(">>[Comunications] Started\r\n");
 #endif
 
@@ -40,7 +40,7 @@ void taskComunications(void *param)
 
     DispCmd TcNewCmd;
     TcNewCmd.cmdId = CMD_CMDNULL;
-    TcNewCmd.idOrig = CMD_IDORIG_TCOMUNICATIONS; /* Comunications */
+    TcNewCmd.idOrig = SCH_TCOMUNICATIONS_IDORIG; /* Comunications */
     TcNewCmd.param = 0;
 
     /* Pointer to current connection, packet and socket */
@@ -128,7 +128,7 @@ static void com_receive_tc(csp_packet_t *packet)
     static DispCmd newCmd;
     static int i, cmdid, cmdarg;
 
-#if SCH_TASKCOMUNICATIONS_VERBOSE
+#if SCH_TCOMUNICATIONS_VERBOSE
     printf("[SRV] New TCs: ");
 #endif
 
@@ -138,7 +138,7 @@ static void com_receive_tc(csp_packet_t *packet)
         cmdid = packet->data16[i];
         cmdarg = packet->data16[i+1];
 
-#if SCH_TASKCOMUNICATIONS_VERBOSE
+#if SCH_TCOMUNICATIONS_VERBOSE
         printf("(0x%X, 0x%X),", cmdid, cmdarg);
 #endif
         /* Check for stop bytes, then add new cmd */
@@ -149,7 +149,7 @@ static void com_receive_tc(csp_packet_t *packet)
         }
     }
 
-#if SCH_TASKCOMUNICATIONS_VERBOSE
+#if SCH_TCOMUNICATIONS_VERBOSE
     printf("\n");
 #endif
 }

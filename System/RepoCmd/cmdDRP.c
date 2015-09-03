@@ -50,7 +50,7 @@ int drp_print_dat_FlightPlan(void *param){
 
     int i;
 //    char buffer[10];
-    for(i=0; i<SCH_FLIGHTPLAN_N_CMD; i++)
+    for(i=0; i<SCH_TFLIGHTPLAN_N_CMD; i++)
     {
         DispCmd dcmd = dat_get_FlightPlan(i);
         printf("sta_FlightPlan[%d]: cmdId = 0x%X, param = %d", i , dcmd.cmdId, dcmd.param);
@@ -214,12 +214,12 @@ int drp_fpl_check_and_exec(void *param){
     current_hour = sta_get_stateVar(sta_rtc_hours);
     current_mins = sta_get_stateVar(sta_rtc_minutes);
     index = current_hour*60 + current_mins;
-    index = index / SCH_FLIGHTPLAN_RESOLUTION;
+    index = index / SCH_TFLIGHTPLAN_RESOLUTION;
     
-    #if SCH_TASKFLIGHTPLAN_VERBOSE
+    #if SCH_TFLIGHTPLAN_VERBOSE
         /* Debug info */
         printf("  [drp_fpl_check_and_exec] index = %d = (%d*60+%d)/SCH_FP_RESOLUTION \n  last_index=%d | SCH_FP_N_CMD=%d\r\n",
-                index, current_hour, current_mins, last_index, SCH_FLIGHTPLAN_N_CMD);
+                index, current_hour, current_mins, last_index, SCH_TFLIGHTPLAN_N_CMD);
     #endif
 
     /* If check time is less than flight plan resolution (as it should be)
@@ -235,13 +235,13 @@ int drp_fpl_check_and_exec(void *param){
 
         /* Check if valid cmd */
         if(NewCmd.cmdId == CMD_CMDNULL){
-            #if SCH_TASKFLIGHTPLAN_VERBOSE
+            #if SCH_TFLIGHTPLAN_VERBOSE
                 printf("    [drp_fpl_check_and_exec] Se extrae CMD_CMDNULL, se omite\r\n");
             #endif
             return 0;
         }
 
-        #if SCH_TASKFLIGHTPLAN_VERBOSE
+        #if SCH_TFLIGHTPLAN_VERBOSE
             /* Print the command code */
             printf("    [drp_fpl_check_and_exec] Se extrae cmdId = 0x%X, param = %d, ejecutando .. \r\n",
                     (unsigned int)NewCmd.cmdId, (unsigned int)NewCmd.param);
@@ -262,7 +262,7 @@ int drp_fpl_check_and_exec(void *param){
         cmdResult = exeCmd.fnct((void *)&cmdParam);
     }
     else{
-        #if(SCH_TASKFLIGHTPLAN_VERBOSE >= 1)
+        #if(SCH_TFLIGHTPLAN_VERBOSE >= 1)
             /* Print the command code */
             printf("    [drp_fpl_check_and_exec] (last_index==index) => NO se genera comando\r\n");
         #endif
@@ -407,7 +407,7 @@ void drp_debug4(void){
 
     printf("DAT_FlightPlanBuff..\n");
     value=1000; DispCmd NewCmd;
-    for(index=0; index<(SCH_FLIGHTPLAN_N_CMD); index++, value++){
+    for(index=0; index<(SCH_TFLIGHTPLAN_N_CMD); index++, value++){
 
         printf("  writing: ");
         dat_set_FlightPlan_cmd(index, value);
@@ -585,7 +585,7 @@ void drp_DAT_FlightPlan_EBF(void){
     //aca debe ir la configuracion inicial del FligthPlan
     //esta es la configuracion a cargar antes del lanzamiento
     int index;
-    for(index=0; index<SCH_FLIGHTPLAN_N_CMD; index++){
+    for(index=0; index<SCH_TFLIGHTPLAN_N_CMD; index++){
         if(index%2==0){
             dat_set_FlightPlan_cmd(index, ppc_id_get_osc);
             dat_set_FlightPlan_param(index, index);

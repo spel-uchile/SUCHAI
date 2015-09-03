@@ -47,14 +47,6 @@ typedef struct ctrl_command{
 #define CMD_CMDNULL     (0xFFFF)    ///< Dummy command id. Represent a null command
 #define CMD_STOP        (0xFFFE)    ///< Reserved id. Represent a stop or separation code
 
-#define CMD_IDORIG_TCONSOLE         (0x1101)
-#define CMD_IDORIG_THOUSEKEEPING    (0x1102)
-#define CMD_IDORIG_TCOMUNICATIONS   (0x1103)
-#define CMD_IDORIG_TFLIGHTPLAN      (0x1104)
-#define CMD_IDORIG_TFLIGHTPLAN2     (0x1105)
-#define CMD_IDORIG_TFLIGHTPLAN3     (0x1106)
-#define CMD_IDORIG_TDEPLOYMENT      (0x1107)
-
 #define CMD_SYSREQ_MIN      (1)     ///< Min energy level possible
 #define CMD_SYSREQ_MAX      (9)     ///< Max energy level possible
 

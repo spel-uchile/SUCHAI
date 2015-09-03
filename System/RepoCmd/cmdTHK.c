@@ -213,7 +213,7 @@ int thk_suchai_deployment(void *param)
 
     //take picture
     #if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==1 )
-        #if(SCH_THK_SILENT_REALTIME==1)
+        #if(SCH_THOUSEKEEPING_SILENT_REALTIME==1)
             pay_takePhoto_camera(NULL); //takes 10min to complete
         #else
             printf("  Jumping pay_takePhoto_camera(NULL) call, it takes 10min to complete ..\r\n");
@@ -243,7 +243,7 @@ int thk_suchai_deployment(void *param)
 
     /* Deploy Antena */
     #if (SCH_ANTENNA_ONBOARD==1)
-        int rt_mode = SCH_THK_ANT_DEP_REALTIME; /* 1=Real Time, 0=Debug Time */
+        int rt_mode = SCH_THOUSEKEEPING_ANT_DEP_REALTIME; /* 1=Real Time, 0=Debug Time */
         thk_deploy_antenna(&rt_mode);
     #endif
 
@@ -257,7 +257,7 @@ int thk_suchai_deployment(void *param)
      * to check deployment, so its included here */
     #if (SCH_ANTENNA_ONBOARD==1 && SCH_PAY_LANGMUIR_ONBOARD==1)
         if( sta_get_stateVar(sta_pay_lagmuirProbe_isDeployed)==0 ){
-            int rt_mode = SCH_THK_ANT_DEP_REALTIME; /* 1=Real Time, 0=Debug Time */
+            int rt_mode = SCH_THOUSEKEEPING_ANT_DEP_REALTIME; /* 1=Real Time, 0=Debug Time */
             pay_deploy_langmuirProbe(rt_mode);    //realtime mode
             //set var lang dep = 1
         }
@@ -281,7 +281,7 @@ int thk_suchai_deployment(void *param)
  */
 int thk_deploy_antenna(void *param)
 {
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
+    #if (SCH_TDEPLOYMENT_VERBOSE>=1)
         printf("\n[thk_deploy_antenna] Deploying TRX Antenna... \r\n");
         //rtc_print(NULL);
     #endif
@@ -315,7 +315,7 @@ int thk_deploy_antenna(void *param)
     {
         for(tries_indx=1; tries_indx<=THK_MAX_TRIES_ANT_DEPLOY; tries_indx++)
         {
-            #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+            #if (SCH_TDEPLOYMENT_VERBOSE>=2)
                 printf("    [Deploying] Attempt #%d\r\n", tries_indx);
             #endif
 
@@ -359,7 +359,7 @@ int thk_deploy_antenna(void *param)
             {
                 thk_deployment_registration(&tries_indx);
 
-                #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
+                #if (SCH_TDEPLOYMENT_VERBOSE>=1)
                     printf("    ANTENNA DEPLOYED SUCCESSFULLY [%d TRIES]\r\n", tries_indx);
                     rtc_print(NULL);
                 #endif
@@ -373,7 +373,7 @@ int thk_deploy_antenna(void *param)
     tries_indx = THK_MAX_TRIES_ANT_DEPLOY+1; //por si acaso
     thk_deployment_registration(&tries_indx);
 
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+    #if (SCH_TDEPLOYMENT_VERBOSE>=2)
         printf("    ANTENNA DEPLOY FAIL [%d TRIES]\r\n", THK_MAX_TRIES_ANT_DEPLOY);
         rtc_print(NULL);
     #endif
@@ -501,14 +501,14 @@ int thk_deployment_registration(void *param)
 //------------------------------------------------------------------------------
 
 int thk_silent_time_and_pictures(void *param){
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
+    #if (SCH_TDEPLOYMENT_VERBOSE>=1)
         con_printf("\n[thk_silent_time_and_pictures] Mandatory inactivity time...\r\n");
         rtc_print(NULL);
     #endif
 
     //1) Silencio el TRX
     #if (SCH_TRX_ONBOARD==1)
-        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        #if (SCH_TDEPLOYMENT_VERBOSE>=2)
             con_printf("    * Turning off TX\r\b");
         #endif
 
@@ -528,7 +528,7 @@ int thk_silent_time_and_pictures(void *param){
     pay_set_state_camera(&cam_state);
 
     //3) duermo el SUCHAI por 30min
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
+    #if (SCH_TDEPLOYMENT_VERBOSE>=1)
         con_printf("    * System halted at ");
         rtc_print(NULL);
     #endif
@@ -562,7 +562,7 @@ int thk_silent_time_and_pictures(void *param){
         ClrWdt()
     }
 
-    #if (SCH_TASKDEPLOYMENT_VERBOSE>=1)
+    #if (SCH_TDEPLOYMENT_VERBOSE>=1)
         con_printf("    * System resumed at ");
         rtc_print(NULL);
         con_printf("    FINISHING SILENT TIME\r\n");
@@ -570,7 +570,7 @@ int thk_silent_time_and_pictures(void *param){
 
     //4) normalizo el TRX
     #if (SCH_TRX_ONBOARD==1)
-        #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
+        #if (SCH_TDEPLOYMENT_VERBOSE>=2)
             con_printf("    * Turning on TX\r\b");
         #endif
 

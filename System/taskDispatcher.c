@@ -26,7 +26,7 @@ extern xQueueHandle executerStatQueue;
 
 void taskDispatcher(void *param)
 {
-#if SCH_TASKDISPATCHER_VERBOSE
+#if SCH_TDISPATCHER_VERBOSE
         printf("[Dispatcher] Started\r\n");
 #endif
 
@@ -54,7 +54,7 @@ void taskDispatcher(void *param)
             /* Check if command is executable */
             if(check_if_executable(&newCmd))
             {
-                #if (SCH_TASKDISPATCHER_VERBOSE >=1)
+                #if (SCH_TDISPATCHER_VERBOSE >=1)
                     /* IMPRIMIR LOS COMANDOS QUE SE VAN A EJECUTAR */
                     printf("[Dispatcher] Orig: 0x%X | Cmd: 0x%X | Param: %d\n", idOrig, cmdId, cmdParam );
                 #endif
@@ -82,14 +82,14 @@ void taskDispatcher(void *param)
                     xQueueReceive(executerStatQueue, &cmdResult, portMAX_DELAY);
                 #endif
 
-                #if SCH_TASKDISPATCHER_VERBOSE >= 1
+                #if SCH_TDISPATCHER_VERBOSE >= 1
                     printf("[Dispatcher] CMD Result: %d\n", cmdResult);
                 #endif
             }
         }
         else
         {
-            #if SCH_TASKDISPATCHER_VERBOSE >= 1
+            #if SCH_TDISPATCHER_VERBOSE >= 1
                 printf("[Dispatcher] Unable to read cmd from queue\n");
             #endif
         }
@@ -114,7 +114,7 @@ BOOL check_if_executable(DispCmd *newCmd)
 
     if(cmdId == CMD_CMDNULL)
     {
-        #if SCH_TASKDISPATCHER_VERBOSE >=1
+        #if SCH_TDISPATCHER_VERBOSE >=1
             printf("[Dispatcher] Command: 0x%X | From: 0x%X Refused because of CMD_NULL \n", cmdId, idOrig);
         #endif
         return FALSE;
@@ -125,7 +125,7 @@ BOOL check_if_executable(DispCmd *newCmd)
         // Compare sysReq with SOC
         if(sta_get_stateVar(sta_eps_soc) < sysReq)
         {
-            #if SCH_TASKDISPATCHER_VERBOSE >=1
+            #if SCH_TDISPATCHER_VERBOSE >=1
                 printf("[Dispatcher] Orig: 0x%X | Cmd: 0x%X | Param: %d Refused because of SOC\n", idOrig, cmdId, param );
             #endif
             return FALSE;

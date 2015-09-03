@@ -24,14 +24,14 @@ extern xQueueHandle dispatcherQueue;
 
 void taskFlightPlan2(void *param)
 {
-#if (SCH_FLIGHTPLAN2_VERBOSE)
+#if (SCH_TFLIGHTPLAN2_VERBOSE)
         printf(">>[FlightPlan2] Started\r\n");
 #endif
 
-#if SCH_FLIGHTPLAN2_REALTIME
+#if SCH_TFLIGHTPLAN2_REALTIME
     unsigned int min_check_period_ms = 10000;      /* check every x ms  */
     portTickType xDelay_ticks = (min_check_period_ms) / portTICK_RATE_MS;
-    #if (SCH_USE_HOUSEKEEPING == 1)
+    #if (SCH_THOUSEKEEPING_USE == 1)
         portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
     #endif
 #else
@@ -41,13 +41,13 @@ void taskFlightPlan2(void *param)
 #endif
 
     DispCmd NewCmd;
-    NewCmd.idOrig = CMD_IDORIG_TFLIGHTPLAN2; /* Housekeeping */
+    NewCmd.idOrig = SCH_TFLIGHTPLAN2_IDORIG; /* Housekeeping */
     NewCmd.cmdId = CMD_CMDNULL;
     NewCmd.param = 0;
 
     /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
     portTickType xLastWakeTime = xTaskGetTickCount();
-    #if (SCH_USE_HOUSEKEEPING == 1)
+    #if (SCH_THOUSEKEEPING_USE == 1)
         while( TRUE ){
             if( sta_get_stateVar(sta_dep_ant_deployed)==1 ){
                 break;
@@ -68,7 +68,7 @@ void taskFlightPlan2(void *param)
         if( xShouldDelay == FALSE )
         {
              xLastWakeTime = xTaskGetTickCount();
-            #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+            #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
                 printf("[FlightPlan2] xLastWakeTime + xDelay_ticks < xTickCount, "
                         "update xLastWakeTime to xTickCount ..\r\n");
             #endif
@@ -76,7 +76,7 @@ void taskFlightPlan2(void *param)
 
         //Add commands below ..
 
-        #if (SCH_FLIGHTPLAN2_VERBOSE>=1)
+        #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
             printf("[FlightPlan2] min_check_period_ms (%d) actions ..\r\n", min_check_period_ms);
         #endif
 

@@ -31,7 +31,7 @@ static void com_receive_cmd(csp_packet_t *packet);
 void taskComunications(void *param)
 {
 #if (SCH_TCOMUNICATIONS_VERBOSE)
-    con_printf(">>[Comunications] Started\r\n");
+    printf(">>[Comunications] Started\r\n");
 #endif
 
     portTickType delay_ms    = 1000;    //Task period in [ms]
@@ -48,7 +48,7 @@ void taskComunications(void *param)
     csp_packet_t *packet;
     csp_socket_t *sock = csp_port_get_socket(CSP_ANY);
 
-    unsigned long seconds_cnt = 0; /* Contador para comandos periodicos */
+    unsigned int seconds_cnt = 0; /* Contador para comandos periodicos */
     unsigned int type_cnt = 0; /* Identificador del tipo de beacon siguiente */
 
     /* Comienza el ciclo de la tarea */
@@ -72,9 +72,13 @@ void taskComunications(void *param)
             TcNewCmd.cmdId = tcm_id_update_beacon;
             TcNewCmd.param = type_cnt;
 
+            //printf("[Comunications] seconds_cnt = %d, type_cnt = %d \r\n", seconds_cnt, type_cnt);
+
             /* Queue NewCmd - Non-Blocking (Wait 0.5 task period) */
             xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
+
             type_cnt++;
+            seconds_cnt = 0;
         }
 
         /*** Acts as csp server ***/

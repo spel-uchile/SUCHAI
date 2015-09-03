@@ -80,7 +80,8 @@ void lag_erase_buffer(void)
  */
 int lag_wait_busy_wtimeout(void)
 {
-    unsigned long int i = 50242879;
+    //unsigned long int i = 50242879;
+    unsigned long int i = 5024287;
     while(LAG_BUSY)
     {
         i--;
@@ -217,10 +218,12 @@ int lag_read_sweep_packet(BOOL verb)
  */
 int langmuir_isAlive(void)
 {
+    //printf("[langmuir_isAlive] .. \r\n");
     int result = lag_read_plasma_packet(FALSE);
     
-    if(!result)
+    if(!result){
         return 0;
+    }
 
     int sync_1 = lag_get_langmuir_buffer_i(0);
     int sync_2 = lag_get_langmuir_buffer_i(1);

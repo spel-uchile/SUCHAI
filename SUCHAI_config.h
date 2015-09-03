@@ -117,7 +117,7 @@
 #define SCH_DATAREPOSITORY_VERBOSE          (1)  ///< 1=verboso 0=austero
 
 /******************************************************************************/
-/* Various */
+/* Various aspects */
 /******************************************************************************/
 /* Realtime config */
 #define SCH_THOUSEKEEPING_SILENT_REALTIME   (0)  ///< 1=Realtime 0=Debugtime
@@ -134,7 +134,7 @@
 #define SCH_I2C3_ADDR           (0xF4) ///< I2C 3 Slave address
 
 /* TRX and COMM configs */
-#define SCH_TRX_BEACON_PERIOD              (1*30)   ///< [s] Periodo del beacon en segundos (UINT16)
+#define SCH_TRX_BEACON_PERIOD              (3*60)   ///< [s] Periodo del beacon en segundos (UINT16)
 #define SCH_TRX_BEACON_WPM                 (20)     ///< Velocidad del beacon en palabras por minuto 1-255
 #define SCH_TRX_BEACON_BAT_LVL             (630)    ///< Nivel de bateria minimo para transmitir beacon
 #define SCH_TRX_BEACON_MODE                (2)      ///< Tipo de beacon 0=CW, 1=Cw+FM, 2=FM

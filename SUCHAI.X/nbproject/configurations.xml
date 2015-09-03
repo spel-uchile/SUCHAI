@@ -17,6 +17,7 @@
         <itemPath>../Drivers/include/interfaz_ADC.h</itemPath>
         <itemPath>../Drivers/include/i2c_comm.h</itemPath>
         <itemPath>../Drivers/include/nanocom.h</itemPath>
+        <itemPath>../Drivers/include/javad_gps.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="FreeRTOS" projectFiles="true">
         <itemPath>../FreeRTOS/Source/include/croutine.h</itemPath>
@@ -137,6 +138,7 @@
         <itemPath>../Drivers/interfaz_ADC.c</itemPath>
         <itemPath>../Drivers/i2c_comm.c</itemPath>
         <itemPath>../Drivers/nanocom.c</itemPath>
+        <itemPath>../Drivers/javad_gps.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="FreeRTOS" projectFiles="true">
         <itemPath>../FreeRTOS/Source/croutine.c</itemPath>
@@ -205,7 +207,6 @@
           <itemPath>../Payloads/Drivers/fis_payload.c</itemPath>
           <itemPath>../Payloads/Drivers/sensTemp.c</itemPath>
           <itemPath>../Payloads/Drivers/langmuir.c</itemPath>
-          <itemPath>../Libcsp/include/gps.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f3" displayName="Portable" projectFiles="true">
@@ -254,6 +255,7 @@
     <Elem>../Libcsp/src</Elem>
     <Elem>../FreeRTOS/Source/portable</Elem>
     <Elem>../System</Elem>
+    <Elem>../Drivers</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

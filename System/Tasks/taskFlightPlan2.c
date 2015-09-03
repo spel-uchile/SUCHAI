@@ -31,7 +31,9 @@ void taskFlightPlan2(void *param)
 #if SCH_FLIGHTPLAN2_REALTIME
     unsigned int min_check_period_ms = 10000;      /* check every x ms  */
     portTickType xDelay_ticks = (min_check_period_ms) / portTICK_RATE_MS;
-    portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
+    #if (SCH_USE_HOUSEKEEPING == 1)
+        portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
+    #endif
 #else
     unsigned int min_check_period_ms = 1000;      /* check every 2sec  */
     portTickType xDelay_ticks = (min_check_period_ms) / portTICK_RATE_MS;

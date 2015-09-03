@@ -35,8 +35,6 @@ void taskFlightPlan(void *param)
     /* Resolution = 10[s] */
     const unsigned int xDelay_ticks = (10 * 1000) / portTICK_RATE_MS;
 #endif
-    portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
-    
     DispCmd NewCmd;
     NewCmd.cmdId = CMD_CMDNULL;
     NewCmd.idOrig = CMD_IDORIG_TFLIGHTPLAN;
@@ -45,6 +43,7 @@ void taskFlightPlan(void *param)
     /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
     portTickType xLastWakeTime = xTaskGetTickCount();
     #if (SCH_USE_HOUSEKEEPING == 1)
+        portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
         while( TRUE ){
             if( sta_get_stateVar(sta_dep_ant_deployed)==1 ){
                 break;

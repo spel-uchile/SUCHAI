@@ -23,12 +23,12 @@ Revision history
 v1.00 (15/04/2013)        	:Initial release
 ==========================================================================================*/
 
-#include <p24FJ96GA010.h>   // Esto va?
-#include <libpic30.h>       // Esto va?
-#include <stdio.h>          // Esto va?
-//#include "serial_com.h"     // OK
+
 #include "pic_pc104_config.h"     // OK
 #include "SUCHAI_config.h"     // OK
+
+#include <stdio.h>          // Esto va?
+#include <stdlib.h>
 
 //void __delay_ms(unsigned long d);   // Estan definidas estas funciones en algun otro lado?
 //void __delay_us(unsigned long d);   // ""

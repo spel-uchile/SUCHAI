@@ -81,7 +81,7 @@ void pay_onResetCmdPAY(void){
 
     payFunction[(unsigned char)pay_id_gps_model] = pay_gps_model;
     pay_sysReq[(unsigned char)pay_id_gps_model] =  CMD_SYSREQ_MIN;
-    payFunction[(unsigned char)]pay_id_gps_serial = pay_gps_serial;
+    payFunction[(unsigned char)pay_id_gps_serial] = pay_gps_serial;
     pay_sysReq[(unsigned char)pay_id_gps_serial] =  CMD_SYSREQ_MIN;
     payFunction[(unsigned char)pay_id_gps_senddn] = pay_gps_senddn;
     pay_sysReq[(unsigned char)pay_id_gps_senddn] =  CMD_SYSREQ_MIN;
@@ -1008,6 +1008,7 @@ int pay_gps_model(void *param){
 
     gps_clear_buffer();
     gps_clearUARTbuffer();
+    return 1;
 }
 
 //       // FUNCTIONAL
@@ -1025,6 +1026,7 @@ int pay_gps_serial(void *param){
 
     gps_clear_buffer();
     gps_clearUARTbuffer();
+    return 1;
 }
 
 //       // FUNCTIONAL
@@ -1042,7 +1044,7 @@ int pay_gps_senddn(void *param){
 
     gps_clear_buffer();
     gps_clearUARTbuffer();
-
+    return 1;
 }
 
 //       // BETA (NOT TOTALLY FUNCTIONAL)
@@ -1061,6 +1063,7 @@ int pay_gps_jmesg(void *param){
 
     gps_clear_buffer();
     gps_clearUARTbuffer();
+    return 1;
 }
 
 //       // BETA (NOT TOTALLY FUNCTIONAL)
@@ -1079,6 +1082,7 @@ int pay_gps_jsat(void *param){
 
     gps_clear_buffer();
     gps_clearUARTbuffer();
+    return 1;
 }
 
 //******************************************************************************

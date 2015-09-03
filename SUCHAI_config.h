@@ -89,7 +89,7 @@
 #define SCH_FLIGHTPLAN_N_CMD                    ((24 * 60) / SCH_FLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]
 #define SCH_FLIGHTPLAN_EXTMEMORY                (1)     ///< (0) buffer en  RAM, (1) en memoria SD
 #define SCH_FLIGHTPLAN_TYPE                     (0)     ///< 0 = do not use it, 1 = FP, 2 = FP2, 3 = FP3
-#define SCH_USE_HOUSEKEEPING                    (1)     ///< 1 = use it, 0 = do not use it
+#define SCH_USE_HOUSEKEEPING                    (0)     ///< 1 = use it, 0 = do not use it
 
 /**
  * @def SCH_DATAREPOSITORY_MAX_BUFF_TELECMD

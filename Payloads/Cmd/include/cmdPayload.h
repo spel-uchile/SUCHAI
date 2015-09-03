@@ -27,6 +27,7 @@
 #include "sensTemp.h"
 #include "eps_suchai.h"
 #include "memEEPROM.h"
+#include "javad_gps.h"
 
 //#include "console.h"
 

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gps.h"
+#include "javad_gps.h"
 
 /*========================================================================================
 Description            		:Sotfware for Javad's TR-G2 GPS
@@ -345,7 +345,7 @@ unsigned char gps_cs(unsigned char* d, unsigned int count){
 // ============================================================================================================
 unsigned char gps_parse_jmsg(unsigned char success, unsigned char* buf){
 	buffer = buf;
-	unsigned long i;
+	//unsigned long i;
 	unsigned char exitcode;
 	char a[] = {0x00, 0x00, 0x00, 0x00};
 	char* end;
@@ -727,7 +727,7 @@ unsigned char gps_jmsg(void ){
 // ============================================================================================================
 unsigned char gps_parse_jsat(unsigned char success, unsigned char* buf){
 	buffer = buf;
-	unsigned long i;
+	//unsigned long i;
 	unsigned char exitcode;
 	char a[] = {0x00, 0x00, 0x00, 0x00};
 	char* end;
@@ -901,9 +901,10 @@ unsigned char gps_parse_jsat(unsigned char success, unsigned char* buf){
 			errors[4] = 1;
 
 
-		SendStrRS232("Error array ");			// Put the error array in screen
-		SendRS232(&errors[0], 5, RS2_M_UART4);
-		SendStrRS232("\n\r");
+		printf("Error array ");			// Put the error array in screen
+		//RS232(&errors[0], 5, RS2_M_UART4);
+                printf("%c %c %c %c %c ", errors[0], errors[1], errors[2], errors[3], errors[4]);
+		printf("\n\r");
 
 		if(errors[0] == 1 || errors[1] == 1 || errors[2] == 1 || errors[3] == 1 || errors[4] == 1 || errors[5] == 1)
 			exitcode = 4;				// Exitcode for a missing sentence

@@ -815,15 +815,5 @@ char CurrDirEstEPS(void){
         return 1;
 }
 
-//struct consumos{
-//	unsigned int tranciver;
-//	unsigned int procesador;
-//	unsigned int beacon;
-//	unsigned int gps;
-//	unsigned int camara;
-//	unsigned int payload1;
-//	unsigned int payload2;
-//	//etc.
-//};
 
 

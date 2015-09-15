@@ -28,35 +28,20 @@
 //semaforo para sincronizar accceso a las variables de estado
 extern xSemaphoreHandle statusRepositorySem;
 
+
+//******************************************************************************
+// BUS section
+//******************************************************************************
+
 #if (SCH_MEMEEPROM_ONBOARD==0)
-    int STA_STATE_VAR_BUFF[sta_stateVar_last_one];
+    int STA_STATE_VAR_BUFF[sta_busStateVar_last_one];
 #endif
-
-
-///**
-// * Funcion para modificar una variable de estado
-// * @param indxVar. Variable de estado que quiero modificar
-// * @param value. Valor a asignar a la variable de estado
-// */
-//void sta_set_stateVar(STA_StateVar indxVar, int value){
-//    portBASE_TYPE semStatus = xSemaphoreTake( statusRepositorySem, portMAX_DELAY );
-//
-//    #if (SCH_MEMEEPROM_ONBOARD==0)
-//        //Para el caso de guardar las variables en memoria interna
-//        STA_CUBESAT_VAR_BUFF[indxVar] = value;
-//    #else
-//        //Para el caso de guardar las variables en la memI2C
-//        writeIntEEPROM1( (unsigned char)indxVar, value);
-//    #endif
-//
-//    semStatus = xSemaphoreGive(statusRepositorySem);
-//}
 
 /**
  * Funcion para obtener una variable de estado
  * @param indxVar. Variable de estado que quiero modificar
  */
-int sta_get_stateVar(STA_StateVar indxVar){
+int sta_get_BusStateVar(STA_BusStateVar indxVar){
     portBASE_TYPE semStatus = xSemaphoreTake( statusRepositorySem, portMAX_DELAY );
     
     int value;
@@ -81,38 +66,6 @@ int sta_get_stateVar(STA_StateVar indxVar){
         case sta_AntSwitch_isOpen:
             param = 1000;
             value = thk_get_AntSwitch_isOpen(&param);
-            break;
-        // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
-        case sta_pay_lagmuirProbe_isAlive:
-            //printf("PAY => (Payload subsystem)\r\n");
-            value = pay_isAlive_lagmuirProbe(NULL);
-            break;
-        case sta_pay_sensTemp_isAlive:
-            value = pay_isAlive_sensTemp(NULL);
-            break;
-        case sta_pay_gps_isAlive:
-            value = pay_isAlive_gps(NULL);
-            break;
-        case sta_pay_expFis_isAlive:
-            value = pay_isAlive_expFis(NULL);
-            break;
-        case sta_pay_camera_isAlive:
-            value = pay_isAlive_camera(NULL);
-            break;
-        case sta_pay_gyro_isAlive:
-            value = pay_isAlive_gyro(NULL);
-            break;
-        case sta_pay_tmEstado_isAlive:
-            value = pay_isAlive_tmEstado(NULL);
-            break;
-        case sta_pay_battery_isAlive:
-            value = pay_isAlive_battery(NULL);
-            break;
-        case sta_pay_debug_isAlive:
-            value = pay_isAlive_debug(NULL);
-            break;
-        case sta_pay_lagmuirProbe_isDeployed:
-            value = 0;  //no hay forma de saberlo !!
             break;
         //FPL => (C&DH subsystem)
         case sta_fpl_index:
@@ -274,39 +227,7 @@ int sta_get_stateVar(STA_StateVar indxVar){
             case sta_trx_tx_baud:
                 value = trx_get_tx_baud(NULL);
                 break;
-
         #endif
-        //PAY => (Payload subsystem)
-        case sta_pay_lagmuirProbe_state:
-            //printf("PAY => (Payload subsystem)\r\n");
-            value = pay_get_state_lagmuirProbe(NULL);
-            break;
-        case sta_pay_sensTemp_state:
-            value = pay_get_state_sensTemp(NULL);
-            break;
-        case sta_pay_gps_state:
-            value = pay_get_state_gps(NULL);
-            break;
-        case sta_pay_expFis_state:
-            value = pay_get_state_expFis(NULL);
-            break;
-        case sta_pay_camera_state:
-            value = pay_get_state_camera(NULL);
-            break;
-        case sta_pay_gyro_state:
-            value = pay_get_state_gyro(NULL);
-            break;
-        case sta_pay_tmEstado_state:
-            value = pay_get_state_tmEstado(NULL);
-            break;
-        case sta_pay_battery_state:
-            value = pay_get_state_battery(NULL);
-            break;
-        case sta_pay_debug_state:
-            value = pay_get_state_debug(NULL);
-            break;
-//            case:
-//                break;
         default:
             printf("[sta_get_stateVar] Error: No function/command for STA_StateVar %d \r\n", indxVar);
             value = -(0x7FFF);
@@ -327,7 +248,7 @@ int sta_get_stateVar(STA_StateVar indxVar){
  * llamados anteriores o posteriores (@sa default_PIC_config,
  * @sa dep_init_suchai_hw, @sa dep_init_suchai_repos).
  */
-void sta_onReset_stateRepo(void)
+void sta_onReset_BusStateRepo(void)
 {
     int param, res;
 
@@ -397,53 +318,7 @@ void sta_onReset_stateRepo(void)
 //    srp_print_STA_stateVar(NULL);
 }
 
-/**
- * Asocia el DAT_Payload_Buff pay_i a la STA_StateVar que controla la ejecucion o
- * o no de ese Payload
- * @param pay_i DAT_Payload del que quiero obtener el DAT_StateVar
- * @return DAT_StateVar dat_pay_xxx_perform
- */
-STA_StateVar sta_DAT_Payload_Buff_to_STA_StateVar(DAT_Payload_Buff pay_i){
-//STA_StateVar sta_DAT_Payload_Buff_to_STA_StateVar(int pay_i){
-    STA_StateVar dat_pay_xxx_state;
-
-    switch(pay_i){
-        case dat_pay_lagmuirProbe:
-            dat_pay_xxx_state = sta_pay_lagmuirProbe_state;
-        break;
-        case dat_pay_sensTemp:
-            dat_pay_xxx_state = sta_pay_sensTemp_state;
-        break;
-        case dat_pay_gps:
-            dat_pay_xxx_state = sta_pay_gps_state;
-        break;
-        case dat_pay_gyro:
-            dat_pay_xxx_state = sta_pay_gyro_state;
-        break;
-        case dat_pay_expFis:
-            dat_pay_xxx_state = sta_pay_expFis_state;
-        break;
-        case dat_pay_camera:
-            dat_pay_xxx_state = sta_pay_camera_state;
-        break;
-        case dat_pay_tmEstado:
-            dat_pay_xxx_state = sta_pay_tmEstado_state;
-        break;
-        case dat_pay_battery:
-            dat_pay_xxx_state = sta_pay_battery_state;
-        break;
-        case dat_pay_debug:
-            dat_pay_xxx_state = sta_pay_debug_state;
-        break;
-        default:
-            dat_pay_xxx_state=-1;
-        break;
-    }
-
-    return dat_pay_xxx_state;
-}
-
-char* sta_varToString(STA_StateVar var_i){
+char* sta_BusStateVarToString(STA_BusStateVar var_i){
     char *pc;
     switch(var_i){
         case sta_RTC_isAlive:
@@ -463,38 +338,6 @@ char* sta_varToString(STA_StateVar var_i){
             break;
         case sta_AntSwitch_isOpen:
             pc = "sta_AntSwitch_isOpen";
-            break;
-
-        // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
-        case sta_pay_lagmuirProbe_isAlive:
-            pc = "sta_pay_lagmuirProbe_isAlive";
-            break;
-        case sta_pay_sensTemp_isAlive:
-            pc = "sta_pay_sensTemp_isAlive";
-            break;
-        case sta_pay_gps_isAlive:
-            pc = "sta_pay_gps_isAlive";
-            break;
-        case sta_pay_expFis_isAlive:
-            pc = "sta_pay_expFis_isAlive";
-            break;
-        case sta_pay_camera_isAlive:
-            pc = "sta_pay_camera_isAlive";
-            break;
-        case sta_pay_gyro_isAlive:
-            pc = "sta_pay_gyro_isAlive";
-            break;
-        case sta_pay_tmEstado_isAlive:
-            pc = "sta_pay_tmEstado_isAlive";
-            break;
-        case sta_pay_battery_isAlive:
-            pc = "sta_pay_battery_isAlive";
-            break;
-        case sta_pay_debug_isAlive:
-            pc = "sta_pay_debug_isAlive";
-            break;
-        case sta_pay_lagmuirProbe_isDeployed:
-            pc = "sta_pay_lagmuirProbe_isDeployed";
             break;
 
         //FLIGHT PLAN => (C&DH subsystem)
@@ -589,43 +432,45 @@ char* sta_varToString(STA_StateVar var_i){
             pc = "sta_rtc_seconds";
      	    break;
 
-        //EPS => (Energy subsystem)
-        case sta_eps_bat0_voltage:
-            pc = "sta_eps_bat0_voltage";
-     	    break;
-        case sta_eps_bat0_current:
-            pc = "sta_eps_bat0_current";
-     	    break;
-        case sta_eps_bus5V_current:
-            pc = "sta_eps_bus5V_current";
-     	    break;
-        case sta_eps_bus3V_current:
-            pc = "sta_eps_bus3V_current";
-     	    break;
-        case sta_eps_bus_battery_current:
-            pc = "sta_eps_bus_battery_current";
-     	    break;
-        case sta_eps_bat0_temp:
-            pc = "sta_eps_bat0_temp";
-     	    break;
-        case sta_eps_panel_pwr:
-            pc = "sta_eps_panel_pwr";
-     	    break;
-        case sta_eps_status:
-            pc = "sta_eps_status";
-     	    break;
-        case sta_eps_soc:
-            pc = "sta_eps_soc";
-     	    break;
-        case sta_eps_socss:
-            pc = "sta_eps_socss";
-     	    break;
-        case sta_eps_state_flag:
-            pc = "sta_eps_state_flag";
-     	    break;
-        case sta_eps_charging:
-            pc = "sta_eps_charging";
-     	    break;
+        #if SCH_EPS_ONBOARD == 1
+            //EPS => (Energy subsystem)
+            case sta_eps_bat0_voltage:
+                pc = "sta_eps_bat0_voltage";
+                break;
+            case sta_eps_bat0_current:
+                pc = "sta_eps_bat0_current";
+                break;
+            case sta_eps_bus5V_current:
+                pc = "sta_eps_bus5V_current";
+                break;
+            case sta_eps_bus3V_current:
+                pc = "sta_eps_bus3V_current";
+                break;
+            case sta_eps_bus_battery_current:
+                pc = "sta_eps_bus_battery_current";
+                break;
+            case sta_eps_bat0_temp:
+                pc = "sta_eps_bat0_temp";
+                break;
+            case sta_eps_panel_pwr:
+                pc = "sta_eps_panel_pwr";
+                break;
+            case sta_eps_status:
+                pc = "sta_eps_status";
+                break;
+            case sta_eps_soc:
+                pc = "sta_eps_soc";
+                break;
+            case sta_eps_socss:
+                pc = "sta_eps_socss";
+                break;
+            case sta_eps_state_flag:
+                pc = "sta_eps_state_flag";
+                break;
+            case sta_eps_charging:
+                pc = "sta_eps_charging";
+                break;
+        #endif  
 
         /* Revisar de aqui hacia abajo si aun son necesarios !!! */
 
@@ -654,39 +499,212 @@ char* sta_varToString(STA_StateVar var_i){
         case sta_trx_tx_baud:
             pc = "sta_trx_tx_baud";
             break;
-
-
-        //PAYLOAD
-        case sta_pay_lagmuirProbe_state:
-            pc = "sta_pay_lagmuirProbe_state";
-     	    break;
-        case sta_pay_sensTemp_state:
-            pc = "sta_pay_sensTemp_state";
-     	    break;
-        case sta_pay_gps_state:
-            pc = "sta_pay_gps_state";
-     	    break;
-        case sta_pay_expFis_state:
-            pc = "sta_pay_expFis_state";
-     	    break;
-        case sta_pay_camera_state:
-            pc = "sta_pay_camera_state";
-     	    break;
-        case sta_pay_gyro_state:
-            pc = "ta_pay_gyro_state";
-     	    break;
-        case sta_pay_tmEstado_state:
-            pc = "sta_pay_tmEstado_state";
-     	    break;
-        case sta_pay_battery_state:
-            pc = "sta_pay_battery_state";
-     	    break;
-        case sta_pay_debug_state:
-            pc = "sta_pay_debug_state";
-     	    break;
         default:
-            pc = "No string for this var_i";
-     	    break;
+            pc = "unknown BusStateVar";
+            break;
     }
     return pc;
+}
+
+//******************************************************************************
+// PAYLOAD section
+//******************************************************************************
+
+void sta_onReset_PayStateRepo(void){
+    return;
+}
+
+int sta_get_PayStateVar(STA_PayStateVar indxVar){
+    portBASE_TYPE semStatus = xSemaphoreTake( statusRepositorySem, portMAX_DELAY );
+
+    int value;
+    //int param;
+    switch(indxVar){
+    // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
+        case sta_pay_lagmuirProbe_isAlive:
+            //printf("PAY => (Payload subsystem)\r\n");
+            value = pay_isAlive_lagmuirProbe(NULL);
+            break;
+        case sta_pay_sensTemp_isAlive:
+            value = pay_isAlive_sensTemp(NULL);
+            break;
+        case sta_pay_gps_isAlive:
+            value = pay_isAlive_gps(NULL);
+            break;
+        case sta_pay_expFis_isAlive:
+            value = pay_isAlive_expFis(NULL);
+            break;
+        case sta_pay_camera_isAlive:
+            value = pay_isAlive_camera(NULL);
+            break;
+        case sta_pay_gyro_isAlive:
+            value = pay_isAlive_gyro(NULL);
+            break;
+        case sta_pay_tmEstado_isAlive:
+            value = pay_isAlive_tmEstado(NULL);
+            break;
+        case sta_pay_battery_isAlive:
+            value = pay_isAlive_battery(NULL);
+            break;
+        case sta_pay_debug_isAlive:
+            value = pay_isAlive_debug(NULL);
+            break;
+        case sta_pay_lagmuirProbe_isDeployed:
+            value = 0;  //no hay forma de saberlo !!
+            break;
+
+        //PAY => (Payload subsystem)
+        case sta_pay_lagmuirProbe_state:
+            //printf("PAY => (Payload subsystem)\r\n");
+            value = pay_get_state_lagmuirProbe(NULL);
+            break;
+        case sta_pay_sensTemp_state:
+            value = pay_get_state_sensTemp(NULL);
+            break;
+        case sta_pay_gps_state:
+            value = pay_get_state_gps(NULL);
+            break;
+        case sta_pay_expFis_state:
+            value = pay_get_state_expFis(NULL);
+            break;
+        case sta_pay_camera_state:
+            value = pay_get_state_camera(NULL);
+            break;
+        case sta_pay_gyro_state:
+            value = pay_get_state_gyro(NULL);
+            break;
+        case sta_pay_tmEstado_state:
+            value = pay_get_state_tmEstado(NULL);
+            break;
+        case sta_pay_battery_state:
+            value = pay_get_state_battery(NULL);
+            break;
+        case sta_pay_debug_state:
+            value = pay_get_state_debug(NULL);
+            break;
+
+        default:
+            printf("[sta_get_stateVar] Error: No function/command for STA_StateVar %d \r\n", indxVar);
+            value = -(0x7FFF);
+        break;
+    }
+
+    semStatus = xSemaphoreGive(statusRepositorySem);
+
+    return value;
+}
+
+char* sta_PayStateVarToString(STA_PayStateVar var_i){
+    char *pc;
+    switch(var_i){
+        case sta_pay_lagmuirProbe_isAlive:
+            pc = "sta_pay_lagmuirProbe_isAlive";
+            break;
+        case sta_pay_sensTemp_isAlive:
+            pc = "sta_pay_sensTemp_isAlive";
+            break;
+        case sta_pay_gps_isAlive:
+            pc = "sta_pay_gps_isAlive";
+            break;
+        case sta_pay_expFis_isAlive:
+            pc = "sta_pay_expFis_isAlive";
+            break;
+        case sta_pay_camera_isAlive:
+            pc = "sta_pay_camera_isAlive";
+            break;
+        case sta_pay_gyro_isAlive:
+            pc = "sta_pay_gyro_isAlive";
+            break;
+        case sta_pay_tmEstado_isAlive:
+            pc = "sta_pay_tmEstado_isAlive";
+            break;
+        case sta_pay_battery_isAlive:
+            pc = "sta_pay_battery_isAlive";
+            break;
+        case sta_pay_debug_isAlive:
+            pc = "sta_pay_debug_isAlive";
+            break;
+        case sta_pay_lagmuirProbe_isDeployed:
+            pc = "sta_pay_lagmuirProbe_isDeployed";
+            break;
+
+    // FP2 variables
+        case sta_pay_lagmuirProbe_state:
+            pc = "sta_pay_lagmuirProbe_state";
+            break;
+        case sta_pay_sensTemp_state:
+            pc = "sta_pay_sensTemp_state";
+            break;
+        case sta_pay_gps_state:
+            pc = "sta_pay_gps_state";
+            break;
+        case sta_pay_expFis_state:
+            pc = "sta_pay_expFis_state";
+            break;
+        case sta_pay_camera_state:
+            pc = "sta_pay_camera_state";
+            break;
+        case sta_pay_gyro_state:
+            pc = "sta_pay_gyro_state";
+            break;
+        case sta_pay_tmEstado_state:
+            pc = "sta_pay_tmEstado_state";
+            break;
+        case sta_pay_battery_state:
+            pc = "sta_pay_battery_state";
+            break;
+        case sta_pay_debug_state:
+            pc = "sta_pay_debug_state";
+            break;
+        default:
+            pc = "unknown PayStateVar";
+            break;
+    }
+    return pc;
+}
+
+/**
+ * Asocia el DAT_Payload_Buff pay_i a la STA_StateVar que controla la ejecucion o
+ * o no de ese Payload
+ * @param pay_i DAT_Payload del que quiero obtener el DAT_StateVar
+ * @return DAT_StateVar dat_pay_xxx_perform
+ */
+STA_PayStateVar sta_DAT_Payload_Buff_to_STA_PayStateVar(DAT_Payload_Buff pay_i){
+//STA_StateVar sta_DAT_Payload_Buff_to_STA_StateVar(int pay_i){
+    STA_PayStateVar dat_pay_xxx_state;
+
+    switch(pay_i){
+        case dat_pay_lagmuirProbe:
+            dat_pay_xxx_state = sta_pay_lagmuirProbe_state;
+        break;
+        case dat_pay_sensTemp:
+            dat_pay_xxx_state = sta_pay_sensTemp_state;
+        break;
+        case dat_pay_gps:
+            dat_pay_xxx_state = sta_pay_gps_state;
+        break;
+        case dat_pay_gyro:
+            dat_pay_xxx_state = sta_pay_gyro_state;
+        break;
+        case dat_pay_expFis:
+            dat_pay_xxx_state = sta_pay_expFis_state;
+        break;
+        case dat_pay_camera:
+            dat_pay_xxx_state = sta_pay_camera_state;
+        break;
+        case dat_pay_tmEstado:
+            dat_pay_xxx_state = sta_pay_tmEstado_state;
+        break;
+        case dat_pay_battery:
+            dat_pay_xxx_state = sta_pay_battery_state;
+        break;
+        case dat_pay_debug:
+            dat_pay_xxx_state = sta_pay_debug_state;
+        break;
+        default:
+            dat_pay_xxx_state=-1;
+        break;
+    }
+
+    return dat_pay_xxx_state;
 }

@@ -123,7 +123,7 @@ BOOL check_if_executable(DispCmd *newCmd)
     #if(SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE != 0)
     {
         // Compare sysReq with SOC
-        if(sta_get_stateVar(sta_eps_soc) < sysReq)
+        if(sta_get_BusStateVar(sta_eps_soc) < sysReq)
         {
             #if SCH_TDISPATCHER_VERBOSE >=1
                 printf("[Dispatcher] Orig: 0x%X | Cmd: 0x%X | Param: %d Refused because of SOC\n", idOrig, cmdId, param );
@@ -132,7 +132,7 @@ BOOL check_if_executable(DispCmd *newCmd)
         }
 
         //Prevent TCM command to discharge bat. (Pina-Bilbao Power Budget)
-        if((sta_get_stateVar(sta_eps_state_flag) == 1) && ((cmdId>>8)==SCH_CMD_TCM))
+        if((sta_get_BusStateVar(sta_eps_state_flag) == 1) && ((cmdId>>8)==SCH_CMD_TCM))
         {
             #if SCH_TASKDISPATCHER_VERBOSE >=1
                 printf("[Dispatcher] Orig: 0x%X | Cmd: 0x%X | Param: %d Refused because of EPS flag\n", idOrig, cmdId, param );

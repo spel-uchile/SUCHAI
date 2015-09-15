@@ -253,16 +253,6 @@ int thk_suchai_deployment(void *param)
     ClrWdt();
     __delay_ms(60000);  //delay 60sec to avoid drain-out the EPS
 
-    /* Ceploy langmuir should NOT be here, but there is no way
-     * to check deployment, so its included here */
-    #if (SCH_ANTENNA_ONBOARD==1 && SCH_PAY_LANGMUIR_ONBOARD==1)
-        if( sta_get_stateVar(sta_pay_lagmuirProbe_isDeployed)==0 ){
-            int rt_mode = SCH_THOUSEKEEPING_ANT_DEP_REALTIME; /* 1=Real Time, 0=Debug Time */
-            pay_deploy_langmuirProbe(rt_mode);    //realtime mode
-            //set var lang dep = 1
-        }
-    #endif
-
     //other "only once"-tasks
     //..
 
@@ -590,12 +580,12 @@ int thk_debug2(void *param){
     printf("PPC_MB_nOE_MHX_CHECK = %d \r\n", PPC_MB_nOE_MHX_CHECK );
     printf("PPC_MB_nON_MHX_CHECK = %d \r\n", PPC_MB_nON_MHX_CHECK );
     printf("PPC_MB_nON_SD_CHECK = %d \r\n", PPC_MB_nON_SD_CHECK );
-    printf("sta_RTC_isAlive = %d \r\n", sta_get_stateVar(sta_RTC_isAlive) );
-    printf("sta_TRX_isAlive = %d \r\n", sta_get_stateVar(sta_TRX_isAlive) );
-    printf("sta_EPS_isAlive = %d \r\n", sta_get_stateVar(sta_EPS_isAlive) );
-    printf("sta_MemEEPROM_isAlive = %d \r\n", sta_get_stateVar(sta_MemEEPROM_isAlive) );
-    printf("sta_MemSD_isAlive = %d \r\n", sta_get_stateVar(sta_MemSD_isAlive) );
-    printf("sta_SUCHAI_isDeployed = %d \r\n", sta_get_stateVar(sta_AntSwitch_isOpen) );
+    printf("sta_RTC_isAlive = %d \r\n", sta_get_BusStateVar(sta_RTC_isAlive) );
+    printf("sta_TRX_isAlive = %d \r\n", sta_get_BusStateVar(sta_TRX_isAlive) );
+    printf("sta_EPS_isAlive = %d \r\n", sta_get_BusStateVar(sta_EPS_isAlive) );
+    printf("sta_MemEEPROM_isAlive = %d \r\n", sta_get_BusStateVar(sta_MemEEPROM_isAlive) );
+    printf("sta_MemSD_isAlive = %d \r\n", sta_get_BusStateVar(sta_MemSD_isAlive) );
+    printf("sta_SUCHAI_isDeployed = %d \r\n", sta_get_BusStateVar(sta_AntSwitch_isOpen) );
     #if (SCH_ANTENNA_ONBOARD==1)
         int ant12 = PPC_ANT12_CHECK;
         printf("PPC_ANT12_CHECK = %d => ", ant12 );
@@ -630,18 +620,6 @@ int thk_debug2(void *param){
     #if (SCH_PAY_FIS_ONBOARD==1)
         pay_init_expFis(NULL);
         pay_stop_expFis(NULL);
-    #endif
-    #if (SCH_PAY_BATTERY_ONBOARD==1)
-        pay_init_battery(NULL);
-        printf("  sta_pay_battery_isAlive = %d \r\n", sta_get_stateVar(sta_pay_battery_isAlive) );
-    #endif
-    #if (SCH_PAY_DEBUG_ONBOARD==1)
-        pay_init_debug(NULL);
-        printf("  sta_pay_test2_isAlive = %d \r\n", sta_get_stateVar(sta_pay_debug_isAlive) );
-    #endif
-    #if (SCH_PAY_LANGMUIR_ONBOARD==1)
-        pay_init_lagmuirProbe(NULL);
-        pay_stop_lagmuirProbe(NULL);
     #endif
     pay_init_tmEstado(NULL);
     printf("******************************************\r\n");

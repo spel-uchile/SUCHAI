@@ -61,7 +61,15 @@ int dep_init_stateRepo(void *param)
         printf("\n[dep_init_stateRepo] Initializing state repository ..\r\n");
     #endif
 
-    sta_onReset_stateRepo();
+    #if (SCH_TDEPLOYMENT_VERBOSE>=2)
+        printf("    * sta_onReset_BusStateRepo() ..\r\n");
+    #endif
+    sta_onReset_BusStateRepo();
+
+    #if (SCH_TDEPLOYMENT_VERBOSE>=2)
+        printf("    * sta_onReset_PayStateRepo() ..\r\n");
+    #endif
+    sta_onReset_PayStateRepo();
 
     return 1;
 }
@@ -269,7 +277,10 @@ int dep_init_adHoc_strcts(void *param)
     #if (SCH_TDEPLOYMENT_VERBOSE>=2)
         printf("    * init EPS structs\r\n");
     #endif
-    setStateFlagEPS( (unsigned char)sta_get_stateVar(sta_eps_state_flag) );
+
+    #if( SCH_EPS_ONBOARD == 1 )
+        setStateFlagEPS( (unsigned char)sta_get_BusStateVar(sta_eps_state_flag) );
+    #endif
 
     return 1;
 }
@@ -341,7 +352,7 @@ void dep_init_suchai_tasks(void)
         __delay_ms(300);
     #endif
 
-    if( sta_get_stateVar(sta_MemSD_isAlive) == 1 )
+    if( sta_get_BusStateVar(sta_MemSD_isAlive) == 1 )
     {
         #if (SCH_TFLIGHTPLAN_USE == 1)
             #if (SCH_TDEPLOYMENT_VERBOSE>=2)
@@ -374,7 +385,7 @@ void dep_init_suchai_tasks(void)
 int dep_init_sysbus_hw(void *param)
 {
     int resp;
-    STA_StateVar hw_isAlive;
+    STA_BusStateVar hw_isAlive;
 
     #if (SCH_TDEPLOYMENT_VERBOSE>=1)
         printf("\n[dep_init_bus_hw] Initializig external hardware...\r\n");
@@ -425,7 +436,7 @@ int dep_init_sysbus_hw(void *param)
         #endif
         //Check if suchai is deployed to select correct trx configuration
         hw_isAlive = sta_dep_ant_deployed;
-        int deployed = sta_get_stateVar(hw_isAlive);
+        int deployed = sta_get_BusStateVar(hw_isAlive);
         //Initialize trx
         resp  = trx_initialize(&deployed);
         //hw_isAlive = sta_TRX_isAlive;
@@ -486,7 +497,7 @@ int dep_init_sysbus_hw(void *param)
             printf("    * External Antenna .. ");
         #endif
         hw_isAlive = sta_AntSwitch_isOpen;
-        resp = sta_get_stateVar(hw_isAlive);
+        resp = sta_get_BusStateVar(hw_isAlive);
         //hw_isAlive = sta_Antenna_isDeployed;
         //sta_set_stateVar(hw_isAlive, resp);
         #if (SCH_TDEPLOYMENT_VERBOSE>=2)

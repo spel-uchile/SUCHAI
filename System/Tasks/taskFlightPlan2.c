@@ -49,7 +49,7 @@ void taskFlightPlan2(void *param)
     portTickType xLastWakeTime = xTaskGetTickCount();
     #if (SCH_THOUSEKEEPING_USE == 1)
         while( TRUE ){
-            if( sta_get_stateVar(sta_dep_ant_deployed)==1 ){
+            if( sta_get_BusStateVar(sta_dep_ant_deployed)==1 ){
                 break;
             }
             vTaskDelayUntil(&xLastWakeTime, check_deployment_time);
@@ -80,7 +80,7 @@ void taskFlightPlan2(void *param)
             printf("[FlightPlan2] min_check_period_ms (%d) actions ..\r\n", min_check_period_ms);
         #endif
 
-        if(sta_get_stateVar(sta_ppc_opMode)==STA_PPC_OPMODE_NORMAL){
+        if(sta_get_BusStateVar(sta_ppc_opMode)==STA_PPC_OPMODE_NORMAL){
             NewCmd.cmdId = pay_id_fp2_default_fsm;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);

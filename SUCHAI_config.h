@@ -26,7 +26,7 @@
 #define SCH_TRX_ONBOARD                     (1) ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
 #define SCH_RTC_ONBOARD                     (1) ///< 1 = Onboard 0 = Not Onboard
 #define SCH_MEMEEPROM_ONBOARD               (1) ///< 1 = Onboard 0 = Not Onboard
-#define SCH_EPS_ONBOARD                     (1) ///< Onboard => I2C1 en uso
+#define SCH_EPS_ONBOARD                     (0) ///< Onboard => I2C1 en uso
 #define SCH_MEMSD_ONBOARD                   (1) ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_MGN_ONBOARD                     (0)  ///< Onboard => 1 pin(es) en modo Switch
 
@@ -35,11 +35,11 @@
 #define SCH_PAY_SENSTEMP_ONBOARD            (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 #define SCH_PAY_TMESTADO_ONBOARD            (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 #define SCH_PAY_BATTERY_ONBOARD             (0)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
-#define SCH_PAY_GYRO_ONBOARD                (0)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
+#define SCH_PAY_GYRO_ONBOARD                (1)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_PAY_GPS_ONBOARD                 (0)  ///< Onboard => UART4 en uso, 1 pin(es) en modo Switch
 #define SCH_PAY_CAM_nMEMFLASH_ONBOARD       (0)  ///< Onboard => SPI-1 asignado a la Camara. Offboard => SPI-1 asignado a memFlash
 #define SCH_PAY_FIS_ONBOARD                 (0)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
-#define SCH_PAY_DEBUG_ONBOARD               (0)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
+#define SCH_PAY_DEBUG_ONBOARD               (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 
 /******************************************************************************/
 /* Tasks */
@@ -47,7 +47,7 @@
 /* Main Tasks configurations */
 #define SCH_THOUSEKEEPING_USE                    (0)    ///< 1 = use it, 0 = do not use it
 #define SCH_TCONSOLE_USE                         (1)    ///< 1 = use it, 0 = do not use it
-#define SCH_TFLIGHTPLAN_USE                      (0)    ///< 0 = do not use it, 1 = FP, 2 = FP2, 3 = FP3
+#define SCH_TFLIGHTPLAN_USE                      (3)    ///< 0 = do not use it, 1 = FP, 2 = FP2, 3 = FP3
 #define SCH_TCOMMUNICATION_USE                   (SCH_TRX_ONBOARD)  ///< 1 = use it, 0 = do not use it
 /* Id Tasks configs */
 #define SCH_TCONSOLE_IDORIG         (0x1101)
@@ -127,7 +127,7 @@
 #define SCH_TFLIGHTPLAN2_REALTIME           (1)  ///< 1=Realtime 0=Debugtime
 #define SCH_TFLIGHTPLAN3_REALTIME           (1)  ///< 1=Realtime 0=Debugtime
 
-/* Peripheral's config */
+/*  Peripheral's config */
 #define SCH_UART_DEBUG_PORT     (0) ///< 0-Habilita DB9, 1-Habilita USB
 #define SCH_I2C1_ADDR           (0x00) ///< I2C 1 Slave address
 #define SCH_I2C2_ADDR           (0xF3) ///< I2C 2 Slave address

@@ -130,6 +130,8 @@ void pay_onResetCmdPAY(void){
  * @return
  */
 int pay_fp2_default_fsm(void *param){
+    //unsigned int tick_ms = *( (unsigned int *)param );
+    //int value = *( (int*)param );
     //pay_fp2_multiplexing();
     pay_fp2_simultaneous();
     return 1;
@@ -147,7 +149,7 @@ int pay_test_dataRepo(void *param){
         printf(ret); printf("\r\n");
 
         //escribo
-        stat = dat_set_Payload_Buff(pay_i, value, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        stat = dat_set_Payload_Buff(pay_i, value);
         printf("stat = dat_setPayloadVar( pay_i, value);\r\nstat =  ");
         if(stat==TRUE){ printf("TRUE\r\n"); }
         else{ printf("FALSE\nFin del test\r\n"); break; }
@@ -214,6 +216,7 @@ int pay_isAlive_expFis(void *param){
      * This Payload is mainly (DAC seems to basic to check isAlive with it)
      * Sw/PIC24 based, so it's assummed to always be aliwe.
      */
+    if(SCH_PAY_FIS_ONBOARD == 0){return 0;}
     return 1;
 }
 int pay_get_state_expFis(void *param){
@@ -241,14 +244,14 @@ int pay_init_expFis(void *param){
     int buff_len = fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
 
     lenBuff = (buff_len*len*rounds_per_ADC_period);
-    dat_reset_Payload_Buff(pay_i, lenBuff, 0);
+    dat_reset_Payload_Buff(pay_i);
 
     //configure Payload
     expFis_gpb_indx = 0;    //Reset vars
     int res = 1;    //always alive
 
     //debug Info
-    printf("  sta_pay_expFis_isAlive = %d \r\n", sta_get_stateVar(sta_pay_expFis_isAlive) );
+    printf("  sta_pay_expFis_isAlive = %d \r\n", sta_get_PayStateVar(sta_pay_expFis_isAlive) );
 
     return res;
 }
@@ -434,7 +437,7 @@ int pay_init_battery(void *param){
     DAT_Payload_Buff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_battery;
     lenBuff = (unsigned int)(500*4);   //desde 0x00 a 0xFF
-    dat_reset_Payload_Buff(pay_i, lenBuff, 1);
+    dat_reset_Payload_Buff(pay_i);
     //agrego un comentario
 
 
@@ -453,9 +456,9 @@ int pay_take_battery(void *param){
     lectura2 = (int)readEPSvars(EPS_ID_bat0_current)+0b1111000000000000;
     lectura3 = (int)readEPSvars(EPS_ID_bat0_temp)+0b1111000000000000;
     //guarda tres lecturas voltaje, corriente y temperatura de la bateria
-    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura1, index+0, DAT_PAYBUFF_MODE_NO_MAXINDX);
-    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura2, index+1, DAT_PAYBUFF_MODE_NO_MAXINDX);
-    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura3, index+2, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura1, index+0);
+    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura2, index+1);
+    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura3, index+2);
 
     printf("writing ..\r\n");
     printf("dat_pay_battery[%d] = %d \r\n", index+0, lectura1);
@@ -471,7 +474,7 @@ int pay_execute_experiment_battery(void *param){ //comando para iniciar medicion
 
     unsigned int timemed = *(int*)param; //95*60*10 = 57000
     unsigned int i;
-    dat_reset_Payload_Buff(dat_pay_battery, dat_get_MaxPayIndx(dat_pay_battery), 2);
+    dat_reset_Payload_Buff(dat_pay_battery);
     //una orbita=95minutos, 60segundos, 10 muestras por segundo (sensor de 100ms)
 
     //prueba
@@ -517,8 +520,9 @@ int pay_stop_battery(void *param){
 //******************************************************************************
 int pay_isAlive_debug(void *param){
     /*
-     * This Payload is Sw based, so it's assummed to always be aliwe.
+     * This Payload is Sw based
      */
+    if(SCH_PAY_DEBUG_ONBOARD == 0){return 0;}
     return 1;
 }
 int pay_get_state_debug(void *param){
@@ -539,7 +543,7 @@ int pay_init_debug(void *param){
     DAT_Payload_Buff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_debug;
     lenBuff = (unsigned int)(500);    //payload en etapa experimental aun
-    dat_reset_Payload_Buff(pay_i, lenBuff, 0);
+    dat_reset_Payload_Buff(pay_i);
 
     //restart counter
     pay_debug_cnt = 0;
@@ -554,7 +558,7 @@ int pay_take_debug(void *param){
 
     //save data
     pay_debug_cnt++;
-    dat_set_Payload_Buff(dat_pay_debug, pay_debug_cnt, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_debug, pay_debug_cnt);
 
     return 1;
 }
@@ -565,6 +569,7 @@ int pay_stop_debug(void *param){
 }
 //******************************************************************************
 int pay_isAlive_gyro(void *param){
+    if(SCH_PAY_GYRO_ONBOARD == 0){return 0;}
     return gyr_isAlive();
 }
 int pay_get_state_gyro(void *param){
@@ -602,7 +607,7 @@ int pay_init_gyro(void *param){
     DAT_Payload_Buff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_gyro;
     lenBuff = (unsigned int)(500*3);  //(1440*3)      //numero de 10-minutos en un dia
-    dat_reset_Payload_Buff(pay_i, lenBuff, 1);
+    dat_reset_Payload_Buff(pay_i);
 
     //configure Payload
     int res;
@@ -615,7 +620,7 @@ int pay_init_gyro(void *param){
     }
 
     //debug info
-    printf("  sta_pay_gyro_isAlive = %d \r\n", sta_get_stateVar(sta_pay_gyro_isAlive) );
+    printf("  sta_pay_gyro_isAlive = %d \r\n", sta_get_PayStateVar(sta_pay_gyro_isAlive) );
     printf("  PPC_GYRO_INT2_CHECK = %d \r\n", PPC_GYRO_INT2_CHECK );
 
     return res;
@@ -628,7 +633,7 @@ int pay_take_gyro(void *param){
 
     //in case of failure
     if( pay_isAlive_gyro(NULL) == 0){
-        dat_set_Payload_Buff(dat_pay_gyro ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_gyro ,0xFAFA);
         printf("pay_take_gyro() failure\r\n");
         return 1;
     }
@@ -636,9 +641,9 @@ int pay_take_gyro(void *param){
     //save data
     GYR_DATA res_data;
     gyr_take_samples(FALSE, &res_data);
-    dat_set_Payload_Buff(dat_pay_gyro, res_data.a_x, DAT_PAYBUFF_MODE_NO_MAXINDX);
-    dat_set_Payload_Buff(dat_pay_gyro, res_data.a_y, DAT_PAYBUFF_MODE_NO_MAXINDX);
-    dat_set_Payload_Buff(dat_pay_gyro, res_data.a_z, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_gyro, res_data.a_x);
+    dat_set_Payload_Buff(dat_pay_gyro, res_data.a_y);
+    dat_set_Payload_Buff(dat_pay_gyro, res_data.a_z);
     
     return 1;
 }
@@ -651,6 +656,7 @@ int pay_isAlive_tmEstado(void *param){
     /*
      * This Payload is Sw based, so it's assummed to always be aliwe.
      */
+    if(SCH_PAY_TMESTADO_ONBOARD == 0){return 0;}
     return 1;
 }
 int pay_get_state_tmEstado(void *param){
@@ -670,11 +676,11 @@ int pay_init_tmEstado(void *param){
     //configure PaylaodBuff
     DAT_Payload_Buff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_tmEstado;
-    lenBuff = (unsigned int)(40*sta_stateVar_last_one);  //(4*60/5=48)      //numero de 5-minutos en una orbita (4 horas)
-    dat_reset_Payload_Buff(pay_i, lenBuff, 1);
+    lenBuff = (unsigned int)(40*sta_busStateVar_last_one);  //(4*60/5=48)      //numero de 5-minutos en una orbita (4 horas)
+    dat_reset_Payload_Buff(pay_i);
 
     //isAlive
-    int res_isAlive = sta_get_stateVar(sta_pay_tmEstado_isAlive);
+    int res_isAlive = sta_get_PayStateVar(sta_pay_tmEstado_isAlive);
 
     //debug info
     #if (_VERBOSE_>=2)
@@ -691,12 +697,12 @@ int pay_take_tmEstado(void *param){
     pay_save_date_time_to_Payload_Buff(dat_pay_tmEstado);
 
     //save data
-    STA_StateVar indxVar; int var;
-    for(indxVar=0; indxVar<sta_stateVar_last_one; indxVar++){
-        var = sta_get_stateVar(indxVar);
-        //dat_set_Payload_Buff(dat_pay_tmEstado, var, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    STA_BusStateVar indxVar; int var;
+    for(indxVar=0; indxVar<sta_busStateVar_last_one; indxVar++){
+        var = sta_get_BusStateVar(indxVar);
+        //dat_set_Payload_Buff(dat_pay_tmEstado, var);
         #if (_VERBOSE_>=1)
-            printf("sta_get_stateVar[%s] = %d\r\n", sta_varToString(indxVar), var);
+            printf("sta_get_stateVar[%s] = %d\r\n", sta_BusStateVarToString(indxVar), var);
         #endif
     }
 
@@ -732,6 +738,7 @@ int pay_get_savedPhoto_camera(void *param){
     return 1;
 }
 int pay_isAlive_camera(void *param){
+    if(SCH_PAY_CAM_nMEMFLASH_ONBOARD == 0){return 0;}
     return cam_isAlive();
 }
 int pay_get_state_camera(void *param){
@@ -766,7 +773,7 @@ int pay_init_camera(void *param){
 
     //debug info
     printf("  PPC_CAM_HOLD_CHECK = %d\r\n", PPC_CAM_HOLD_CHECK);
-    printf("  sta_pay_camera_isAlive = %d \r\n", sta_get_stateVar(sta_pay_camera_isAlive) );
+    printf("  sta_pay_camera_isAlive = %d \r\n", sta_get_PayStateVar(sta_pay_camera_isAlive) );
 
     return res;
 }
@@ -777,9 +784,9 @@ int pay_take_camera(void *param){
     //pay_save_date_time_to_Payload_Buff(dat_pay_camera);   //save date_time in 2ints
 
     //in case of failure
-    if( sta_get_stateVar(sta_pay_camera_isAlive)==0 ){
+    if( sta_get_PayStateVar(sta_pay_camera_isAlive)==0 ){
         printf("camera is not alive!..\r\n");
-        dat_set_Payload_Buff(dat_pay_camera ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_camera ,0xFAFA);
         return 1;
     }
 
@@ -811,7 +818,7 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
     //in case of errors
     if(photo_byte_length == 0){
         printf(" Error: No photo was taken ..\r\n");
-        dat_set_Payload_Buff(dat_pay_camera ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_camera ,0xFAFA);
         return FALSE;
     }
 
@@ -821,7 +828,7 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
             photo_int_length, photo_byte_length);
 
     //Inicializa la estructura de data payload
-    dat_reset_Payload_Buff(dat_pay_camera, photo_int_length, 0);
+    dat_reset_Payload_Buff(dat_pay_camera);
 
     //prepara variables para guardar foto
     unsigned int int_r[10];
@@ -852,16 +859,16 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
         int_r[8] = pay_camera_get_1int_from_2bytes();
         int_r[9] = pay_camera_get_1int_from_2bytes();
 
-        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[0], DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[1], DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[2], DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[3], DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[4], DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[5], DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[6], DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[7], DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[8], DAT_PAYBUFF_MODE_NO_MAXINDX);
-        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[9], DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[0]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[1]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[2]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[3]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[4]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[5]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[6]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[7]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[8]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[9]);
 
         ClrWdt();
 //        printf("  Debug info: saving [%d/%d] ..\r\n",
@@ -873,7 +880,7 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
         //get 1 int out of 2 bytes
         int_r[0] = pay_camera_get_1int_from_2bytes();
 
-        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[0], DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[0]);
 
         ClrWdt();
     }
@@ -926,6 +933,7 @@ int pay_camera_get_1int_from_2bytes(void){
 }
 //******************************************************************************
 int pay_isAlive_gps(void *param){
+    if(SCH_PAY_GPS_ONBOARD == 0){return 0;}
     return 0;
 }
 int pay_get_state_gps(void *param){
@@ -946,7 +954,7 @@ int pay_init_gps(void *param){
     DAT_Payload_Buff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_gps;
     lenBuff = (unsigned int)(200);   //(1440)  //numero de 10-minutos en un dia
-    dat_reset_Payload_Buff(pay_i, lenBuff, 1);
+    dat_reset_Payload_Buff(pay_i);
 
     return 0;
 //    //configure Payload
@@ -972,7 +980,7 @@ int pay_take_gps(void *param){
     //in case of failure
     if( pay_isAlive_gps(NULL) == 0 ){
         printf("gps is not alive!..\r\n");
-        dat_set_Payload_Buff(dat_pay_gps ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_gps ,0xFAFA);
         //turn GPS off
         PPC_GPS_SWITCH = 0;
         return 0;
@@ -1120,6 +1128,8 @@ BOOL pay_deploy_langmuirProbe(int realtime){
     return TRUE;
 }
 int pay_isAlive_lagmuirProbe(void *param){
+    if(SCH_PAY_LANGMUIR_ONBOARD == 0){return 0;}
+
     return langmuir_isAlive();
 }
 int pay_get_state_lagmuirProbe(void *param){
@@ -1136,11 +1146,21 @@ int pay_set_state_lagmuirProbe(void *param){
 int pay_init_lagmuirProbe(void *param){
     printf("pay_init_lagmuirProbe\r\n");
 
+    /* Ceploy langmuir should NOT be here, but there is no way
+     * to check deployment, so its included here */
+    #if (SCH_ANTENNA_ONBOARD==1 && SCH_PAY_LANGMUIR_ONBOARD==1)
+        if( sta_get_PayStateVar(sta_pay_lagmuirProbe_isDeployed)==0 ){
+            int rt_mode = SCH_THOUSEKEEPING_ANT_DEP_REALTIME; /* 1=Real Time, 0=Debug Time */
+            pay_deploy_langmuirProbe(rt_mode);    //realtime mode
+            //set var lang dep = 1
+        }
+    #endif
+
     //configure Payload_Buff
     DAT_Payload_Buff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_lagmuirProbe;
     lenBuff = (unsigned int)(20*1); /*TODO: SET VALUE*/ //(1440)      //numero de 10-minutos en un dia
-    dat_reset_Payload_Buff(pay_i, lenBuff, 1);
+    dat_reset_Payload_Buff(pay_i);
 
     //configs
     int res_isAlive = pay_isAlive_lagmuirProbe(NULL); //not fully implemented yet => always dead
@@ -1148,7 +1168,7 @@ int pay_init_lagmuirProbe(void *param){
 
     //debug info
     printf("  sta_pay_lagmuirProbe_isAlive = %d \r\n", res_isAlive );
-    printf("  sta_pay_lagmuirProbe_isDeployed = %d \r\n", sta_get_stateVar(sta_pay_lagmuirProbe_isDeployed) );
+    printf("  sta_pay_lagmuirProbe_isDeployed = %d \r\n", sta_get_PayStateVar(sta_pay_lagmuirProbe_isDeployed) );
 
     return res_isAlive;
 }
@@ -1160,7 +1180,7 @@ int pay_take_lagmuirProbe(void *param){
     pay_save_date_time_to_Payload_Buff(dat_pay_lagmuirProbe);
 
     //save data
-    dat_set_Payload_Buff(dat_pay_lagmuirProbe, 0x01, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_lagmuirProbe, 0x01);
 
 ////    int verbose = *(int *)param;
 //    int ok = 0;
@@ -1284,6 +1304,8 @@ int pay_debug_sensTemp(void *param){
     return pay_isAlive_sensTemp(NULL);
 }
 int pay_isAlive_sensTemp(void *param){
+    if(SCH_PAY_SENSTEMP_ONBOARD == 0){return 0;}
+
     int res, rest = 0;
     res = (int)sensTemp_isAlive(ST1_ADDRESS);
     rest = rest<<1;
@@ -1321,23 +1343,23 @@ int pay_init_sensTemp(void *param){
     DAT_Payload_Buff pay_i; unsigned int lenBuff;
     pay_i = dat_pay_sensTemp;
     lenBuff = (unsigned int)(500*4) + 4;    //numero de muestras*4 + estado de isAlive cada sensor
-    dat_reset_Payload_Buff(pay_i, lenBuff, 1);
+    dat_reset_Payload_Buff(pay_i);
 
     //configure Payload
     BOOL s1, s2, s3, s4;
     s1 = sensTemp_init(ST1_ADDRESS);
-    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s1, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s1);
 
     s2 = sensTemp_init(ST2_ADDRESS);
-    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s2, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s2);
 
     s3 = sensTemp_init(ST3_ADDRESS);
-    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s3, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s3);
 
     s4 = sensTemp_init(ST4_ADDRESS);
-    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s4, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_sensTemp, (int)s4);
 
-    int res_isAlive = sta_get_stateVar(sta_pay_sensTemp_isAlive);
+    int res_isAlive = sta_get_PayStateVar(sta_pay_sensTemp_isAlive);
 
     //debug info
     printf("  sta_pay_sensTemp_isAlive = %d \r\n", res_isAlive );
@@ -1353,20 +1375,20 @@ int pay_take_sensTemp(void *param){
     //in case of failure
     if( pay_isAlive_sensTemp(NULL) == 0){
         printf("sensTemp is not alive!..\r\n");
-        dat_set_Payload_Buff(dat_pay_sensTemp ,0xFAFA, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff(dat_pay_sensTemp ,0xFAFA);
         return 0;
     }
 
     //save data
     int val;
     val=sensTemp_take(ST1_ADDRESS, FALSE);
-    dat_set_Payload_Buff(dat_pay_sensTemp, val, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_sensTemp, val);
     val=sensTemp_take(ST2_ADDRESS, FALSE);
-    dat_set_Payload_Buff(dat_pay_sensTemp, val, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_sensTemp, val);
     val=sensTemp_take(ST3_ADDRESS, FALSE);
-    dat_set_Payload_Buff(dat_pay_sensTemp, val, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_sensTemp, val);
     val=sensTemp_take(ST4_ADDRESS, FALSE);
-    dat_set_Payload_Buff(dat_pay_sensTemp, val, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(dat_pay_sensTemp, val);
 
     return 1;
 }
@@ -1393,7 +1415,7 @@ void pay_fp2_multiplexed(){
         printf("pay_fp2_i_multiplexing => pay_i = %d\r\n", (unsigned int)current_pay_i);
     #endif
 
-    PAY_xxx_State pay_i_state = sta_get_stateVar(sta_DAT_Payload_Buff_to_STA_StateVar(current_pay_i));
+    PAY_xxx_State pay_i_state = sta_get_BusStateVar(sta_DAT_Payload_Buff_to_STA_PayStateVar(current_pay_i));
     switch(pay_i_state){
         case pay_xxx_state_inactive:
             printf("  pay_i = %s", dat_get_payload_name(current_pay_i));
@@ -1463,8 +1485,11 @@ void pay_fp2_simultaneous(void)
     PAY_xxx_State pay_i_state;
     int pay_i_tick_rate;
 
-    //print time
-    rtc_print(NULL);
+    #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
+        printf("[pay_fp2_simultaneous] running ..\r\n");
+        //print time
+        rtc_print(NULL);
+    #endif
 
     for(pay_i = 0; pay_i < dat_pay_last_one; pay_i++)
     {
@@ -1478,7 +1503,8 @@ void pay_fp2_simultaneous(void)
             printf("  pay_i_tick_rate = %d \r\n", pay_i_tick_rate);
         #endif
 
-        pay_i_state = sta_get_stateVar(sta_DAT_Payload_Buff_to_STA_StateVar(pay_i));
+        STA_PayStateVar pay_i_state_var = sta_DAT_Payload_Buff_to_STA_PayStateVar(pay_i);
+        pay_i_state = sta_get_PayStateVar(pay_i_state_var);
         switch(pay_i_state){
         //**********************************************************************
             case pay_xxx_state_inactive:
@@ -1575,9 +1601,11 @@ void pay_fp2_simultaneous(void)
         #endif
 
     }
-
-    //print time
-    rtc_print(NULL);
+    
+    #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
+        //print time
+        rtc_print(NULL);
+    #endif
 }
 
 /**
@@ -1591,28 +1619,28 @@ int pay_fp2_get_exec_rate(DAT_Payload_Buff pay_i){
             return 6;       //tick_rate in taskHousekeeping is 10sec => every 60 sec = 1min
             break;
         case dat_pay_battery:
-            return 6*15;     //tick_rate in taskHousekeeping is 10sec => every 60*15 sec = 15min
+            return 6;       //tick_rate in taskHousekeeping is 10sec => every 60 sec = 1min
             break;
         case dat_pay_debug:
-            return 9999;
+            return 6;       //tick_rate in taskHousekeeping is 10sec => every 60 sec = 1min
             break;
         case dat_pay_lagmuirProbe:
-            return 6;
+            return 6;       //tick_rate in taskHousekeeping is 10sec => every 60 sec = 1min
             break;
         case dat_pay_gps:
-            return 9999;
+            return 6;       //tick_rate in taskHousekeeping is 10sec => every 60 sec = 1min
             break;
         case dat_pay_camera:
-            return 9999;
+            return 6;       //tick_rate in taskHousekeeping is 10sec => every 60 sec = 1min
             break;
         case dat_pay_sensTemp:
-            return 6;
+            return 6;       //tick_rate in taskHousekeeping is 10sec => every 60 sec = 1min
             break;
         case dat_pay_gyro:
-            return 9999;
+            return 6;       //tick_rate in taskHousekeeping is 10sec => every 60 sec = 1min
             break;
         case dat_pay_expFis:
-            return 9999;
+            return 6;       //tick_rate in taskHousekeeping is 10sec => every 60 sec = 1min
             break;
         case dat_pay_last_one:
             //ignore
@@ -1629,35 +1657,36 @@ int pay_fp2_get_exec_rate(DAT_Payload_Buff pay_i){
 unsigned int pay_fp2_get_run_take_num_exec_times(DAT_Payload_Buff pay_i){
     unsigned int max_exec_times;
 
+    unsigned int pai_exec_times = 5;
     switch(pay_i){
         case dat_pay_tmEstado:
-            max_exec_times = 7000;
+            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_battery:
-            max_exec_times = 7000;
+            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_debug:
-            max_exec_times = 0;
+            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_lagmuirProbe:
-            max_exec_times = 7000;
+            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_gps:
-            max_exec_times = 0;
+            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_camera:
-            max_exec_times = 0;
+            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_sensTemp:
-            max_exec_times = 7000;
+            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_gyro:
-            max_exec_times = 0;
+            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_expFis:
-            max_exec_times = 0;
+            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
-        case dat_pay_last_one:
+        default:
             //ignore
             max_exec_times = 0;
             break;
@@ -1957,6 +1986,6 @@ void pay_save_date_time_to_Payload_Buff(DAT_Payload_Buff pay_i){
     unsigned int dt1, dt2;
     dt1 = (unsigned int )(date_time>>0);
     dt2 = (unsigned int )(date_time>>16);
-    dat_set_Payload_Buff(pay_i, dt1, DAT_PAYBUFF_MODE_NO_MAXINDX);
-    dat_set_Payload_Buff(pay_i, dt2, DAT_PAYBUFF_MODE_NO_MAXINDX);
+    dat_set_Payload_Buff(pay_i, dt1);
+    dat_set_Payload_Buff(pay_i, dt2);
 }

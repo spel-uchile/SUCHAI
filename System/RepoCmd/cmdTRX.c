@@ -688,6 +688,7 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                     }
 
                     /* Load and transmit TM */
+                    tmframe[0] = CMD_TMFRAME_TSTOP;
                     trx_tm_send(tmframe, TRX_TMFRAMELEN16);
                 }
 

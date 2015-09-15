@@ -53,24 +53,24 @@ int srp_increment_STA_stateVar_hoursWithoutReset(void *param)
     //int ar=*( (int *)param ); char ret[6];
     //con_printf("param= ");  Hex16ToAscii( ar, ret); con_printf(buffer); con_printf("\n");
     //solo debe ser llamada cada 1hora
-    int arg = sta_get_stateVar(sta_ppc_hoursWithoutReset)+1;
+    int arg = sta_get_BusStateVar(sta_ppc_hoursWithoutReset)+1;
     ppc_set_hoursWithoutReset(&arg);
     return 1;
 }
 int srp_increment_STA_stateVar_hoursAlive(void *param){
     //solo debe ser llamada cada 1hora
-    int arg = sta_get_stateVar(sta_ppc_hoursAlive)+1;
+    int arg = sta_get_BusStateVar(sta_ppc_hoursAlive)+1;
     ppc_set_hoursAlive(&arg);
     return 1;
 }
 int srp_increment_STA_stateVar_nSended_tm(void *param){
-    int arg = sta_get_stateVar(sta_trx_count_tm)+1;
+    int arg = sta_get_BusStateVar(sta_trx_count_tm)+1;
     trx_set_count_tm(&arg);
 
     return 1;
 }
 int srp_increment_STA_stateVar_nReceived_tc(void *param){
-    int arg = sta_get_stateVar(sta_trx_count_tc)+1;
+    int arg = sta_get_BusStateVar(sta_trx_count_tc)+1;
     trx_set_count_tc(&arg);
     return 1;
 }
@@ -217,10 +217,10 @@ int srp_print_STA_stateVar(void *param)
     printf("StateVar content: \r\n");
     printf("===============================\r\n");
 
-    STA_StateVar indxVar; int val;
-    for(indxVar=0; indxVar<sta_stateVar_last_one; indxVar++){
-        val = sta_get_stateVar(indxVar);
-        printf("    * sta_get_stateVar(%s) = %d \r\n", sta_varToString(indxVar), val);
+    STA_BusStateVar indxVar; int val;
+    for(indxVar=0; indxVar<sta_busStateVar_last_one; indxVar++){
+        val = sta_get_BusStateVar(indxVar);
+        printf("    * sta_get_stateVar(%s) = %d \r\n", sta_BusStateVarToString(indxVar), val);
     }
     printf("===============================\r\n");
 

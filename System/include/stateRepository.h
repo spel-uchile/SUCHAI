@@ -31,6 +31,10 @@
 #define STA_PPC_OPMODE_EXPFIS       (1) /* expFis is running*/
 #define STA_PPC_OPMODE_CAMERA       (1) /* Camera is running */
 
+//******************************************************************************
+// BUS section
+//******************************************************************************
+
 /**
  * Cubesat's State Variables
  */
@@ -42,18 +46,6 @@ typedef enum{
     sta_MemEEPROM_isAlive,
     sta_MemSD_isAlive,
     sta_AntSwitch_isOpen,  // var number 6
-
-    // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
-    sta_pay_lagmuirProbe_isAlive,
-    sta_pay_sensTemp_isAlive,
-    sta_pay_gps_isAlive,
-    sta_pay_expFis_isAlive,
-    sta_pay_camera_isAlive,
-    sta_pay_gyro_isAlive,
-    sta_pay_tmEstado_isAlive,
-    sta_pay_battery_isAlive,
-    sta_pay_debug_isAlive,
-    sta_pay_lagmuirProbe_isDeployed,
 
     //FLIGHT PLAN => (C&DH subsystem)
     sta_fpl_index,            // Indice del flight plan que sera editado
@@ -91,33 +83,64 @@ typedef enum{
     sta_rtc_minutes,
     sta_rtc_seconds,
 
-    //EPS => (Energy subsystem)
-    sta_eps_bat0_voltage,
-    sta_eps_bat0_current,
-    sta_eps_bus5V_current,
-    sta_eps_bus3V_current,
-    sta_eps_bus_battery_current,
-    sta_eps_bat0_temp,
-    sta_eps_panel_pwr,
-    sta_eps_status,
-    sta_eps_soc,
-    sta_eps_socss,
-    sta_eps_state_flag,
-    sta_eps_charging,
+    #if (SCH_EPS_ONBOARD==1)
+        //EPS => (Energy subsystem)
+        sta_eps_bat0_voltage,
+        sta_eps_bat0_current,
+        sta_eps_bus5V_current,
+        sta_eps_bus3V_current,
+        sta_eps_bus_battery_current,
+        sta_eps_bat0_temp,
+        sta_eps_panel_pwr,
+        sta_eps_status,
+        sta_eps_soc,
+        sta_eps_socss,
+        sta_eps_state_flag,
+        sta_eps_charging,
+    #endif
 
     /* Revisar de aqui hacia abajo si aun son necesarios !!! */
 
-    //TRX => (Communication subsystem)
-    sta_trx_opmode,           // Operation mode
-    sta_trx_count_tm,         // number of sended TM
-    sta_trx_count_tc,         // number of received TC
-    sta_trx_day_last_tc,      // day of the last received tc (since 1/1/00)
-    sta_trx_beacon_period,    // Beacon period in seconds
-    sta_trx_beacon_bat_lvl,   // Batery voltage required to transmit beacon
-    sta_trx_rx_baud,          // RX baudrate
-    sta_trx_tx_baud,          // TX baudrate
+    #if (SCH_TRX_ONBOARD==1)
+        //TRX => (Communication subsystem)
+        sta_trx_opmode,           // Operation mode
+        sta_trx_count_tm,         // number of sended TM
+        sta_trx_count_tc,         // number of received TC
+        sta_trx_day_last_tc,      // day of the last received tc (since 1/1/00)
+        sta_trx_beacon_period,    // Beacon period in seconds
+        sta_trx_beacon_bat_lvl,   // Batery voltage required to transmit beacon
+        sta_trx_rx_baud,          // RX baudrate
+        sta_trx_tx_baud,          // TX baudrate
+    #endif
 
+    //*************
+    sta_busStateVar_last_one     //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
+}STA_BusStateVar;                // SUCHAI's most important variables
+
+//void sta_set_stateVar(STA_StateVar indxVar, int value);  //deprecated, OCt 2014
+int sta_get_BusStateVar(STA_BusStateVar indxVar);
+char *sta_BusStateVarToString(STA_BusStateVar var_i);
+void sta_onReset_BusStateRepo(void);
+
+//******************************************************************************
+// PAYLOAD section
+//******************************************************************************
+
+typedef enum{
     //PAYLOAD
+    // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
+    sta_pay_lagmuirProbe_isAlive,
+    sta_pay_sensTemp_isAlive,
+    sta_pay_gps_isAlive,
+    sta_pay_expFis_isAlive,
+    sta_pay_camera_isAlive,
+    sta_pay_gyro_isAlive,
+    sta_pay_tmEstado_isAlive,
+    sta_pay_battery_isAlive,
+    sta_pay_debug_isAlive,
+    sta_pay_lagmuirProbe_isDeployed,
+
+    // FP2 variables
     sta_pay_lagmuirProbe_state,
     sta_pay_sensTemp_state,
     sta_pay_gps_state,
@@ -129,27 +152,16 @@ typedef enum{
     sta_pay_debug_state,
 
     //*************
-    sta_stateVar_last_one     //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
-}STA_StateVar;                // SUCHAI's most important variables
+    sta_payStateVar_last_one     //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
+}STA_PayStateVar;                // SUCHAI's most important variables
 
 
-//void sta_set_stateVar(STA_StateVar indxVar, int value);  //deprecated, OCt 2014
-int sta_get_stateVar(STA_StateVar indxVar);
-void sta_onReset_stateRepo(void);
-
-
-STA_StateVar sta_DAT_Payload_Buff_to_STA_StateVar(DAT_Payload_Buff pay_i);
+int sta_get_PayStateVar(STA_PayStateVar indxVar);
+char* sta_PayStateVarToString(STA_PayStateVar var_i);
+STA_PayStateVar sta_DAT_Payload_Buff_to_STA_PayStateVar(DAT_Payload_Buff pay_i);
+void sta_onReset_PayStateRepo(void);
 //STA_StateVar sta_DAT_Payload_Buff_to_STA_StateVar(int pay_i);
 
-//debug funcitons
-char *sta_varToString(STA_StateVar var_i);
-
-//#define SRP_PAY_XXX_STATE_INACTIVE    0x0000
-//#define SRP_PAY_XXX_STATE_ACTIVE      0x0001
-//#define SRP_PAY_XXX_STATE_RUN_INIT    0x0002
-//#define SRP_PAY_XXX_STATE_RUN_TAKE    0x0003
-//#define SRP_PAY_XXX_STATE_RUN_STOP    0x0004
-//#define SRP_PAY_XXX_STATE_WAITING_TX  0x0005
 
 #endif // STATE_REPO_H
 

@@ -70,10 +70,10 @@ int drp_print_dat_PayloadIndxs(void *param){
     DAT_Payload_Buff pay_i;
     for(pay_i=0; pay_i<dat_pay_last_one; pay_i++)
     {
-        unsigned int max = dat_get_MaxPayIndx( pay_i);
+        //unsigned int max = dat_get_MaxPayIndx(pay_i);
         unsigned int next = dat_get_NextPayIndx( pay_i);
         
-        printf("pay_i = %u | maxIndx = %d | next = %d \r\n", (unsigned int)pay_i, max, next);
+        printf("pay_i = %u | next = %d \r\n", (unsigned int)pay_i, next);
 //        itoa(buffer, (unsigned int)pay_i,10);
 //        con_printf(buffer); con_printf("\r\n");
 //        con_printf("    MaxIndx=");
@@ -110,7 +110,9 @@ int drp_print_dat_PayloadVar(void *param){
 //    itoa(buffer, (unsigned int)pay_i,10);
 //    con_printf(buffer); con_printf("\r\n");
 
-    unsigned int indx; unsigned int max = dat_get_MaxPayIndx(pay_i); int val;
+    unsigned int indx;
+    unsigned int max = dat_get_NextPayIndx(pay_i);
+    int val;
     for(indx=0; indx<=max; indx++)
     {
         dat_get_Payload_Buff(pay_i, indx, &val);
@@ -166,7 +168,7 @@ int drp_fpl_set_cmd(void *param)
 {
     //Se recupera el comando y el indice
     int cmdid = *((int *)param);
-    int index = sta_get_stateVar(sta_fpl_index);
+    int index = sta_get_BusStateVar(sta_fpl_index);
 
     //Se actualiza el flight plan
     int result = dat_set_FlightPlan_cmd(index, cmdid);
@@ -187,7 +189,7 @@ int drp_fpl_set_param(void *param)
 {
     //Se recupera el comando y el indice
     int var = *((int *)param);
-    int index = sta_get_stateVar(sta_fpl_index);
+    int index = sta_get_BusStateVar(sta_fpl_index);
 
     //Se actualiza el flight plan
     int result = dat_set_FlightPlan_param(index, var);
@@ -197,7 +199,7 @@ int drp_fpl_set_param(void *param)
 
 int drp_fpl_check_and_exec(void *param){
     //FP, programmed actions
-    unsigned int index, current_hour, current_mins;
+    unsigned int current_index, current_hour, current_mins;
     static unsigned int last_index; //to enter the first try, then check every time
 
     DispCmd NewCmd;
@@ -211,26 +213,34 @@ int drp_fpl_check_and_exec(void *param){
 
     /* Map hh:mm to MM minutues of the day to obtain the
      * index of the next command to read from fligh plan */
-    current_hour = sta_get_stateVar(sta_rtc_hours);
-    current_mins = sta_get_stateVar(sta_rtc_minutes);
-    index = current_hour*60 + current_mins;
-    index = index / SCH_TFLIGHTPLAN_RESOLUTION;
+    current_hour = sta_get_BusStateVar(sta_rtc_hours);
+    current_mins = sta_get_BusStateVar(sta_rtc_minutes);
+    current_index = current_hour*60 + current_mins;
+    current_index = current_index / SCH_TFLIGHTPLAN_RESOLUTION;
     
-    #if SCH_TFLIGHTPLAN_VERBOSE
+    #if SCH_TFLIGHTPLAN_VERBOSE >= 2
         /* Debug info */
+//        printf("  [drp_fpl_check_and_exec] (%u*60+%u) => %u/%u [current_index/SCH_TFLIGHTPLAN_N_CMD] \n",
+//                current_hour, current_mins, current_index, SCH_TFLIGHTPLAN_N_CMD);
         printf("  [drp_fpl_check_and_exec] index = %d = (%d*60+%d)/SCH_FP_RESOLUTION \n  last_index=%d | SCH_FP_N_CMD=%d\r\n",
-                index, current_hour, current_mins, last_index, SCH_TFLIGHTPLAN_N_CMD);
+                current_index, current_hour, current_mins, last_index, SCH_TFLIGHTPLAN_N_CMD);
     #endif
 
     /* If check time is less than flight plan resolution (as it should be)
      *  we need to prevent an index repetition */
-    if(last_index != index)
+    if(last_index != current_index)
     {
+        #if SCH_TFLIGHTPLAN_VERBOSE
+            /* Debug info */
+            printf("  [drp_fpl_check_and_exec] (%u*60+%u) => %u/%u [current_index/SCH_TFLIGHTPLAN_N_CMD] \n",
+                    current_hour, current_mins, current_index, SCH_TFLIGHTPLAN_N_CMD);
+        #endif
+
         /* Update last_index */
-        last_index = index;
+        last_index = current_index;
 
         /* Get the next command from flight plan */
-        NewCmd = dat_get_FlightPlan(index); //get cmdId and param
+        NewCmd = dat_get_FlightPlan(current_index); //get cmdId and param
         //NewCmd.idOrig = CMD_IDORIG_TFLIGHTPLAN3;
 
         /* Check if valid cmd */
@@ -262,7 +272,7 @@ int drp_fpl_check_and_exec(void *param){
         cmdResult = exeCmd.fnct((void *)&cmdParam);
     }
     else{
-        #if(SCH_TFLIGHTPLAN_VERBOSE >= 1)
+        #if(SCH_TFLIGHTPLAN_VERBOSE >= 2)
             /* Print the command code */
             printf("    [drp_fpl_check_and_exec] (last_index==index) => NO se genera comando\r\n");
         #endif
@@ -277,285 +287,287 @@ int drp_debug(void *param){
 
     printf("drp_debug(%d)..\n", ind);
 
-    switch(ind){
-        case 1:
-            drp_debug1();
-            break;
-        case 2:
-            drp_debug2();
-            break;
-        case 3:
-            drp_debug3();
-            break;
-        case 4:
-            drp_debug4();
-            break;
-        case 5:
-            drp_debug5();
-            break;
-        default:
-            //
-            break;
-    }
+    printf("nothing to do here\n");
+
+//    switch(ind){
+//        case 1:
+//            drp_debug1();
+//            break;
+//        case 2:
+//            drp_debug2();
+//            break;
+//        case 3:
+//            drp_debug3();
+//            break;
+//        case 4:
+//            drp_debug4();
+//            break;
+//        case 5:
+//            drp_debug5();
+//            break;
+//        default:
+//            //
+//            break;
+//    }
 
     return 1;
 }
-void drp_debug1(void){
-//    int i;
-//    con_printf("Testing rand()\r\n");
-//    for(i=0;i<0xFFFF;i++){
-//        unsigned char c= rand();
-//        con_printf("rand()=");
-//        char buffer[6];
-//        itoa(buffer,  (unsigned int)c, 10);
-//        con_printf(buffer); con_printf("\r\n");
+//void drp_debug1(void){
+////    int i;
+////    con_printf("Testing rand()\r\n");
+////    for(i=0;i<0xFFFF;i++){
+////        unsigned char c= rand();
+////        con_printf("rand()=");
+////        char buffer[6];
+////        itoa(buffer,  (unsigned int)c, 10);
+////        con_printf(buffer); con_printf("\r\n");
+////        ClrWdt();
+////    }
+//
+//}
+//
+//void drp_debug2(void){
+////    char buffer[10];
+//    int value=0, res=0;
+//    unsigned char index;
+//    long block;
+//
+//    con_printf("(Destructive) Testing -1block r/w- memSD\r\n");
+//    for(block=0;block<1024;block++){
+//        printf("testing block = %lu \r\n",block);
+//
+//        value=0xA000;
+//        for(index=0;index<=0xFF;index++, value++){
+//
+//            con_printf("writing: ");
+//            msd_setVar_1BlockExtMem( block, index, value);
+//            printf("value[%d] = 0x%X | ", index, value);
+////            itoa(buffer, index,10); con_printf(buffer); con_printf("]=");
+////            itoa(buffer, value,10); con_printf(buffer); con_printf("    |    ");
+//
+//            con_printf("reading: ");
+//            msd_getVar_1BlockExtMem( block, index, &res);
+//            printf("value[%d] = 0x%X | ", index, res);
+////            itoa(buffer, index,10); con_printf("value["); con_printf(buffer); con_printf("]=");
+////            itoa(buffer, res,10); con_printf(buffer); con_printf("    |    ");
+//
+//            printf("comparing: ");
+//            if(value==res){ printf("ok"); }
+//            else{ printf("fail"); }
+//            printf("\n");
+//
+//            //con_printf("ClrWdt()\r\n");
+//            ClrWdt();
+//        }
+//    }
+//    //drp_memSD_BlockErase();
+//
+//
+//}
+//
+//void drp_debug3(void){
+//    int value=0, res=0;
+//    unsigned int index;
+//    unsigned long block;
+//
+//    con_printf("(Destructive) Testing -256block r/w- memSD\r\n");
+//    for(block=0; block<1024; block=block+256){
+//        printf("testing 256Block = %lu\n", block);
+//
+//        value=20000;
+//        for(index=0; index<=0xFFFF; index++, value++){
+//
+//            con_printf("writing: ");
+//            msd_setVar_256BlockExtMem( block, index, value);
+//            printf("value[%u] = %d    |    ", index, value);
+//
+//            printf("reading: ");
+//            msd_getVar_256BlockExtMem( block, index, &res);
+//            printf("value[%u] = %d    |    ", index, res);
+//
+//            printf("comparing: ");
+//            if( value==res ){ printf("ok\n"); }
+//            else{ con_printf("fail\n"); return; }
+//
+//            ClrWdt();
+//        }
+//    }
+//    //drp_memSD_BlockErase();
+//}
+//void drp_debug4(void){
+//    int value=0, res=0;
+//    unsigned int index;
+//
+//    printf("DAT_TeleCmdBuff..\n");
+//    value=20000;
+//    for(index=0; index<SCH_DATAREPOSITORY_MAX_BUFF_TELECMD; index++, value++){
+//
+//        printf("  writing: ");
+//        dat_set_TeleCmd_Buff(index, value);
+//        printf("    DAT_TeleCmdBuff[%u] = %d    |    ", index, value);
+//
+//        printf("  reading: ");
+//        res = dat_get_TeleCmd_Buff(index);
+//        printf("    DAT_TeleCmdBuff[%u] = %d    |    ", index, res);
+//
+//        printf("comparing: ");
+//        if( value==res ){ printf("ok\n"); }
+//        else{ con_printf("fail\n"); return; }
+//
 //        ClrWdt();
 //    }
-
-}
-
-void drp_debug2(void){
-//    char buffer[10];
-    int value=0, res=0;
-    unsigned char index;
-    long block;
-
-    con_printf("(Destructive) Testing -1block r/w- memSD\r\n");
-    for(block=0;block<1024;block++){
-        printf("testing block = %lu \r\n",block);
-
-        value=0xA000;
-        for(index=0;index<=0xFF;index++, value++){
-
-            con_printf("writing: ");
-            msd_setVar_1BlockExtMem( block, index, value);
-            printf("value[%d] = 0x%X | ", index, value);
-//            itoa(buffer, index,10); con_printf(buffer); con_printf("]=");
-//            itoa(buffer, value,10); con_printf(buffer); con_printf("    |    ");
-
-            con_printf("reading: ");
-            msd_getVar_1BlockExtMem( block, index, &res);
-            printf("value[%d] = 0x%X | ", index, res);
-//            itoa(buffer, index,10); con_printf("value["); con_printf(buffer); con_printf("]=");
-//            itoa(buffer, res,10); con_printf(buffer); con_printf("    |    ");
-
-            printf("comparing: ");
-            if(value==res){ printf("ok"); }
-            else{ printf("fail"); }
-            printf("\n");
-
-            //con_printf("ClrWdt()\r\n");
-            ClrWdt();
-        }
-    }
-    //drp_memSD_BlockErase();
-
-
-}
-
-void drp_debug3(void){
-    int value=0, res=0;
-    unsigned int index;
-    unsigned long block;
-
-    con_printf("(Destructive) Testing -256block r/w- memSD\r\n");
-    for(block=0; block<1024; block=block+256){
-        printf("testing 256Block = %lu\n", block);
-
-        value=20000;
-        for(index=0; index<=0xFFFF; index++, value++){
-
-            con_printf("writing: ");
-            msd_setVar_256BlockExtMem( block, index, value);
-            printf("value[%u] = %d    |    ", index, value);
-
-            printf("reading: ");
-            msd_getVar_256BlockExtMem( block, index, &res);
-            printf("value[%u] = %d    |    ", index, res);
-
-            printf("comparing: ");
-            if( value==res ){ printf("ok\n"); }
-            else{ con_printf("fail\n"); return; }
-
-            ClrWdt();
-        }
-    }
-    //drp_memSD_BlockErase();
-}
-void drp_debug4(void){
-    int value=0, res=0;
-    unsigned int index;
-
-    printf("DAT_TeleCmdBuff..\n");
-    value=20000;
-    for(index=0; index<SCH_DATAREPOSITORY_MAX_BUFF_TELECMD; index++, value++){
-
-        printf("  writing: ");
-        dat_set_TeleCmd_Buff(index, value);
-        printf("    DAT_TeleCmdBuff[%u] = %d    |    ", index, value);
-
-        printf("  reading: ");
-        res = dat_get_TeleCmd_Buff(index);
-        printf("    DAT_TeleCmdBuff[%u] = %d    |    ", index, res);
-
-        printf("comparing: ");
-        if( value==res ){ printf("ok\n"); }
-        else{ con_printf("fail\n"); return; }
-
-        ClrWdt();
-    }
-
-    printf("DAT_FlightPlanBuff..\n");
-    value=1000; DispCmd NewCmd;
-    for(index=0; index<(SCH_TFLIGHTPLAN_N_CMD); index++, value++){
-
-        printf("  writing: ");
-        dat_set_FlightPlan_cmd(index, value);
-        printf("    DAT_FlightPlanBuff[%u].cmd = %d    |    ", index, value);
-        dat_set_FlightPlan_param(index, value+1);
-        printf("    DAT_FlightPlanBuff[%u].param = %d    |    \n", index, value+1);
-        
-
-        printf("  reading: ");
-        NewCmd = dat_get_FlightPlan(index);
-        printf("    DAT_FlightPlanBuff[%u].cmd = %d    |    ", index, NewCmd.cmdId);
-        printf("    DAT_FlightPlanBuff[%u].param = %d    |    \n", index, NewCmd.param);
-
-        printf("  comparing: ");
-        if( value==NewCmd.cmdId && (value+1)==NewCmd.param ){ printf("ok\n"); }
-        else{ con_printf("fail\n"); return; }
-
-        ClrWdt();
-    }
-    
-    printf("DAT_NextPayBuff and DAT_MaxPayBuff..\n");
-    int pay_i; int n=0, m=49, res1, res2;
-    for(pay_i=0; pay_i<dat_pay_last_one; pay_i++, m=m+10){
-        printf("  writing: ");
-        dat_set_NextPayIndx(pay_i, n);
-        printf("    DAT_NextPayBuff[%u] = %d    |    ", pay_i, n);
-        dat_set_MaxPayIndx(pay_i, m);
-        printf("    DAT_NextPayBuff[%u] = %d    |    \n", pay_i, m);
-
-        printf("  reading: ");
-        res1 = dat_get_NextPayIndx(pay_i);
-        printf("    DAT_NextPayBuff[%u] = %d    |    ", pay_i, res1);
-        res2 = dat_get_MaxPayIndx(pay_i);
-        printf("    DAT_MaxPayBuff[%u] = %d    |    \n", pay_i, res2);
-
-        printf("  comparing: ");
-        if( n==res1 && m==res2 ){ printf("ok\n"); }
-        else{ printf("fail\n"); return; }
-
-        ClrWdt();
-    }
-
-    printf("DAT_Payload_Buff..\n");
-    int maxind;
-    for(pay_i=0; pay_i<dat_pay_last_one; pay_i++){
-        value=20000; 
-        maxind = dat_get_MaxPayIndx(pay_i);
-        for(index=0; index<=maxind; index++, value++){
-
-            printf("  writing: ");
-            dat_set_Payload_Buff(pay_i, value, DAT_PAYBUFF_MODE_NO_MAXINDX);
-            printf("    DAT_Payload_Buff[%u][%u] = %d    |    ",pay_i, index, value);
-            printf("%d/%d [NextIndx/MaxIndx]   |    \n", dat_get_NextPayIndx(pay_i), dat_get_MaxPayIndx(pay_i) );
-
-            printf("  reading: ");
-            dat_get_Payload_Buff(pay_i, index, &res);
-            printf("    DAT_Payload_Buff[%u][%u] = %d    |    \n",pay_i,  index, res);
-
-            printf("  comparing: ");
-            if( value==res ){ printf("ok\n"); }
-            else{ con_printf("fail\n"); return; }
-
-            ClrWdt();
-        }
-        printf("*******************************************\n");
-    }
-
-    printf("DAT_AuxBuff..\n");
-    int aux_i; int maxind2;
-    for(aux_i=0; aux_i<dat_aux_last_one; aux_i++){
-        value=20000;
-        maxind2 = 30;
-        for(index=0; index<=maxind2; index++, value++){
-
-            printf("  writing: ");
-            dat_set_Aux_Buff(aux_i, index, value);
-            printf("    DAT_AuxdBuff[%u] = %d    |    ", index, value);
-
-            printf("  reading: ");
-            res = dat_get_Aux_Buff(aux_i, index);
-            printf("    DAT_AuxdBuff[%u] = %d    |    ", index, res);
-
-            printf("  comparing: ");
-            if( value==res ){ printf("ok\n"); }
-            else{ con_printf("fail\n"); return; }
-
-            ClrWdt();
-        }
-        printf("*******************************************\n");
-    }
-    printf("End of drp_debug4\n");
-}
-void drp_debug5(void){
-    int value=0, res=0;
-    unsigned int index;
-
-    printf("dat_reset_Payload_Buff()..\n");
-    int pay_i; int lenBuff=10, r_nextIndx, r_MaxIndx;
-    for(pay_i=0; pay_i<dat_pay_last_one; pay_i++, lenBuff=lenBuff+1){
-        printf("  writing: ");
-        dat_reset_Payload_Buff(pay_i, lenBuff, 0);
-        printf("    dat_reset_Payload_Buff(%d, %d)\r\n", pay_i, lenBuff);
-
-        printf("  reading: ");
-        r_nextIndx = dat_get_NextPayIndx(pay_i);
-        printf("    dat_get_NextPayIndx(%u) = %d    |    ", pay_i, r_nextIndx);
-        r_MaxIndx = dat_get_MaxPayIndx(pay_i);
-        printf("    dat_get_MaxPayIndx(%u) = %d    |    \n", pay_i, r_MaxIndx);
-
-        printf("  comparing: ");
-        if( r_nextIndx==0 && r_MaxIndx==(lenBuff-1) ){ printf("ok\n"); }
-        else{ printf("fail\n"); return; }
-
-        ClrWdt();
-    }
-
-    printf("DAT_Payload_Buff..\n");
-    int maxind; BOOL st;
-    for(pay_i=0; pay_i<dat_pay_last_one; pay_i++){
-        value=20000;
-        st = TRUE;
-        maxind = dat_get_MaxPayIndx(pay_i);
-        for(index=0; st==TRUE; index++, value++){
-
-            printf("  writing: ");
-            dat_set_Payload_Buff(pay_i, value, DAT_PAYBUFF_MODE_NO_MAXINDX);
-            printf("    DAT_Payload_Buff[%u][%u] = %d    |    ",pay_i, index, value);
-            printf("%d/%d [NextIndx/MaxIndx]   |    \n", dat_get_NextPayIndx(pay_i), dat_get_MaxPayIndx(pay_i) );
-
-            printf("  reading: ");
-            dat_get_Payload_Buff(pay_i, index, &res);
-            printf("    DAT_Payload_Buff[%u][%u] = %d    |    \n",pay_i,  index, res);
-
-            printf("  comparing: ");
-            if( value==res ){ printf("ok\n"); }
-            else{ printf("fail\n"); return; }
-
-            if( dat_isFull_Payload_Buff(pay_i)==TRUE){
-                printf("    DAT_Payload_Buff[%u] esta lleno\r\n", pay_i);
-                st = FALSE;
-            }
-
-            ClrWdt();
-        }
-        printf("*******************************************\n");
-    }
-    printf("End of drp_debug5\n");
-}
+//
+//    printf("DAT_FlightPlanBuff..\n");
+//    value=1000; DispCmd NewCmd;
+//    for(index=0; index<(SCH_TFLIGHTPLAN_N_CMD); index++, value++){
+//
+//        printf("  writing: ");
+//        dat_set_FlightPlan_cmd(index, value);
+//        printf("    DAT_FlightPlanBuff[%u].cmd = %d    |    ", index, value);
+//        dat_set_FlightPlan_param(index, value+1);
+//        printf("    DAT_FlightPlanBuff[%u].param = %d    |    \n", index, value+1);
+//
+//
+//        printf("  reading: ");
+//        NewCmd = dat_get_FlightPlan(index);
+//        printf("    DAT_FlightPlanBuff[%u].cmd = %d    |    ", index, NewCmd.cmdId);
+//        printf("    DAT_FlightPlanBuff[%u].param = %d    |    \n", index, NewCmd.param);
+//
+//        printf("  comparing: ");
+//        if( value==NewCmd.cmdId && (value+1)==NewCmd.param ){ printf("ok\n"); }
+//        else{ con_printf("fail\n"); return; }
+//
+//        ClrWdt();
+//    }
+//
+//    printf("DAT_NextPayBuff and DAT_MaxPayBuff..\n");
+//    int pay_i; int n=0, m=49, res1, res2;
+//    for(pay_i=0; pay_i<dat_pay_last_one; pay_i++, m=m+10){
+//        printf("  writing: ");
+//        dat_set_NextPayIndx(pay_i, n);
+//        printf("    DAT_NextPayBuff[%u] = %d    |    ", pay_i, n);
+//        //dat_set_MaxPayIndx(pay_i, m);
+//        printf("    DAT_NextPayBuff[%u] = %d    |    \n", pay_i, m);
+//
+//        printf("  reading: ");
+//        res1 = dat_get_NextPayIndx(pay_i);
+//        printf("    DAT_NextPayBuff[%u] = %d    |    \n", pay_i, res1);
+//        //res2 = dat_get_MaxPayIndx(pay_i);
+//        //printf("    DAT_MaxPayBuff[%u] = %d    |    \n", pay_i, res2);
+//
+//        printf("  comparing: ");
+//        if( n==res1 && m==res2 ){ printf("ok\n"); }
+//        else{ printf("fail\n"); return; }
+//
+//        ClrWdt();
+//    }
+//
+//    printf("DAT_Payload_Buff..\n");
+//    int maxind;
+//    for(pay_i=0; pay_i<dat_pay_last_one; pay_i++){
+//        value=20000;
+//        maxind = dat_get_MaxPayIndx(pay_i);
+//        for(index=0; index<=maxind; index++, value++){
+//
+//            printf("  writing: ");
+//            dat_set_Payload_Buff(pay_i, value);
+//            printf("    DAT_Payload_Buff[%u][%u] = %d    |    ",pay_i, index, value);
+//            printf("%d/%d [NextIndx/MaxIndx]   |    \n", dat_get_NextPayIndx(pay_i), dat_get_MaxPayIndx(pay_i) );
+//
+//            printf("  reading: ");
+//            dat_get_Payload_Buff(pay_i, index, &res);
+//            printf("    DAT_Payload_Buff[%u][%u] = %d    |    \n",pay_i,  index, res);
+//
+//            printf("  comparing: ");
+//            if( value==res ){ printf("ok\n"); }
+//            else{ con_printf("fail\n"); return; }
+//
+//            ClrWdt();
+//        }
+//        printf("*******************************************\n");
+//    }
+//
+//    printf("DAT_AuxBuff..\n");
+//    int aux_i; int maxind2;
+//    for(aux_i=0; aux_i<dat_aux_last_one; aux_i++){
+//        value=20000;
+//        maxind2 = 30;
+//        for(index=0; index<=maxind2; index++, value++){
+//
+//            printf("  writing: ");
+//            dat_set_Aux_Buff(aux_i, index, value);
+//            printf("    DAT_AuxdBuff[%u] = %d    |    ", index, value);
+//
+//            printf("  reading: ");
+//            res = dat_get_Aux_Buff(aux_i, index);
+//            printf("    DAT_AuxdBuff[%u] = %d    |    ", index, res);
+//
+//            printf("  comparing: ");
+//            if( value==res ){ printf("ok\n"); }
+//            else{ con_printf("fail\n"); return; }
+//
+//            ClrWdt();
+//        }
+//        printf("*******************************************\n");
+//    }
+//    printf("End of drp_debug4\n");
+//}
+//void drp_debug5(void){
+//    int value=0, res=0;
+//    unsigned int index;
+//
+//    printf("dat_reset_Payload_Buff()..\n");
+//    int pay_i; int lenBuff=10, r_nextIndx, r_MaxIndx;
+//    for(pay_i=0; pay_i<dat_pay_last_one; pay_i++, lenBuff=lenBuff+1){
+//        printf("  writing: ");
+//        dat_reset_Payload_Buff(pay_i);
+//        printf("    dat_reset_Payload_Buff(%d, %d)\r\n", pay_i, lenBuff);
+//
+//        printf("  reading: ");
+//        r_nextIndx = dat_get_NextPayIndx(pay_i);
+//        printf("    dat_get_NextPayIndx(%u) = %d    |    ", pay_i, r_nextIndx);
+//        r_MaxIndx = dat_get_MaxPayIndx(pay_i);
+//        printf("    dat_get_MaxPayIndx(%u) = %d    |    \n", pay_i, r_MaxIndx);
+//
+//        printf("  comparing: ");
+//        if( r_nextIndx==0 && r_MaxIndx==(lenBuff-1) ){ printf("ok\n"); }
+//        else{ printf("fail\n"); return; }
+//
+//        ClrWdt();
+//    }
+//
+//    printf("DAT_Payload_Buff..\n");
+//    int maxind; BOOL st;
+//    for(pay_i=0; pay_i<dat_pay_last_one; pay_i++){
+//        value=20000;
+//        st = TRUE;
+//        maxind = dat_get_MaxPayIndx(pay_i);
+//        for(index=0; st==TRUE; index++, value++){
+//
+//            printf("  writing: ");
+//            dat_set_Payload_Buff(pay_i, value);
+//            printf("    DAT_Payload_Buff[%u][%u] = %d    |    ",pay_i, index, value);
+//            printf("%d[NextIndx/MaxIndx]   |    \n", dat_get_NextPayIndx(pay_i));
+//
+//            printf("  reading: ");
+//            dat_get_Payload_Buff(pay_i, index, &res);
+//            printf("    DAT_Payload_Buff[%u][%u] = %d    |    \n",pay_i,  index, res);
+//
+//            printf("  comparing: ");
+//            if( value==res ){ printf("ok\n"); }
+//            else{ printf("fail\n"); return; }
+//
+//            if( dat_isFull_Payload_Buff(pay_i)==TRUE){
+//                printf("    DAT_Payload_Buff[%u] esta lleno\r\n", pay_i);
+//                st = FALSE;
+//            }
+//
+//            ClrWdt();
+//        }
+//        printf("*******************************************\n");
+//    }
+//    printf("End of drp_debug5\n");
+//}
 
 int drp_executeBeforeFlight(void *param){
     #if (SCH_CMDDRP_VERBOSE>=1)

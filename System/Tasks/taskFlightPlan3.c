@@ -49,13 +49,15 @@ void taskFlightPlan3(void *param)
     portTickType xLastWakeTime = xTaskGetTickCount();
     #if (SCH_THOUSEKEEPING_USE == 1)
         while( TRUE ){
-            if( sta_get_stateVar(sta_dep_ant_deployed)==1 ){
+            if( sta_get_BusStateVar(sta_dep_ant_deployed)==1 ){
                 break;
             }
             vTaskDelayUntil(&xLastWakeTime, check_deployment_time);
         }
     #endif
 
+    int ticks_elapsed = 1;
+    int res_ticks = (60*(SCH_TFLIGHTPLAN_RESOLUTION))/(2*(min_check_period_ms/1000));
     while(1)
     {
         /* min_check_period_ms actions */
@@ -77,20 +79,27 @@ void taskFlightPlan3(void *param)
         //Add commands below ..
 
         #if (SCH_TFLIGHTPLAN3_VERBOSE>=1)
-            printf("[FlightPlan3] min_check_period_ms (%d) actions ..\r\n", min_check_period_ms);
+            printf("[FlightPlan3] min_check_period_ms (%d) actions, ticks_elapsed/res_ticks = %u/%u ..\r\n", min_check_period_ms, ticks_elapsed, res_ticks);
         #endif
 
         //execute regular/cyclic payloads ..
-        if(sta_get_stateVar(sta_ppc_opMode)==STA_PPC_OPMODE_NORMAL){
+        if(sta_get_BusStateVar(sta_ppc_opMode)==STA_PPC_OPMODE_NORMAL){
             NewCmd.cmdId = pay_id_fp2_default_fsm;
-            NewCmd.param = 0;
+            NewCmd.param = min_check_period_ms;
             xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
         }
 
-        //execute programmed/itinerary actions ..
-        NewCmd.cmdId = drp_id_fpl_check_and_exec;
-        NewCmd.param = 0;
-        xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
+        if(ticks_elapsed >= res_ticks){
+            ticks_elapsed = 1;
+
+            //execute programmed/itinerary actions ..
+            NewCmd.cmdId = drp_id_fpl_check_and_exec;
+            NewCmd.param = 0;
+            xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
+        }
+        else{
+            ticks_elapsed++;
+        }
     }
 }
 

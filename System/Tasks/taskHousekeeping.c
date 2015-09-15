@@ -56,7 +56,7 @@ void taskHouskeeping(void *param)
     NewCmd.param = 0;
 
     //deploy if necessary
-    if( sta_get_stateVar(sta_dep_ant_deployed) == 0 ){
+    if( sta_get_BusStateVar(sta_dep_ant_deployed) == 0 ){
 
         #if (SCH_THOUSEKEEPING_SILENT_REALTIME==1)
             NewCmd.cmdId = thk_id_suchai_deployment;

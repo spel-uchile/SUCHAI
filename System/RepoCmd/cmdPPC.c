@@ -316,9 +316,15 @@ int ppc_reactToSOC(void* param)
     #if (SCH_CMDPPC_VERBOSE>=1)
         printf("ppc_reactToSOC()\r\n");
     #endif
-       
-    int current_soc;
-    current_soc = sta_get_stateVar(sta_eps_soc);
+         
+    #if( SCH_EPS_ONBOARD == 1 )
+        int current_soc;
+        current_soc = sta_get_BusStateVar(sta_eps_soc);
+    #else
+        int current_soc;
+        current_soc = 0;
+    #endif
+    
 
     if(prev_soc == current_soc){
         //nothing new to do

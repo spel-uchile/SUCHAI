@@ -54,7 +54,7 @@ void taskConsole(void *param)
         portTickType xLastWakeTime = xTaskGetTickCount();
         portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
         while( TRUE ){
-            if( sta_get_stateVar(sta_dep_ant_deployed)==1 ){
+            if( sta_get_BusStateVar(sta_dep_ant_deployed)==1 ){
                 break;
             }
             vTaskDelayUntil(&xLastWakeTime, check_deployment_time);

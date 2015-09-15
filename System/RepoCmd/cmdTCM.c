@@ -198,10 +198,10 @@ int tcm_sendTM_tmEstado(void *param)
     trx_tm_addtoframe(&tm_id, 1, CMD_ADDFRAME_START); /* New empty start frame */
 
     /* Read info and append to the frame */
-    STA_StateVar indxVar;
-    for(indxVar=0; indxVar<sta_stateVar_last_one; indxVar++)
+    STA_BusStateVar indxVar;
+    for(indxVar=0; indxVar<sta_busStateVar_last_one; indxVar++)
     {
-        tm_id = sta_get_stateVar(indxVar);
+        tm_id = sta_get_BusStateVar(indxVar);
         trx_tm_addtoframe(&tm_id, 1, CMD_ADDFRAME_ADD);
     }
 
@@ -237,7 +237,10 @@ int tcm_update_beacon(void *param)
     int val = -1;
     static char buff[10];
     char *p_buff = p_beacon_buff;
-    double d_val = 0;
+
+    #if( SCH_EPS_ONBOARD == 1 )
+        double d_val = 0;
+    #endif
 
     //SIMPLE
     if(mode==0)
@@ -256,41 +259,41 @@ int tcm_update_beacon(void *param)
         strcpy(p_buff++, buff);
 
         /* hoursWithoutReset */
-        val = sta_get_stateVar(sta_ppc_hoursWithoutReset);
+        val = sta_get_BusStateVar(sta_ppc_hoursWithoutReset);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
 
         /* resetCounter */
-        val = sta_get_stateVar(sta_ppc_resetCounter);
+        val = sta_get_BusStateVar(sta_ppc_resetCounter);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
 
         /* Last reset source */
-        val = sta_get_stateVar(sta_ppc_lastResetSource);
+        val = sta_get_BusStateVar(sta_ppc_lastResetSource);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* ant_deployed */
-        val = sta_get_stateVar(sta_dep_ant_deployed);
+        val = sta_get_BusStateVar(sta_dep_ant_deployed);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* opMode */
-        val = sta_get_stateVar(sta_ppc_opMode);
+        val = sta_get_BusStateVar(sta_ppc_opMode);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* ppc_osc */
-        val = sta_get_stateVar(sta_ppc_osc);
+        val = sta_get_BusStateVar(sta_ppc_osc);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
         /* ppc_osc */
-        val = sta_get_stateVar(sta_ppc_wdt);
+        val = sta_get_BusStateVar(sta_ppc_wdt);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
@@ -308,43 +311,31 @@ int tcm_update_beacon(void *param)
         itoa(buff, mode, 10);
         strcpy(p_buff++, buff);
 
-        val = sta_get_stateVar(sta_RTC_isAlive);
+        val = sta_get_BusStateVar(sta_RTC_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = sta_get_stateVar(sta_TRX_isAlive);
+        val = sta_get_BusStateVar(sta_TRX_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = sta_get_stateVar(sta_EPS_isAlive);
+        val = sta_get_BusStateVar(sta_EPS_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = sta_get_stateVar(sta_MemEEPROM_isAlive);
+        val = sta_get_BusStateVar(sta_MemEEPROM_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = sta_get_stateVar(sta_MemSD_isAlive);
+        val = sta_get_BusStateVar(sta_MemSD_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = sta_get_stateVar(sta_pay_lagmuirProbe_isAlive);
+        val = 0x4D41;   //MA
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
-
-        val = sta_get_stateVar(sta_pay_sensTemp_isAlive);
-        itoa(buff,val,10);
-        strcpy(p_buff++, buff);
-
-        val = sta_get_stateVar(sta_pay_gps_isAlive);
-        itoa(buff,val,10);
-        strcpy(p_buff++, buff);
-
-        val = sta_get_stateVar(sta_pay_camera_isAlive);
-        itoa(buff,val,10);
-        strcpy(p_buff++, buff);
-
-        val = sta_get_stateVar(sta_pay_gyro_isAlive);
+        
+        val = 0x5355;   //SU
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
@@ -359,14 +350,14 @@ int tcm_update_beacon(void *param)
         strcpy(p_buff++, buff);
 
         /* count_tm */
-        val = sta_get_stateVar(sta_trx_count_tm);
+        val = sta_get_BusStateVar(sta_trx_count_tm);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
 
         /* count_tc */
-        val = sta_get_stateVar(sta_trx_count_tc);
+        val = sta_get_BusStateVar(sta_trx_count_tc);
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
@@ -407,51 +398,56 @@ int tcm_update_beacon(void *param)
 
     else if(mode == 4)
     {
-        /* eps_soc */
-        val = sta_get_stateVar(sta_eps_soc);
-        itoa(buff,val,10);
-        strcpy(p_buff++, buff);
+        #if( SCH_EPS_ONBOARD == 1 )
+            /* eps_soc */
+            val = sta_get_BusStateVar(sta_eps_soc);
+            itoa(buff,val,10);
+            strcpy(p_buff++, buff);
 
-        /* eps_charging*/
-        val = sta_get_stateVar(sta_eps_charging);
-        itoa(buff,val,10);
-        strcpy(p_buff++, buff);
+            /* eps_charging*/
+            val = sta_get_BusStateVar(sta_eps_charging);
+            itoa(buff,val,10);
+            strcpy(p_buff++, buff);
 
-        /* bat0_voltage */
-        val = sta_get_stateVar(sta_eps_bat0_voltage);
-        d_val = -0.00939*val + 9.791;
-        val = (int)(d_val*10.0); /* 7.4V -> 74 */
-        itoa(buff,val/10,10);
-        strcpy(p_buff++, buff);
-        itoa(buff,val%10,10);
-        strcpy(p_buff++, buff);
+            /* bat0_voltage */
+            val = sta_get_BusStateVar(sta_eps_bat0_voltage);
+            d_val = -0.00939*val + 9.791;
+            val = (int)(d_val*10.0); /* 7.4V -> 74 */
+            itoa(buff,val/10,10);
+            strcpy(p_buff++, buff);
+            itoa(buff,val%10,10);
+            strcpy(p_buff++, buff);
 
-        /* bat0_tmp */
-        val = sta_get_stateVar(sta_eps_bat0_current);
-        d_val =  -3.20*val+2926.22;
-        val = (int)(d_val); /* 38.1mA -> 38 */
-        itoa(buff,val/10,10);
-        strcpy(p_buff++, buff);
-        itoa(buff,val%10,10);
-        strcpy(p_buff++, buff);
+            /* bat0_tmp */
+            val = sta_get_BusStateVar(sta_eps_bat0_current);
+            d_val =  -3.20*val+2926.22;
+            val = (int)(d_val); /* 38.1mA -> 38 */
+            itoa(buff,val/10,10);
+            strcpy(p_buff++, buff);
+            itoa(buff,val%10,10);
+            strcpy(p_buff++, buff);
 
-        /* bat0_tmp */
-        val = sta_get_stateVar(sta_eps_bat0_temp);
-        d_val =  -0.163*val+110.338;
-        val = (int)(d_val); /* 18.3C -> 18 */
-        itoa(buff,val/10,10);
-        strcpy(p_buff++, buff);
-        itoa(buff,val%10,10);
-        strcpy(p_buff++, buff);
+            /* bat0_tmp */
+            val = sta_get_BusStateVar(sta_eps_bat0_temp);
+            d_val =  -0.163*val+110.338;
+            val = (int)(d_val); /* 18.3C -> 18 */
+            itoa(buff,val/10,10);
+            strcpy(p_buff++, buff);
+            itoa(buff,val%10,10);
+            strcpy(p_buff++, buff);
 
-        /* bat0_tmp */
-        val = sta_get_stateVar(sta_eps_panel_pwr);
-        itoa(buff,val/10,10);
-        strcpy(p_buff++, buff);
-        itoa(buff,val%10,10);
-        strcpy(p_buff++, buff);
-        
-        ok = 1;
+            /* bat0_tmp */
+            val = sta_get_BusStateVar(sta_eps_panel_pwr);
+            itoa(buff,val/10,10);
+            strcpy(p_buff++, buff);
+            itoa(buff,val%10,10);
+            strcpy(p_buff++, buff);
+
+            ok = 1;
+        #else
+            ok = 0;
+        #endif
+
     }
     else
     {
@@ -577,7 +573,7 @@ int tcm_sendTM_payload_battery(int mode, int num_samples)
 
     //Add pay_i metadata
     //unsigned int maxIndx = dat_get_MaxPayIndx( pay_i);
-    unsigned long nextIndx = dat_get_NextPayIndx(dat_pay_battery); //valor de la  ultima posicion
+    unsigned int nextIndx = dat_get_NextPayIndx(dat_pay_battery); //valor de la  ultima posicion
     int pay_battery_state = pay_get_state(dat_pay_battery);
 
     //nfrm = trx_tm_addtoframe( (int *)&maxIndx, 1, CMD_ADDFRAME_ADD);
@@ -585,20 +581,19 @@ int tcm_sendTM_payload_battery(int mode, int num_samples)
     nfrm = trx_tm_addtoframe( (int *)&pay_battery_state, 1, CMD_ADDFRAME_ADD);
 
     #if (SCH_CMDTCM_VERBOSE>=1)
-        printf("    pay_i = %d, pay_i_state = %d, nextIndx = %lu \r\n", (unsigned int)dat_pay_battery, pay_battery_state, nextIndx);
+        printf("    pay_i = %d, pay_i_state = %d, nextIndx = %u \r\n", (unsigned int)dat_pay_battery, pay_battery_state, nextIndx);
     #endif
 
     unsigned int indx=0; //indice
     unsigned int set_indx;
-    int valNULL=0; // varable int con valor cero
-    unsigned int maxIndx = dat_get_MaxPayIndx(dat_pay_battery); //maximo valor del indice
-    printf("indx= %i , maxIndx = %i, ", indx , maxIndx);
+    int valNULL = 0; // varable int con valor cero
+    printf("indx= %i , nextIndx = %i, ", indx , nextIndx);
     int val = 0;
     printf("val=%d \r\n", val);
 
     while(val==0)
     {
-        printf("en while.. val=%d \r\n", val);
+        printf("en while.. val = %d \r\n", val);
         dat_get_Payload_Buff(dat_pay_battery, indx, &val);
         indx++;
         ClrWdt();
@@ -623,7 +618,7 @@ int tcm_sendTM_payload_battery(int mode, int num_samples)
         //converse con tomas y esta funcion la hara el
 
 
-        dat_set_Payload_Buff_at_indx(dat_pay_battery, valNULL, set_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
+        dat_set_Payload_Buff_at_indx(dat_pay_battery, valNULL, set_indx);
         //dat_get_Payload_Buff(dat_pay_battery, set_indx , &val);
         //printf("    dat_get_Payload_Buff(indx=%u, val=%d) \r\n", indx, val);
         ClrWdt();

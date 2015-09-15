@@ -245,20 +245,20 @@ void dat_erase_FlightPlan(void){
 //******************************************************************************
 // DAT_Payload_Buff
 //******************************************************************************
-void dat_erase_Payload_Buff(DAT_Payload_Buff pay_i){
+void dat_erase_Payload_Buff(DAT_Payload_Buff pay_i, int len){
     unsigned long i, block;
     block = dat_pay_i_to_block(pay_i);
 
      //not perfect calculation, but good enough
-    int max_block = dat_get_MaxPayIndx(pay_i)/256 + 1;
+    //int max_block = dat_get_MaxPayIndx(pay_i)/256 + 1;
 
     #if (SCH_DATAREPOSITORY_VERBOSE>=1)
         printf("  dat_erase_pay_i_buff()..\n");
         printf("    starting at block = %u\n", (unsigned int)block);
-        printf("    ending at block = %u\n", (unsigned int)max_block);
+        printf("    ending at block = %u\n", (unsigned int)len);
     #endif
 
-    for(i=0;i<max_block;i++){
+    for(i=0;i<len;i++){
         msd_blockErase(block+i);
         ClrWdt();
     }
@@ -308,7 +308,7 @@ unsigned int dat_get_NextPayIndx(DAT_Payload_Buff pay_i){
  * @param mode
  * @return FALSE if there is any problem, TRUE if not
  */
-BOOL dat_set_Payload_Buff(DAT_Payload_Buff pay_i, int value, int mode){
+BOOL dat_set_Payload_Buff(DAT_Payload_Buff pay_i, int value){
     // guarda "value" en la sgte posicion libre del buffer,
     // y retorna si lo logro o no (buffer lleno, payload invalido)
     unsigned int nextIndx;
@@ -321,16 +321,16 @@ BOOL dat_set_Payload_Buff(DAT_Payload_Buff pay_i, int value, int mode){
         return FALSE;
     }
 
-    if(mode == DAT_PAYBUFF_MODE_USE_MAXINDX){
-        printf("dat_set_PayloadBuff: Using MAXINDX mode\n");
-        // Descarta si pay_i esta lleno
-        if( dat_isFull_Payload_Buff(pay_i)==TRUE){
-            #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-                printf("dat_set_PayloadBuff: nextIndx > maxIndx\n");
-            #endif
-            return FALSE;
-        }
-    }
+//    if(mode == DAT_PAYBUFF_MODE_USE_MAXINDX){
+//        printf("dat_set_PayloadBuff: Using MAXINDX mode\n");
+//        // Descarta si pay_i esta lleno
+//        if( dat_isFull_Payload_Buff(pay_i)==TRUE){
+//            #if (SCH_DATAREPOSITORY_VERBOSE>=1)
+//                printf("dat_set_PayloadBuff: nextIndx > maxIndx\n");
+//            #endif
+//            return FALSE;
+//        }
+//    }
 
     //Obtiene nextIndx (posicion a la que guardar)
     nextIndx = dat_get_NextPayIndx(pay_i);
@@ -349,7 +349,7 @@ BOOL dat_set_Payload_Buff(DAT_Payload_Buff pay_i, int value, int mode){
     return TRUE;
 }
 
-BOOL dat_set_Payload_Buff_at_indx(DAT_Payload_Buff pay_i, int value, unsigned int indx, int mode){
+BOOL dat_set_Payload_Buff_at_indx(DAT_Payload_Buff pay_i, int value, unsigned int indx){
     // guarda "value" en la sgte posicion libre del buffer,
     // y retorna si lo logro o no (buffer lleno, payload invalido)
     unsigned int nextIndx;
@@ -362,16 +362,16 @@ BOOL dat_set_Payload_Buff_at_indx(DAT_Payload_Buff pay_i, int value, unsigned in
         return FALSE;
     }
 
-    if(mode == DAT_PAYBUFF_MODE_USE_MAXINDX){
-        printf("dat_set_PayloadBuff: Using MAXINDX mode\n");
-        // Descarta si pay_i esta lleno
-        if( dat_isFull_Payload_Buff(pay_i)==TRUE){
-            #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-                printf("dat_set_PayloadBuff: nextIndx > maxIndx\n");
-            #endif
-            return FALSE;
-        }
-    }
+//    if(mode == DAT_PAYBUFF_MODE_USE_MAXINDX){
+//        printf("dat_set_PayloadBuff: Using MAXINDX mode\n");
+//        // Descarta si pay_i esta lleno
+//        if( dat_isFull_Payload_Buff(pay_i)==TRUE){
+//            #if (SCH_DATAREPOSITORY_VERBOSE>=1)
+//                printf("dat_set_PayloadBuff: nextIndx > maxIndx\n");
+//            #endif
+//            return FALSE;
+//        }
+//    }
 
     //Obtiene nextIndx (posicion a la que guardar)
     nextIndx = indx;
@@ -505,7 +505,7 @@ void dat_onReset_Payload_Buff(void){
     */
 }
 
-void dat_reset_Payload_Buff(DAT_Payload_Buff pay_i, unsigned int lenBuff, int mode){
+void dat_reset_Payload_Buff(DAT_Payload_Buff pay_i){
     #if (SCH_DATAREPOSITORY_VERBOSE>=2)
         printf("Borrando buffer de pay_i = %u\n", (unsigned int)pay_i );
         printf("Usando mode = ");
@@ -518,7 +518,7 @@ void dat_reset_Payload_Buff(DAT_Payload_Buff pay_i, unsigned int lenBuff, int mo
     #endif
 
     //Seteo limites del Buffer
-    dat_set_MaxPayIndx(pay_i, lenBuff-1);
+//    dat_set_MaxPayIndx(pay_i, lenBuff-1);
     dat_set_NextPayIndx(pay_i, 0);
 
 //    if(mode==1){

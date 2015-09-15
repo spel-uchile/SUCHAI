@@ -34,6 +34,9 @@ typedef enum{
     thk_id_debug=((unsigned int)SCH_CMD_THK*0x100), ///< @cmd_first
     thk_id_debug2, ///< @cmd
 
+    //de EBF
+    thk_id_executeBeforeFlight, ///< @cmd
+
     //Deplyment
     thk_id_suchai_deployment, ///< @cmd
     thk_id_deploy_antenna, ///< @cmd
@@ -52,9 +55,6 @@ typedef enum{
     thk_id_get_dep_day_number, ///< @cmd
     thk_id_get_dep_hours, ///< @cmd
     thk_id_get_dep_seconds, ///< @cmd
-    
-    //de EBF
-    thk_id_executeBeforeFlight, ///< @cmd
 
 //    thk_id_set_dep_ant_deployed, ///< @cmd
 //    thk_id_set_dep_ant_tries, ///< @cmd

@@ -18,6 +18,7 @@
  */
 
 #include "eps_suchai.h"
+#include "SUCHAI_config.h"
 
 
 static EPS_Bat_mes BatMes;
@@ -128,6 +129,8 @@ int eps_initialize(void){
     return eps_isAlive(FALSE);
 }
 int eps_isAlive(BOOL verbose){
+
+    if(SCH_EPS_ONBOARD == 0){return 0;}
     
     int ver = VersionReadEPS();
 

@@ -27,6 +27,9 @@ int pay_sysReq[PAY_NCMD];
 #define _VERBOSE_ 1
 #define TEST2_MSJS 1
 
+// 1 = time, samples, time, samples, .. | 0 = time, samples, samples, ..
+#define PAY_TSPAIR_nSLIST   (1)
+
 void pay_onResetCmdPAY(void){
     printf("        pay_onResetCmdPAY\n");
 
@@ -548,13 +551,20 @@ int pay_init_debug(void *param){
     //restart counter
     pay_debug_cnt = 0;
 
+    #if(PAY_TSPAIR_nSLIST == 0)
+        //save date_time in 2ints
+        pay_save_date_time_to_Payload_Buff(dat_pay_debug);
+    #endif
+
     return pay_isAlive_debug(NULL);
 }
 int pay_take_debug(void *param){
     printf("pay_take_debug()  ..\r\n");
 
-    //save date_time in 2ints
-    pay_save_date_time_to_Payload_Buff(dat_pay_debug);
+    #if(PAY_TSPAIR_nSLIST == 1)
+        //save date_time in 2ints
+        pay_save_date_time_to_Payload_Buff(dat_pay_debug);
+    #endif
 
     //save data
     pay_debug_cnt++;
@@ -623,13 +633,20 @@ int pay_init_gyro(void *param){
     printf("  sta_pay_gyro_isAlive = %d \r\n", sta_get_PayStateVar(sta_pay_gyro_isAlive) );
     printf("  PPC_GYRO_INT2_CHECK = %d \r\n", PPC_GYRO_INT2_CHECK );
 
+    #if(PAY_TSPAIR_nSLIST == 0)
+        //save date_time in 2ints
+        pay_save_date_time_to_Payload_Buff(dat_pay_gyro);
+    #endif
+
     return res;
 }
 int pay_take_gyro(void *param){
     printf("pay_take_gyro()  ..\r\n");
 
-    //save date_time in 2ints
-    pay_save_date_time_to_Payload_Buff(dat_pay_gyro);
+    #if(PAY_TSPAIR_nSLIST == 1)
+        //save date_time in 2ints
+        pay_save_date_time_to_Payload_Buff(dat_pay_gyro);
+    #endif
 
     //in case of failure
     if( pay_isAlive_gyro(NULL) == 0){
@@ -687,14 +704,22 @@ int pay_init_tmEstado(void *param){
         printf("  sta_pay_tmEstado_isAlive = %d \r\n", res_isAlive );
     #endif
 
+    #if(PAY_TSPAIR_nSLIST == 0)
+        //save date_time in 2ints
+        pay_save_date_time_to_Payload_Buff(dat_pay_tmEstado);
+    #endif
+
+
     return res_isAlive;
 }
 
 int pay_take_tmEstado(void *param){
     printf("pay_take_tmEstado()  ..\r\n");
 
-    //save date_time in 2ints
-    pay_save_date_time_to_Payload_Buff(dat_pay_tmEstado);
+    #if(PAY_TSPAIR_nSLIST == 1)
+        //save date_time in 2ints
+        pay_save_date_time_to_Payload_Buff(dat_pay_tmEstado);
+    #endif
 
     //save data
     STA_BusStateVar indxVar; int var;
@@ -956,6 +981,11 @@ int pay_init_gps(void *param){
     lenBuff = (unsigned int)(200);   //(1440)  //numero de 10-minutos en un dia
     dat_reset_Payload_Buff(pay_i);
 
+    #if(PAY_TSPAIR_nSLIST == 0)
+        //save date_time in 2ints
+        pay_save_date_time_to_Payload_Buff(dat_pay_gps);
+    #endif
+
     return 0;
 //    //configure Payload
 //    int res;
@@ -974,8 +1004,10 @@ int pay_init_gps(void *param){
 int pay_take_gps(void *param){
     printf("pay_take_gps\r\n");
 
-    //save date_time in 2ints
-    pay_save_date_time_to_Payload_Buff(dat_pay_gps);
+    #if(PAY_TSPAIR_nSLIST == 0)
+        //save date_time in 2ints
+        pay_save_date_time_to_Payload_Buff(dat_pay_gps);
+    #endif
 
     //in case of failure
     if( pay_isAlive_gps(NULL) == 0 ){
@@ -1364,13 +1396,20 @@ int pay_init_sensTemp(void *param){
     //debug info
     printf("  sta_pay_sensTemp_isAlive = %d \r\n", res_isAlive );
 
+    #if(PAY_TSPAIR_nSLIST == 0)
+        //save date_time in 2ints
+        pay_save_date_time_to_Payload_Buff(dat_pay_sensTemp);
+    #endif
+
     return res_isAlive;
 }
 int pay_take_sensTemp(void *param){
     printf("pay_take_sensTemp\r\n");
 
-    //save date_time in 2ints
-    pay_save_date_time_to_Payload_Buff(dat_pay_sensTemp);
+    #if(PAY_TSPAIR_nSLIST == 1)
+        //save date_time in 2ints
+        pay_save_date_time_to_Payload_Buff(dat_pay_sensTemp);
+    #endif
 
     //in case of failure
     if( pay_isAlive_sensTemp(NULL) == 0){

@@ -119,7 +119,7 @@ typedef enum _DAT_Payload{
     dat_pay_gps,
     dat_pay_camera,         //pay_i=5
     dat_pay_sensTemp,   
-    dat_pay_gyro,           //pay_i=8
+    dat_pay_gyro,           //pay_i=7
     dat_pay_expFis,     
     //*************
     dat_pay_last_one    //Se utiliza para marcar el largo del arreglo.

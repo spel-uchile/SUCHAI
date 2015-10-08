@@ -223,20 +223,22 @@ int thk_suchai_deployment(void *param)
     // print rtc time
     rtc_print(NULL);
 
-    unsigned int elapsed_mins = 0;
-    while(TRUE){
-        unsigned long int cu_tick_10ms = xTaskGetTickCount();
-        if( cu_tick_10ms >= final_tick_10ms || elapsed_mins>35 ){
-            printf("[thk_suchai_deployment] Waiting timeout, cu_tick_10ms = %lu, elapsed_mins = %d\r\n", cu_tick_10ms, elapsed_mins);
-            break;
-        }
-        printf("[thk_suchai_deployment] Waiting for timeout, cu_tick_10ms = %lu, elapsed_mins = %d\r\n", cu_tick_10ms, elapsed_mins);
-        //vTaskDelayUntil(&xLastWakeTime, delay_tick_60s); //Suspend task 60 sec
-        ClrWdt();
-        __delay_ms(60000);  //delay 60sec
-        elapsed_mins++;
+    #if(SCH_THOUSEKEEPING_ANT_DEP_REALTIME == 1)
+        unsigned int elapsed_mins = 0;
+        while(TRUE){
+            unsigned long int cu_tick_10ms = xTaskGetTickCount();
+            if( cu_tick_10ms >= final_tick_10ms || elapsed_mins>35 ){
+                printf("[thk_suchai_deployment] Waiting timeout, cu_tick_10ms = %lu, elapsed_mins = %d\r\n", cu_tick_10ms, elapsed_mins);
+                break;
+            }
+            printf("[thk_suchai_deployment] Waiting for timeout, cu_tick_10ms = %lu, elapsed_mins = %d\r\n", cu_tick_10ms, elapsed_mins);
+            //vTaskDelayUntil(&xLastWakeTime, delay_tick_60s); //Suspend task 60 sec
+            ClrWdt();
+            __delay_ms(60000);  //delay 60sec
+            elapsed_mins++;
 
-    }
+        }
+    #endif
 
     // print rtc time
     rtc_print(NULL);
@@ -250,11 +252,13 @@ int thk_suchai_deployment(void *param)
     // print rtc time
     rtc_print(NULL);
 
-    ClrWdt();
-    __delay_ms(60000);  //delay 60sec to avoid drain-out the EPS
+    #if (SCH_THOUSEKEEPING_ANT_DEP_REALTIME == 1)
+        ClrWdt();
+        __delay_ms(60000);  //delay 60sec to avoid drain-out the EPS
 
-    //other "only once"-tasks
-    //..
+        //other "only once"-tasks
+        //..
+    #endif
 
     return 1;
 }

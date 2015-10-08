@@ -543,7 +543,7 @@ int tcm_sendTM_payload(int mode, DAT_Payload_Buff pay_i){
         nfrm = trx_tm_addtoframe(&val, 1, CMD_ADDFRAME_ADD);
 
         #if (SCH_CMDTCM_VERBOSE>=1)
-            printf("    dat_get_Payload_Buff(pay_i=%s, indx=%u, &val=%d) \r\n", dat_get_payload_name(pay_i), indx, val);
+            printf("    dat_get_Payload_Buff(pay_i=%s, indx=%u, &val=0x%X) \r\n", dat_get_payload_name(pay_i), indx, val);
         #endif
 
 

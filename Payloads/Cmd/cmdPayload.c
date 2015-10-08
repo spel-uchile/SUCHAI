@@ -561,14 +561,17 @@ int pay_init_debug(void *param){
 int pay_take_debug(void *param){
     printf("pay_take_debug()  ..\r\n");
 
-    #if(PAY_TSPAIR_nSLIST == 1)
-        //save date_time in 2ints
-        pay_save_date_time_to_Payload_Buff(dat_pay_debug);
-    #endif
+//    #if(PAY_TSPAIR_nSLIST == 1)
+//        //save date_time in 2ints
+//        pay_save_date_time_to_Payload_Buff(dat_pay_debug);
+//    #endif
 
     //save data
-    pay_debug_cnt++;
-    dat_set_Payload_Buff(dat_pay_debug, pay_debug_cnt);
+    int i;
+    for(i=0;i<100;i++){
+        pay_debug_cnt++;
+        dat_set_Payload_Buff(dat_pay_debug, pay_debug_cnt);
+    }
 
     return 1;
 }
@@ -725,7 +728,7 @@ int pay_take_tmEstado(void *param){
     STA_BusStateVar indxVar; int var;
     for(indxVar=0; indxVar<sta_busStateVar_last_one; indxVar++){
         var = sta_get_BusStateVar(indxVar);
-        //dat_set_Payload_Buff(dat_pay_tmEstado, var);
+        dat_set_Payload_Buff(dat_pay_tmEstado, var);
         #if (_VERBOSE_>=1)
             printf("sta_get_stateVar[%s] = %d\r\n", sta_BusStateVarToString(indxVar), var);
         #endif
@@ -1696,34 +1699,34 @@ int pay_fp2_get_exec_rate(DAT_Payload_Buff pay_i){
 unsigned int pay_fp2_get_run_take_num_exec_times(DAT_Payload_Buff pay_i){
     unsigned int max_exec_times;
 
-    unsigned int pai_exec_times = 5;
+    unsigned int pay_exec_times = 5;
     switch(pay_i){
         case dat_pay_tmEstado:
-            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
+            max_exec_times = pay_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_battery:
-            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
+            max_exec_times = pay_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_debug:
-            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
+            max_exec_times = pay_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_lagmuirProbe:
-            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
+            max_exec_times = pay_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_gps:
-            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
+            max_exec_times = pay_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_camera:
-            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
+            max_exec_times = pay_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_sensTemp:
-            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
+            max_exec_times = pay_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_gyro:
-            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
+            max_exec_times = pay_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_expFis:
-            max_exec_times = pai_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
+            max_exec_times = pay_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         default:
             //ignore

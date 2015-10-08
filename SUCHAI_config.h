@@ -45,18 +45,18 @@
 /* Tasks */
 /******************************************************************************/
 /* Main Tasks configurations */
-#define SCH_THOUSEKEEPING_USE                    (0)    ///< 1 = use it, 0 = do not use it
+#define SCH_THOUSEKEEPING_USE                    (1)    ///< 1 = use it, 0 = do not use it
 #define SCH_TCONSOLE_USE                         (1)    ///< 1 = use it, 0 = do not use it
 #define SCH_TFLIGHTPLAN_USE                      (3)    ///< 0 = do not use it, 1 = FP, 2 = FP2, 3 = FP3
 #define SCH_TCOMMUNICATION_USE                   (SCH_TRX_ONBOARD)  ///< 1 = use it, 0 = do not use it
 /* Id Tasks configs */
-#define SCH_TCONSOLE_IDORIG         (0x1101)
-#define SCH_THOUSEKEEPING_IDORIG    (0x1102)
-#define SCH_TCOMUNICATIONS_IDORIG   (0x1103)
-#define SCH_TFLIGHTPLAN_IDORIG      (0x1104)
-#define SCH_TFLIGHTPLAN2_IDORIG     (0x1105)
-#define SCH_TFLIGHTPLAN3_IDORIG     (0x1106)
-#define SCH_TDEPLOYMENT_IDORIG      (0x1107)
+#define SCH_TCONSOLE_IDORIG                     (0x1101)
+#define SCH_THOUSEKEEPING_IDORIG                (0x1102)
+#define SCH_TCOMUNICATIONS_IDORIG               (0x1103)
+#define SCH_TFLIGHTPLAN_IDORIG                  (0x1104)
+#define SCH_TFLIGHTPLAN2_IDORIG                 (0x1105)
+#define SCH_TFLIGHTPLAN3_IDORIG                 (0x1106)
+#define SCH_TDEPLOYMENT_IDORIG                  (0x1107)
 /* Additional Tasks configurations */
 #define SCH_NUM_CMDXXX                          (10)    //< Numero maximo de repositorios de comando que pueden ser agregados (min 3)
 #define SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE  (0)     ///< 1=Activo ( EPS montada ) 0= Inactivo ( EPS no montada SOC se lleva a MAX_SOC )
@@ -65,40 +65,40 @@
 #define SCH_TFLIGHTPLAN_N_CMD                   ((24 * 60) / SCH_TFLIGHTPLAN_RESOLUTION) ///< Total de comandos en el flight plan 24[hrs]*60[min] / RES[min]
 #define SCH_TFLIGHTPLAN_EXTMEMORY               (1)     ///< (0) buffer en  RAM, (1) en memoria SD
 /* VERBOSE Tasks configurations */
-#define SCH_TCOMUNICATIONS_VERBOSE          (1)  ///< 1=verboso 0=austero
-#define SCH_TCONSOLE_VERBOSE                (1)  ///< 1=verboso 0=austero
-#define SCH_TDEPLOYMENT_VERBOSE             (2)  ///< 1=verboso 0=austero
-#define SCH_TDISPATCHER_VERBOSE             (1)  ///< 1=verboso 0=austero
-#define SCH_TEXECUTER_VERBOSE               (1)  ///< 1=verboso 0=austero
-#define SCH_TFLIGHTPLAN_VERBOSE             (1)  ///< 1=verboso 0=austero
-#define SCH_TFLIGHTPLAN2_VERBOSE            (1)  ///< 1=verboso 0=austero
-#define SCH_TFLIGHTPLAN3_VERBOSE            (1)  ///< 1=verboso 0=austero
-#define SCH_THOUSEKEEPING_VERBOSE           (1)  ///< 1=verboso 0=austero
+#define SCH_TCOMUNICATIONS_VERBOSE              (1)  ///< 1=verboso 0=austero
+#define SCH_TCONSOLE_VERBOSE                    (1)  ///< 1=verboso 0=austero
+#define SCH_TDEPLOYMENT_VERBOSE                 (2)  ///< 1=verboso 0=austero
+#define SCH_TDISPATCHER_VERBOSE                 (1)  ///< 1=verboso 0=austero
+#define SCH_TEXECUTER_VERBOSE                   (1)  ///< 1=verboso 0=austero
+#define SCH_TFLIGHTPLAN_VERBOSE                 (1)  ///< 1=verboso 0=austero
+#define SCH_TFLIGHTPLAN2_VERBOSE                (1)  ///< 1=verboso 0=austero
+#define SCH_TFLIGHTPLAN3_VERBOSE                (1)  ///< 1=verboso 0=austero
+#define SCH_THOUSEKEEPING_VERBOSE               (1)  ///< 1=verboso 0=austero
 
 /******************************************************************************/
 /* CmdXXX */
 /******************************************************************************/
 /* Command Repo configs */
-#define SCH_CMD_PPC         (0x10)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
-#define SCH_CMD_CON         (0x20)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
-#define SCH_CMD_TRX         (0x30)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
-#define SCH_CMD_EPS         (0x40)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
-#define SCH_CMD_DRP         (0x50)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
-#define SCH_CMD_PAY         (0x60)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
-#define SCH_CMD_RTC         (0x70)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
-#define SCH_CMD_TCM         (0x80)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
-#define SCH_CMD_SRP         (0x90)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
-#define SCH_CMD_THK         (0xA0)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_PPC                             (0x10)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_CON                             (0x20)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_TRX                             (0x30)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_EPS                             (0x40)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_DRP                             (0x50)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_PAY                             (0x60)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_RTC                             (0x70)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_TCM                             (0x80)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_SRP                             (0x90)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
+#define SCH_CMD_THK                             (0xA0)  ///< Indicates the belonging of a certain CmdId. E.g. (cmdId = 0x0A01 and cmdBar=0x0A) => command 0x01 belongs to cmdBar
 /* VERBOSE CMD configurations */
-#define SCH_CMDCONSOLE_VERBOSE              (1)  ///< 1=verboso 0=austero
-#define SCH_CMDDRP_VERBOSE                  (1)  ///< 1=verboso 0=austero
-#define SCH_CMDEPS_VERBOSE                  (1)  ///< 1=verboso 0=austero
-#define SCH_CMDPAYLOAD_VERBOSE              (1)  ///< 1=verboso 0=austero
-#define SCH_CMDPPC_VERBOSE                  (1)  ///< 1=verboso 0=austero
-#define SCH_CMDREPOSITORY_VERBOSE           (1)  ///< 1=verboso 0=austero
-#define SCH_CMDRTC_VERBOSE                  (1)  ///< 1=verboso 0=austero
-#define SCH_CMDTRX_VERBOSE                  (1)  ///< 1=verboso 0=austero
-#define SCH_CMDTCM_VERBOSE                  (1)  ///< 1=verboso 0=austero
+#define SCH_CMDCONSOLE_VERBOSE                  (1)  ///< 1=verboso 0=austero
+#define SCH_CMDDRP_VERBOSE                      (1)  ///< 1=verboso 0=austero
+#define SCH_CMDEPS_VERBOSE                      (1)  ///< 1=verboso 0=austero
+#define SCH_CMDPAYLOAD_VERBOSE                  (1)  ///< 1=verboso 0=austero
+#define SCH_CMDPPC_VERBOSE                      (1)  ///< 1=verboso 0=austero
+#define SCH_CMDREPOSITORY_VERBOSE               (1)  ///< 1=verboso 0=austero
+#define SCH_CMDRTC_VERBOSE                      (1)  ///< 1=verboso 0=austero
+#define SCH_CMDTRX_VERBOSE                      (1)  ///< 1=verboso 0=austero
+#define SCH_CMDTCM_VERBOSE                      (1)  ///< 1=verboso 0=austero
 
 /******************************************************************************/
 /* Respositories */
@@ -136,12 +136,12 @@
 /* TRX and COMM configs */
 #define SCH_TRX_BEACON_PERIOD              (3*60)   ///< [s] Periodo del beacon en segundos (UINT16)
 #define SCH_TRX_BEACON_WPM                 (20)     ///< Velocidad del beacon en palabras por minuto 1-255
-#define SCH_TRX_BEACON_BAT_LVL             (630)    ///< Nivel de bateria minimo para transmitir beacon
-#define SCH_TRX_BEACON_MODE                (2)      ///< Tipo de beacon 0=CW, 1=Cw+FM, 2=FM
-#define SCH_TRX_BEACON_POSPONE_PRE         (30*60)  ///< [s] Periodo de inactividad del beacon luego del 1er encendido (silencio radial) (UINT16)
+#define SCH_TRX_BEACON_BAT_LVL             (500)    ///< Nivel de bateria minimo para transmitir beacon
+#define SCH_TRX_BEACON_MODE                (1)      ///< Tipo de beacon 0=CW, 1=Cw+FM, 2=FM
+#define SCH_TRX_BEACON_POSPONE_PRE         (1*60)   ///< def:30*60 [s] Periodo de inactividad del beacon luego del 1er encendido (silencio radial) (UINT16)
 #define SCH_TRX_BEACON_POSPONE_NOM         (1*60)   ///< [s] Periodo de inactividad del beacon luego de cada reinicio (excepto el 1ero) (UINT16)
-#define SCH_TRX_RX_BAUD                    (48)     /// RX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
-#define SCH_TRX_TX_BAUD                    (48)     /// TX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
+#define SCH_TRX_RX_BAUD                    (12)     /// RX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
+#define SCH_TRX_TX_BAUD                    (12)     /// TX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
 #define SCH_TRX_NODE_GND                   (10)     /// Nodo de la estacion terrena
 #define SCH_TRX_PORT_TM                    (10)     /// Puerto correspondiente a telemetria (en la estacion terrena)
 #define SCH_TRX_PORT_TC                    (10)     /// Puerto correspondiente a telecomandos (en el software de vuelo)

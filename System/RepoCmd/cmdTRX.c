@@ -487,6 +487,7 @@ int trx_initialize(void *param)
     else
         deployed = 0;
 
+    
     // Reading settings from status repo
     MemEEPROM_Vars mem_eeprom_var;
     mem_eeprom_var = mem_trx_beacon_period;

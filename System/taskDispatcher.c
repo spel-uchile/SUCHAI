@@ -85,6 +85,12 @@ void taskDispatcher(void *param)
                 #if SCH_TDISPATCHER_VERBOSE >= 1
                     printf("[Dispatcher] CMD Result: %d\n", cmdResult);
                 #endif
+
+                #if (SCH_TDISPATCHER_VERBOSE >=1)
+                    // 80 characters long
+                    printf("[Dispatcher] *******************************************************************\n");
+                #endif
+
             }
         }
         else

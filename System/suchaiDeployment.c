@@ -340,7 +340,7 @@ void dep_init_suchai_tasks(void)
         #if (SCH_TDEPLOYMENT_VERBOSE>=2)
             printf("    * Creating taskHousekeeping\r\n");
         #endif
-        xTaskCreate(taskHouskeeping, (signed char *)"HKP", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskHouskeepingHandle);
+        xTaskCreate(taskHousekeeping, (signed char *)"HKP", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskHouskeepingHandle);
         __delay_ms(300);
     #endif
     

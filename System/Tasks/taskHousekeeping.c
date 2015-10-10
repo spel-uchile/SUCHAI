@@ -23,7 +23,7 @@
 
 extern xQueueHandle dispatcherQueue; /* Commands queue */
 
-void taskHouskeeping(void *param)
+void taskHousekeeping(void *param)
 {
     #if SCH_THOUSEKEEPING_VERBOSE
         printf(">>[Houskeeping] Started\r\n");

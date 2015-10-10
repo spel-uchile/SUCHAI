@@ -32,7 +32,7 @@
 #include "cmdTHK.h"
 #include "cmdPayload.h"
 
-void taskHouskeeping(void *param);
+void taskHousekeeping(void *param);
 
 #endif //T_HOUSEKEEPING_H
 

@@ -217,6 +217,9 @@ int trx_set_tx_baud(void *param)
  */
 int trx_get_tx_baud(void *param)
 {
+    int result2;
+    result2 = com_get_conf(&TRX_CONFIG, NODE_COM, com_timeout);
+
 //    int result = trx_read_conf(NULL);
 //    if(!result)
 //        return 0;
@@ -261,6 +264,9 @@ int trx_set_rx_baud(void *param)
  */
 int trx_get_rx_baud(void *param)
 {
+    int result2;
+    result2 = com_get_conf(&TRX_CONFIG, NODE_COM, com_timeout);
+
 //    int result = trx_read_conf(NULL);
 //    if(!result)
 //        return 0;
@@ -300,6 +306,9 @@ int trx_set_beacon_level(void* param)
  */
 int trx_get_beacon_level(void *param)
 {
+    int result2;
+    result2 = com_get_conf(&TRX_CONFIG, NODE_COM, com_timeout);
+
 //    int result = trx_read_conf(NULL);
 //    if(!result)
 //        return 0;
@@ -338,6 +347,7 @@ int trx_set_beacon_period(void* param)
 int trx_get_beacon_period(void *param)
 {
     int result;
+    result = com_get_conf(&TRX_CONFIG, NODE_COM, com_timeout);
 
 //    result = trx_read_conf(NULL);
 //    if(!result)

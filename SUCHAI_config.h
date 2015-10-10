@@ -47,7 +47,7 @@
 /* Main Tasks configurations */
 #define SCH_THOUSEKEEPING_USE                    (1)    ///< 1 = use it, 0 = do not use it
 #define SCH_TCONSOLE_USE                         (1)    ///< 1 = use it, 0 = do not use it
-#define SCH_TFLIGHTPLAN_USE                      (3)    ///< 0 = do not use it, 1 = FP, 2 = FP2, 3 = FP3
+#define SCH_TFLIGHTPLAN_USE                      (0)    ///< 0 = do not use it, 1 = FP, 2 = FP2, 3 = FP3
 #define SCH_TCOMMUNICATION_USE                   (SCH_TRX_ONBOARD)  ///< 1 = use it, 0 = do not use it
 /* Id Tasks configs */
 #define SCH_TCONSOLE_IDORIG                     (0x1101)
@@ -134,7 +134,7 @@
 #define SCH_I2C3_ADDR           (0xF4) ///< I2C 3 Slave address
 
 /* TRX and COMM configs */
-#define SCH_TRX_BEACON_PERIOD              (3*60)   ///< [s] Periodo del beacon en segundos (UINT16)
+#define SCH_TRX_BEACON_PERIOD              (1*60)   ///< [s] Periodo del beacon en segundos (UINT16)
 #define SCH_TRX_BEACON_WPM                 (20)     ///< Velocidad del beacon en palabras por minuto 1-255
 #define SCH_TRX_BEACON_BAT_LVL             (500)    ///< Nivel de bateria minimo para transmitir beacon
 #define SCH_TRX_BEACON_MODE                (1)      ///< Tipo de beacon 0=CW, 1=Cw+FM, 2=FM

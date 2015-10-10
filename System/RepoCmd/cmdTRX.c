@@ -525,10 +525,10 @@ int trx_initialize(void *param)
     TRX_CONFIG.morse_en_voltage = 1;
     TRX_CONFIG.morse_enable = 1;
     TRX_CONFIG.morse_inter_delay = morse_inter_delay;
-    TRX_CONFIG.morse_mode = SCH_TRX_BEACON_MODE;
-    TRX_CONFIG.morse_pospone = SCH_TRX_BEACON_POSPONE_NOM;
+    TRX_CONFIG.morse_mode = (uint8_t)SCH_TRX_BEACON_MODE;
+    TRX_CONFIG.morse_pospone = (uint16_t)SCH_TRX_BEACON_POSPONE_NOM;
 //    TRX_CONFIG.morse_text = "00SUCHAI00"; //Use command
-    TRX_CONFIG.morse_wpm = SCH_TRX_BEACON_WPM;
+    TRX_CONFIG.morse_wpm = (uint8_t)SCH_TRX_BEACON_WPM;
     TRX_CONFIG.preamble_length = 75;
     TRX_CONFIG.rx_baud = rx_baud;
     TRX_CONFIG.tx_baud = tx_baud;

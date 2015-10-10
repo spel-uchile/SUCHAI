@@ -69,13 +69,11 @@ void taskComunications(void *param)
             /* Ajustar el contador a los tipos de beacon que hay*/
             type_cnt = type_cnt % 5;
 
-            TcNewCmd.cmdId = tcm_id_update_beacon;
-            TcNewCmd.param = type_cnt;
-
-            //printf("[Comunications] seconds_cnt = %d, type_cnt = %d \r\n", seconds_cnt, type_cnt);
-
-            /* Queue NewCmd - Non-Blocking (Wait 0.5 task period) */
-            xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
+//            TcNewCmd.cmdId = tcm_id_update_beacon;
+//            TcNewCmd.param = type_cnt;
+//            //printf("[Comunications] seconds_cnt = %d, type_cnt = %d \r\n", seconds_cnt, type_cnt);
+//            /* Queue NewCmd - Non-Blocking (Wait 0.5 task period) */
+//            xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
 
             type_cnt++;
             seconds_cnt = 0;

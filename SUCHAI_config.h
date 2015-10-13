@@ -121,7 +121,7 @@
 /******************************************************************************/
 /* Realtime config */
 #define SCH_THOUSEKEEPING_SILENT_REALTIME   (0)  ///< 1=Realtime 0=Debugtime
-#define SCH_THOUSEKEEPING_ANT_DEP_REALTIME  (0)  ///< 1=Realtime 0=Debugtime
+#define SCH_THOUSEKEEPING_ANT_DEP_REALTIME  (1)  ///< 1=Realtime 0=Debugtime
 #define SCH_THOUSEKEEPING_REALTIME          (1)  ///< 1=Realtime 0=Debugtime
 #define SCH_TFLIGHTPLAN_REALTIME            (1)  ///< 1=Realtime 0=Debugtime
 #define SCH_TFLIGHTPLAN2_REALTIME           (1)  ///< 1=Realtime 0=Debugtime
@@ -138,7 +138,7 @@
 #define SCH_TRX_BEACON_WPM                 (20)     ///< Velocidad del beacon en palabras por minuto 1-255
 #define SCH_TRX_BEACON_BAT_LVL             (500)    ///< Nivel de bateria minimo para transmitir beacon
 #define SCH_TRX_BEACON_MODE                (1)      ///< Tipo de beacon 0=CW, 1=Cw+FM, 2=FM
-#define SCH_TRX_BEACON_POSPONE_PRE         (1*60)   ///< def:30*60 [s] Periodo de inactividad del beacon luego del 1er encendido (silencio radial) (UINT16)
+#define SCH_TRX_BEACON_POSPONE_PRE         (4*60)   ///< def:30*60 [s] Periodo de inactividad del beacon luego del 1er encendido (silencio radial) (UINT16)
 #define SCH_TRX_BEACON_POSPONE_NOM         (1*60)   ///< [s] Periodo de inactividad del beacon luego de cada reinicio (excepto el 1ero) (UINT16)
 #define SCH_TRX_RX_BAUD                    (12)     /// RX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
 #define SCH_TRX_TX_BAUD                    (12)     /// TX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]

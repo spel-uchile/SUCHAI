@@ -32,8 +32,7 @@ extern xQueueHandle dispatcherQueue;
 void dep_init_suchai_hw(void)
 {
     #if (SCH_TDEPLOYMENT_VERBOSE)
-        printf("[suchaiDeployment] Started\r\n");
-        printf("\n[suchaiDeployment] INITIALIZING SUCHAI FLIGHT SOFTWARE\r\n");
+        printf("\n[suchaiDeployment] dep_init_suchai_hw()..\r\n");
     #endif
 
     /* External Perippherals/Componentes/subsystems/Hw etc ..*/
@@ -41,8 +40,12 @@ void dep_init_suchai_hw(void)
 }
 
 void dep_init_suchai_repos(void){
+    #if (SCH_TDEPLOYMENT_VERBOSE)
+        printf("\n[suchaiDeployment] dep_init_suchai_repos()..\r\n");
+    #endif
+
     /* Repositories */
-    dep_init_stateRepo(NULL);  //modify specific reset-dependant STA_StateVar vars
+    dep_init_stateRepo(NULL);   //modify specific reset-dependant STA_StateVar vars
     dep_init_cmdRepo(NULL);     //loads cmdXXX repos to be used
     dep_init_dataRepo(NULL);    //prepares GnrlPurposeBuff to be used
     /* Other structures */
@@ -58,16 +61,16 @@ void dep_init_suchai_repos(void){
 int dep_init_stateRepo(void *param)
 {
     #if (SCH_TDEPLOYMENT_VERBOSE>=1)
-        printf("\n[dep_init_stateRepo] Initializing state repository ..\r\n");
+        printf("\n[dep_init_stateRepo] Initializing state repository..\r\n");
     #endif
 
     #if (SCH_TDEPLOYMENT_VERBOSE>=2)
-        printf("    * sta_onReset_BusStateRepo() ..\r\n");
+        printf("    * sta_onReset_BusStateRepo()..\r\n");
     #endif
     sta_onReset_BusStateRepo();
 
     #if (SCH_TDEPLOYMENT_VERBOSE>=2)
-        printf("    * sta_onReset_PayStateRepo() ..\r\n");
+        printf("    * sta_onReset_PayStateRepo()..\r\n");
     #endif
     sta_onReset_PayStateRepo();
 
@@ -103,7 +106,7 @@ extern int thk_sysReq[];
 int dep_init_cmdRepo(void *param)
 {
     #if (SCH_TDEPLOYMENT_VERBOSE>=1)
-        printf("\n[dep_init_cmdRepo] Initializing command repository...\r\n");
+        printf("\n[dep_init_cmdRepo] Initializing command repository..\r\n");
     #endif
 
 //    #if (SCH_TASKDEPLOYMENT_VERBOSE>=2)
@@ -233,7 +236,7 @@ int dep_init_cmdRepo(void *param)
 int dep_init_dataRepo(void *param)
 {
     #if (SCH_TDEPLOYMENT_VERBOSE>=1)
-        printf("\n[dep_init_Repos] Initializing data repositories...\r\n");
+        printf("\n[dep_init_Repos] Initializing data repositories..\r\n");
     #endif
 
     /* Initializing dataRepository*/
@@ -273,12 +276,12 @@ int dep_init_adHoc_strcts(void *param)
         printf("\n[dep_init_GnrlStruct] Initializing other structures...\r\n");
     #endif
 
-    /* Initializing EPS struct */
-    #if (SCH_TDEPLOYMENT_VERBOSE>=2)
-        printf("    * init EPS structs\r\n");
-    #endif
-
     #if( SCH_EPS_ONBOARD == 1 )
+        /* Initializing EPS struct */
+        #if (SCH_TDEPLOYMENT_VERBOSE>=2)
+            printf("    * init EPS structs\r\n");
+        #endif
+
         setStateFlagEPS( (unsigned char)sta_get_BusStateVar(sta_eps_state_flag) );
     #endif
 

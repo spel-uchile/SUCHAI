@@ -534,8 +534,9 @@ int trx_initialize(void *param)
     TRX_CONFIG.tx_baud = tx_baud;
     TRX_CONFIG.tx_max_temp = 60;
 
-    if(!deployed)
+    if(deployed==0)
     {
+        printf("      * trx_initialize, first time on => TRX_CONFIG.morse_pospone = %d \r\n", SCH_TRX_BEACON_POSPONE_PRE);
         TRX_CONFIG.morse_pospone = SCH_TRX_BEACON_POSPONE_PRE;
     }
 
@@ -568,6 +569,7 @@ int trx_initialize(void *param)
  *
  * @return 0, TX Fail. 1, TX Success. 2, No TX operation performe
  */
+static int single_frame = 1;
 int trx_tm_addtoframe(int *data, int len, int mode)
 {
     static uint16_t tmframe[TRX_TMFRAMELEN16];
@@ -650,12 +652,16 @@ int trx_tm_addtoframe(int *data, int len, int mode)
             case CMD_ADDFRAME_CONT:
                 /* A new frame being configured */
                 int16_counter = 0;
+                single_frame = 0;
                 /* Append control field  */
                 tmframe[int16_counter++] = CMD_TMFRAME_TCONT;   /* Type (2) */
                 tmframe[int16_counter++] = (char)(frame_counter);     /* Frame# (2) */
 
                 /* Add tm type */
-                tmframe[int16_counter++] = (uint16_t)(tm_type);     /* DataL */
+                /* For TM formate please see:
+                 * https://docs.google.com/spreadsheets/d/1LKhd_xAB94L9oMWbPKR8nDvijBbtvDN1tCDrdkQpOPM/edit?usp=sharing
+                 */
+                //tmframe[int16_counter++] = (uint16_t)(tm_type);     /* DataL */   // solo se envia en el START
 
                 /* Add data if needed */
                 frame_counter++;
@@ -699,10 +705,17 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                     }
 
                     /* Load and transmit TM */
-                    tmframe[0] = CMD_TMFRAME_TSTOP;
+                    if(single_frame == 1){
+                        tmframe[0] = CMD_TMFRAME_TSINGL;
+                    }
+                    else{
+                        tmframe[0] = CMD_TMFRAME_TSTOP;
+                    }
+                    
                     trx_tm_send(tmframe, TRX_TMFRAMELEN16);
                 }
 
+                single_frame = 1;
                 int16_counter = 0;
                 frame_counter = 0;
                 tm_type = CMD_STOP;
@@ -773,9 +786,15 @@ int trx_tm_addtoframe(int *data, int len, int mode)
  */
 static int trx_tm_send(uint16_t *data, int len)
 {
-#if SCH_CMDTRX_VERBOSE > 1
-    printf("Sending TM frame...\n");
-#endif
+    #if(SCH_CMDTRX_VERBOSE >= 1)
+        //printf("Sending TM frame...\n");
+        int i; unsigned int h;
+        for(i=0;i<len;i++){
+            h = data[i];
+            printf("0x%04X,", h);
+        }
+        printf("\r\n");
+    #endif
 
     int result;
     result = csp_transaction(CSP_PRIO_NORM, SCH_TRX_NODE_GND, SCH_TRX_PORT_TM,

@@ -195,6 +195,9 @@ int thk_get_dep_seconds(void* param){
 int thk_suchai_deployment(void *param)
 {
     printf("[thk_suchai_deployment] Suchai deployment routine..\r\n");
+
+    int arg = 1200;
+    trx_set_beacon_level(&arg); // 12 Volts => no Beacon
     
     int delay_min = *( (int*)param );
 //    portTickType xLastWakeTime = xTaskGetTickCount();
@@ -260,12 +263,15 @@ int thk_suchai_deployment(void *param)
         //..
     #endif
 
+    arg = SCH_TRX_BEACON_BAT_LVL;
+    trx_set_beacon_level(&arg);
+
     return 1;
 }
 
 #define THK_SILENT_TIME_MIN 30          ///< cuantos "minutos" (65,535[s]) estara en inactividad antes de iniciarse
-#define THK_MAX_TRIES_ANT_DEPLOY 10               ///< cuantas veces tratara desplegar la antena antes de anunciar fracaso
-#define THK_DEPLOY_TIME 45311          ///< 2*THK_DEPLOY_TIME/1000 indica cuantos "ms" estara activo el bus de 3.3V quemando el nilon
+#define THK_MAX_TRIES_ANT_DEPLOY 10     ///< cuantas veces tratara desplegar la antena antes de anunciar fracaso
+#define THK_DEPLOY_TIME 45311           ///< 2*THK_DEPLOY_TIME/1000 indica cuantos "ms" estara activo el bus de 3.3V quemando el nilon
 #define THK_REST_DEPLOY_TIME 5000       ///< cuantos "ms" estara inactivo el bus de 3.3V descanzando de tratar de quemar el nilon
 #define THK_RECHECK_TIME 2000           ///< despues de cuantos "ms" RE-chequeara que efectivamente se desplego la antena
 /**

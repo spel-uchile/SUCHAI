@@ -51,7 +51,7 @@ int srp_increment_STA_stateVar_hoursWithoutReset(void *param)
      * si debe incrementarlo y por cuanto */
 
     //int ar=*( (int *)param ); char ret[6];
-    //con_printf("param= ");  Hex16ToAscii( ar, ret); con_printf(buffer); con_printf("\n");
+    //printf("param= ");  Hex16ToAscii( ar, ret); printf(buffer); printf("\n");
     //solo debe ser llamada cada 1hora
     int arg = sta_get_BusStateVar(sta_ppc_hoursWithoutReset)+1;
     ppc_set_hoursWithoutReset(&arg);
@@ -89,6 +89,8 @@ int srp_executeBeforeFlight(void * param){
  * @return 1 = Ok, 0 = Fail
  */
 int srp_memEEPROM_initial_state(void * param){
+    printf("[srp_memEEPROM_initial_state] ..\r\n");
+
     int arg;
 
     //PPC => (C&DH subsystem)
@@ -198,6 +200,10 @@ int srp_memEEPROM_initial_state(void * param){
     arg = 0;    //not deployed
     trx_initialize(&arg);
 
+    printf("[srp_memEEPROM_initial_state] All STA_StateVar variables:\r\n");
+    //print all SatatusVars
+    srp_print_STA_stateVar(NULL);
+
     return 1;
 }
 
@@ -220,7 +226,7 @@ int srp_print_STA_stateVar(void *param)
     STA_BusStateVar indxVar; int val;
     for(indxVar=0; indxVar<sta_busStateVar_last_one; indxVar++){
         val = sta_get_BusStateVar(indxVar);
-        printf("    * sta_get_stateVar(%s) = %d \r\n", sta_BusStateVarToString(indxVar), val);
+        printf("    * sta_get_stateVar(%d = %s) = 0x%X = %d \r\n", indxVar, sta_BusStateVarToString(indxVar), val, val);
     }
     printf("===============================\r\n");
 
@@ -231,7 +237,7 @@ int srp_debug(void *param){
     int ind=*((int*)param);
 
     char ret[10];
-    itoa(ret, (unsigned int)ind, 10); con_printf("calling srp_debug"); con_printf(ret); con_printf("()...\r\n");
+    itoa(ret, (unsigned int)ind, 10); printf("calling srp_debug"); printf(ret); printf("()...\r\n");
 
     switch(ind){
         case 4:
@@ -254,24 +260,24 @@ void srp_debug4(void){
     unsigned int data=0xA000;
     char buffer[10];
 
-    con_printf("(Destructive) Testing memEEPROM\r\n");
+    printf("(Destructive) Testing memEEPROM\r\n");
     for(address=MEP_FIRST_ADDR;address<=MEP_LAST_ADDR;address++, data++){
-        //con_printf("testing address j="); Hex16ToAscii( address); con_printf(buffer); con_printf("\n");
+        //printf("testing address j="); Hex16ToAscii( address); printf(buffer); printf("\n");
 
-        con_printf("writing: ");
+        printf("writing: ");
         writeIntEEPROM1(address, data);
-        itoa(buffer, address,10); con_printf("value["); con_printf(buffer); con_printf("]=");
-        itoa(buffer, data,10); con_printf(buffer); con_printf("    |    ");
+        itoa(buffer, address,10); printf("value["); printf(buffer); printf("]=");
+        itoa(buffer, data,10); printf(buffer); printf("    |    ");
 
-        con_printf("reading: ");
+        printf("reading: ");
         unsigned int res = readIntEEPROM1(address);
-        itoa(buffer, address,10); con_printf("value["); con_printf(buffer); con_printf("]=");
-        itoa(buffer, res,10); con_printf(buffer); con_printf("    |    ");
+        itoa(buffer, address,10); printf("value["); printf(buffer); printf("]=");
+        itoa(buffer, res,10); printf(buffer); printf("    |    ");
 
-        con_printf("comparing: ");
-        if(data==res){ con_printf("ok"); }
-        else{ con_printf("fail"); }
-        con_printf("\n");
+        printf("comparing: ");
+        if(data==res){ printf("ok"); }
+        else{ printf("fail"); }
+        printf("\n");
     }
 }
 

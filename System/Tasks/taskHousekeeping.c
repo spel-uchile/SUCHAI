@@ -93,7 +93,7 @@ void taskHousekeeping(void *param)
         /* 20 seconds actions */
         if((elapsed_sec % check_20sec) == 0)
         {
-            #if (SCH_THOUSEKEEPING_VERBOSE>=1)
+            #if (SCH_THOUSEKEEPING_VERBOSE>=2)
                 printf("[Houskeeping]:  20[s] actions ..\r\n");
             #endif
             //Add commands below ..
@@ -112,17 +112,17 @@ void taskHousekeeping(void *param)
             #endif
 
             //make changes if SOC is too low, among others
-            #if (SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE==1)
-                NewCmd.cmdId = ppc_id_reactToSOC;
-                NewCmd.param = 0;
-                xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-            #endif
+//            #if (SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE==1)
+//                NewCmd.cmdId = ppc_id_reactToSOC;
+//                NewCmd.param = 0;
+//                xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+//            #endif
 
-            #if (SCH_THOUSEKEEPING_VERBOSE>=2)
-                NewCmd.cmdId = srp_id_print_STA_stateVar;
-                NewCmd.param = 0;
-                xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-            #endif
+//            #if (SCH_THOUSEKEEPING_VERBOSE>=2)
+//                NewCmd.cmdId = srp_id_print_STA_stateVar;
+//                NewCmd.param = 0;
+//                xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+//            #endif
         }
 
         /* 1 minute actions */
@@ -132,12 +132,17 @@ void taskHousekeeping(void *param)
                 printf("[Houskeeping]:    1[min] actions ..\r\n");
             #endif
             //Add commands below ..
+
+            //print StateVars, debug purposes
+            NewCmd.cmdId = srp_id_print_STA_stateVar;
+            NewCmd.param = 1;
+            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
         }
 
         /* 5 minutes actions */
         if((elapsed_sec % check_5min) == 0)
         {
-            #if (SCH_THOUSEKEEPING_VERBOSE>=1)
+            #if (SCH_THOUSEKEEPING_VERBOSE>=2)
                 printf("[Houskeeping]:    5[min] actions ..\r\n");
             #endif
             //Add commands below ..

@@ -310,12 +310,13 @@ void sta_onReset_BusStateRepo(void)
         }
     #endif
 
-    /*
-     * Comment all this block ONLY after all var have a callable function "get"
-     */
-//    printf("[sta_onResetStatRepo] All STA_StateVar variables:\r\n");
-//    //print all SatatusVars
-//    srp_print_STA_stateVar(NULL);
+//    /* Debug purposes      */
+//    int dep = thk_get_dep_ant_deployed(NULL);
+//    if(dep == 0){
+//        printf("[sta_onResetStatRepo] All STA_StateVar variables:\r\n");
+//        //print all SatatusVars
+//        srp_print_STA_stateVar(NULL);
+//    }
 }
 
 char* sta_BusStateVarToString(STA_BusStateVar var_i){

@@ -1,0 +1,248 @@
+===============================
+StateVar content: 
+===============================
+    * sta_get_stateVar(sta_RTC_isAlive = 0) = 1 = 0x1 
+    * sta_get_stateVar(sta_TRX_isAlive = 1) = 1 = 0x1 
+    * sta_get_stateVar(sta_EPS_isAlive = 2) = 0 = 0x0 
+    * sta_get_stateVar(sta_MemEEPROM_isAlive = 3) = 1 = 0x1 
+    * sta_get_stateVar(sta_MemSD_isAlive = 4) = 1 = 0x1 
+    * sta_get_stateVar(sta_AntSwitch_isOpen = 5) = 1 = 0x1 
+    * sta_get_stateVar(sta_fpl_index = 6) = 0 = 0x0 
+    * sta_get_stateVar(sta_ppc_opMode = 7) = 0 = 0x0 
+    * sta_get_stateVar(sta_ppc_lastResetSource = 8) = 4 = 0x4 
+    * sta_get_stateVar(sta_ppc_hoursAlive = 9) = 0 = 0x0 
+    * sta_get_stateVar(sta_ppc_hoursWithoutReset = 10) = 0 = 0x0 
+    * sta_get_stateVar(sta_ppc_resetCounter = 11) = -1 = 0xFFFF 
+    * sta_get_stateVar(sta_ppc_wdt = 12) = 1 = 0x1 
+    * sta_get_stateVar(sta_ppc_osc = 13) = 4 = 0x4 
+    * sta_get_stateVar(sta_ppc_MB_nOE_USB_nINT_stat = 14) = 1 = 0x1 
+    * sta_get_stateVar(sta_ppc_MB_nOE_MHX_stat = 15) = 1 = 0x1 
+    * sta_get_stateVar(sta_ppc_MB_nON_MHX_stat = 16) = 0 = 0x0 
+    * sta_get_stateVar(sta_ppc_MB_nON_SD_stat = 17) = 0 = 0x0 
+    * sta_get_stateVar(sta_dep_ant_deployed = 18) = 0 = 0x0 
+    * sta_get_stateVar(sta_dep_ant_tries = 19) = 0 = 0x0 
+    * sta_get_stateVar(sta_dep_year = 20) = 0 = 0x0 
+    * sta_get_stateVar(sta_dep_month = 21) = 0 = 0x0 
+    * sta_get_stateVar(sta_dep_week_day = 22) = 0 = 0x0 
+    * sta_get_stateVar(sta_dep_day_number = 23) = 0 = 0x0 
+    * sta_get_stateVar(sta_dep_hours = 24) = 0 = 0x0 
+    * sta_get_stateVar(sta_dep_minutes = 25) = 0 = 0x0 
+    * sta_get_stateVar(sta_dep_seconds = 26) = 0 = 0x0 
+    * sta_get_stateVar(sta_rtc_year = 27) = 165 = 0xA5 
+    * sta_get_stateVar(sta_rtc_month = 28) = 25 = 0x19 
+    * sta_get_stateVar(sta_rtc_week_day = 29) = 7 = 0x7 
+    * sta_get_stateVar(sta_rtc_day_number = 30) = 45 = 0x2D 
+    * sta_get_stateVar(sta_rtc_hours = 31) = 38 = 0x26 
+    * sta_get_stateVar(sta_rtc_minutes = 32) = 88 = 0x58 
+    * sta_get_stateVar(sta_rtc_seconds = 33) = 55 = 0x37 
+    * sta_get_stateVar(sta_trx_opmode = 34) = 1 = 0x1 
+    * sta_get_stateVar(sta_trx_count_tm = 35) = 0 = 0x0 
+    * sta_get_stateVar(sta_trx_count_tc = 36) = 0 = 0x0 
+    * sta_get_stateVar(sta_trx_day_last_tc = 37) = 0 = 0x0 
+    * sta_get_stateVar(sta_trx_beacon_period = 38) = 60 = 0x3C 
+[6468] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(sta_trx_beacon_bat_lvl = 39) = 500 = 0x1F4 
+[6468] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(sta_trx_rx_baud = 40) = 12 = 0xC 
+[6468] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(sta_trx_tx_baud = 41) = 12 = 0xC 
+===============================
+****************************************************
+thk_executeBeforeFlight finalizo
+Para quedar en config de vuelo, se
+DEBE apagar el SUCHAI, hagalo ANTES de:
+****************************************************
+10 segundos..
+9 segundos..
+8 segundos..
+7 segundos..
+6 segundos..
+5 segundos..
+4 segundos..
+3 segundos..
+2 segundos..
+1 segund\0xff\0x00\0x00\0x00\0x00\0x00\0x00\0x00\0x00\0x00\0x00\0xff
+--------- SUCHAI BOOT SEQUENCE ---------
+
+Initializing sattelite bus
+    * Microcontroller IO pins
+    * CubesatKit MB
+    * PC104 Bus
+
+Initilizing Microcontroller
+    * Reset status
+    * Setting oscillator
+    * mPWRMGNT_Regulator_ActiveInSleep
+    * Enabling WDT
+
+Initializing libcsp
+[12278] l\0x00\0x00:0 Binding socket 0 to port 0
+
+    * Conn table:
+[00 2A22] S:0, 0 -> 0, 0 -> 0, sock: 0
+[01 2A3C] S:1, 0 -> 0, 0 -> 0, sock: 1150
+[02 2A56] S:0, 0 -> 0, 0 -> 0, sock: 0
+[03 2A70] S:0, 0 -> 0, 0 -> 0, sock: 0
+[04 2A8A] S:0, 0 -> 0, 0 -> 0, sock: 0
+
+    * Route table:
+Node  Interface  Address
+   0  LOOP       0
+   *  I2C        255
+
+[suchaiDeployment] dep_init_suchai_hw()..
+
+[dep_init_bus_hw] Initializig external hardware...
+    * External MemEEPROM .. Ok
+    * External RTC .. Ok
+    * External TRX .. Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 1
+RADIO: rx 12, tx 12, preamble 75, max temp: 60
+MORSE: enable: 1, mode: 1,  delay 60, pospone 60, wpm 20, batt level 500, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:1 txc:1 tempa:1 tempb:1 rssi:1 rferr:1
+HK: interval 5
+Ok
+    * External MemSD .. Ok
+    * External Antenna .. Ok (Deployed)
+Antenna Deployment is carried out (if pending) by Task Housekeeping
+
+[suchaiDeployment] dep_init_suchai_repos()..
+
+[dep_init_stateRepo] Initializing state repository..
+    * sta_onReset_BusStateRepo()..
+    [sta_onResetStatRepo] Important STA_StateVar variables:
+        * ppc_get_resetCounter: 0
+            * First time on, resetCounter = 0
+        * ppc_get_lastResetSource: SOFTWARE_Reset
+        * ppc_get_hoursAlive: 0
+        * ppc_get_hoursWithoutReset: 0
+        * ppc_get_wdt_state: 1
+        * ppc_get_osc: Oscillator is PRIMARY_OSC_WITH_PLL
+        * thk_get_AntSwitch_isOpen: 1
+            * Antenna Deployment rely on this var AND others
+        * thk_get_dep_ant_deployed: 0
+            * Antenna Deployment is pending
+    * sta_onReset_PayStateRepo()..
+
+[dep_init_cmdRepo] Initializing command repository..
+    * Attaching cmdPPC..
+        ppc_onResetCmdPPC
+    * Attaching cmdCON..
+        con_onResetCmdCON
+    * Attaching cmdTRX..
+        trx_onResetCmdTRX
+    * Attaching cmdEPS..
+        eps_onResetCmdEPS
+    * Attaching cmdSRP..
+        srp_onResetCmdSRP
+    * Attaching cmdDRP..
+        drp_onResetCmdDRP
+    * Attaching cmdPAY..
+        pay_onResetCmdPAY
+    * Attaching cmdRTC..
+        rtc_onResetCmdRTC
+    * Attaching cmdTCM..
+        tcm_onResetCmdTCM
+    * Attaching cmdTHK..
+        thk_onResetCmdTHK
+
+[dep_init_Repos] Initializing data repositories..
+    * onReset data Repository..
+        DAT_TeleCmd_Buff starting block <=> 31
+        DAT_FlightPlan starting block <=> 287
+        DAT_nextIndx starting block <=> 543
+        DAT_maxIndx starting block <=> 799
+        DAT_Payload_Buff[0] starting block <=> 1055 | number of Payloads = 9
+        DAT_AuxBuff[0] starting block <=> 3359 | number of Auxs = 13
+        * onReset Fligh Plan..
+        * onReset Payloads..
+
+[dep_init_GnrlStruct] Initializing other structures...
+
+[main] Starting base tasks...
+
+[dep_launch_tasks] Starting all tasks...
+    * Creating taskConsole
+    * Creating taskHousekeeping
+    * Creating taskCommunications
+
+Starting FreeRTOS [->]
+[Dispatcher] Started
+>>[Console] Started>>[Houskeeping] Started
+[Dispatcher] Orig: 0x1102 | Cmd: 0xA003 | Param: 2
+[thk_suchai_deployment] Suchai deployment routine..
+[thk_suchai_deployment] initial_tick_10ms = 4 | final_tick_10ms = 12004 
+>> 45/25/165 38:89:26
+>> 45/25/165 38:89:26
+>> 45/25/165 38:89:26
+
+[thk_deploy_antenna] Deploying TRX Antenna... 
+    [Deploying] Attempt #1
+    ANTENNA DEPLOYED SUCCESSFULLY [1 TRIES]
+>> 45/25/165 38:89:29
+>> 45/25/165 38:89:29
+[Dispatcher] CMD Result: 1
+[Dispatcher] *******************************************************************
+
+>>[Comunications] Started
+[Dispatcher] Orig: 0x1102 | Cmd: 0x9001 | Param: 1
+===============================
+StateVar content: 
+===============================
+    * sta_get_stateVar(sta_RTC_isAlive = 0) = 1 = 0x1 
+    * sta_get_stateVar(sta_TRX_isAlive = 1) = 1 = 0x1 
+    * sta_get_stateVar(sta_EPS_isAlive = 2) = 0 = 0x0 
+    * sta_get_stateVar(sta_MemEEPROM_isAlive = 3) = 1 = 0x1 
+    * sta_get_stateVar(sta_MemSD_isAlive = 4) = 1 = 0x1 
+    * sta_get_stateVar(sta_AntSwitch_isOpen = 5) = 1 = 0x1 
+    * sta_get_stateVar(sta_fpl_index = 6) = 0 = 0x0 
+    * sta_get_stateVar(sta_ppc_opMode = 7) = 0 = 0x0 
+    * sta_get_stateVar(sta_ppc_lastResetSource = 8) = 3 = 0x3 
+    * sta_get_stateVar(sta_ppc_hoursAlive = 9) = 0 = 0x0 
+    * sta_get_stateVar(sta_ppc_hoursWithoutReset = 10) = 0 = 0x0 
+    * sta_get_stateVar(sta_ppc_resetCounter = 11) = 0 = 0x0 
+    * sta_get_stateVar(sta_ppc_wdt = 12) = 1 = 0x1 
+    * sta_get_stateVar(sta_ppc_osc = 13) = 4 = 0x4 
+    * sta_get_stateVar(sta_ppc_MB_nOE_USB_nINT_stat = 14) = 1 = 0x1 
+    * sta_get_stateVar(sta_ppc_MB_nOE_MHX_stat = 15) = 1 = 0x1 
+    * sta_get_stateVar(sta_ppc_MB_nON_MHX_stat = 16) = 0 = 0x0 
+    * sta_get_stateVar(sta_ppc_MB_nON_SD_stat = 17) = 0 = 0x0 
+    * sta_get_stateVar(sta_dep_ant_deployed = 18) = 1 = 0x1 
+    * sta_get_stateVar(sta_dep_ant_tries = 19) = 1 = 0x1 
+    * sta_get_stateVar(sta_dep_year = 20) = 165 = 0xA5 
+    * sta_get_stateVar(sta_dep_month = 21) = 25 = 0x19 
+    * sta_get_stateVar(sta_dep_week_day = 22) = 7 = 0x7 
+    * sta_get_stateVar(sta_dep_day_number = 23) = 45 = 0x2D 
+    * sta_get_stateVar(sta_dep_hours = 24) = 38 = 0x26 
+    * sta_get_stateVar(sta_dep_minutes = 25) = 89 = 0x59 
+    * sta_get_stateVar(sta_dep_seconds = 26) = 29 = 0x1D 
+    * sta_get_stateVar(sta_rtc_year = 27) = 165 = 0xA5 
+    * sta_get_stateVar(sta_rtc_month = 28) = 25 = 0x19 
+    * sta_get_stateVar(sta_rtc_week_day = 29) = 7 = 0x7 
+    * sta_get_stateVar(sta_rtc_day_number = 30) = 45 = 0x2D 
+    * sta_get_stateVar(sta_rtc_hours = 31) = 38 = 0x26 
+    * sta_get_stateVar(sta_rtc_minutes = 32) = 89 = 0x59 
+    * sta_get_stateVar(sta_rtc_seconds = 33) = 34 = 0x22 
+    * sta_get_stateVar(sta_trx_opmode = 34) = 1 = 0x1 
+    * sta_get_stateVar(sta_trx_count_tm = 35) = 0 = 0x0 
+    * sta_get_stateVar(sta_trx_count_tc = 36) = 0 = 0x0 
+    * sta_get_stateVar(sta_trx_day_last_tc = 37) = 0 = 0x0 
+______________________________________________________________________________
+                     ___ _   _  ___ _  _   _   ___ 
+                    / __| | | |/ __| || | /_\ |_ _|
+                    \__ \ |_| | (__| __ |/ _ \ | | 
+                    |___/\___/ \___|_||_/_/ \_\___|
+______________________________________________________________________________
+
+    * sta_get_stateVar(sta_trx_beacon_period = 38) = 60 = 0x3C 
+[6468] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(sta_trx_beacon_bat_lvl = 39) = 500 = 0x1F4 
+[6468] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(sta_trx_rx_baud = 40) = 12 = 0xC 
+[6468] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(sta_trx_tx_baud = 41) = 12 = 0xC 
+===============================
+[Dispatcher] CMD Result: 1
+[Dispatcher] *******************************************************************
+[6468] (null):-23131 FREE: Buffer already free A5A5
+[Houskeeping]:  20[s] actions ..

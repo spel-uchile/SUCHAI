@@ -296,10 +296,6 @@ int tcm_update_beacon(void *param)
         val = sta_get_BusStateVar(sta_ppc_wdt);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
-
-        /* Separador */
-        itoa(buff,0,10);
-        strcpy(p_buff++, buff);
         
         ok = 1;
     }
@@ -331,11 +327,19 @@ int tcm_update_beacon(void *param)
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        val = 0x4D41;   //MA
+        val = sta_get_PayStateVar(sta_pay_lagmuirProbe_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
-        
-        val = 0x5355;   //SU
+
+        val = sta_get_PayStateVar(sta_pay_sensTemp_isAlive);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        val = sta_get_PayStateVar(sta_pay_gps_isAlive);
+        itoa(buff,val,10);
+        strcpy(p_buff++, buff);
+
+        val = sta_get_PayStateVar(sta_pay_camera_isAlive);
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
@@ -388,72 +392,16 @@ int tcm_update_beacon(void *param)
         itoa(buff,val,10);
         strcpy(p_buff++, buff);
 
-        /* morse_bat_level */
-        val = TRX_CONFIG.morse_bat_level;
-        itoa(buff,val/100,10);
-        strcpy(p_buff++, buff);
-
         ok = 1;
     }
 
-    else if(mode == 4)
-    {
-        #if( SCH_EPS_ONBOARD == 1 )
-            /* eps_soc */
-            val = sta_get_BusStateVar(sta_eps_soc);
-            itoa(buff,val,10);
-            strcpy(p_buff++, buff);
-
-            /* eps_charging*/
-            val = sta_get_BusStateVar(sta_eps_charging);
-            itoa(buff,val,10);
-            strcpy(p_buff++, buff);
-
-            /* bat0_voltage */
-            val = sta_get_BusStateVar(sta_eps_bat0_voltage);
-            d_val = -0.00939*val + 9.791;
-            val = (int)(d_val*10.0); /* 7.4V -> 74 */
-            itoa(buff,val/10,10);
-            strcpy(p_buff++, buff);
-            itoa(buff,val%10,10);
-            strcpy(p_buff++, buff);
-
-            /* bat0_tmp */
-            val = sta_get_BusStateVar(sta_eps_bat0_current);
-            d_val =  -3.20*val+2926.22;
-            val = (int)(d_val); /* 38.1mA -> 38 */
-            itoa(buff,val/10,10);
-            strcpy(p_buff++, buff);
-            itoa(buff,val%10,10);
-            strcpy(p_buff++, buff);
-
-            /* bat0_tmp */
-            val = sta_get_BusStateVar(sta_eps_bat0_temp);
-            d_val =  -0.163*val+110.338;
-            val = (int)(d_val); /* 18.3C -> 18 */
-            itoa(buff,val/10,10);
-            strcpy(p_buff++, buff);
-            itoa(buff,val%10,10);
-            strcpy(p_buff++, buff);
-
-            /* bat0_tmp */
-            val = sta_get_BusStateVar(sta_eps_panel_pwr);
-            itoa(buff,val/10,10);
-            strcpy(p_buff++, buff);
-            itoa(buff,val%10,10);
-            strcpy(p_buff++, buff);
-
-            ok = 1;
-        #else
-            ok = 0;
-        #endif
-
-    }
     else
     {
         ok = 0;
     }
 
+    beacon_buff[COM_MORSE_LEN-1] = '\0';
+    
 #if SCH_CMDTCM_VERBOSE
     printf(">>Beacon: %s\n\r", beacon_buff);
 #endif

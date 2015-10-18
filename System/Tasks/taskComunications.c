@@ -67,8 +67,9 @@ void taskComunications(void *param)
         if(seconds_cnt % SCH_TRX_BEACON_PERIOD == 0)
         {
             /* Ajustar el contador a los tipos de beacon que hay*/
-            type_cnt = type_cnt % 5;
+            type_cnt = type_cnt % 4;
 
+//       ***** UNCOMMENT TO TEST CHANGES *****
 //            TcNewCmd.cmdId = tcm_id_update_beacon;
 //            TcNewCmd.param = type_cnt;
 //            //printf("[Comunications] seconds_cnt = %d, type_cnt = %d \r\n", seconds_cnt, type_cnt);

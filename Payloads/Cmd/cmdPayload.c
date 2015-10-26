@@ -194,23 +194,23 @@ int pay_debug_expFis(void *param){
 //            fis_wait_busy_wtimeout();
 //            fis_print_sens_buff();
 
-    static int ft;
-    int buff_len;
-    if(ft==0){
-        ft = 1;
-        static unsigned int ADC_period[] = {10000, 5000, 1000, 500, 100, 50, 10};
-        int len = 7;
-        int rounds_per_ADC_period = 3;
-        buff_len = fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
-    }
-    if( fis_iterate() ){
-        //fis_print_sens_buff();
-        //fis_get_sens_buff_i(indx);
-    }
-    if( fis_iterate_isComplete() ){
-        printf("fis_iterate_isComplete() return TRUE\n");
-        ft = 0; //repeat it over
-    }
+//    static int ft;
+//    int buff_len;
+//    if(ft==0){
+//        ft = 1;
+//        static unsigned int ADC_period[] = {10000, 5000, 1000, 500, 100, 50, 10};
+//        int len = 7;
+//        int rounds_per_ADC_period = 3;
+//        buff_len = fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
+//    }
+//    if( fis_iterate() ){
+//        //fis_print_sens_buff();
+//        //fis_get_sens_buff_i(indx);
+//    }
+//    if( fis_iterate_isComplete() ){
+//        printf("fis_iterate_isComplete() return TRUE\n");
+//        ft = 0; //repeat it over
+//    }
 
     return 1;
 }
@@ -250,12 +250,13 @@ int pay_init_expFis(void *param){
     pay_i = dat_pay_expFis; //expFis is the current Payload in execution
     
     //Time that the DA/AD holds a value 
-    int len = 7;
+    int len = 5;
     //number of iterations done for each ADC_period value
     int rounds_per_ADC_period = 3;
     //configuration needed for the data buffers used in this payload, and the fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
     //return value is buffer size for each buffer
     //unsigned int buff_len = fis_get_sens_buff_size();
+    const unsigned int ADC_period[] = {1000, 600, 200, 60, 10};
     unsigned int total_samples = fis_get_total_number_of_samples();
     unsigned int expFis_data_size = total_samples*len*rounds_per_ADC_period;
     //int buff_len = fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
@@ -264,10 +265,12 @@ int pay_init_expFis(void *param){
     //reset the expFis Buffers before using it 
     //dat_reset_Payload_Buff(pay_i, lenBuff, 0);
     //dat_reset_Payload_Buff(pay_i, lenBuff, DAT_PAYBUFF_MODE_NO_MAXINDX);
-    dat_reset_Payload_Buff(pay_i,expFis_data_size,DAT_PAYBUFF_MODE_NO_MAXINDX);
-    int buff_len = fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
+    //dat_reset_Payload_Buff(pay_i,expFis_data_size,DAT_PAYBUFF_MODE_NO_MAXINDX);
+    fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
+    
+    unsigned int buff_len = fis_get_sens_buff_size();
 
-    lenBuff = (buff_len*len*rounds_per_ADC_period);
+    unsigned int lenBuff = (buff_len*len*rounds_per_ADC_period);
     dat_reset_Payload_Buff(pay_i);
 
     //configure Payload
@@ -314,7 +317,8 @@ int pay_take_expFis(void *param){
             //dat_set_Payload_Buff(dat_pay_expFis, fis_get_sens_buff_i(ind), DAT_PAYBUFF_MODE_NO_MAXINDX);
             //dat_set_Payload_Buff_at_indx()
             //save the data into the Data Repository
-            dat_set_Payload_Buff_at_indx(dat_pay_expFis, fis_get_sens_buff_i(ind), expFis_gpb_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
+            //dat_set_Payload_Buff_at_indx(dat_pay_expFis, fis_get_sens_buff_i(ind), expFis_gpb_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
+            dat_set_Payload_Buff_at_indx(dat_pay_expFis, fis_get_sens_buff_i(ind), expFis_gpb_indx);
             //printf("sens_buff[%d] = %X\n",ind,fis_get_sens_buff_i(ind));
             dat_get_Payload_Buff(dat_pay_expFis,expFis_gpb_indx,&value_stored_in_dataRepo);
             

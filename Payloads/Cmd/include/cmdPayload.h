@@ -102,14 +102,6 @@ typedef enum{
     pay_id_gps_jmesg, ///< @cmd
     pay_id_gps_jsat, ///< @cmd
 
-    pay_id_isAlive_expFis, ///< @cmd
-    pay_id_get_state_expFis, ///< @cmd
-    pay_id_set_state_expFis, ///< @cmd
-    pay_id_init_expFis, ///< @cmd
-    pay_id_take_expFis, ///< @cmd
-    pay_id_stop_expFis, ///< @cmd
-    pay_id_debug_expFis, ///< @cmd
-
     pay_id_isAlive_battery, ///< @cmd
     pay_id_get_state_battery, ///< @cmd
     pay_id_set_state_battery, ///< @cmd

@@ -46,7 +46,7 @@
 typedef enum{
     pay_id_test_dataRepo=((unsigned int)(SCH_CMD_PAY)*0x100), ///< @cmd_first
 
-    pay_id_fp2_default_fsm, ///< @cmd
+    pay_id_fp2_default_fsm, ///< @cmd   //0x6001
 
     pay_id_isAlive_tmEstado, ///< @cmd
     pay_id_get_state_tmEstado, ///< @cmd
@@ -55,7 +55,7 @@ typedef enum{
     pay_id_take_tmEstado, ///< @cmd
     pay_id_stop_tmEstado, ///< @cmd
 
-    pay_id_isAlive_sensTemp, ///< @cmd
+    pay_id_isAlive_sensTemp, ///< @cmd  //0x6008
     pay_id_get_state_sensTemp, ///< @cmd
     pay_id_set_state_sensTemp, ///< @cmd
     pay_id_init_sensTemp, ///< @cmd
@@ -63,7 +63,7 @@ typedef enum{
     pay_id_stop_sensTemp, ///< @cmd
     pay_id_debug_sensTemp, ///< @cmd
 
-    pay_id_isAlive_gyro, ///< @cmd
+    pay_id_isAlive_gyro, ///< @cmd  //0x600F
     pay_id_get_state_gyro, ///< @cmd
     pay_id_set_state_gyro, ///< @cmd
     pay_id_init_gyro, ///< @cmd
@@ -71,7 +71,7 @@ typedef enum{
     pay_id_stop_gyro, ///< @cmd
     pay_id_debug_gyro, ///< @cmd
 
-    pay_id_isAlive_camera, ///< @cmd
+    pay_id_isAlive_camera, ///< @cmd    //0x6016
     pay_id_get_state_camera, ///< @cmd
     pay_id_set_state_camera, ///< @cmd
     pay_id_init_camera, ///< @cmd
@@ -80,12 +80,22 @@ typedef enum{
     pay_id_takePhoto_camera, ///< @cmd
     pay_id_get_savedPhoto_camera, ///< @cmd
 
-    pay_id_isAlive_gps, ///< @cmd
+    pay_id_isAlive_gps, ///< @cmd   //0X601E
     pay_id_get_state_gps, ///< @cmd
     pay_id_set_state_gps, ///< @cmd
     pay_id_init_gps, ///< @cmd
     pay_id_take_gps, ///< @cmd
     pay_id_stop_gps, ///< @cmd
+           
+    pay_id_isAlive_expFis, ///< @cmd    //0X6024
+    pay_id_get_state_expFis, ///< @cmd  //0x6025
+    pay_id_set_state_expFis, ///< @cmd  //0x6026
+    pay_id_init_expFis, ///< @cmd   //0x6027
+    pay_id_take_expFis, ///< @cmd   //0x6028
+    pay_id_stop_expFis, ///< @cmd   //0x6029
+    pay_id_debug_expFis, ///< @cmd  //0x602A
+    pay_id_test_expFis, ////< @cmd  //0x602B
+
     pay_id_gps_model, ///< @cmd
     pay_id_gps_serial, ///< @cmd
     pay_id_gps_senddn, ///< @cmd
@@ -179,6 +189,7 @@ int pay_init_expFis(void *param);
 int pay_take_expFis(void *param);
 int pay_stop_expFis(void *param);
 int pay_debug_expFis(void *param);
+int pay_test_expFis(void *param);
 //sensTemp
 int pay_isAlive_sensTemp(void *param);
 int pay_get_state_sensTemp(void *param);

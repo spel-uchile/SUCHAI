@@ -100,7 +100,7 @@ void Open_SPI_2_default(void){
 //-------------------------------------------------------------------------------------------------------------------------------
 unsigned char SPI_3_transfer(unsigned char a){
 	WriteSPI3(a);
-	//while(!SPI3_Rx_Buf_Full){}
+	while(!SPI3_Rx_Buf_Full){}
             // espera mientras llega la trama.
             /*
             SPIxIF (interrupt flag de transferenecia completa) se levanta cuando
@@ -112,7 +112,7 @@ unsigned char SPI_3_transfer(unsigned char a){
             Si SPIxRBF=1 => hay un dato a leer, si no se lee antes de recivir
             otra trama se produce overflow y se levanta el flag SPIxSTAT.SPIROV
             */
-	//while(SPI_SCK_3){}	//espera mientras SCK no baje de su ultimo clock
+	while(SPI_SCK_3){}	//espera mientras SCK no baje de su ultimo clock
 	//unsigned char b= ReadSPI3();  //NO DESCOMENTAR ESTA LINEA
 	//return b; //PORQUE ESO HACE QUE LA ESCRITURA EN EL DAC SEA ERRONEA
     return 0;

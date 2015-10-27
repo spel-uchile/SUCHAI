@@ -249,31 +249,25 @@ int pay_init_expFis(void *param){
     DAT_Payload_Buff pay_i; //unsigned int lenBuff;
     pay_i = dat_pay_expFis; //expFis is the current Payload in execution
     
-    //Time that the DA/AD holds a value 
+    //Array of time values between each sample of the ADC
     int len = 5;
-    //number of iterations done for each ADC_period value
-    int rounds_per_ADC_period = 3;
-    //configuration needed for the data buffers used in this payload, and the fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
-    //return value is buffer size for each buffer
-    //unsigned int buff_len = fis_get_sens_buff_size();
-    const unsigned int ADC_period[] = {1000, 600, 200, 60, 10};
-    unsigned int total_samples = fis_get_total_number_of_samples();
-    unsigned int expFis_data_size = total_samples*len*rounds_per_ADC_period;
-    //int buff_len = fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
-    //sum of the buffer sizes (total space used in the data repository)
-    //lenBuff = (buff_len*len*rounds_per_ADC_period);
-    //reset the expFis Buffers before using it 
-    //dat_reset_Payload_Buff(pay_i, lenBuff, 0);
-    //dat_reset_Payload_Buff(pay_i, lenBuff, DAT_PAYBUFF_MODE_NO_MAXINDX);
-    //dat_reset_Payload_Buff(pay_i,expFis_data_size,DAT_PAYBUFF_MODE_NO_MAXINDX);
+    unsigned int ADC_period[len];
+    
+    int rounds_per_ADC_period = 3;    //number of iterations done for each ADC_period value
+    
+    //initialize the ADC period array
+    int i;
+    for(i=0; i< len; i++){
+        ADC_period[i]= 65335-7500*i;
+    }
+    
+    //configure Payload
     fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
     
-    unsigned int buff_len = fis_get_sens_buff_size();
-
-    unsigned int lenBuff = (buff_len*len*rounds_per_ADC_period);
+    //dat_reset_Payload_Buff ha cambiado, por lo que ya no es necesario
+    //entregarle como argumento el largo del buffer a ocupar
     dat_reset_Payload_Buff(pay_i);
-
-    //configure Payload
+    
     expFis_gpb_indx = 0;    //Reset vars
     int res = 1;    //always alive
 
@@ -292,34 +286,27 @@ int pay_test_expFis(void *param){
 }
 
 int pay_take_expFis(void *param){
-    //save date_time in 2ints
-    //pay_save_date_time_to_Payload_Buff(dat_pay_expFis);
-    //return 1;
     printf("pay_take_expFis...\n");
+    
     int ind;
-    unsigned int timeout = 30;
+    unsigned int timeout = 30;  //max time waiting to fill the sens_buffer 
     unsigned int buff_size = fis_get_sens_buff_size();
-    int value_stored_in_dataRepo;
-    unsigned int fis_state = fis_get_state();   //get the state variable of the expFis
-    //int rc = fis_iterate(fis_state); //executes the Payload and return when is is time to save data in the Data Repository
-    unsigned int rc;
-    //BOOL asdf;
-    //if( fis_iterate() ){    //does ONE ITERATION over one of the "_rounds_per_ADC_period"-times
-    //while (rc == 0){ // if equal to 0, the payload is not finished
+    int value_stored_in_dataRepo;   //debug only
+    unsigned int fis_state = fis_get_state();    //get the initial state of the Payload
+    
+    unsigned int rc;    //return code of "fis_iterate" function
     do{
-        fis_iterate(&rc, timeout);
+        fis_iterate(&rc, timeout); //executes the Payload and return 
+        //when is is time to save data in the Data Repository
         //so we must save the current data inside "sens_buff" into the Data Repository
         //and then resume the Payload execution
-        //fis_print_sens_buff();
-        //fis_get_sens_buff_i(indx);
         for(ind=0;ind<buff_size;ind++){
-            //Transfer the data inside "sens_buff[ind]" to data repository
-            //dat_set_Payload_Buff(dat_pay_expFis, fis_get_sens_buff_i(ind), DAT_PAYBUFF_MODE_NO_MAXINDX);
-            //dat_set_Payload_Buff_at_indx()
             //save the data into the Data Repository
-            //dat_set_Payload_Buff_at_indx(dat_pay_expFis, fis_get_sens_buff_i(ind), expFis_gpb_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
+            //deprecated: dat_set_Payload_Buff_at_indx(dat_pay_expFis, fis_get_sens_buff_i(ind), expFis_gpb_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
+            
             dat_set_Payload_Buff_at_indx(dat_pay_expFis, fis_get_sens_buff_i(ind), expFis_gpb_indx);
-            //printf("sens_buff[%d] = %X\n",ind,fis_get_sens_buff_i(ind));
+            printf("    sens_buff[%d] = %X\n",ind,fis_get_sens_buff_i(ind));
+            
             dat_get_Payload_Buff(dat_pay_expFis,expFis_gpb_indx,&value_stored_in_dataRepo);
             
             printf("    dat_set_Payload_Buff(%d)\n",fis_get_sens_buff_i(ind));
@@ -327,16 +314,17 @@ int pay_take_expFis(void *param){
             printf("    expFis_gpb_indx: %d\r\n",expFis_gpb_indx);
             expFis_gpb_indx++;  //updates the global buffer counter
         }
-        //fis_state = fis_get_state(); //get the state were the execution of fis_iterate() stopped
-        //rc = fis_iterate(fis_state); //resume the fis_iterate
     }
     while (rc == 0);
+    
+    //Payload ended
     if(rc<0){   //fis_iterate finished with error
-        fis_state = fis_get_state();
+        fis_state = fis_get_state();    //use the state to see the cause of error
         printf("fis_iterate() finished with error ");
         printf("fis_state= 0x%X\n",fis_state);
     }
-    // rc could be -1 or +1, if +1 => succesfull, -1=> failed
+    //return -1 if failed (rc < 0)
+    //return +1 if succesfull (rc > 0)
     return (rc == -1)? 0 : 1;
 }
 int pay_stop_expFis(void *param){

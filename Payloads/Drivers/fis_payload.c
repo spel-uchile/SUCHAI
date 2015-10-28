@@ -198,7 +198,7 @@ unsigned int fis_iterate_config(const unsigned int _ADC_period[], int _len, int 
     fis_ADC_period = _ADC_period;
     fis_len = _len;
     fis_rounds_per_ADC_period = _rounds_per_ADC_period;
-    //return FIS_SENS_BUFF_LEN;
+
     return fis_state;
 }
 /*
@@ -291,13 +291,17 @@ void fis_iterate(unsigned int *rc, unsigned int timeout_seg){
     }
 }
 //******************************************************************************
-//void fis_testDAC(void){
+/*
+ * Tells the DAC to put a fixed voltage in the DAC output.
+ * The voltage value its mapped from 0 to Vcc (0 to 3.3V)
+ */
 void fis_testDAC(unsigned int value){
 //    unsigned int j;
-    double analog_value = (value*(3.33/65535));
+    //double analog_value = (value*(3.33/65535));
+    double analog_value = (value*(0.050813));
     printf("fis_testDAC ...\n");
-    printf("    Sending a %x value trough the DAC SPI\n", value);
-    printf("    This value is equivalent to a %f analog voltage\n",analog_value);
+    printf("    Sending a %x value to fis_writeDAC function\n", value);
+    printf("    This value should be equivalent to a %f mV\n",analog_value);
     //for(j=0xFFFF;j>0;j--){
 //        unsigned char c= rand();
 //        unsigned int arg=c;
@@ -329,7 +333,7 @@ int s = 15;
 void fis_payload_writeDAC(unsigned int arg){
     unsigned char r, firstByte, secondByte,thirdByte;
     //Bytes to be written in the SPI register
-    unsigned int myarg = reverse_endianess(arg);
+    unsigned int myarg = arg; //reverse_endianess(arg);
     firstByte = 0x00;
     secondByte = (unsigned char)(myarg>>8);
     thirdByte = (unsigned char) myarg;

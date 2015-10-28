@@ -100,6 +100,7 @@ void pay_onResetCmdPAY(void){
     payFunction[(unsigned char)pay_id_take_expFis] = pay_take_expFis;
     payFunction[(unsigned char)pay_id_stop_expFis] = pay_stop_expFis;
     payFunction[(unsigned char)pay_id_debug_expFis] = pay_debug_expFis;
+    payFunction[(unsigned char)pay_id_testDAC_expFis] = pay_testDAC_expFis;
 
     payFunction[(unsigned char)pay_id_isAlive_battery] = pay_isAlive_battery;
     payFunction[(unsigned char)pay_id_get_state_battery] = pay_get_state_battery;
@@ -277,7 +278,7 @@ int pay_init_expFis(void *param){
     return res;
 }
 
-int pay_test_expFis(void *param){
+int pay_testDAC_expFis(void *param){
     printf("Command pay_test_expFis received ...\n");
     unsigned int value = *((unsigned int *) param);
     printf("     parameter value = %u\n", value);

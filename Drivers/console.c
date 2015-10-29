@@ -199,7 +199,7 @@ DispCmd con_cmd_handler(void)
        {
            if(con_arg_count == 0)
            {
-                newCmd.cmdId=trx_id_read_conf;
+                newCmd.cmdId = trx_id_read_conf;
                 newCmd.param = 0;
            }
            else
@@ -218,7 +218,7 @@ DispCmd con_cmd_handler(void)
         {
            if(con_arg_count == 1)
            {
-               newCmd.cmdId=trx_id_ping;
+               newCmd.cmdId = trx_id_ping;
                newCmd.param = atoi(con_args[0]); /* To node X */;
            }
            else

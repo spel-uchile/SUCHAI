@@ -169,6 +169,10 @@ void taskHousekeeping(void *param)
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
+            NewCmd.cmdId = trx_id_ping;
+            NewCmd.param = 5;   // ping to TRX (node 5 according to CSP)
+            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+
         }
 
         /* codigo para _1day_check */

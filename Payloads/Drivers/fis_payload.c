@@ -353,7 +353,7 @@ void fis_payload_writeDAC(unsigned int arg){
     r = SPI_3_transfer(firstByte);
     r = SPI_3_transfer(secondByte);
     r = SPI_3_transfer(thirdByte);
-
+    
     SPI_nSS_3 = 1;  //SPI: Slave Select PIN inactive
 }
 

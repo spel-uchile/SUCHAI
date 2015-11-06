@@ -26,24 +26,30 @@
 #define _FISICA_VERBOSE_TIMER5_CFG   (0)
 #define _FISICA_VERBOSE_ADC_CFG      (0)
 #define _FISICA_VERBOSE_DAC_SPI      (0)
-#define CHAR_BIT (8)
-//buffer size is calculated to be exactly the number of samples for ONE waveform
+
+/*
+ * Global parameters being used in the execution of this payload
+ */
+static unsigned int fis_state;    //working state
+static int fis_ADC_period_i;    //Index of the  "fis_ADC_period" being executed 
+static const unsigned int *fis_ADC_period;  //Array with the values of "ADC_period"
+static int fis_len; //number of elements in "fis_ADC_period"
+static int fis_rounds_per_ADC_period;   //number of repetitions of the payload for each "ADC_period" value
+static unsigned int fis_round;   //index of the current waveform being executed
+static unsigned int fis_point;  //counter for the total waveform points
+static unsigned int fis_sample;  //total number of samples to be done
+static unsigned int seed[FIS_SRAND_SEEDS];  //seeds array with the arguments for srand() calls
 static unsigned int sens_buff[FIS_SENS_BUFF_LEN];   //temporary buffer where the measures are stored
 static int sens_buff_ind;   //index used with sens_buff
-
-static unsigned int global_point_counter;  //counter for the total waveform points
-static unsigned int global_samples_taken;  //total number of samples to be done
-
-static unsigned int current_waveform_ind;   //index of the current waveform being executed
-static unsigned int current_point_ind;  //index of the current point of the "current_waveform" for the DAC
 static BOOL sync;
 
-static unsigned int seed[FIS_SRAND_SEEDS];  //seeds array with the arguments for srand() calls
-static int seed_ind;    //index for the seeds array
-static unsigned int fis_state;    //working state
+//static unsigned int current_point_ind;  //index of the current point in the "current_waveform" for the DAC
+//static int seed_ind;    //index for the seeds array
+//static int fis_round;   //round being executed
+//static int fis_eoi; //"end of interrupt" flag, when 1 the Payload is finished
 
 unsigned int fis_get_total_number_of_samples(void){
-    return FIS_WAVEFORM_SIZE*FIS_NUM_OF_WAVEFORMS*FIS_SAMPLES_PER_POINT;
+    return FIS_WAVEFORM_SIZE*FIS_ROUNDS_PER_PERIOD*FIS_SAMPLES_PER_POINT;
 }
 /* Return the size of the sens_buff
  */
@@ -61,9 +67,9 @@ unsigned int fis_get_state(void){
 void fis_reset_seed_buff(void){
     unsigned int i;
     for (i=0; i < FIS_SRAND_SEEDS; i++){
-        seed[i] = i+100;
+        seed[i] = i+1000;
     }
-    seed_ind = 0;
+    //seed_ind = 0;
 }
 
 /* 
@@ -73,7 +79,8 @@ void fis_reset_seed_buff(void){
  */
 int fis_wait_busy_wtimeout(unsigned int timeout){
     int seg_timeout = timeout;   //timeout of 30 seg
-    while(!((fis_sens_buff_isFull()==TRUE) || (fis_state == FIS_STATE_DONE))){    //if is not full wait a little bit
+    //while(!((fis_sens_buff_isFull()==TRUE) || (fis_state == FIS_STATE_DONE))){
+    while(!(fis_sens_buff_isFull() || (fis_state == FIS_STATE_WAITING))){
         __delay_ms(1000);
         seg_timeout--;
         if(seg_timeout<=0){ //after 30 seconds trigger timeout
@@ -136,23 +143,14 @@ BOOL fis_sens_buff_isFull(void){
     }
     return TRUE;
 }
-/*
- * Global parameters being used in the execution of this payload
- */
-static int fis_ADC_period_i;    //Index of the  "fis_ADC_period" being executed 
-static int fis_round;   //round being executed
-static int fis_eoi; //"end of interrupt" flag, when 1 the Payload is finished
-static const unsigned int *fis_ADC_period;  //Array with the values of "ADC_period"
-static int fis_len; //number of elements in "fis_ADC_period"
-static int fis_rounds_per_ADC_period;   //number of repetitions of the payload for each "ADC_period" value
-
 /**
  * Return TRUE if the last round of the las ADC_period was completed, if so, the
  * experiment is complete
  * @return TRUE if the last round of the las ADC_period was completed, FALSE otherwise
  */
 BOOL fis_iterate_isComplete(void){
-    if(fis_eoi==1){ return TRUE; }
+    //if(fis_eoi==1){ return TRUE; }
+    if(fis_state == FIS_STATE_DONE) { return TRUE; }
     else{ return FALSE; }
 }
 /**
@@ -168,17 +166,17 @@ static void fis_config_reset(void){
 
     fis_round = 0;
     fis_ADC_period_i = 0;
-    fis_eoi = 0;
-    
-    current_point_ind = 0;
-    current_waveform_ind = 0;
-    global_point_counter = 0;
-    global_samples_taken = 0;
+    fis_point = 0;
+    fis_sample = 0;
     sync = FALSE;
     fis_state = FIS_STATE_OFF;  //ready for init the execution
     
     fis_reset_sens_buff();  //reset the buffer and clears it
     fis_reset_seed_buff();  //reset the seeds used for rand()
+    //fis_samples_taken = 0;
+    //fis_eoi = 0;
+    //current_point_ind = 0;
+    //fis_round = 0;
 }
 /*  
  * Reset and erase some variables that must be "resseted" in evert call to fis_iterate()
@@ -221,7 +219,7 @@ unsigned int fis_iterate_config(const unsigned int _ADC_period[], int _len, int 
 void fis_iterate(unsigned int *rc, unsigned int timeout_seg){
     printf("fis_iterate...\n");
     int normal_wait;
-    //int rc; //return code= -1:failed  0:pause 1:succesfully
+
     if(fis_state == FIS_STATE_DONE){
     //if(fis_eoi==1){ // are we finished 
         //return FALSE;   
@@ -242,14 +240,14 @@ void fis_iterate(unsigned int *rc, unsigned int timeout_seg){
         printf("    len( ADC_period[] ) = %d\n", fis_len );
         printf("    ADC_period[%d] = %u\n", fis_ADC_period_i, fis_ADC_period[fis_ADC_period_i] );
         printf("    round = %d/%d\n", fis_round+1,fis_rounds_per_ADC_period);
-        printf("    number of waveforms = %lu\n", FIS_NUM_OF_WAVEFORMS);
+        //printf("    number of waveforms = %lu\n", FIS_ROUNDS_PER_PERIOD);
         printf("    points per waveform = %lu\n", FIS_WAVEFORM_SIZE);
-        printf("    total points (DAC) = %lu\n", FIS_TOTAL_POINTS);
+        //printf("    total points (DAC) = %lu\n", FIS_TOTAL_POINTS);
         printf("    samples per point = %lu\n", FIS_SAMPLES_PER_POINT);
         printf("    total samples (ADC) = %lu\n", FIS_TOTAL_SAMPLES);
+        printf("    len( sens_buff ) = %lu\n", FIS_SENS_BUFF_LEN);
         //fis_iterate_reset();    //reset some variables used in others calls of this function
         //configures the ADC and Timers, then executes the payload for the current ADC_period
-        fis_state = FIS_STATE_WORKING;
         fis_start_expFis(fis_ADC_period[fis_ADC_period_i]);
     }
     else if(fis_state == FIS_STATE_WAITING){    //expFis is wating to resume its execution
@@ -270,13 +268,13 @@ void fis_iterate(unsigned int *rc, unsigned int timeout_seg){
         if(fis_round==fis_rounds_per_ADC_period){
             //go to next ADC_period
             fis_ADC_period_i++;
-            fis_round = 0;
-            seed_ind++; //changes 
+            //fis_round = 0;
+            //seed_ind++; //changes 
         }
         //check ADC_period_i
         if(fis_ADC_period_i==fis_len){  
             //end of iterations
-            fis_eoi = 1;
+            //fis_eoi = 1;
             fis_state = FIS_STATE_DONE;
         }
     }
@@ -310,31 +308,11 @@ void fis_testDAC(unsigned int value){
     #endif
     unsigned int j;
     for(j=0;j < value;j++){
-//        unsigned char c= rand();
-//        unsigned int arg=c;
-//        arg=(arg<<8);
-//        fis_payload_writeDAC(arg); 
         fis_payload_writeDAC(j);
     }
     #if _FISICA_VERBOSE_DAC_SPI > 0
         printf("    Ok\n");
     #endif
-}
-unsigned int reverse_endianess(unsigned int v){
-    
-    //unsigned int v;     // input bits to be reversed
-unsigned int r = v; // r will be reversed bits of v; first get LSB of v
-//int s = sizeof(v) * CHAR_BIT - 1; // extra shift needed at end
-int s = 15;
-    for (v >>= 1; v; v >>= 1)
-    {   
-      r <<= 1;
-      r |= v & 1;
-      s--;
-    }
-    r <<= s; // shift when v's highest bits are zero
-    printf("    reverse_endianess: %X\n",r);
-    return r;
 }
 /*
  * Writes a Digital value in the input Port of this Payload, using the DAC
@@ -342,7 +320,7 @@ int s = 15;
 void fis_payload_writeDAC(unsigned int arg){
     unsigned char r, firstByte, secondByte,thirdByte;
     //Bytes to be written in the SPI register
-    unsigned int myarg = arg; //reverse_endianess(arg);
+    unsigned int myarg = arg;
     firstByte = 0x00;
     secondByte = (unsigned char)(myarg>>8);
     thirdByte = (unsigned char) myarg;
@@ -386,11 +364,12 @@ void fis_stop_expFis(void){
  * Use only when the fis_sens_buff_isFull returns TRUE
  */
 void fis_pause_expFis(void){
-    if(global_samples_taken == FIS_TOTAL_SAMPLES){
-        fis_stop_expFis();
-        return;
-    }
-    //if(fis_state == FIS_STATE_WORKING){
+    //if(fis_samples_taken == FIS_TOTAL_SAMPLES){
+    //if(fis_sample == FIS_TOTAL_SAMPLES) {
+    //    fis_stop_expFis();
+    //    return;
+    //}
+    if(fis_state == FIS_STATE_WORKING) {
         fis_state = FIS_STATE_WAITING;
         //pause the timers
         T4CONbits.TON = 0;
@@ -401,7 +380,7 @@ void fis_pause_expFis(void){
         //IFS1bits.T5IF = 0;
         sync = FALSE;
         printf("fis_pause_expFis\n");
-    //}
+    }
 }
 /*  
  * Use only saving the data inside sens_buff into the Data Repository
@@ -430,6 +409,7 @@ void fis_start_expFis(unsigned int period){
     fis_Timer4_config(period_DAC);  //DAC
     fis_Timer5_config(period_ADC);  //ADC
     //fis_Timer45_begin();
+    fis_state = FIS_STATE_WORKING;
     #if (SCH_FISICA_VERBOSE>=1)
         printf("expFis ISRs are up..\r\n");
     #endif
@@ -624,16 +604,20 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
             printf("PR5 : %u\n",PR5);
         #endif
     #endif
-    //if(global_counter >= FIS_WAVEFORM_SIZE){
-    if(current_point_ind == FIS_WAVEFORM_SIZE){ //last point of a waveform
+
+    //if(current_point_ind == FIS_WAVEFORM_SIZE){ //last point of a waveform
+    if(fis_point == FIS_WAVEFORM_SIZE){ //last point of a waveform
         //a full waveform has been completed, a new seed must be ucurrent_waveform_indent_waveform++;
-        current_point_ind = 0;
-        seed_ind++; //updates to the  next seed
-        if(current_waveform_ind < FIS_NUM_OF_WAVEFORMS){    //there are some waveforms left
-            srand(seed[seed_ind]);  //set the next seed for rand()
-            current_waveform_ind++;
+        //current_point_ind = 0;
+        fis_point = 0;
+        //seed_ind++; //updates to the  next seed
+        if(fis_round < FIS_ROUNDS_PER_PERIOD){    //there are some waveforms left
+            //srand(seed[seed_ind]);  //set the next seed for rand()
+            fis_round++;
+            srand(seed[fis_round]);
             #if _FISICA_VERBOSE_TIMER4_ISR > 0
-                printf("    srand(%d)\n",seed[seed_ind]);
+                //printf("    srand(%d)\n",seed[seed_ind]);
+                printf("    srand(%d)\n",seed[fis_round]);
             #endif
         }
         else{
@@ -650,8 +634,8 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
     #endif
     fis_payload_writeDAC(arg);
     
-    current_point_ind++;    //update the point index
-    global_point_counter++;    //update the global counter 
+    //current_point_ind++;    //update the point index
+    fis_point++;    //update the global counter 
     
     if(sync == FALSE){
         sync = TRUE;
@@ -696,7 +680,7 @@ void __attribute__((__interrupt__, auto_psv)) _T5Interrupt(void){
         #endif
 
         sens_buff_ind++;    //updates the index of the buffer
-        global_samples_taken++; //updates the global counter of samples
+        fis_sample++; //updates the global counter of samples
         
         if( sens_buff_ind == (FIS_SENS_BUFF_LEN)){ //pause the execution if buffer is full
             #if _FISICA_VERBOSE_TIMER5_ISR > 0
@@ -704,8 +688,9 @@ void __attribute__((__interrupt__, auto_psv)) _T5Interrupt(void){
             #endif
             fis_pause_expFis(); //there are some work to do, we make a pause only
         }
-        else if (global_samples_taken == FIS_TOTAL_SAMPLES){//all the work is done
-            fis_stop_expFis();  //stop the execution
+        else if (fis_sample == FIS_TOTAL_SAMPLES){//all the work is done
+            //fis_stop_expFis();  //stop the execution
+            fis_pause_expFis();
         }
     }
     IFS1bits.T5IF = 0;

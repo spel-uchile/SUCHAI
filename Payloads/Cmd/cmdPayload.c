@@ -244,7 +244,9 @@ int pay_set_state_expFis(void *param){
 }
 static int expFis_gpb_indx; //expFis global stored data counter
 int pay_init_expFis(void *param){
-    printf("pay_init_expFis\r\n");
+    #if FIS_CMD_VERBOSE
+        printf("pay_init_expFis\r\n");
+    #endif
 
     //configure Payload_Buff
     DAT_Payload_Buff pay_i; //unsigned int lenBuff;
@@ -273,22 +275,28 @@ int pay_init_expFis(void *param){
     int res = 1;    //always alive
 
     //debug Info
-    printf("  sta_pay_expFis_isAlive = %d \r\n", sta_get_PayStateVar(sta_pay_expFis_isAlive) );
-
+    #if FIS_CMD_VERBOSE
+        printf("  sta_pay_expFis_isAlive = %d \r\n", sta_get_PayStateVar(sta_pay_expFis_isAlive) );
+    #endif
     return res;
 }
 
 int pay_testDAC_expFis(void *param){
-    printf("Command pay_test_expFis received ...\n");
+    #if FIS_CMD_VERBOSE
+        printf("Command pay_test_expFis received ...\n");
+    #endif
     unsigned int value = *((unsigned int *) param);
-    printf("     parameter value = %u\n", value);
+    #if FIS_CMD_VERBOSE
+        printf("     parameter value = %u\n", value);
+    #endif
     fis_testDAC(value);
     return 1;
 }
 
 int pay_take_expFis(void *param){
-    printf("pay_take_expFis...\n");
-    
+    #if FIS_CMD_VERBOSE
+        printf("pay_take_expFis...\n");
+    #endif
     int ind;
     unsigned int temp;
     unsigned int timeout = 30;  //max time waiting to fill the sens_buffer 
@@ -307,12 +315,15 @@ int pay_take_expFis(void *param){
             //deprecated: dat_set_Payload_Buff_at_indx(dat_pay_expFis, fis_get_sens_buff_i(ind), expFis_gpb_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
             temp = fis_get_sens_buff_i(ind);
             dat_set_Payload_Buff_at_indx(dat_pay_expFis, temp, expFis_gpb_indx);
-            printf("    dat_set_Payload_Buff(%d)\n",temp);
+            #if FIS_CMD_VERBOSE
+                printf("    dat_set_Payload_Buff(%d)\n",temp);
+            #endif
             
-            dat_get_Payload_Buff(dat_pay_expFis,expFis_gpb_indx,&value_stored_in_dataRepo);
-            printf("    dat_get_Payload_Buff(): %d\n",value_stored_in_dataRepo);
-                        
-            printf("    expFis_gpb_indx: %d\r\n",expFis_gpb_indx);
+            //dat_get_Payload_Buff(dat_pay_expFis,expFis_gpb_indx,&value_stored_in_dataRepo);
+            #if FIS_CMD_VERBOSE
+                printf("    dat_get_Payload_Buff(): %d\n",value_stored_in_dataRepo);          
+                printf("    expFis_gpb_indx: %d\r\n",expFis_gpb_indx);
+            #endif  
             expFis_gpb_indx++;  //updates the global buffer counter
         }
     }
@@ -321,8 +332,10 @@ int pay_take_expFis(void *param){
     //Payload ended
     if(rc<0){   //fis_iterate finished with error
         fis_state = fis_get_state();    //use the state to see the cause of error
-        printf("fis_iterate() finished with error ");
-        printf("fis_state= 0x%X\n",fis_state);
+        #if FIS_CMD_VERBOSE
+            printf("fis_iterate() finished with error ");
+            printf("fis_state= 0x%X\n",fis_state);
+        #endif
     }
     //return -1 if failed (rc < 0)
     //return +1 if succesfull (rc > 0)

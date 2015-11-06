@@ -8,6 +8,9 @@
 #include "DebugIncludes.h"  //para con_printf
 #include "dataRepository.h"
 
+// comand verbose
+#define FIS_CMD_VERBOSE (1)
+
 // expFis variables
 #define FIS_STATE_OFF   (0)
 #define FIS_STATE_READY (1)
@@ -16,18 +19,20 @@
 #define FIS_STATE_DONE (4)
 
 //cantidad de waveforms a utilizar
-#define FIS_NUM_OF_WAVEFORMS    (3UL)
+#define FIS_ROUNDS_PER_PERIOD    (3UL)
 //cantidad de puntos que conforman un waveform
 #define FIS_WAVEFORM_SIZE (60UL)
 //cantidad total de puntos a generar
 //numero de muestras por punto generado por el DAC
 #define FIS_SAMPLES_PER_POINT (2UL)
 //total amount of points to be generated with the DAC
-#define FIS_TOTAL_POINTS    ((FIS_NUM_OF_WAVEFORMS)*(FIS_WAVEFORM_SIZE))
+#define FIS_TOTAL_POINTS    (FIS_WAVEFORM_SIZE)
+//#define FIS_TOTAL_POINTS    ((FIS_ROUNDS_PER_PERIOD)*(FIS_WAVEFORM_SIZE))
 //total amount of samples to taken with the ADC
+//#define FIS_TOTAL_SAMPLES (FIS_TOTAL_POINTS)*(FIS_SAMPLES_PER_POINT)
 #define FIS_TOTAL_SAMPLES (FIS_TOTAL_POINTS)*(FIS_SAMPLES_PER_POINT)
 //number of seed for the srand() function calls
-#define FIS_SRAND_SEEDS (FIS_NUM_OF_WAVEFORMS)
+#define FIS_SRAND_SEEDS (FIS_ROUNDS_PER_PERIOD)
 //maximun size for the buffer
 #define FIS_MAX_SENS_BUFF_LEN (100UL)
 /*

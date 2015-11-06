@@ -290,6 +290,7 @@ int pay_take_expFis(void *param){
     printf("pay_take_expFis...\n");
     
     int ind;
+    unsigned int temp;
     unsigned int timeout = 30;  //max time waiting to fill the sens_buffer 
     unsigned int buff_size = fis_get_sens_buff_size();
     int value_stored_in_dataRepo;   //debug only
@@ -304,14 +305,13 @@ int pay_take_expFis(void *param){
         for(ind=0;ind<buff_size;ind++){
             //save the data into the Data Repository
             //deprecated: dat_set_Payload_Buff_at_indx(dat_pay_expFis, fis_get_sens_buff_i(ind), expFis_gpb_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
-            
-            dat_set_Payload_Buff_at_indx(dat_pay_expFis, fis_get_sens_buff_i(ind), expFis_gpb_indx);
-            printf("    sens_buff[%d] = %X\n",ind,fis_get_sens_buff_i(ind));
+            temp = fis_get_sens_buff_i(ind);
+            dat_set_Payload_Buff_at_indx(dat_pay_expFis, temp, expFis_gpb_indx);
+            printf("    dat_set_Payload_Buff(%d)\n",temp);
             
             dat_get_Payload_Buff(dat_pay_expFis,expFis_gpb_indx,&value_stored_in_dataRepo);
-            
-            printf("    dat_set_Payload_Buff(%d)\n",fis_get_sens_buff_i(ind));
             printf("    dat_get_Payload_Buff(): %d\n",value_stored_in_dataRepo);
+                        
             printf("    expFis_gpb_indx: %d\r\n",expFis_gpb_indx);
             expFis_gpb_indx++;  //updates the global buffer counter
         }
@@ -326,7 +326,7 @@ int pay_take_expFis(void *param){
     }
     //return -1 if failed (rc < 0)
     //return +1 if succesfull (rc > 0)
-    return (rc == -1)? 0 : 1;
+    return (rc < 0)? 0 : 1;
 }
 int pay_stop_expFis(void *param){
     printf("pay_stop_expFis\r\n");

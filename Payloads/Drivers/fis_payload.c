@@ -20,12 +20,12 @@
 #include "fis_payload.h"
 #include "interfaz_ADC.h"
 
-#define _FISICA_VERBOSE_TIMER4_ISR   (1)
+#define _FISICA_VERBOSE_TIMER4_ISR   (0)
 #define _FISICA_VERBOSE_TIMER5_ISR   (0)
 #define _FISICA_VERBOSE_TIMER4_CFG   (0)
 #define _FISICA_VERBOSE_TIMER5_CFG   (0)
 #define _FISICA_VERBOSE_ADC_CFG      (0)
-#define _FISICA_VERBOSE_DAC_SPI      (1)
+#define _FISICA_VERBOSE_DAC_SPI      (0)
 #define CHAR_BIT (8)
 //buffer size is calculated to be exactly the number of samples for ONE waveform
 static unsigned int sens_buff[FIS_SENS_BUFF_LEN];   //temporary buffer where the measures are stored
@@ -77,11 +77,15 @@ int fis_wait_busy_wtimeout(unsigned int timeout){
         __delay_ms(1000);
         seg_timeout--;
         if(seg_timeout<=0){ //after 30 seconds trigger timeout
+        #if _FISICA_VERBOSE_TIMER5_ISR || _FISICA_VERBOSE_TIMER4_ISR 
             printf("fis_wait_busy_wtimeout: expFis timeout!\n");
+        #endif
             return 0;
         }
     }
-    printf("fis_wait_busy_wtimeout: ok\n");
+    #if _FISICA_VERBOSE_TIMER5_ISR || _FISICA_VERBOSE_TIMER4_ISR 
+        printf("fis_wait_busy_wtimeout: ok\n");
+    #endif
     return 1;
 }
 /*
@@ -245,6 +249,7 @@ void fis_iterate(unsigned int *rc, unsigned int timeout_seg){
         printf("    total samples (ADC) = %lu\n", FIS_TOTAL_SAMPLES);
         //fis_iterate_reset();    //reset some variables used in others calls of this function
         //configures the ADC and Timers, then executes the payload for the current ADC_period
+        fis_state = FIS_STATE_WORKING;
         fis_start_expFis(fis_ADC_period[fis_ADC_period_i]);
     }
     else if(fis_state == FIS_STATE_WAITING){    //expFis is wating to resume its execution
@@ -283,7 +288,7 @@ void fis_iterate(unsigned int *rc, unsigned int timeout_seg){
         //rc == 1 when DONE
         *rc = (fis_state == FIS_STATE_DONE)? 1 : 0;
     }
-    else{ //timeout!
+    else { //timeout!
         //rc = 1;
         *rc = -1;
         //*rc = (fis_state == FIS_STATE_DONE)? 1 : 0;
@@ -296,20 +301,24 @@ void fis_iterate(unsigned int *rc, unsigned int timeout_seg){
  * The voltage value its mapped from 0 to Vcc (0 to 3.3V)
  */
 void fis_testDAC(unsigned int value){
-//    unsigned int j;
-    //double analog_value = (value*(3.33/65535));
-    double analog_value = (value*(0.050813));
-    printf("fis_testDAC ...\n");
-    printf("    Sending a %x value to fis_writeDAC function\n", value);
-    printf("    This value should be equivalent to a %f mV\n",analog_value);
-    //for(j=0xFFFF;j>0;j--){
+    #if _FISICA_VERBOSE_DAC_SPI > 0
+        //double analog_value = (value*(3.33/65535));
+        double analog_value = (value*(0.050813));
+        printf("fis_testDAC ...\n");
+        printf("    Sending a %x value to fis_writeDAC function\n", value);
+        printf("    This value should be equivalent to a %f mV\n",analog_value);
+    #endif
+    unsigned int j;
+    for(j=0;j < value;j++){
 //        unsigned char c= rand();
 //        unsigned int arg=c;
 //        arg=(arg<<8);
 //        fis_payload_writeDAC(arg); 
-        fis_payload_writeDAC(value);
-    //}
-    printf("    Ok\n");
+        fis_payload_writeDAC(j);
+    }
+    #if _FISICA_VERBOSE_DAC_SPI > 0
+        printf("    Ok\n");
+    #endif
 }
 unsigned int reverse_endianess(unsigned int v){
     
@@ -338,7 +347,7 @@ void fis_payload_writeDAC(unsigned int arg){
     secondByte = (unsigned char)(myarg>>8);
     thirdByte = (unsigned char) myarg;
     
-    #if _FISICA_VERBOSE_DAC_SPI
+    #if _FISICA_VERBOSE_DAC_SPI > 0
         printf("fis_payload_writeDAC\n");
         printf("    arg: %X \n", myarg);
         printf("SPI_3_transfer ...\n");
@@ -601,7 +610,6 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
     #if _FISICA_VERBOSE_TIMER4_ISR > 0
         //printf("ISR T4\n");
         #if _FISICA_VERBOSE_TIMER4_ISR >= 2
-            //printf("count: %u \n",count++);
             printf("IEC1bits.T4IE: %u\n",IEC1bits.T4IE);
             printf("IEC1bits.T5IE: %u\n",IEC1bits.T5IE);
             printf("IFS1bits.T4IF: %u\n", IFS1bits.T4IF);
@@ -637,7 +645,9 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
                 
     //T4_Clear_Intr_Status_Bit;
     unsigned int arg = rand();
-    printf("rand(): %X\n",arg);
+    #if _FISICA_VERBOSE_TIMER4_ISR > 0
+        printf("rand(): %X\n",arg);
+    #endif
     fis_payload_writeDAC(arg);
     
     current_point_ind++;    //update the point index

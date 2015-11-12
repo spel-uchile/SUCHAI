@@ -256,14 +256,16 @@ int pay_init_expFis(void *param){
     int len = 1;
     unsigned int inputSignalPeriod[len];
     
-    int rounds = 1;    //number of iterations done for each ADC_period value
+    int rounds = 2;    //number of iterations done for each ADC_period value
     
     //initialize the ADC period array
+    /*
     int i;
     for(i=0; i< len; i++) {
         inputSignalPeriod[i]= 65335-7500*i;
     }
-    
+    */
+    inputSignalPeriod[0] = 65535;
     //configure Payload
     fis_iterate_config(inputSignalPeriod, len, rounds);
     

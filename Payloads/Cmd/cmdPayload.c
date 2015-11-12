@@ -253,19 +253,19 @@ int pay_init_expFis(void *param){
     pay_i = dat_pay_expFis; //expFis is the current Payload in execution
     
     //Array of time values between each sample of the ADC
-    int len = 5;
-    unsigned int ADC_period[len];
+    int len = 1;
+    unsigned int inputSignalPeriod[len];
     
-    int rounds_per_ADC_period = 3;    //number of iterations done for each ADC_period value
+    int rounds = 1;    //number of iterations done for each ADC_period value
     
     //initialize the ADC period array
     int i;
-    for(i=0; i< len; i++){
-        ADC_period[i]= 65335-7500*i;
+    for(i=0; i< len; i++) {
+        inputSignalPeriod[i]= 65335-7500*i;
     }
     
     //configure Payload
-    fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
+    fis_iterate_config(inputSignalPeriod, len, rounds);
     
     //dat_reset_Payload_Buff ha cambiado, por lo que ya no es necesario
     //entregarle como argumento el largo del buffer a ocupar

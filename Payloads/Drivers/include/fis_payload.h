@@ -21,18 +21,18 @@
 //cantidad de waveforms a utilizar
 #define FIS_ROUNDS_PER_PERIOD    (3UL)
 //cantidad de puntos que conforman un waveform
-#define FIS_WAVEFORM_SIZE (60UL)
+#define FIS_SIGNAL_POINTS (60UL)
 //cantidad total de puntos a generar
 //numero de muestras por punto generado por el DAC
 #define FIS_SAMPLES_PER_POINT (2UL)
 //total amount of points to be generated with the DAC
-#define FIS_TOTAL_POINTS    (FIS_WAVEFORM_SIZE)
+#define FIS_TOTAL_POINTS    (FIS_SIGNAL_POINTS)
 //#define FIS_TOTAL_POINTS    ((FIS_ROUNDS_PER_PERIOD)*(FIS_WAVEFORM_SIZE))
 //total amount of samples to taken with the ADC
 //#define FIS_TOTAL_SAMPLES (FIS_TOTAL_POINTS)*(FIS_SAMPLES_PER_POINT)
 #define FIS_TOTAL_SAMPLES (FIS_TOTAL_POINTS)*(FIS_SAMPLES_PER_POINT)
 //number of seed for the srand() function calls
-#define FIS_SRAND_SEEDS (FIS_ROUNDS_PER_PERIOD)
+#define FIS_SRAND_SEEDS (1UL)
 //maximun size for the buffer
 #define FIS_MAX_SENS_BUFF_LEN (100UL)
 /*
@@ -42,9 +42,9 @@
 //numero de muestras en el buffer
 */
 #if (SCH_PAY_FIS_ONBOARD==1)
-    #if ((FIS_WAVEFORM_SIZE)*(FIS_SAMPLES_PER_POINT)) <= (FIS_MAX_SENS_BUFF_LEN)
+    #if ((FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT)) <= (FIS_MAX_SENS_BUFF_LEN)
         //size of sens_buff is equal to the size of a waveform, times the samples for each point
-        #define FIS_SENS_BUFF_LEN ((FIS_WAVEFORM_SIZE)*(FIS_SAMPLES_PER_POINT))
+        #define FIS_SENS_BUFF_LEN ((FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT))
     #else
         #define FIS_SENS_BUFF_LEN FIS_MAX_SENS_BUFF_LEN
     #endif
@@ -91,8 +91,8 @@ void fis_iterate(unsigned int* rc, unsigned int timeout_seg);
 //void fis_save_sens_buff_to_GPB(DAT_GnrlPurpBuff frec_i, int rst_gbp_indx);
 //unsigned int fis_frec_i_to_ADC_period(DAT_GnrlPurpBuff pay_frec_i);
 
-void fis_start_expFis(unsigned int period);
-void fis_stop_expFis(void);
+void fis_start(unsigned int period);
+void fis_iterate_stop(void);
 
 void fis_ADC_config(void);
 void fis_Timer4_config(unsigned int period);
@@ -100,7 +100,7 @@ void fis_Timer5_config(unsigned int period);
 
 void fis_payload_writeDAC(unsigned int arg);
 
-void fis_pause_expFis(void);
+void fis_iterate_pause(void);
 void fis_iterate_resume(void);
 
 #endif

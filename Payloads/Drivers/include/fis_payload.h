@@ -34,7 +34,7 @@
 //number of seed for the srand() function calls
 #define FIS_SRAND_SEEDS (2UL)
 //maximun size for the buffer
-#define FIS_MAX_SENS_BUFF_LEN (100UL)
+#define FIS_MAX_SENS_BUFF_LEN (2UL)
 
 #if (SCH_PAY_FIS_ONBOARD==1)
     #if ((FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT)) <= (FIS_MAX_SENS_BUFF_LEN)
@@ -74,7 +74,7 @@ BOOL fis_iterate_isComplete();
  * @param _rounds_per_ADC_period How many rounds there will be for every ADC_period
  * @return the lenght of the internal buffer (FIS_SENS_BUFF_LEN)
  */
-unsigned int fis_iterate_config(unsigned int* inputSignalPeriod, int len, int rounds);
+unsigned int fis_iterate_config(const unsigned int inputSignalPeriod[], int len, int rounds);
 /**
  * Helper to iterate ONE TIME over one of the "_rounds_per_ADC_period"-times 
  * a SINGLE ADC_period must execute

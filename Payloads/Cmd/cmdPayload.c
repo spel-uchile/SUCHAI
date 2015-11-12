@@ -253,19 +253,18 @@ int pay_init_expFis(void *param){
     pay_i = dat_pay_expFis; //expFis is the current Payload in execution
     
     //Array of time values between each sample of the ADC
-    int len = 1;
+    int len = 2;
     unsigned int inputSignalPeriod[len];
     
     int rounds = 2;    //number of iterations done for each ADC_period value
     
     //initialize the ADC period array
-    /*
+    
     int i;
     for(i=0; i< len; i++) {
-        inputSignalPeriod[i]= 65335-7500*i;
+        inputSignalPeriod[i]= 10000;//-7500*i;
     }
-    */
-    inputSignalPeriod[0] = 65535;
+    
     //configure Payload
     fis_iterate_config(inputSignalPeriod, len, rounds);
     
@@ -306,7 +305,7 @@ int pay_take_expFis(void *param){
     int value_stored_in_dataRepo;   //debug only
     unsigned int fis_state = fis_get_state();    //get the initial state of the Payload
     
-    unsigned int rc;    //return code of "fis_iterate" function
+    unsigned int rc = 0;    //return code of "fis_iterate" function
     do{
         fis_iterate(&rc, timeout); //executes the Payload and return 
         //when is is time to save data in the Data Repository
@@ -321,13 +320,15 @@ int pay_take_expFis(void *param){
                 printf("    dat_set_Payload_Buff(%d)\n",temp);
             #endif
             
-            //dat_get_Payload_Buff(dat_pay_expFis,expFis_gpb_indx,&value_stored_in_dataRepo);
             #if FIS_CMD_VERBOSE
+                dat_get_Payload_Buff(dat_pay_expFis,expFis_gpb_indx,&value_stored_in_dataRepo);
                 printf("    dat_get_Payload_Buff(): %d\n",value_stored_in_dataRepo);          
                 printf("    expFis_gpb_indx: %d\r\n",expFis_gpb_indx);
             #endif  
             expFis_gpb_indx++;  //updates the global buffer counter
         }
+        printf("rc = %d\n", rc);
+        //fis_iterate_stop();
     }
     while (rc == 0);
     

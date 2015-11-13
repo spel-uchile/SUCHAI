@@ -266,10 +266,11 @@ int pay_init_expFis(void *param){
     }
     
     //configure Payload
-    fis_iterate_config(inputSignalPeriod, len, rounds);
+    if (!(fis_iterate_config(inputSignalPeriod, len, rounds) == FIS_STATE_READY)) {
+        return 0;
+    }
+    printf("    expFis is READY!\n");
     
-    //dat_reset_Payload_Buff ha cambiado, por lo que ya no es necesario
-    //entregarle como argumento el largo del buffer a ocupar
     dat_reset_Payload_Buff(pay_i);
     
     expFis_gpb_indx = 0;    //Reset vars
@@ -306,7 +307,7 @@ int pay_take_expFis(void *param){
     unsigned int fis_state = fis_get_state();    //get the initial state of the Payload
     
     unsigned int rc = 0;    //return code of "fis_iterate" function
-    do{
+    while(rc == 0){
         fis_iterate(&rc, timeout); //executes the Payload and return 
         //when is is time to save data in the Data Repository
         //so we must save the current data inside "sens_buff" into the Data Repository
@@ -328,9 +329,7 @@ int pay_take_expFis(void *param){
             expFis_gpb_indx++;  //updates the global buffer counter
         }
         printf("rc = %d\n", rc);
-        //fis_iterate_stop();
     }
-    while (rc == 0);
     
     //Payload ended
     if(rc<0){   //fis_iterate finished with error

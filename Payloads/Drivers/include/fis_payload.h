@@ -18,24 +18,21 @@
 #define FIS_STATE_WORKING   (3)
 #define FIS_STATE_DONE (4)
 
-//cantidad de waveforms a utilizar
-#define FIS_ROUNDS_PER_PERIOD    (2UL)
-//cantidad de puntos que conforman un waveform
-#define FIS_SIGNAL_POINTS (2UL)
-//cantidad total de puntos a generar
-//numero de muestras por punto generado por el DAC
-#define FIS_SAMPLES_PER_POINT (2UL)
-//total amount of points to be generated with the DAC
-#define FIS_TOTAL_POINTS    (FIS_SIGNAL_POINTS)
-//#define FIS_TOTAL_POINTS    ((FIS_ROUNDS_PER_PERIOD)*(FIS_WAVEFORM_SIZE))
-//total amount of samples to taken with the ADC
-//#define FIS_TOTAL_SAMPLES (FIS_TOTAL_POINTS)*(FIS_SAMPLES_PER_POINT)
-#define FIS_TOTAL_SAMPLES (FIS_TOTAL_POINTS)*(FIS_SAMPLES_PER_POINT)
+//cantidad de iteraciones que hace para cada frecuencia
+#define FIS_ROUNDS    (2)
+//cantidad maxima de frencuencias
+#define FIS_MAX_FREQS (2)
+//cantidad de puntos de de cada señal generada (largo)
+#define FIS_SIGNAL_POINTS (2)
+//numero de muestras por punto generado de la señal (minimo 2 para cumplir con Nyquist)
+#define FIS_SAMPLES_PER_POINT (2)
+//cantidad de muestras que tiene una señal/waveform
+#define FIS_SIGNAL_SAMPLES (FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT)
 //number of seed for the srand() function calls
-#define FIS_SRAND_SEEDS (2UL)
+#define FIS_SRAND_SEEDS (FIS_ROUNDS)
 //maximun size for the buffer
-#define FIS_MAX_SENS_BUFF_LEN (2UL)
-
+#define FIS_MAX_SENS_BUFF_LEN (2)
+        
 #if (SCH_PAY_FIS_ONBOARD==1)
     #if ((FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT)) <= (FIS_MAX_SENS_BUFF_LEN)
         //size of sens_buff is equal to the size of a waveform, times the samples for each point
@@ -74,7 +71,8 @@ BOOL fis_iterate_isComplete();
  * @param _rounds_per_ADC_period How many rounds there will be for every ADC_period
  * @return the lenght of the internal buffer (FIS_SENS_BUFF_LEN)
  */
-unsigned int fis_iterate_config(const unsigned int inputSignalPeriod[], int len, int rounds);
+//unsigned int fis_iterate_config(const unsigned int inputSignalPeriod[], int len, int rounds);
+unsigned int fis_iterate_config(unsigned int inputSignalPeriod[], int len, int rounds);
 /**
  * Helper to iterate ONE TIME over one of the "_rounds_per_ADC_period"-times 
  * a SINGLE ADC_period must execute

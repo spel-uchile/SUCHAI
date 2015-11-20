@@ -80,10 +80,10 @@ void lag_erase_buffer(void)
  */
 int lag_wait_busy_wtimeout(void)
 {
-    //unsigned long int i = 50242879;
-    unsigned long int i = 5024287;
+    long int i = 30*2; /* Maximum time to wait 30 seconds */
     while(LAG_BUSY)
     {
+        __delay_ms(500); /*Delay half second (0.5 secs)*/
         i--;
         if(i<=0)
         {
@@ -93,7 +93,7 @@ int lag_wait_busy_wtimeout(void)
             return 0;
         }
     }
-    
+
     return 1;
 }
 
@@ -106,7 +106,7 @@ unsigned int lag_get_langmuir_buffer_i(int ind)
 {
     if(ind>=LAG_BUFFER_LEN)
         return 0;
-    
+
     return langmuir_buffer[ind];
 }
 
@@ -114,15 +114,22 @@ unsigned int lag_get_langmuir_buffer_i(int ind)
  *		 	LAG READ CAL PACKET
  *------------------------------------------------------------------------------
  * Description        : Sends proper control packet to receive a calibration
- *                      packet (4packets x 10Bytes)
- * Arguments          : unsigned int* buffer[40] - Receive buffer
- *                      Lagmuir will send 40 bytes, details in
+ *                      packet (4packets x 12Bytes)
+ * Arguments          : unsigned int* buffer[48] - Receive buffer
+ *                      Lagmuir will send 48 bytes
+ *						-previous message format details in
  *                      https://docs.google.com/spreadsheet/ccc?key=0AlJNKX_r8AXcdHpNbVROMFg1cWtiNXVRa3hHb091Ync#gid=0
+ *						-current message format (12Bytes):
+ *							43 43 43 01-04 	(3Bytes header + 1Byte ID Calibration -resistance identifier-)
+ *							XX XX 			(2 byte Sweep Voltage: 4V)
+ *							YY YY 			(2 byte Plasma Voltage)
+ *							TT TT 			(2 byte Temperature ºK)
+ *							ZZ ZZ 			(2 byte Particle Counter)
  * Return Value       : Number of values to read from bubffer, 0 - Fail
  *----------------------------------------------------------------------------*/
 int lag_read_cal_packet(BOOL verb)
 {
-    LAG_MAX_READ = 40;
+    LAG_MAX_READ = 48;//12*4
     LAG_COUNT = 0;
     LAG_BUSY = 1;
 
@@ -137,7 +144,7 @@ int lag_read_cal_packet(BOOL verb)
 
     if(verb)
         lag_print_buffer(LAG_MAX_READ);
-    
+
     if(r)
         return LAG_MAX_READ;
     else
@@ -147,16 +154,23 @@ int lag_read_cal_packet(BOOL verb)
 /*------------------------------------------------------------------------------
  *		 	LAG READ PLASMA PACKET
  *------------------------------------------------------------------------------
- * Description        : Sends proper control packet to receive a plasma 
- *                      packet (1packet x 10Bytes)
- * Arguments          : unsgined int* buffer[10] - Receive buffer
- *                      Lagmuir will send 40 bytes, details in
+ * Description        : Sends proper control packet to receive a plasma
+ *                      packet (1packet x 12Bytes)
+ * Arguments          : unsgined int* buffer[12] - Receive buffer
+ *                      Lagmuir will send 12 bytes, details in
+  *						-previous message format details in
  *                      https://docs.google.com/spreadsheet/ccc?key=0AlJNKX_r8AXcdHpNbVROMFg1cWtiNXVRa3hHb091Ync#gid=0
+ *						-current message format (12Bytes):
+ *							43 43 43 05 (3Bytes header + 1Byte ID Plasma)
+ *							XX XX 		(2 byte Sweep Voltage: 4V)
+ *							YY YY 		(2 byte Plasma Voltage)
+ *							TT TT 		(2 byte Temperature ºK)
+ *							ZZ ZZ 		(2 byte Particle Counter)
  * Return Value       : Number of values to read from bubffer, 0 - Fail
  *----------------------------------------------------------------------------*/
 int lag_read_plasma_packet(BOOL verb)
 {
-    LAG_MAX_READ = 10;
+    LAG_MAX_READ = 12;
     LAG_COUNT = 0;
     LAG_BUSY = 1;
 
@@ -218,12 +232,10 @@ int lag_read_sweep_packet(BOOL verb)
  */
 int langmuir_isAlive(void)
 {
-    //printf("[langmuir_isAlive] .. \r\n");
     int result = lag_read_plasma_packet(FALSE);
-    
-    if(!result){
+
+    if(!result)
         return 0;
-    }
 
     int sync_1 = lag_get_langmuir_buffer_i(0);
     int sync_2 = lag_get_langmuir_buffer_i(1);

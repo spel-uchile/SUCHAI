@@ -319,6 +319,9 @@ int thk_deploy_antenna(void *param)
                 printf("    [Deploying] Attempt #%d\r\n", tries_indx);
             #endif
 
+            #if (SCH_TDEPLOYMENT_VERBOSE>=2)
+                printf("      Burning ANT1 .. \r\n");
+            #endif
             PPC_ANT12_SWITCH=1;
             PPC_ANT1_SWITCH=1;
             PPC_ANT2_SWITCH=0;
@@ -329,7 +332,10 @@ int thk_deploy_antenna(void *param)
             __delay_ms(delay_dep_time);
             ClrWdt();
             __delay_ms(delay_dep_time);
-
+            
+            #if (SCH_TDEPLOYMENT_VERBOSE>=2)
+                printf("          Taking a rest .. \r\n");
+            #endif
             PPC_ANT12_SWITCH=0;
             PPC_ANT1_SWITCH=0;
             PPC_ANT2_SWITCH=0;
@@ -337,6 +343,9 @@ int thk_deploy_antenna(void *param)
             __delay_ms(delay_rest_dep_time);
             ClrWdt();
 
+            #if (SCH_TDEPLOYMENT_VERBOSE>=2)
+                printf("      Burning ANT2 .. \r\n");
+            #endif
             PPC_ANT12_SWITCH=1;
             PPC_ANT1_SWITCH=0;
             PPC_ANT2_SWITCH=1;
@@ -348,6 +357,9 @@ int thk_deploy_antenna(void *param)
             ClrWdt();
             __delay_ms(delay_dep_time);
 
+            #if (SCH_TDEPLOYMENT_VERBOSE>=2)
+                printf("          Taking a rest .. \r\n");
+            #endif
             PPC_ANT12_SWITCH=0;
             PPC_ANT1_SWITCH=0;
             PPC_ANT2_SWITCH=0;

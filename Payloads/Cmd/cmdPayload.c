@@ -1245,9 +1245,8 @@ int pay_init_lagmuirProbe(void *param){
     #endif
 
     //configure Payload_Buff
-    DAT_Payload_Buff pay_i; unsigned int lenBuff;
+    DAT_Payload_Buff pay_i;
     pay_i = dat_pay_lagmuirProbe;
-    lenBuff = (unsigned int)(20*1); /*TODO: SET VALUE*/ //(1440)      //numero de 10-minutos en un dia
     dat_reset_Payload_Buff(pay_i);
 
     //configs
@@ -1258,58 +1257,31 @@ int pay_init_lagmuirProbe(void *param){
     printf("  sta_pay_lagmuirProbe_isAlive = %d \r\n", res_isAlive );
     printf("  sta_pay_lagmuirProbe_isDeployed = %d \r\n", sta_get_PayStateVar(sta_pay_lagmuirProbe_isDeployed) );
 
+    //save iniial data
+    int i;
+    int lenbuff_cal = lag_read_cal_packet(FALSE);
+    for(i=0;i<lenbuff_cal;i++){
+        dat_set_Payload_Buff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i));
+    }
+
     return res_isAlive;
 }
 
 int pay_take_lagmuirProbe(void *param){
     printf("pay_take_lagmuirProbe\r\n");
 
+    //(15 secs delay between commands with an increased delay)
+
     //save date_time in 2ints
     pay_save_date_time_to_Payload_Buff(dat_pay_lagmuirProbe);
 
     //save data
-    dat_set_Payload_Buff(dat_pay_lagmuirProbe, 0x01);
+    int i;
 
-////    int verbose = *(int *)param;
-//    int ok = 0;
-//    int i = 0;
-//    /* Tomar datos de calibracion */
-//    ok = lag_read_cal_packet(FALSE);
-//    if(ok)
-//    {
-//        /* Guardar datos a la SD (40) */
-//        for(i=0; i<40; i++)
-//        {
-//            dat_set_Payload_Buff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
-//        }
-////        if(verbose) SendRS232(langmuir_buffer, 40, RS2_M_UART1);
-//    }
-//
-//    /* Tomar datos de plasma */
-//    ok = lag_read_plasma_packet(FALSE);
-//    if(ok)
-//    {
-//        /* Guardar datos a la SD (10) */
-//        for(i=0; i<10; i++)
-//        {
-//            dat_set_Payload_Buff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
-//        }
-////        if(verbose) SendRS232(langmuir_buffer, 10, RS2_M_UART1);
-//    }
-//
-//    /* Tomar datos de sweep */
-//    ok = lag_read_sweep_packet(FALSE);
-//    if(ok)
-//    {
-//        /* Guardar datos a la SD (1096) */
-//        for(i=0; i<1096; i++)
-//        {
-//            dat_set_Payload_Buff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i) );
-//        }
-////        if(verbose) SendRS232(langmuir_buffer, 1096, RS2_M_UART1);
-//    }
-//    #endif
-
+    int lenbuff_pla = lag_read_plasma_packet(FALSE);
+    for(i=0;i<lenbuff_pla;i++){
+        dat_set_Payload_Buff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i));
+    }
 
     return 1;
 }
@@ -1752,7 +1724,7 @@ int pay_fp2_get_exec_rate(DAT_Payload_Buff pay_i){
 unsigned int pay_fp2_get_run_take_num_exec_times(DAT_Payload_Buff pay_i){
     unsigned int max_exec_times;
 
-    unsigned int pay_exec_times = 5;
+    unsigned int pay_exec_times = 95*1;
     switch(pay_i){
         case dat_pay_tmEstado:
             max_exec_times = pay_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times

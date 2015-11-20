@@ -354,14 +354,22 @@ int tcm_update_beacon(void *param)
         strcpy(p_buff++, buff);
 
         /* count_tm */
-        val = sta_get_BusStateVar(sta_trx_count_tm);
+        #if (SCH_TRX_ONBOARD==1)
+            val = sta_get_BusStateVar(sta_trx_count_tm);
+        #else
+            val = 0;
+        #endif
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
         strcpy(p_buff++, buff);
 
         /* count_tc */
-        val = sta_get_BusStateVar(sta_trx_count_tc);
+        #if (SCH_TRX_ONBOARD==1)
+            val = sta_get_BusStateVar(sta_trx_count_tc);
+        #else
+            val = 0;
+        #endif
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);

@@ -31,7 +31,7 @@
 #define SCH_MGN_ONBOARD                     (0)  ///< Onboard => 1 pin(es) en modo Switch
 
 /* Payloads Onboard */
-#define SCH_PAY_LANGMUIR_ONBOARD            (0)  ///< Ocupa UART3_en_H1.19_y_H1.20
+#define SCH_PAY_LANGMUIR_ONBOARD            (1)  ///< Ocupa UART3_en_H1.19_y_H1.20
 #define SCH_PAY_SENSTEMP_ONBOARD            (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 #define SCH_PAY_TMESTADO_ONBOARD            (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 #define SCH_PAY_BATTERY_ONBOARD             (0)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)

@@ -8,12 +8,12 @@
 #include "rs232_suchai.h"
 
 #if(SCH_PAY_LANGMUIR_ONBOARD==1)
-    #define LAG_BUFFER_LEN      (1096)
+    #define LAG_BUFFER_LEN      (1096) /* Maximum buffer length for Sweep receive packets*/
 #else
     #define LAG_BUFFER_LEN      (1)
 #endif
 
-#define LAG_COMMPORT    RS2_M_UART3 
+#define LAG_COMMPORT    RS2_M_UART3
 #define LAG_BAUDRATE    (38400) /* BAUD 38400 => ABAUD 25*/
 #define LAG_ABAUD       (25) /* BAUD 38400 => ABAUD 25*/
 

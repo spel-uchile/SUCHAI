@@ -253,21 +253,22 @@ int pay_init_expFis(void *param){
     pay_i = dat_pay_expFis; //expFis is the current Payload in execution
     
     //Array of time values between each sample of the ADC
-    int len = 1;
-    unsigned int inputSignalPeriod[len];
+    //int len = 1;
+    unsigned int inputSignalPeriod = *((unsigned int *) param);
     
-    //OJO: HAY DEJAR CONSISTENTE LA FIRMA DE L AFUNCION CON REPESCTO AL NUMERO DE RONDAS
-    int rounds = 1;    //number of iterations done for each ADC_period value
-    
-    //initialize the ADC period array
-    
-    int i;
-    for(i=0; i< len; i++) {
-        inputSignalPeriod[i]= 10000;//-7500*i;
+    if(inputSignalPeriod < 75) {
+        printf("periodo muy pequeno!\n Abortando...\n");
+        return 0;
     }
     
+    int rounds = 3;    //number of iterations done for each ADC_period value
+        //debug Info
+    #if FIS_CMD_VERBOSE > 0
+        printf("    rounds = %d\n", rounds);
+        printf("    adc period = %d\n", inputSignalPeriod);
+    #endif
     //configure Payload
-    if (!(fis_iterate_config(inputSignalPeriod, len, rounds) == FIS_STATE_READY)) {
+    if (!(fis_iterate_config(inputSignalPeriod, rounds) == FIS_STATE_READY)) {
         return 0;
     }
     printf("    expFis is READY!\n");
@@ -278,7 +279,7 @@ int pay_init_expFis(void *param){
     int res = 1;    //always alive
 
     //debug Info
-    #if FIS_CMD_VERBOSE
+    #if FIS_CMD_VERBOSE > 0
         printf("  sta_pay_expFis_isAlive = %d \r\n", sta_get_PayStateVar(sta_pay_expFis_isAlive) );
     #endif
     return res;
@@ -304,7 +305,7 @@ int pay_take_expFis(void *param){
     unsigned int temp;
     unsigned int timeout = 30;  //max time waiting to fill the sens_buffer 
     unsigned int buff_size = fis_get_sens_buff_size();
-    int value_stored_in_dataRepo;   //debug only
+    //int value_stored_in_dataRepo;   //debug only
     unsigned int fis_state = fis_get_state();    //get the initial state of the Payload
     
     unsigned int rc = 0;    //return code of "fis_iterate" function
@@ -318,18 +319,19 @@ int pay_take_expFis(void *param){
             //deprecated: dat_set_Payload_Buff_at_indx(dat_pay_expFis, fis_get_sens_buff_i(ind), expFis_gpb_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
             temp = fis_get_sens_buff_i(ind);
             dat_set_Payload_Buff_at_indx(dat_pay_expFis, temp, expFis_gpb_indx);
-            #if FIS_CMD_VERBOSE
+            #if FIS_CMD_VERBOSE > 0
                 printf("    dat_set_Payload_Buff(%d)\n",temp);
             #endif
             
-            #if FIS_CMD_VERBOSE
-                dat_get_Payload_Buff(dat_pay_expFis,expFis_gpb_indx,&value_stored_in_dataRepo);
-                printf("    dat_get_Payload_Buff(): %d\n",value_stored_in_dataRepo);          
-                printf("    expFis_gpb_indx: %d\r\n",expFis_gpb_indx);
+            #if FIS_CMD_VERBOSE > 0
+                //dat_get_Payload_Buff(dat_pay_expFis,expFis_gpb_indx,&value_stored_in_dataRepo);
+                //printf("    dat_get_Payload_Buff(): %d\n",value_stored_in_dataRepo);          
+                //printf("    expFis_gpb_indx: %d\r\n",expFis_gpb_indx);
             #endif  
             expFis_gpb_indx++;  //updates the global buffer counter
         }
-        printf("rc = %d\n", rc);
+        //MUCH POWER!
+        ClrWdt();
     }
     
     //Payload ended

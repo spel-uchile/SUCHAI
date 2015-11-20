@@ -20,6 +20,7 @@
 #include "fis_payload.h"
 #include "interfaz_ADC.h"
 
+#define _FISICA_VERBOSE_ITERATE      (1)
 #define _FISICA_VERBOSE_TIMER4_ISR   (0)
 #define _FISICA_VERBOSE_TIMER5_ISR   (0)
 #define _FISICA_VERBOSE_TIMER4_CFG   (0)
@@ -33,7 +34,8 @@
 static unsigned int fis_state;    //working state
 static unsigned int fis_signal_period_ind;    //Index of the  "fis_ADC_period" being executed 
 //static const unsigned int* fis_signal_period; //Array with the values of "ADC_period"
-static unsigned int fis_signal_period[FIS_MAX_FREQS];
+//static unsigned int fis_signal_period[FIS_MAX_FREQS];
+static unsigned int fis_signal_period;
 static int fis_signal_period_len; //number of elements in "fis_ADC_period"
 static int fis_rounds;   //number of repetitions of the payload for each "ADC_period" value
 static unsigned int fis_current_round;   //index of the current waveform being executed
@@ -45,7 +47,7 @@ static int sens_buff_ind;   //index used with sens_buff
 static BOOL sync;
 
 unsigned int fis_get_total_number_of_samples(void){
-    return FIS_SIGNAL_POINTS*FIS_ROUNDS*FIS_SAMPLES_PER_POINT;
+    return FIS_SIGNAL_POINTS*fis_rounds*FIS_SAMPLES_PER_POINT;
 }
 /* 
  * Return the size of the sens_buff
@@ -65,7 +67,7 @@ unsigned int fis_get_state(void){
 void fis_seed_init(void){
     unsigned int i;
     for (i=0; i < FIS_SRAND_SEEDS; i++){
-        seed[i] = i+1000;
+        seed[i] = i+1000;        
     }
     srand(seed[0]);
     
@@ -79,17 +81,17 @@ void fis_seed_init(void){
 int fis_wait_busy_wtimeout(unsigned int timeout){
     int seg_timeout = timeout;   
 
-    while(!fis_sens_buff_isFull()){
+    while(!(fis_sens_buff_isFull())){
         __delay_ms(1000)
         seg_timeout--;
         if(seg_timeout<=0){ 
-        //#if _FISICA_VERBOSE_TIMER5_ISR || _FISICA_VERBOSE_TIMER4_ISR 
+        #if _FISICA_VERBOSE_ITERATE > 0
             printf("fis_wait_busy_wtimeout: expFis timeout!\n");
-        //#endif
+        #endif
             return 0;   //timeout!
         }
     }
-    #if _FISICA_VERBOSE_TIMER5_ISR || _FISICA_VERBOSE_TIMER4_ISR 
+    #if _FISICA_VERBOSE_ITERATE > 0
         printf("fis_wait_busy_wtimeout: ok\n");
     #endif
     return 1;
@@ -115,7 +117,7 @@ void fis_print_sens_buff(void){
 void fis_sens_buff_init(void){
     printf("sens_buff reset \n");
     int ind;
-    for(ind=0;ind < FIS_SENS_BUFF_LEN;ind++){
+    for(ind = 0; ind < FIS_SENS_BUFF_LEN ; ind++){
         sens_buff[ind] = 0;
     }
     sens_buff_ind = 0;
@@ -158,44 +160,37 @@ BOOL fis_iterate_isComplete(void){
  * SEGMENTATOIN FAULTS !! So, don't call its a internal function
  */
 static void fis_config_reset(void){
-    printf("fis_config_ reset...\n");
+    #if _FISICA_VERBOSE_ITERATE > 0
+        printf("fis_config_ reset...\n");
+    #endif
 
-    int i;
-    for (i=0; i < FIS_MAX_FREQS; i++) {
-        fis_signal_period[i] = 0;
-        printf("    fis_signal[%d] = %u\n",i,fis_signal_period[i]);
-    }
+    fis_signal_period = 0;
     fis_signal_period_len = fis_rounds = 0;
-
     fis_current_round = 0;
     fis_signal_period_ind = 0;
     fis_point = 0;
     fis_sample = 0;
     sync = FALSE;
     fis_state = FIS_STATE_OFF;  //ready for init the execution
-    
     fis_sens_buff_init();  //reset the buffer and clears it
     fis_seed_init();  //reset the seeds used for rand()
 }
 
-//unsigned int fis_iterate_config(const unsigned int inputSignalPeriod[], int len, int rounds){
-unsigned int fis_iterate_config(unsigned int inputSignalPeriod[], int len, int rounds){
-    printf("fis_iterate_config..\n");
+unsigned int fis_iterate_config(unsigned int inputSignalPeriod, int rounds){
+    #if _FISICA_VERBOSE_ITERATE > 0
+        printf("fis_iterate_config..\n");
+    #endif 
     fis_config_reset();
     
-    //fis_signal_period = inputSignalPeriod;
-    if(len > FIS_MAX_FREQS) {
-        return FIS_STATE_OFF;
-    }
-    
+    int len = 1;
+    fis_signal_period = inputSignalPeriod;
     fis_signal_period_len = len;   
     fis_rounds = rounds;
-    
-    int i;
-    for (i=0; i < fis_signal_period_len; i++) {
-        fis_signal_period[i] = inputSignalPeriod[i];
-        printf("    fis_signal_period[%d] = %u\n",i,fis_signal_period[i]);
-    }
+
+    fis_signal_period = inputSignalPeriod;
+    #if _FISICA_VERBOSE_ITERATE > 0
+        printf("    fis_signal_period = %u\n",fis_signal_period);
+    #endif
 
     fis_signal_period_ind = 0;
     fis_state = FIS_STATE_READY;
@@ -213,53 +208,68 @@ unsigned int fis_iterate_config(unsigned int inputSignalPeriod[], int len, int r
  *          TRUE if the iteration was successfull
  *          FALSE if not
  */
-//unsigned int fis_iterate(unsigned int previous_state){
+
 void fis_iterate(unsigned int *rc, unsigned int timeout_seg){
-    printf("fis_iterate...\n");
+    #if _FISICA_VERBOSE_ITERATE > 0
+        printf("fis_iterate...\n");
+    #endif
+        
     int normal_wait;
 
     if(fis_state == FIS_STATE_DONE){
+    #if _FISICA_VERBOSE_ITERATE > 0
         printf("    expFis completed\n");
+    #endif
         fis_state = FIS_STATE_OFF;  //shuts down the expFis
         *rc = 1;
         return;
     }
     else if(fis_state == FIS_STATE_OFF){ //error
-        printf("    expFis must be configured before calling fis_iterate\n");
+        #if _FISICA_VERBOSE_ITERATE > 0
+            printf("    expFis must be configured before calling fis_iterate\n");
+        #endif
         *rc = 1;
         return;
     }
     else if (fis_state == FIS_STATE_READY){  //first time of execution
-        printf("    Configuring and starting expFis...\n");
-        printf("    len( ADC_period[] ) = %u\n", fis_signal_period_len );
-        printf("    fis_signal_period[%u] = %u\n", fis_signal_period_ind, fis_signal_period[fis_signal_period_ind]);
-        printf("    round = %u/%u\n",fis_current_round+1, fis_rounds);
-        printf("    points per waveform = %u\n", FIS_SIGNAL_POINTS);
-        printf("    samples per point = %u\n", FIS_SAMPLES_PER_POINT);
-        printf("    total samples (ADC) = %u\n", FIS_SIGNAL_SAMPLES);
-        printf("    len( sens_buff ) = %u\n", FIS_SENS_BUFF_LEN);
-        
-        fis_run(fis_signal_period[fis_signal_period_ind]);
+        #if _FISICA_VERBOSE_ITERATE > 0
+            printf("    Configuring and starting expFis...\n");
+            printf("    ADC period = %u\n", fis_signal_period);
+            printf("    round = %u/%u\n",fis_current_round+1, fis_rounds);
+            printf("    seed[%u] = %u\n",fis_current_round, seed[fis_current_round]);
+            printf("    fis_points = %u/%u\n",fis_point, FIS_SIGNAL_POINTS);
+            printf("    fis_samples = %u/%u\n",fis_sample, FIS_SIGNAL_SAMPLES);
+            printf("    samples per point = %u\n", FIS_SAMPLES_PER_POINT);
+            printf("    total samples (ADC) = %u\n", FIS_SIGNAL_SAMPLES);
+            printf("    len( sens_buff ) = %u\n", FIS_SENS_BUFF_LEN);
+        #endif
+        fis_run(fis_signal_period);
 
     }
     else if(fis_state == FIS_STATE_WAITING){    //expFis is wating to resume its execution
-        printf("fis_state = FIS_STATE_WAITING\n");
-        printf("    fis_signal_period[%u] = %u\n", fis_signal_period_ind, fis_signal_period[fis_signal_period_ind]);
-        printf("    round = %u/%u\n",fis_current_round+1, fis_rounds);
-        printf("    fis_point = %u\n", fis_point);
-        printf("    fis_samples = %u\n", fis_sample);
-        printf("    sens_buff_ind = %u\n", sens_buff_ind );
-        printf("    sync = %u\n", sync);
-        printf("    T4CONbits.TON %X\n",T4CONbits.TON);
-        printf("    T4CONbits.TON %X\n",T4CONbits.TON);
-        printf("    IEC1bits.T4IE %X\n",IEC1bits.T4IE);
-        printf("    IEC1bits.T5IE %X\n",IEC1bits.T5IE);
-        printf("    IFS1bits.T4IF %X\n",IFS1bits.T4IF);
-        printf("    IFS1bits.T5IF %X\n",IFS1bits.T5IF);
+        #if _FISICA_VERBOSE_ITERATE > 0
+            printf("    Configuring and starting expFis...\n");
+            printf("    ADC period = %u\n", fis_signal_period);
+            printf("    round = %u/%u\n",fis_current_round+1, fis_rounds);
+            printf("    seed[%u] = %u\n",fis_current_round, seed[fis_current_round]);
+            printf("    fis_points = %u/%u\n",fis_point, FIS_SIGNAL_POINTS);
+            printf("    fis_samples = %u/%u\n",fis_sample, FIS_SIGNAL_SAMPLES);
+            printf("    samples per point = %u\n", FIS_SAMPLES_PER_POINT);
+            printf("    total samples (ADC) = %u\n", FIS_SIGNAL_SAMPLES);
+            printf("    len( sens_buff ) = %u\n", FIS_SENS_BUFF_LEN);
+            //printf("    T4CONbits.TON %X\n",T4CONbits.TON);
+            //printf("    T4CONbits.TON %X\n",T4CONbits.TON);
+            //printf("    IEC1bits.T4IE %X\n",IEC1bits.T4IE);
+            //printf("    IEC1bits.T5IE %X\n",IEC1bits.T5IE);
+            //printf("    IFS1bits.T4IF %X\n",IFS1bits.T4IF);
+            //printf("    IFS1bits.T5IF %X\n",IFS1bits.T5IF);
+        #endif
         fis_iterate_resume();
     }
     else{
-        printf("    Invalid fis_state value\n");
+        #if _FISICA_VERBOSE_ITERATE > 0
+            printf("    Invalid fis_state value\n");
+        #endif
         *rc = -1;
         return;
     }
@@ -318,7 +328,6 @@ void fis_payload_writeDAC(unsigned int arg){
         printf("    third Byte sent %X\n", thirdByte);
     #endif
 
-    //Lowering SPI_nSS_3 inits the SPI transfer
     SPI_nSS_3 = 0;  //SPI: Slave Select PIN active
 
     r = SPI_3_transfer(firstByte);
@@ -329,27 +338,20 @@ void fis_payload_writeDAC(unsigned int arg){
 }
 
 void fis_iterate_stop(void){
-    //Disable the timers interruptions
-    /*
-    DisableIntT5;
-    DisableIntT4;
-    DisableIntADC1;
-    */
     
     T4CONbits.TON = 0;
     T5CONbits.TON = 0;
     IEC1bits.T4IE = 0;
     IEC1bits.T5IE = 0;
 
-    #if (SCH_FISICA_VERBOSE>=1)
-        printf("expFis ISRs are down..\r\n");
+    #if (_FISICA_VERBOSE_ITERATE > 0)
+        printf("expFis ISRs are down ...\r\n");
     #endif
-    //Modules
-    /*
-    CloseTimer4();
-    CloseTimer5();
-    */
     CloseADC10();
+    
+    #if (_FISICA_VERBOSE_ITERATE > 0)
+        printf("expFis ADC is closed ...\r\n");
+    #endif
     
     fis_state = FIS_STATE_DONE;
 }
@@ -363,20 +365,24 @@ void fis_iterate_pause(void){
     IEC1bits.T4IE = 0;
     IEC1bits.T5IE = 0;
     
-    printf("fis_pause_expFis\n");
+    #if _FISICA_VERBOSE_ITERATE > 0
+        printf("fis_pause_expFis\n");
     //se han sacados todas las muestras, para todas las rondas, para cada una de las frecuencias
-    if(fis_sample == FIS_SIGNAL_SAMPLES && fis_current_round == fis_rounds && fis_signal_period_ind == (fis_signal_period_len-1)) {
-        fis_iterate_stop();  
+    //if(fis_sample == FIS_SIGNAL_SAMPLES && fis_current_round == fis_rounds && fis_signal_period_ind == (fis_signal_period_len-1)) {
+        printf("fis_sample: %u\n", fis_sample);
+        printf("fis_current_round: %u\n", fis_current_round);
+    #endif
+    if(fis_sample == FIS_SIGNAL_SAMPLES) {
+        fis_sample = 0;
+        if((fis_current_round) == fis_rounds) {
+            fis_iterate_stop();  
+        }
     }
 }
 /*  
  * Use only saving the data inside sens_buff into the Data Repository
  */
 void fis_iterate_resume(void){
-    if(fis_current_round == fis_rounds && fis_signal_period_ind < fis_signal_period_len){
-        fis_signal_period_ind++;
-        fis_current_round = 0;
-    }
     sync = FALSE;
     sens_buff_ind = 0;
     T4CONbits.TON = 1;
@@ -384,25 +390,26 @@ void fis_iterate_resume(void){
     IEC1bits.T4IE = 1;
     IEC1bits.T5IE = 1;
     fis_state = FIS_STATE_WORKING;
-    printf("fis_iterate_resume ok\n");
-    fis_run(fis_signal_period[fis_signal_period_ind]);
+    #if _FISICA_VERBOSE_ITERATE > 0
+        printf("fis_iterate_resume ok\n");
+    #endif
+    fis_run(fis_signal_period);
 
 }
 void fis_run(const unsigned int period){
-    #if (SCH_FISICA_VERBOSE>=2)
+    unsigned int period_DAC = period*(FIS_SAMPLES_PER_POINT);
+    unsigned int period_ADC = period;    
+    #if (_FISICA_VERBOSE_ITERATE > 0)
         printf("ADC_period (DAC_period=3*ADC_period) = %u\n", period);
+        printf("period DAC= %u\n", period_DAC);            
+        printf("period ADC= %u\n", period_ADC);
     #endif
     fis_ADC_config();   //configura los registros del ADC
-    //unsigned int _period = 20000;   //solo para debug
-    unsigned int period_DAC = period*(FIS_SAMPLES_PER_POINT);
-                printf("period DAC= %u\n", period_DAC);
-    unsigned int period_ADC = period;
-                printf("period ADC= %u\n", period_ADC);
     fis_Timer4_config(period_DAC);  //DAC
     fis_Timer5_config(period_ADC);  //ADC
     //fis_Timer45_begin();
     fis_state = FIS_STATE_WORKING;
-    #if (SCH_FISICA_VERBOSE>=1)
+    #if (_FISICA_VERBOSE_ITERATE > 0)
         printf("expFis ISRs are up..\r\n");
     #endif
 }
@@ -512,13 +519,11 @@ void fis_ADC_config(void){
         printf("fis_ADC_config: ADC interruptions disabled...\n");
     #endif
 }
-/*  Set the T4 control registers and the interruption register as well
- *  T4CON = T4_ON & T4_GATE_OFF & T4_IDLE_CON & T4_PS_1_256 & T4_SOURCE_INT
+/*  
+ * Set the T4 control registers and the interruption register as well
+ *  T4CON = T4_ON & T4_GATE_OFF & T4_IDLE_CON & T4_PS_1_64 & T4_SOURCE_INT
  */
 void fis_Timer4_config(unsigned int period){    //CONFIGURAR EL POSTSCALER A 64
-    //first_time = TRUE;
-    //                      7654321076543210
-    //unsigned int config = 0b1000000000110000;
     //                      7654321076543210
     unsigned int config = 0b1000000000100000; //T4_ON & T4_GATE_OFF & T4_IDLE_CON & T4_PS_1_64 & T4_SOURCE_INT & T4_32BIT_MODE_OFF;
    
@@ -542,20 +547,16 @@ void fis_Timer4_config(unsigned int period){    //CONFIGURAR EL POSTSCALER A 64
         printf("t4_config done\n");
     #endif
 }
-/*  Set the T5 control registers and the interruption register as well
- *  T5CON = T5_ON & T5_GATE_OFF & T5_IDLE_CON & T5_PS_1_256 & T5_SOURCE_INT
- */
 
+/*  
+ * Set the T5 control registers and the interruption register as well
+ * T5CON = T5_ON & T5_GATE_OFF & T5_IDLE_CON & T5_PS_1_64 & T5_SOURCE_INT
+ */
 void fis_Timer5_config(unsigned int period){//CONFIGURAR EL POSTSCALER A 64
     //                      7654321076543210
-    //unsigned int config = 0b1000000000110000;
-    //                      7654321076543210
     unsigned int config = 0b1000000000100000; //T5_ON & T5_GATE_OFF & T5_IDLE_CON & T5_PS_1_64 & T5_SOURCE_INT;
-    //                      7654321076543210
-    //unsigned int period = 0b0000000000000111;
     WriteTimer5(0x0000);
     OpenTimer5( config, period );
-    //ConfigIntTimer5(T5_INT_ON & T5_INT_PRIOR_1); 
     EnableIntT5;
     #if _FISICA_VERBOSE_TIMER5_CFG > 0
         printf("t5_config configuration data\n");
@@ -575,7 +576,8 @@ void fis_Timer5_config(unsigned int period){//CONFIGURAR EL POSTSCALER A 64
     #endif
 }
 
-/*  DAC ISR
+/*  
+ * DAC ISR
  */
 void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
     #if _FISICA_VERBOSE_TIMER4_ISR > 0
@@ -596,17 +598,15 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
         #endif
     #endif
 
-    printf("fis_point = %u\n", fis_point);
     if(fis_point == FIS_SIGNAL_POINTS){ //last point of a waveform
 
         fis_point = 0;
-        printf("fis_current_round = %u\n", fis_current_round);
+        //printf("fis_current_round = %u\n", fis_current_round);
         //if(fis_current_round < FIS_ROUNDS){    //there are some waveforms left
             //fis_current_round++;
             //srand(seed[fis_current_round]);
             //falta introducir un metodo para cambiar el periodo de la señal!!!
             #if _FISICA_VERBOSE_TIMER4_ISR > 0
-
                 printf("    srand(%d)\n",seed[fis_current_round]);
             #endif
         //}
@@ -625,10 +625,6 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
 
     fis_point++;    //update the global counter 
     
-    /* if(sync == FALSE){
-        sync = TRUE;
-    }
-    */
     sync = TRUE;
     IFS1bits.T4IF = 0;
 }
@@ -671,7 +667,6 @@ void __attribute__((__interrupt__, auto_psv)) _T5Interrupt(void){
             #endif
             //sens_buff_ind = 0;
             if(fis_sample == FIS_SIGNAL_SAMPLES){
-                //fis_sample = 0;
                 fis_current_round++;
                 srand(seed[fis_current_round]);
             }
@@ -680,6 +675,7 @@ void __attribute__((__interrupt__, auto_psv)) _T5Interrupt(void){
     }
     IFS1bits.T5IF = 0;
 }
+
 ////ISR del T4
 ////void _ISR _T4Interrupt(void){
 //void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){

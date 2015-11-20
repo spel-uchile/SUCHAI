@@ -113,9 +113,8 @@ unsigned char SPI_3_transfer(unsigned char a){
             otra trama se produce overflow y se levanta el flag SPIxSTAT.SPIROV
             */
 	while(SPI_SCK_3){}	//espera mientras SCK no baje de su ultimo clock
-	//unsigned char b= ReadSPI3();  //NO DESCOMENTAR ESTA LINEA
-	//return b; //PORQUE ESO HACE QUE LA ESCRITURA EN EL DAC SEA ERRONEA
-    return 0;
+	unsigned char b= ReadSPI3();  //NO DESCOMENTAR ESTA LINEA
+	return b; //PORQUE ESO HACE QUE LA ESCRITURA EN EL DAC SEA ERRONEA
 }
 int TXB_SPI_3(void){
 	return (SPI3STAT&0b00000010);
@@ -131,8 +130,8 @@ void clear_overflow_SPI_3(void){
 }
 void Open_SPI_3_default(void){
 	unsigned int spi1con1, spi1con2, spi1stat;
-	spi1con1=ENABLE_SCK_PIN&ENABLE_SDO_PIN&SPI_MODE16_OFF&SPI_SMP_OFF&SPI_CKE_ON&SLAVE_ENABLE_OFF&CLK_POL_ACTIVE_HIGH&
-	MASTER_ENABLE_ON&SEC_PRESCAL_1_1&PRI_PRESCAL_1_1 ;//SPIxCON1
+    spi1con1=ENABLE_SCK_PIN&ENABLE_SDO_PIN&SPI_MODE16_OFF&SPI_SMP_OFF&SPI_CKE_OFF&SLAVE_ENABLE_OFF&CLK_POL_ACTIVE_HIGH&
+	MASTER_ENABLE_ON&SEC_PRESCAL_1_1& PRI_PRESCAL_1_1 ;//SPIxCON1
 	spi1con2=FRAME_ENABLE_OFF&FRAME_SYNC_OUTPUT&FRAME_POL_ACTIVE_LOW&FRAME_SYNC_EDGE_PRECEDE&FIFO_BUFFER_DISABLE ; //SPIxCON2
 	spi1stat=SPI_ENABLE&SPI_IDLE_CON&SPI_RX_OVFLOW_CLR ; //SPIxSTAT
 	OpenSPI3(spi1con1, spi1con2, spi1stat);

@@ -8,6 +8,9 @@
 #include "DebugIncludes.h"  //para con_printf
 #include "dataRepository.h"
 
+// comand verbose
+#define FIS_CMD_VERBOSE (1)
+
 // expFis variables
 #define FIS_STATE_OFF   (0)
 #define FIS_STATE_READY (1)
@@ -15,31 +18,25 @@
 #define FIS_STATE_WORKING   (3)
 #define FIS_STATE_DONE (4)
 
-//cantidad de waveforms a utilizar
-#define FIS_NUM_OF_WAVEFORMS    (3UL)
-//cantidad de puntos que conforman un waveform
-#define FIS_WAVEFORM_SIZE (60UL)
-//cantidad total de puntos a generar
-//numero de muestras por punto generado por el DAC
-#define FIS_SAMPLES_PER_POINT (2UL)
-//total amount of points to be generated with the DAC
-#define FIS_TOTAL_POINTS    ((FIS_NUM_OF_WAVEFORMS)*(FIS_WAVEFORM_SIZE))
-//total amount of samples to taken with the ADC
-#define FIS_TOTAL_SAMPLES (FIS_TOTAL_POINTS)*(FIS_SAMPLES_PER_POINT)
+//cantidad de iteraciones que hace para cada frecuencia
+#define FIS_ROUNDS    (1)
+//cantidad maxima de frencuencias
+#define FIS_MAX_FREQS (2)
+//cantidad de puntos de de cada señal generada (largo)
+#define FIS_SIGNAL_POINTS (2)
+//numero de muestras por punto generado de la señal (minimo 2 para cumplir con Nyquist)
+#define FIS_SAMPLES_PER_POINT (2)
+//cantidad de muestras que tiene una señal/waveform
+#define FIS_SIGNAL_SAMPLES (FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT)
 //number of seed for the srand() function calls
-#define FIS_SRAND_SEEDS (FIS_NUM_OF_WAVEFORMS)
+#define FIS_SRAND_SEEDS (FIS_ROUNDS)
 //maximun size for the buffer
-#define FIS_MAX_SENS_BUFF_LEN (100UL)
-/*
-#define FIS_REPEAT_PER_ROUND    (100UL*FIS_SENS_NUM)//(500UL*FIS_SENS_NUM)
-//numero de frecuencias
-#define FIS_SENS_NUM            (10UL)
-//numero de muestras en el buffer
-*/
+#define FIS_MAX_SENS_BUFF_LEN (2)
+        
 #if (SCH_PAY_FIS_ONBOARD==1)
-    #if ((FIS_WAVEFORM_SIZE)*(FIS_SAMPLES_PER_POINT)) <= (FIS_MAX_SENS_BUFF_LEN)
+    #if ((FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT)) <= (FIS_MAX_SENS_BUFF_LEN)
         //size of sens_buff is equal to the size of a waveform, times the samples for each point
-        #define FIS_SENS_BUFF_LEN ((FIS_WAVEFORM_SIZE)*(FIS_SAMPLES_PER_POINT))
+        #define FIS_SENS_BUFF_LEN ((FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT))
     #else
         #define FIS_SENS_BUFF_LEN FIS_MAX_SENS_BUFF_LEN
     #endif
@@ -52,7 +49,7 @@ unsigned int fis_get_sens_buff_size(void);
 BOOL fis_sens_buff_isFull(void);
 int fis_wait_busy_wtimeout(unsigned int timeout);
 void fis_print_sens_buff(void);
-void fis_reset_sens_buff(void);
+void fis_sens_buff_init(void);
 unsigned int fis_get_sens_buff_i(int ind);
 //void fis_testDAC(void);
 void fis_testDAC(unsigned int value);
@@ -74,7 +71,8 @@ BOOL fis_iterate_isComplete();
  * @param _rounds_per_ADC_period How many rounds there will be for every ADC_period
  * @return the lenght of the internal buffer (FIS_SENS_BUFF_LEN)
  */
-unsigned int fis_iterate_config(const unsigned int _ADC_period[], int _len, int _rounds_per_ADC_period);
+//unsigned int fis_iterate_config(const unsigned int inputSignalPeriod[], int len, int rounds);
+unsigned int fis_iterate_config(unsigned int inputSignalPeriod[], int len, int rounds);
 /**
  * Helper to iterate ONE TIME over one of the "_rounds_per_ADC_period"-times 
  * a SINGLE ADC_period must execute
@@ -86,8 +84,8 @@ void fis_iterate(unsigned int* rc, unsigned int timeout_seg);
 //void fis_save_sens_buff_to_GPB(DAT_GnrlPurpBuff frec_i, int rst_gbp_indx);
 //unsigned int fis_frec_i_to_ADC_period(DAT_GnrlPurpBuff pay_frec_i);
 
-void fis_start_expFis(unsigned int period);
-void fis_stop_expFis(void);
+void fis_run(unsigned int period);
+void fis_iterate_stop(void);
 
 void fis_ADC_config(void);
 void fis_Timer4_config(unsigned int period);
@@ -95,7 +93,7 @@ void fis_Timer5_config(unsigned int period);
 
 void fis_payload_writeDAC(unsigned int arg);
 
-void fis_pause_expFis(void);
+void fis_iterate_pause(void);
 void fis_iterate_resume(void);
 
 #endif

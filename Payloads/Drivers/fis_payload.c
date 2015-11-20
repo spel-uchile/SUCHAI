@@ -148,7 +148,7 @@ BOOL fis_sens_buff_isFull(void){
  * @return TRUE if the last round of the las ADC_period was completed, FALSE otherwise
  */
 BOOL fis_iterate_isComplete(void){
-    //if(fis_eoi==1){ return TRUE; }
+
     if(fis_state == FIS_STATE_DONE) { return TRUE; }
     else{ return FALSE; }
 }
@@ -159,7 +159,7 @@ BOOL fis_iterate_isComplete(void){
  */
 static void fis_config_reset(void){
     printf("fis_config_ reset...\n");
-    //fis_signal_period = NULL;
+
     int i;
     for (i=0; i < FIS_MAX_FREQS; i++) {
         fis_signal_period[i] = 0;
@@ -194,7 +194,7 @@ unsigned int fis_iterate_config(unsigned int inputSignalPeriod[], int len, int r
     int i;
     for (i=0; i < fis_signal_period_len; i++) {
         fis_signal_period[i] = inputSignalPeriod[i];
-        printf("    fis_signal[%d] = %u\n",i,fis_signal_period[i]);
+        printf("    fis_signal_period[%d] = %u\n",i,fis_signal_period[i]);
     }
 
     fis_signal_period_ind = 0;
@@ -240,10 +240,22 @@ void fis_iterate(unsigned int *rc, unsigned int timeout_seg){
         printf("    len( sens_buff ) = %u\n", FIS_SENS_BUFF_LEN);
         
         fis_run(fis_signal_period[fis_signal_period_ind]);
-        //fis_run(fis_signal_period[0]);
+
     }
     else if(fis_state == FIS_STATE_WAITING){    //expFis is wating to resume its execution
         printf("fis_state = FIS_STATE_WAITING\n");
+        printf("    fis_signal_period[%u] = %u\n", fis_signal_period_ind, fis_signal_period[fis_signal_period_ind]);
+        printf("    round = %u/%u\n",fis_current_round+1, fis_rounds);
+        printf("    fis_point = %u\n", fis_point);
+        printf("    fis_samples = %u\n", fis_sample);
+        printf("    sens_buff_ind = %u\n", sens_buff_ind );
+        printf("    sync = %u\n", sync);
+        printf("    T4CONbits.TON %X\n",T4CONbits.TON);
+        printf("    T4CONbits.TON %X\n",T4CONbits.TON);
+        printf("    IEC1bits.T4IE %X\n",IEC1bits.T4IE);
+        printf("    IEC1bits.T5IE %X\n",IEC1bits.T5IE);
+        printf("    IFS1bits.T4IF %X\n",IFS1bits.T4IF);
+        printf("    IFS1bits.T5IF %X\n",IFS1bits.T5IF);
         fis_iterate_resume();
     }
     else{
@@ -255,7 +267,7 @@ void fis_iterate(unsigned int *rc, unsigned int timeout_seg){
     normal_wait = fis_wait_busy_wtimeout(timeout_seg);
 
     if( normal_wait == 1 ){   
-        //*rc = (fis_state == FIS_STATE_DONE)? 1 : 0; //1:finish, 0:not yet
+
             *rc = 0;
         if(fis_state == FIS_STATE_DONE) {
             *rc = 1;
@@ -381,10 +393,10 @@ void fis_run(const unsigned int period){
         printf("ADC_period (DAC_period=3*ADC_period) = %u\n", period);
     #endif
     fis_ADC_config();   //configura los registros del ADC
-    unsigned int _period = 15000;   //solo para debug
-    unsigned int period_DAC = _period*(FIS_SAMPLES_PER_POINT);
+    //unsigned int _period = 20000;   //solo para debug
+    unsigned int period_DAC = period*(FIS_SAMPLES_PER_POINT);
                 printf("period DAC= %u\n", period_DAC);
-    unsigned int period_ADC = _period;
+    unsigned int period_ADC = period;
                 printf("period ADC= %u\n", period_ADC);
     fis_Timer4_config(period_DAC);  //DAC
     fis_Timer5_config(period_ADC);  //ADC
@@ -503,12 +515,13 @@ void fis_ADC_config(void){
 /*  Set the T4 control registers and the interruption register as well
  *  T4CON = T4_ON & T4_GATE_OFF & T4_IDLE_CON & T4_PS_1_256 & T4_SOURCE_INT
  */
-void fis_Timer4_config(unsigned int period){
+void fis_Timer4_config(unsigned int period){    //CONFIGURAR EL POSTSCALER A 64
     //first_time = TRUE;
     //                      7654321076543210
-    unsigned int config = 0b1000000000110000;
+    //unsigned int config = 0b1000000000110000;
     //                      7654321076543210
-    //config = T4_ON & T4_GATE_OFF & T4_IDLE_CON & T4_PS_1_8 & T4_SOURCE_INT & T4_32BIT_MODE_OFF;
+    unsigned int config = 0b1000000000100000; //T4_ON & T4_GATE_OFF & T4_IDLE_CON & T4_PS_1_64 & T4_SOURCE_INT & T4_32BIT_MODE_OFF;
+   
     WriteTimer4(0x0000);
     OpenTimer4( config, period );
     EnableIntT4;
@@ -533,9 +546,11 @@ void fis_Timer4_config(unsigned int period){
  *  T5CON = T5_ON & T5_GATE_OFF & T5_IDLE_CON & T5_PS_1_256 & T5_SOURCE_INT
  */
 
-void fis_Timer5_config(unsigned int period){
+void fis_Timer5_config(unsigned int period){//CONFIGURAR EL POSTSCALER A 64
     //                      7654321076543210
-    unsigned int config = 0b1000000000110000; //T4_ON & T4_GATE_OFF & T4_IDLE_CON & T4_PS_1_256 & T4_SOURCE_INT;
+    //unsigned int config = 0b1000000000110000;
+    //                      7654321076543210
+    unsigned int config = 0b1000000000100000; //T5_ON & T5_GATE_OFF & T5_IDLE_CON & T5_PS_1_64 & T5_SOURCE_INT;
     //                      7654321076543210
     //unsigned int period = 0b0000000000000111;
     WriteTimer5(0x0000);
@@ -610,9 +625,11 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
 
     fis_point++;    //update the global counter 
     
-    if(sync == FALSE){
+    /* if(sync == FALSE){
         sync = TRUE;
     }
+    */
+    sync = TRUE;
     IFS1bits.T4IF = 0;
 }
 // ADC ISR

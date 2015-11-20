@@ -19,7 +19,7 @@
 #define FIS_STATE_DONE (4)
 
 //cantidad de iteraciones que hace para cada frecuencia
-#define FIS_ROUNDS    (2)
+#define FIS_ROUNDS    (1)
 //cantidad maxima de frencuencias
 #define FIS_MAX_FREQS (2)
 //cantidad de puntos de de cada señal generada (largo)

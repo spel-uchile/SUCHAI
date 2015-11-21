@@ -214,47 +214,6 @@ int pay_set_state_expFis(void *param){
     writeIntEEPROM1(mem_eeprom_var, value);
     return 1;
 }
-static int expFis_gpb_indx; //expFis global stored data counter
-int pay_init_expFis(void *param){
-    #if FIS_CMD_VERBOSE
-        printf("pay_init_expFis\r\n");
-    #endif
-
-    //configure Payload_Buff
-    DAT_Payload_Buff pay_i; //unsigned int lenBuff;
-    pay_i = dat_pay_expFis; //expFis is the current Payload in execution
-    
-    //Array of time values between each sample of the ADC
-    int len = 1;
-    unsigned int inputSignalPeriod[len];
-    
-    //OJO: HAY DEJAR CONSISTENTE LA FIRMA DE L AFUNCION CON REPESCTO AL NUMERO DE RONDAS
-    int rounds = 1;    //number of iterations done for each ADC_period value
-    
-    //initialize the ADC period array
-    
-    int i;
-    for(i=0; i< len; i++) {
-        inputSignalPeriod[i]= 10000;//-7500*i;
-    }
-    
-    //configure Payload
-    if (!(fis_iterate_config(inputSignalPeriod, len, rounds) == FIS_STATE_READY)) {
-        return 0;
-    }
-    printf("    expFis is READY!\n");
-    
-    dat_reset_Payload_Buff(pay_i);
-    
-    expFis_gpb_indx = 0;    //Reset vars
-    int res = 1;    //always alive
-
-    //debug Info
-    #if FIS_CMD_VERBOSE
-        printf("  sta_pay_expFis_isAlive = %d \r\n", sta_get_PayStateVar(sta_pay_expFis_isAlive) );
-    #endif
-    return res;
-}
 
 int pay_testDAC_expFis(void *param){
     #if FIS_CMD_VERBOSE
@@ -268,6 +227,49 @@ int pay_testDAC_expFis(void *param){
     return 1;
 }
 
+static int expFis_gpb_indx; //expFis global stored data counter
+int pay_init_expFis(void *param){
+    #if FIS_CMD_VERBOSE
+        printf("pay_init_expFis\r\n");
+    #endif
+
+    //configure Payload_Buff
+    DAT_Payload_Buff pay_i; //unsigned int lenBuff;
+    pay_i = dat_pay_expFis; //expFis is the current Payload in execution
+    
+    //Array of time values between each sample of the ADC
+    //int len = 1;
+    unsigned int inputSignalPeriod = *((unsigned int *) param);
+    
+    if(inputSignalPeriod < 75) {
+        printf("periodo muy pequeno!\n Abortando...\n");
+        return 0;
+    }
+    
+    int rounds = 3;    //number of iterations done for each ADC_period value
+        //debug Info
+    #if FIS_CMD_VERBOSE > 0
+        printf("    rounds = %d\n", rounds);
+        printf("    adc period = %d\n", inputSignalPeriod);
+    #endif
+    //configure Payload
+    if (!(fis_iterate_config(inputSignalPeriod, rounds) == FIS_STATE_READY)) {
+        return 0;
+    }
+    printf("    expFis is READY!\n");
+    
+    dat_reset_Payload_Buff(pay_i);
+    
+    expFis_gpb_indx = 0;    //Reset vars
+    int res = 1;    //always alive
+
+    //debug Info
+    #if FIS_CMD_VERBOSE > 0
+        printf("  sta_pay_expFis_isAlive = %d \r\n", sta_get_PayStateVar(sta_pay_expFis_isAlive) );
+    #endif
+    return res;
+}
+
 int pay_take_expFis(void *param){
     #if FIS_CMD_VERBOSE
         printf("pay_take_expFis...\n");
@@ -276,32 +278,36 @@ int pay_take_expFis(void *param){
     unsigned int temp;
     unsigned int timeout = 30;  //max time waiting to fill the sens_buffer 
     unsigned int buff_size = fis_get_sens_buff_size();
-    int value_stored_in_dataRepo;   //debug only
+    //int value_stored_in_dataRepo;   //debug only
     unsigned int fis_state = fis_get_state();    //get the initial state of the Payload
     
     unsigned int rc = 0;    //return code of "fis_iterate" function
     while(rc == 0){
-        fis_iterate(&rc, timeout); //executes the Payload and return 
-        //when is is time to save data in the Data Repository
+        //executes the Payload and return
+        //when it is time to save data in the Data Repository
         //so we must save the current data inside "sens_buff" into the Data Repository
         //and then resume the Payload execution
+        fis_iterate(&rc, timeout);
+
         for(ind=0;ind<buff_size;ind++){
             //save the data into the Data Repository
             //deprecated: dat_set_Payload_Buff_at_indx(dat_pay_expFis, fis_get_sens_buff_i(ind), expFis_gpb_indx, DAT_PAYBUFF_MODE_NO_MAXINDX);
             temp = fis_get_sens_buff_i(ind);
             dat_set_Payload_Buff_at_indx(dat_pay_expFis, temp, expFis_gpb_indx);
-            #if FIS_CMD_VERBOSE
+            #if FIS_CMD_VERBOSE > 0
                 printf("    dat_set_Payload_Buff(%d)\n",temp);
             #endif
             
-            #if FIS_CMD_VERBOSE
-                dat_get_Payload_Buff(dat_pay_expFis,expFis_gpb_indx,&value_stored_in_dataRepo);
-                printf("    dat_get_Payload_Buff(): %d\n",value_stored_in_dataRepo);          
-                printf("    expFis_gpb_indx: %d\r\n",expFis_gpb_indx);
+            #if FIS_CMD_VERBOSE > 0
+                //dat_get_Payload_Buff(dat_pay_expFis,expFis_gpb_indx,&value_stored_in_dataRepo);
+                //printf("    dat_get_Payload_Buff(): %d\n",value_stored_in_dataRepo);          
+                //printf("    expFis_gpb_indx: %d\r\n",expFis_gpb_indx);
             #endif  
             expFis_gpb_indx++;  //updates the global buffer counter
         }
-        printf("rc = %d\n", rc);
+        //MUCH POWER!
+        printf("Clearing WDT to avoid reset ( MUCH POWER! ) ");
+        ClrWdt();
     }
     
     //Payload ended
@@ -322,142 +328,10 @@ int pay_stop_expFis(void *param){
     if( fis_iterate_isComplete() ){
         printf("fis_iterate_isComplete() returned TRUE\n");
     }
-    /*
-    #if (_VERBOSE_>=2)
-        char ret[10];
-        DAT_GnrlPurpBuff aux_i;
-        int j, val;
-        unsigned int max=(FIS_REPEAT_PER_ROUND*FIS_SENS_BUFF_LEN);
-
-        for(aux_i=dat_auxBuff_0; aux_i<=dat_auxBuff_9; aux_i++){
-
-            printf("  aux_i=");
-            sprintf (ret, "%d", (unsigned int)aux_i);
-            printf(ret); printf("\r\n");
-
-            for(j=0;j<max;j++){
-                //Get
-                printf("  dat_get_GPB[");
-                sprintf (ret, "%d", (unsigned int)j);
-                printf(ret); printf("]");
-                val = dat_getGPB(aux_i, j);
-                sprintf (ret, "%d", (unsigned int)val);
-                printf(" = "); printf(ret); printf("\r\n");
-            }
-        }
-    #endif
-*/
 
     return 1;
 }
-//static int expFis_fr;
-//int pay_init_expFis(void *param){
-//    printf("pay_init_expFis\r\n");
-//
-//    DAT_Payload pay_i; unsigned int maxIndx;
-//    pay_i = dat_pay_expFis;
-//    lenBuff = (unsigned int)(2); //valor exacto sera seteado en pay_take, o pay_stop
-//    dat_resetPayload_Buffer(pay_i, lenBuff, 1);
-//
-//    //Reset expFis
-//    expFis_fr=0;
-//
-//    return 1;
-//}
-//int pay_take_expFis(void *param){
-//    char ret[10];
-//    static unsigned int pay_round_cnt, pay_ADCperiod;
-//    static DAT_GnrlPurpBuff pay_aux_i;
-//    int rst_gbp_indx;
-//
-//    printf("  pay_take_expFis:\r\n");
-//
-//    //inicializacion de variables
-//    if(expFis_fr==0){
-//        expFis_fr++;
-//        pay_aux_i=dat_auxBuff_0;
-//        pay_round_cnt=0;
-//        pay_ADCperiod=0;
-//        rst_gbp_indx=0;
-//    }
-//
-//    //si la frecuencia pay_aux_i debe parar y pasar a la sgte
-//    if(pay_round_cnt == FIS_REPEAT_PER_ROUND){
-//
-//        #if (_VERBOSE_>=2)
-//            int j, val; unsigned int max=(2*FIS_SENS_BUFF_LEN);//(FIS_REPEAT_PER_ROUND*FIS_SAMP_PER_ROUND);
-//            for(j=0;j<max;j++){
-//                printf("  dat_get_GPB[");
-//                sprintf (ret, "%d", (unsigned int)j);
-//                printf(ret); printf("]");
-//                val = dat_getGPB(pay_aux_i, j);
-//                sprintf (ret, "%d", (unsigned int)val);
-//                printf(" = "); printf(ret); printf("\r\n");
-//            }
-//        #endif
-//
-//        pay_round_cnt=0;
-//        rst_gbp_indx=1;
-//        pay_aux_i++;
-//
-//        //si el ciclo debe terminar
-//        if(pay_aux_i == (dat_auxBuff_9+1) ){
-//            //lleno buffer para terminar el ciclo de pay_take_expFis()..
-//            dat_setPayloadVar( dat_pay_expFis, 0xA00);
-//            dat_setPayloadVar( dat_pay_expFis, 0xAA01);
-//            return 1;
-//        }
-//    }
-//
-//    #if (_VERBOSE_>=1)
-//        printf("  pay_round_cnt=");
-//        sprintf (ret, "%d", (unsigned int)pay_round_cnt);
-//        printf(ret); printf("\r\n");
-//
-//        printf("  pay_aux_i=");
-//        sprintf (ret, "%d", (unsigned int)pay_aux_i);
-//        printf(ret); printf("\r\n");
-//    #endif
-//
-//    pay_ADCperiod = fis_frec_i_to_ADC_period( pay_aux_i);
-//    fis_start_expFis(pay_ADCperiod); //DAC is always 3*(pay_ADCperiod)
-//    fis_save_sens_buff_to_GPB(pay_aux_i, rst_gbp_indx );
-//
-//    //prepara la prox iteracion de la pay_aux_i
-//    pay_round_cnt++;
-//    rst_gbp_indx=0;
-//
-//    return 1;
-//}
-//int pay_stop_expFis(void *param){
-//    printf("pay_stop_expFis\r\n");
-//
-//    #if (_VERBOSE_>=2)
-//        char ret[10];
-//        DAT_GnrlPurpBuff aux_i;
-//        int j, val;
-//        unsigned int max=(FIS_REPEAT_PER_ROUND*FIS_SENS_BUFF_LEN);
-//
-//        for(aux_i=dat_auxBuff_0; aux_i<=dat_auxBuff_9; aux_i++){
-//
-//            printf("  aux_i=");
-//            sprintf (ret, "%d", (unsigned int)aux_i);
-//            printf(ret); printf("\r\n");
-//
-//            for(j=0;j<max;j++){
-//                //Get
-//                printf("  dat_get_GPB[");
-//                sprintf (ret, "%d", (unsigned int)j);
-//                printf(ret); printf("]");
-//                val = dat_getGPB(aux_i, j);
-//                sprintf (ret, "%d", (unsigned int)val);
-//                printf(" = "); printf(ret); printf("\r\n");
-//            }
-//        }
-//    #endif
-//
-//    return 1;
-//}
+
 //******************************************************************************
 int pay_isAlive_battery(void *param){
     //EPS based
@@ -1284,13 +1158,13 @@ int pay_debug_langmuir(void *param)
 {
     printf("pay_debug_lagmuir\r\n");
 
-    int times_per_sec = 4;
-    int delay = (1000*60/times_per_sec);
-    int times = 16*95*times_per_sec;
+    unsigned int times_per_sec = 4;
+    unsigned int delay = (1000*60U)/times_per_sec;
+    unsigned int times = 16*95*times_per_sec;
     int i;
 
     int lenbuff_cal = lag_read_cal_packet(FALSE);
-    for(i=0;i<lenbuff_cal;i++){
+    for(i=0; i<lenbuff_cal; i++){
         dat_set_Payload_Buff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i));
     }
     
@@ -1298,42 +1172,11 @@ int pay_debug_langmuir(void *param)
         __delay_ms(delay);
         
         int lenbuff_pla = lag_read_plasma_packet(FALSE);
-        for(i=0;i<lenbuff_pla;i++){
+        for(i=0; i<lenbuff_pla; i++){
             dat_set_Payload_Buff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i));
         }
     }
-    
-//    int mode = *(int *)param;
-//    int ok = 0;
-//
-//    switch (mode)
-//    {
-//        case 0:
-//            ok = lag_read_cal_packet(TRUE);
-//            break;
-//        case 1:
-//            ok = lag_read_plasma_packet(TRUE);
-//            break;
-//        case 2:
-//            ok = lag_read_sweep_packet(TRUE);
-//            break;
-//        default:
-//            ok = 0;
-//            break;
-//    }
-//
-//    if(ok)
-//    {
-//        printf("[langmuir] OK");
-//    }
-//    else
-//    {
-//        printf("[langmuir] ERROR");
-//    }
-//
-//    printf("\r\n");
-//
-//    return ok;
+    return 1;
 }
 
 int pay_stop_lagmuirProbe(void *param){

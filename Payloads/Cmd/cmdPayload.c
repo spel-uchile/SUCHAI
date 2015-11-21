@@ -180,39 +180,11 @@ int pay_test_dataRepo(void *param){
 
 //******************************************************************************
 int pay_debug_expFis(void *param){
-        /*
-     * Se usa T4 para escribir_DAC y T5 para leer_ADC,
-     * para conservar Nyquist se hace que Periodo_T4=Periodo_T5*3
-     * Asi se lee 3 veces por cada esritura del DAC.
-     *
-     * En resumen, la variable controlada es Periodo_T5 que es igual a
-     * Periodo leer_ADC = Fosc/2*256*value = (1/16Mhz)/256*value [s],
-     * con value una variable entera (unsigned int)
-     */
-//            fis_erase_sens_buff();
-//            unsigned int ADC_period = 20000;
-//            fis_start_expFis(ADC_period); //DAC is always 3*(pay_ADCperiod)
-//            fis_wait_busy_wtimeout();
-//            fis_print_sens_buff();
-
-//    static int ft;
-//    int buff_len;
-//    if(ft==0){
-//        ft = 1;
-//        static unsigned int ADC_period[] = {10000, 5000, 1000, 500, 100, 50, 10};
-//        int len = 7;
-//        int rounds_per_ADC_period = 3;
-//        buff_len = fis_iterate_config(ADC_period, len, rounds_per_ADC_period);
-//    }
-//    if( fis_iterate() ){
-//        //fis_print_sens_buff();
-//        //fis_get_sens_buff_i(indx);
-//    }
-//    if( fis_iterate_isComplete() ){
-//        printf("fis_iterate_isComplete() return TRUE\n");
-//        ft = 0; //repeat it over
-//    }
-
+    static Fis_States fis_curr_state = FIS_OFF;
+    while(fis_curr_state == FIS_DONE){
+        fis_curr_state = fis_next_state_logic(fis_curr_state);
+        fis_curr_state = fis_current_state_control(fis_curr_state);
+    }
     return 1;
 }
 int pay_isAlive_expFis(void *param){
@@ -1311,37 +1283,57 @@ int pay_take_lagmuirProbe(void *param){
 int pay_debug_langmuir(void *param)
 {
     printf("pay_debug_lagmuir\r\n");
-    int mode = *(int *)param;
-    int ok = 0;
 
-    switch (mode)
-    {
-        case 0:
-            ok = lag_read_cal_packet(TRUE);
-            break;
-        case 1:
-            ok = lag_read_plasma_packet(TRUE);
-            break;
-        case 2:
-            ok = lag_read_sweep_packet(TRUE);
-            break;
-        default:
-            ok = 0;
-            break;
+    int times_per_sec = 4;
+    int delay = (1000*60/times_per_sec);
+    int times = 16*95*times_per_sec;
+    int i;
+
+    int lenbuff_cal = lag_read_cal_packet(FALSE);
+    for(i=0;i<lenbuff_cal;i++){
+        dat_set_Payload_Buff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i));
     }
-
-    if(ok)
-    {
-        printf("[langmuir] OK");
+    
+    for(i=0;i<times;i++){
+        __delay_ms(delay);
+        
+        int lenbuff_pla = lag_read_plasma_packet(FALSE);
+        for(i=0;i<lenbuff_pla;i++){
+            dat_set_Payload_Buff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i));
+        }
     }
-    else
-    {
-        printf("[langmuir] ERROR");
-    }
-
-    printf("\r\n");
-
-    return ok;
+    
+//    int mode = *(int *)param;
+//    int ok = 0;
+//
+//    switch (mode)
+//    {
+//        case 0:
+//            ok = lag_read_cal_packet(TRUE);
+//            break;
+//        case 1:
+//            ok = lag_read_plasma_packet(TRUE);
+//            break;
+//        case 2:
+//            ok = lag_read_sweep_packet(TRUE);
+//            break;
+//        default:
+//            ok = 0;
+//            break;
+//    }
+//
+//    if(ok)
+//    {
+//        printf("[langmuir] OK");
+//    }
+//    else
+//    {
+//        printf("[langmuir] ERROR");
+//    }
+//
+//    printf("\r\n");
+//
+//    return ok;
 }
 
 int pay_stop_lagmuirProbe(void *param){
@@ -1740,7 +1732,7 @@ int pay_fp2_get_exec_rate(DAT_Payload_Buff pay_i){
 unsigned int pay_fp2_get_run_take_num_exec_times(DAT_Payload_Buff pay_i){
     unsigned int max_exec_times;
 
-    unsigned int pay_exec_times = 95*1;
+    unsigned int pay_exec_times = 95*16;    // 24*60/95 = 15.1578947 15.15 orbitas de 95 min => con 16 orbitas doy "la vuelta al mundo"
     switch(pay_i){
         case dat_pay_tmEstado:
             max_exec_times = pay_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times

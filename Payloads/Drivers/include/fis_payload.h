@@ -41,7 +41,7 @@
         #define FIS_SENS_BUFF_LEN FIS_MAX_SENS_BUFF_LEN
     #endif
 #else
-    #define FIS_SENS_BUFF_LEN   1UL
+    #define FIS_SENS_BUFF_LEN   1U
 #endif
 
 unsigned int fis_get_total_number_of_samples(void);
@@ -63,6 +63,7 @@ unsigned int fis_get_state(void);
  * @return TRUE if the last round of the las ADC_period was completed, FALSE otherwise
  */
 BOOL fis_iterate_isComplete();
+
 /**
  * Set the values for the expFis experiment to operate. It returns the
  * lenght of the internal buffer (FIS_SENS_BUFF_LEN)
@@ -73,6 +74,7 @@ BOOL fis_iterate_isComplete();
  */
 //unsigned int fis_iterate_config(const unsigned int inputSignalPeriod[], int len, int rounds);
 unsigned int fis_iterate_config(unsigned int inputSignalPeriod[], int len, int rounds);
+
 /**
  * Helper to iterate ONE TIME over one of the "_rounds_per_ADC_period"-times 
  * a SINGLE ADC_period must execute
@@ -80,6 +82,18 @@ unsigned int fis_iterate_config(unsigned int inputSignalPeriod[], int len, int r
  */
 //unsigned int fis_iterate(unsigned int previous_state);
 void fis_iterate(unsigned int* rc, unsigned int timeout_seg);
+
+typedef enum{
+    FIS_OFF,
+    FIS_READY,
+    FIS_RUNNING,
+    FIS_WAITING,
+    FIS_DONE
+} Fis_States;
+
+Fis_States fis_next_state_logic(Fis_States curr_state);
+Fis_States fis_current_state_control(Fis_States curr_state);
+
 
 //void fis_save_sens_buff_to_GPB(DAT_GnrlPurpBuff frec_i, int rst_gbp_indx);
 //unsigned int fis_frec_i_to_ADC_period(DAT_GnrlPurpBuff pay_frec_i);

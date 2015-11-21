@@ -47,18 +47,21 @@ static BOOL sync;
 unsigned int fis_get_total_number_of_samples(void){
     return FIS_SIGNAL_POINTS*FIS_ROUNDS*FIS_SAMPLES_PER_POINT;
 }
+
 /* 
  * Return the size of the sens_buff
  */
 unsigned int fis_get_sens_buff_size(void){
     return FIS_SENS_BUFF_LEN;
 }
+
 /* 
  * Return the state of the execution of the Payload (executin/wating/etc)
  */
 unsigned int fis_get_state(void){
     return fis_state;
 }
+
 /* 
  * Initialize the buffer with the seeds values used with rand() in the DAC
  */
@@ -94,6 +97,7 @@ int fis_wait_busy_wtimeout(unsigned int timeout){
     #endif
     return 1;
 }
+
 /*
  * Prints all the elements inside the temporary buffer "sens_buff". Use for debuggoing
  * 
@@ -109,6 +113,7 @@ void fis_print_sens_buff(void){
         }
     }
 }
+
 /*
  * Erase all the values stored inside "sen_buff"
  */
@@ -120,6 +125,7 @@ void fis_sens_buff_init(void){
     }
     sens_buff_ind = 0;
 }
+
 /*
  * Returns the value of sens_buff[ind]
  * @param ind Index of the element
@@ -129,6 +135,7 @@ unsigned int fis_get_sens_buff_i(int ind){
     if(ind>=FIS_SENS_BUFF_LEN){return 0;}
     return sens_buff[ind];
 }
+
 /*
  * Asks if the temporary buffer "sens_buff" is full
  * @return
@@ -142,6 +149,7 @@ BOOL fis_sens_buff_isFull(void){
     }
     return TRUE;
 }
+
 /**
  * Return TRUE if the last round of the las ADC_period was completed, if so, the
  * experiment is complete
@@ -152,6 +160,7 @@ BOOL fis_iterate_isComplete(void){
     if(fis_state == FIS_STATE_DONE) { return TRUE; }
     else{ return FALSE; }
 }
+
 /**
  * Reset the iterate_config settings, a new call to "fis_iterate_config"
  * is nedded to use fis_iterate again. Not doing so will certainly end in
@@ -201,6 +210,7 @@ unsigned int fis_iterate_config(unsigned int inputSignalPeriod[], int len, int r
     fis_state = FIS_STATE_READY;
     return fis_state;
 }
+
 /*
  * Does ONE ITERATION of the experiment. This means the execution of one WAVEFORMwith 
  * the CURRENT value of "fis_ADC_period[fis_ADC_period_i]". 
@@ -278,6 +288,84 @@ void fis_iterate(unsigned int *rc, unsigned int timeout_seg){
     }
 }
 
+Fis_States fis_next_state_logic(Fis_States curr_state){
+    printf("[fis_next_state_logic] curr_state is %d\r\n", curr_state);
+    switch(curr_state){
+        case FIS_OFF:
+            curr_state = FIS_READY;
+        break;
+        case FIS_READY:
+            curr_state = FIS_RUNNING;
+        break;
+        case FIS_RUNNING:
+            curr_state = FIS_WAITING;
+        break;
+        case FIS_WAITING:
+            if(fis_sample == FIS_SIGNAL_SAMPLES && fis_current_round == fis_rounds && fis_signal_period_ind == (fis_signal_period_len-1)) {
+                curr_state = FIS_DONE;
+            }
+            else{
+                curr_state = FIS_WAITING;
+            }
+        break;
+        case FIS_DONE:
+            curr_state = FIS_DONE;
+        break;
+        default:
+            printf("[fis_next_state_logic] ERROR: curr_state in default state\r\n");
+        break;
+    }
+    printf("[fis_next_state_logic] next_state is %d\r\n", curr_state);
+
+    return curr_state;
+}
+Fis_States fis_current_state_control(Fis_States curr_state){
+    printf("[fis_current_state_control] curr_state is %d\r\n", curr_state);
+
+    int len = 1;
+    unsigned int inputSignalPeriod[len];
+    //initialize the ADC period array
+    int i;
+    for(i=0; i< len; i++) {
+        inputSignalPeriod[i]= 10000;//-7500*i;
+    }
+    int rounds;    //number of iterations done for each ADC_period value
+    unsigned int timeout_seg;
+    switch(curr_state){
+        case FIS_OFF:
+            // do nothing ..
+        break;
+        case FIS_READY:
+            rounds = 1;    //number of iterations done for each ADC_period value
+            fis_iterate_config(inputSignalPeriod, len, rounds);
+
+            printf("    Configuring and starting expFis...\n");
+            printf("    len( ADC_period[] ) = %u\n", fis_signal_period_len );
+            printf("    fis_signal_period[%u] = %u\n", fis_signal_period_ind, fis_signal_period[fis_signal_period_ind]);
+            printf("    round = %u/%u\n",fis_current_round+1, fis_rounds);
+            printf("    points per waveform = %u\n", FIS_SIGNAL_POINTS);
+            printf("    samples per point = %u\n", FIS_SAMPLES_PER_POINT);
+            printf("    total samples (ADC) = %u\n", FIS_SIGNAL_SAMPLES);
+            printf("    len( sens_buff ) = %u\n", FIS_SENS_BUFF_LEN);
+
+        break;
+        case FIS_RUNNING:
+            fis_run(fis_signal_period[fis_signal_period_ind]);
+        break;
+        case FIS_WAITING:
+            timeout_seg = 30;  //max time waiting to fill the sens_buffer
+            fis_wait_busy_wtimeout(timeout_seg);
+        break;
+        case FIS_DONE:
+            printf("    expFis completed\n");
+        break;
+        default:
+            printf("[fis_current_state_control] ERROR: curr_state in default state\r\n");
+        break;
+    }
+    return curr_state;
+}
+
 /*
  * Tells the DAC to put a fixed voltage in the DAC output.
  * The voltage value its mapped from 0 to Vcc (0 to 3.3V)
@@ -298,6 +386,7 @@ void fis_testDAC(unsigned int value){
         printf("    Ok\n");
     #endif
 }
+
 /*
  * Writes a Digital value in the input Port of this Payload, using the DAC
  */
@@ -353,6 +442,7 @@ void fis_iterate_stop(void){
     
     fis_state = FIS_STATE_DONE;
 }
+
 /*
  * Use only when the fis_sens_buff_isFull returns TRUE
  */
@@ -369,6 +459,7 @@ void fis_iterate_pause(void){
         fis_iterate_stop();  
     }
 }
+
 /*  
  * Use only saving the data inside sens_buff into the Data Repository
  */
@@ -388,6 +479,7 @@ void fis_iterate_resume(void){
     fis_run(fis_signal_period[fis_signal_period_ind]);
 
 }
+
 void fis_run(const unsigned int period){
     #if (SCH_FISICA_VERBOSE>=2)
         printf("ADC_period (DAC_period=3*ADC_period) = %u\n", period);
@@ -406,6 +498,7 @@ void fis_run(const unsigned int period){
         printf("expFis ISRs are up..\r\n");
     #endif
 }
+
 /* 
  * Begin the timer counter
  * 
@@ -512,6 +605,7 @@ void fis_ADC_config(void){
         printf("fis_ADC_config: ADC interruptions disabled...\n");
     #endif
 }
+
 /*  Set the T4 control registers and the interruption register as well
  *  T4CON = T4_ON & T4_GATE_OFF & T4_IDLE_CON & T4_PS_1_256 & T4_SOURCE_INT
  */
@@ -542,6 +636,7 @@ void fis_Timer4_config(unsigned int period){    //CONFIGURAR EL POSTSCALER A 64
         printf("t4_config done\n");
     #endif
 }
+
 /*  Set the T5 control registers and the interruption register as well
  *  T5CON = T5_ON & T5_GATE_OFF & T5_IDLE_CON & T5_PS_1_256 & T5_SOURCE_INT
  */
@@ -632,6 +727,7 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
     sync = TRUE;
     IFS1bits.T4IF = 0;
 }
+
 // ADC ISR
 void __attribute__((__interrupt__, auto_psv)) _T5Interrupt(void){
     if (sync == TRUE){

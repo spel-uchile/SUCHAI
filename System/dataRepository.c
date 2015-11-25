@@ -535,7 +535,7 @@ void dat_reset_Payload_Buff(DAT_Payload_Buff pay_i){
 char* dat_get_payload_name(DAT_Payload_Buff pay_i){
     char* result;
     switch(pay_i){
-        case dat_pay_lagmuirProbe:
+        case dat_pay_langmuirProbe:
             result = "dat_pay_lagmuirProbe";
         break;
         case dat_pay_sensTemp:

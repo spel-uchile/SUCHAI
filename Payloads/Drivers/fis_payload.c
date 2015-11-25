@@ -311,12 +311,13 @@ Fis_States fis_next_state_logic(Fis_States curr_state){
             curr_state = FIS_WAITING;
         break;
         case FIS_WAITING:
-            if(fis_sample == FIS_SIGNAL_SAMPLES && fis_current_round == fis_rounds && fis_signal_period_ind == (fis_signal_period_len-1)) {
-                curr_state = FIS_DONE;
-            }
-            else{
-                curr_state = FIS_WAITING;
-            }
+//            if(fis_sample == FIS_SIGNAL_SAMPLES && fis_current_round == fis_rounds && fis_signal_period_ind == (fis_signal_period_len-1)) {
+//                curr_state = FIS_DONE;
+//            }
+//            else{
+//                curr_state = FIS_WAITING;
+//            }
+            curr_state = FIS_DONE;
         break;
         case FIS_DONE:
             curr_state = FIS_DONE;
@@ -333,39 +334,46 @@ Fis_States fis_next_state_logic(Fis_States curr_state){
 Fis_States fis_current_state_control(Fis_States curr_state){
     printf("[fis_current_state_control] curr_state is %d\r\n", curr_state);
 
-    int len = 1;
-    unsigned int inputSignalPeriod[len];
-    //initialize the ADC period array
-    int i;
-    for(i=0; i< len; i++) {
-        inputSignalPeriod[i]= 10000;//-7500*i;
-    }
-    int rounds;    //number of iterations done for each ADC_period value
-    unsigned int timeout_seg;
+    static unsigned int fis_round;
+    static unsigned int fis_iteration;
+    static unsigned int fis_DAC_period_us = 100;    // 0.1 ms
+    static unsigned int fis_ADC_period_us = 50;     // 0.05 ms
+
     switch(curr_state){
         case FIS_OFF:
             // do nothing ..
         break;
         case FIS_READY:
-            rounds = 1;    //number of iterations done for each ADC_period value
-            //fis_iterate_config(inputSignalPeriod, len, rounds);
-
-            printf("    Configuring and starting expFis...\n");
-            printf("    len( ADC_period[] ) = %u\n", fis_signal_period_len );
-            //printf("    fis_signal_period[%u] = %u\n", fis_signal_period_ind, fis_signal_period[fis_signal_period_ind]);
-            printf("    round = %u/%u\n",fis_current_round+1, fis_rounds);
-            printf("    points per waveform = %u\n", FIS_SIGNAL_POINTS);
-            printf("    samples per point = %u\n", FIS_SAMPLES_PER_POINT);
-            printf("    total samples (ADC) = %u\n", FIS_SIGNAL_SAMPLES);
-            printf("    len( sens_buff ) = %u\n", FIS_SENS_BUFF_LEN);
+            printf("    Configuring expFis ..\n");
+            printf("    Round %d/%d\n", fis_round, FIS_NUM_ROUNDS);
+            printf("    Iteration %d/%d \n", fis_iteration, FIS_NUM_ITERATIONS);
+            printf("    DAC period %d [us]\n", fis_DAC_period_us);
+            printf("    ADC period %d [us]\n", fis_ADC_period_us);
 
         break;
         case FIS_RUNNING:
-            //fis_run(fis_signal_period[fis_signal_period_ind]);
+            printf("    Starting expFis ..\n");
+
+            for(fis_round=1; fis_round<=FIS_NUM_ROUNDS; fis_round++){
+                printf("    Round %d/%d\n", fis_round, FIS_NUM_ROUNDS);
+                for(fis_iteration=1; fis_iteration<=FIS_NUM_ITERATIONS; fis_iteration++){
+                    printf("    Iteration %d/%d \n", fis_iteration, FIS_NUM_ITERATIONS);
+                    printf("    Filling sens_buff ..\n");
+
+                    // write DAC
+                    // wait
+                    __delay_us(fis_ADC_period_us)
+                    // read ADC
+                    // wait
+                    __delay_us(fis_ADC_period_us)
+                    // read ADC
+                    // save into sens_buff[]
+                }
+                // save sens_buff[] into SD mem
+            }
         break;
         case FIS_WAITING:
-            timeout_seg = 30;  //max time waiting to fill the sens_buffer
-            fis_wait_busy_wtimeout(timeout_seg);
+            //
         break;
         case FIS_DONE:
             printf("    expFis completed\n");

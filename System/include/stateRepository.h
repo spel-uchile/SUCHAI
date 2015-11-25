@@ -138,10 +138,10 @@ typedef enum{
     sta_pay_tmEstado_isAlive,
     sta_pay_battery_isAlive,
     sta_pay_debug_isAlive,
-    sta_pay_lagmuirProbe_isDeployed,
+    sta_pay_langmuirProbe_isDeployed,
 
     // FP2 variables
-    sta_pay_lagmuirProbe_state,
+    sta_pay_langmuirProbe_state,
     sta_pay_sensTemp_state,
     sta_pay_gps_state,
     sta_pay_expFis_state,

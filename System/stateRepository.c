@@ -524,7 +524,7 @@ int sta_get_PayStateVar(STA_PayStateVar indxVar){
     // Payload Hw status (connected trough the PC/104 to the OBC -PIC24-)
         case sta_pay_lagmuirProbe_isAlive:
             //printf("PAY => (Payload subsystem)\r\n");
-            value = pay_isAlive_lagmuirProbe(NULL);
+            value = pay_isAlive_langmuirProbe(NULL);
             break;
         case sta_pay_sensTemp_isAlive:
             value = pay_isAlive_sensTemp(NULL);
@@ -550,14 +550,14 @@ int sta_get_PayStateVar(STA_PayStateVar indxVar){
         case sta_pay_debug_isAlive:
             value = pay_isAlive_debug(NULL);
             break;
-        case sta_pay_lagmuirProbe_isDeployed:
+        case sta_pay_langmuirProbe_isDeployed:
             value = 0;  //no hay forma de saberlo !!
             break;
 
         //PAY => (Payload subsystem)
-        case sta_pay_lagmuirProbe_state:
+        case sta_pay_langmuirProbe_state:
             //printf("PAY => (Payload subsystem)\r\n");
-            value = pay_get_state_lagmuirProbe(NULL);
+            value = pay_get_state_langmuirProbe(NULL);
             break;
         case sta_pay_sensTemp_state:
             value = pay_get_state_sensTemp(NULL);
@@ -625,12 +625,12 @@ char* sta_PayStateVarToString(STA_PayStateVar var_i){
         case sta_pay_debug_isAlive:
             pc = "sta_pay_debug_isAlive";
             break;
-        case sta_pay_lagmuirProbe_isDeployed:
+        case sta_pay_langmuirProbe_isDeployed:
             pc = "sta_pay_lagmuirProbe_isDeployed";
             break;
 
     // FP2 variables
-        case sta_pay_lagmuirProbe_state:
+        case sta_pay_langmuirProbe_state:
             pc = "sta_pay_lagmuirProbe_state";
             break;
         case sta_pay_sensTemp_state:
@@ -675,8 +675,8 @@ STA_PayStateVar sta_DAT_Payload_Buff_to_STA_PayStateVar(DAT_Payload_Buff pay_i){
     STA_PayStateVar dat_pay_xxx_state;
 
     switch(pay_i){
-        case dat_pay_lagmuirProbe:
-            dat_pay_xxx_state = sta_pay_lagmuirProbe_state;
+        case dat_pay_langmuirProbe:
+            dat_pay_xxx_state = sta_pay_langmuirProbe_state;
         break;
         case dat_pay_sensTemp:
             dat_pay_xxx_state = sta_pay_sensTemp_state;

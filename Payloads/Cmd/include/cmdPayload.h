@@ -117,14 +117,14 @@ typedef enum{
     pay_id_take_debug, ///< @cmd
     pay_id_stop_debug, ///< @cmd
     
-    pay_id_isAlive_lagmuirProbe, ///< @cmd
-    pay_id_get_state_lagmuirProbe, ///< @cmd
-    pay_id_set_state_lagmuirProbe, ///< @cmd
-    pay_id_init_lagmuirProbe, ///< @cmd
-    pay_id_take_lagmuirProbe, ///< @cmd
-    pay_id_stop_lagmuirProbe, ///< @cmd
-    pay_id_send_to_lagimur, ///< @cmd
-    pay_id_debug_langmuirProbe, ///< @cmd   63
+    pay_id_isAlive_langmuirProbe, ///< @cmd
+    pay_id_get_state_langmuirProbe, ///< @cmd
+    pay_id_set_state_langmuirProbe, ///< @cmd
+    pay_id_init_langmuirProbe, ///< @cmd
+    pay_id_take_langmuirProbe, ///< @cmd
+    pay_id_stop_langmuirProbe, ///< @cmd
+    pay_id_send_to_langmuirProbe, ///< @cmd
+    pay_id_adhoc_langmuirProbe, ///< @cmd   63
             
     //*********************
     pay_id_last_one    //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
@@ -191,14 +191,14 @@ int pay_take_sensTemp(void *param);
 int pay_stop_sensTemp(void *param);
 int pay_debug_sensTemp(void *param);
 //LagmiurProbe
-int pay_isAlive_lagmuirProbe(void *param);
-int pay_get_state_lagmuirProbe(void *param);
-int pay_set_state_lagmuirProbe(void *param);
-int pay_init_lagmuirProbe(void *param);
-int pay_take_lagmuirProbe(void *param);
-int pay_stop_lagmuirProbe(void *param);
-int pay_send_to_lagimur(void *param);
-int pay_debug_langmuir(void *param);
+int pay_isAlive_langmuirProbe(void *param);
+int pay_get_state_langmuirProbe(void *param);
+int pay_set_state_langmuirProbe(void *param);
+int pay_init_langmuirProbe(void *param);
+int pay_take_langmuirProbe(void *param);
+int pay_stop_langmuirProbe(void *param);
+int pay_send_to_langmuirProbe(void *param);
+int pay_adhoc_langmuirProbe(void *param);
 BOOL pay_deploy_langmuirProbe(int mode);
 //Gyro
 int pay_isAlive_gyro(void *param);

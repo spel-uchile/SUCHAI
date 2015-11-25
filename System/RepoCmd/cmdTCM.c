@@ -114,7 +114,7 @@ int tcm_sendTM_all_pay_i(void *param){
         if(SCH_PAY_BATTERY_ONBOARD==0 && pay_i==dat_pay_battery){continue;}
         if(SCH_PAY_DEBUG_ONBOARD==0 && pay_i==dat_pay_debug){continue;}
         if(SCH_PAY_GYRO_ONBOARD==0 && pay_i==dat_pay_gyro){continue;}
-        if(SCH_PAY_LANGMUIR_ONBOARD==0 && pay_i==dat_pay_lagmuirProbe){continue;}
+        if(SCH_PAY_LANGMUIR_ONBOARD==0 && pay_i==dat_pay_langmuirProbe){continue;}
         if(SCH_PAY_TMESTADO_ONBOARD==0 && pay_i==dat_pay_tmEstado){continue;}
         if(SCH_PAY_SENSTEMP_ONBOARD==0 && pay_i==dat_pay_sensTemp){continue;}
         if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==0 && pay_i==dat_pay_camera){continue;}

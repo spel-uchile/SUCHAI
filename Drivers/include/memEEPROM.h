@@ -39,7 +39,7 @@ typedef enum{
     mem_fpl_index,
 
     //PAYLOAD
-    mem_pay_lagmuirProbe_state,
+    mem_pay_langmuirProbe_state,
     mem_pay_sensTemp_state,
     mem_pay_gps_state,
     mem_pay_expFis_state,

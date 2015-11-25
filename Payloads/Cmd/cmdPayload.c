@@ -117,14 +117,14 @@ void pay_onResetCmdPAY(void){
     payFunction[(unsigned char)pay_id_take_debug] = pay_take_debug;
     payFunction[(unsigned char)pay_id_stop_debug] = pay_stop_debug;
 
-    payFunction[(unsigned char)pay_id_isAlive_lagmuirProbe] = pay_isAlive_lagmuirProbe;
-    payFunction[(unsigned char)pay_id_get_state_lagmuirProbe] = pay_get_state_lagmuirProbe;
-    payFunction[(unsigned char)pay_id_set_state_lagmuirProbe] = pay_set_state_lagmuirProbe;
-    payFunction[(unsigned char)pay_id_init_lagmuirProbe] = pay_init_lagmuirProbe;
-    payFunction[(unsigned char)pay_id_take_lagmuirProbe] = pay_take_lagmuirProbe;
-    payFunction[(unsigned char)pay_id_stop_lagmuirProbe] = pay_stop_lagmuirProbe;
-    payFunction[(unsigned char)pay_id_debug_langmuirProbe] = pay_debug_langmuir;
-    payFunction[(unsigned char)pay_id_send_to_lagimur] = pay_send_to_lagimur;
+    payFunction[(unsigned char)pay_id_isAlive_langmuirProbe] = pay_isAlive_langmuirProbe;
+    payFunction[(unsigned char)pay_id_get_state_langmuirProbe] = pay_get_state_langmuirProbe;
+    payFunction[(unsigned char)pay_id_set_state_langmuirProbe] = pay_set_state_langmuirProbe;
+    payFunction[(unsigned char)pay_id_init_langmuirProbe] = pay_init_langmuirProbe;
+    payFunction[(unsigned char)pay_id_take_langmuirProbe] = pay_take_langmuirProbe;
+    payFunction[(unsigned char)pay_id_stop_langmuirProbe] = pay_stop_langmuirProbe;
+    payFunction[(unsigned char)pay_id_adhoc_langmuirProbe] = pay_adhoc_langmuirProbe;
+    payFunction[(unsigned char)pay_id_send_to_langmuirProbe] = pay_send_to_langmuirProbe;
 }
 
 
@@ -181,7 +181,7 @@ int pay_test_dataRepo(void *param){
 //******************************************************************************
 int pay_debug_expFis(void *param){
     static Fis_States fis_curr_state = FIS_OFF;
-    while(fis_curr_state == FIS_DONE){
+    while(fis_curr_state != FIS_DONE){
         fis_curr_state = fis_next_state_logic(fis_curr_state);
         fis_curr_state = fis_current_state_control(fis_curr_state);
     }
@@ -1077,29 +1077,29 @@ BOOL pay_deploy_langmuirProbe(int realtime){
 
     return TRUE;
 }
-int pay_isAlive_lagmuirProbe(void *param){
+int pay_isAlive_langmuirProbe(void *param){
     if(SCH_PAY_LANGMUIR_ONBOARD == 0){return 0;}
 
     return langmuir_isAlive();
 }
-int pay_get_state_lagmuirProbe(void *param){
-    MemEEPROM_Vars mem_eeprom_var = mem_pay_lagmuirProbe_state;
+int pay_get_state_langmuirProbe(void *param){
+    MemEEPROM_Vars mem_eeprom_var = mem_pay_langmuirProbe_state;
     int res = readIntEEPROM1(mem_eeprom_var);
     return res;
 }
-int pay_set_state_lagmuirProbe(void *param){
+int pay_set_state_langmuirProbe(void *param){
     int value = *( (int*)param );
-    MemEEPROM_Vars mem_eeprom_var = mem_pay_lagmuirProbe_state;
+    MemEEPROM_Vars mem_eeprom_var = mem_pay_langmuirProbe_state;
     writeIntEEPROM1(mem_eeprom_var, value);
     return 1;
 }
-int pay_init_lagmuirProbe(void *param){
-    printf("pay_init_lagmuirProbe\r\n");
+int pay_init_langmuirProbe(void *param){
+    printf("pay_init_langmuirProbe\r\n");
 
     /* Ceploy langmuir should NOT be here, but there is no way
      * to check deployment, so its included here */
     #if (SCH_ANTENNA_ONBOARD==1 && SCH_PAY_LANGMUIR_ONBOARD==1)
-        if( sta_get_PayStateVar(sta_pay_lagmuirProbe_isDeployed)==0 ){
+        if( sta_get_PayStateVar(sta_pay_langmuirProbe_isDeployed)==0 ){
             int rt_mode = SCH_THOUSEKEEPING_ANT_DEP_REALTIME; /* 1=Real Time, 0=Debug Time */
             pay_deploy_langmuirProbe(rt_mode);    //realtime mode
             //set var lang dep = 1
@@ -1108,41 +1108,41 @@ int pay_init_lagmuirProbe(void *param){
 
     //configure Payload_Buff
     DAT_Payload_Buff pay_i;
-    pay_i = dat_pay_lagmuirProbe;
+    pay_i = dat_pay_langmuirProbe;
     dat_reset_Payload_Buff(pay_i);
 
     //configs
-    int res_isAlive = pay_isAlive_lagmuirProbe(NULL); //not fully implemented yet => always dead
+    int res_isAlive = pay_isAlive_langmuirProbe(NULL); //not fully implemented yet => always dead
     lag_erase_buffer();
 
     //debug info
-    printf("  sta_pay_lagmuirProbe_isAlive = %d \r\n", res_isAlive );
-    printf("  sta_pay_lagmuirProbe_isDeployed = %d \r\n", sta_get_PayStateVar(sta_pay_lagmuirProbe_isDeployed) );
+    printf("  sta_pay_langmuirProbe_isAlive = %d \r\n", res_isAlive );
+    printf("  sta_pay_langmuirProbe_isDeployed = %d \r\n", sta_get_PayStateVar(sta_pay_langmuirProbe_isDeployed) );
 
     //save iniial data
     int i;
     int lenbuff_cal = lag_read_cal_packet(FALSE);
     for(i=0;i<lenbuff_cal;i++){
-        dat_set_Payload_Buff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i));
+        dat_set_Payload_Buff(dat_pay_langmuirProbe, (int)lag_get_langmuir_buffer_i(i));
     }
 
     return res_isAlive;
 }
 
-int pay_take_lagmuirProbe(void *param){
-    printf("pay_take_lagmuirProbe\r\n");
+int pay_take_langmuirProbe(void *param){
+    printf("pay_take_langmuirProbe\r\n");
 
     //(15 secs delay between commands with an increased delay)
 
     //save date_time in 2ints
-    pay_save_date_time_to_Payload_Buff(dat_pay_lagmuirProbe);
+    pay_save_date_time_to_Payload_Buff(dat_pay_langmuirProbe);
 
     //save data
     int i;
 
     int lenbuff_pla = lag_read_plasma_packet(FALSE);
     for(i=0;i<lenbuff_pla;i++){
-        dat_set_Payload_Buff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i));
+        dat_set_Payload_Buff(dat_pay_langmuirProbe, (int)lag_get_langmuir_buffer_i(i));
     }
 
     return 1;
@@ -1154,7 +1154,7 @@ int pay_take_lagmuirProbe(void *param){
  * @param param 0-calibracion, 1-plasma, 2-sweep
  * @return Resultado de la operacion: 1-exito, 0-error
  */
-int pay_debug_langmuir(void *param)
+int pay_adhoc_langmuirProbe(void* param)
 {
     printf("pay_debug_lagmuir\r\n");
 
@@ -1165,7 +1165,7 @@ int pay_debug_langmuir(void *param)
 
     int lenbuff_cal = lag_read_cal_packet(FALSE);
     for(i=0; i<lenbuff_cal; i++){
-        dat_set_Payload_Buff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i));
+        dat_set_Payload_Buff(dat_pay_langmuirProbe, (int)lag_get_langmuir_buffer_i(i));
     }
     
     for(i=0;i<times;i++){
@@ -1173,21 +1173,21 @@ int pay_debug_langmuir(void *param)
         
         int lenbuff_pla = lag_read_plasma_packet(FALSE);
         for(i=0; i<lenbuff_pla; i++){
-            dat_set_Payload_Buff(dat_pay_lagmuirProbe, (int)lag_get_langmuir_buffer_i(i));
+            dat_set_Payload_Buff(dat_pay_langmuirProbe, (int)lag_get_langmuir_buffer_i(i));
         }
     }
     return 1;
 }
 
-int pay_stop_lagmuirProbe(void *param){
-    printf("pay_stop_lagmuirProbe()  ..\r\n");
+int pay_stop_langmuirProbe(void *param){
+    printf("pay_stop_langmuirProbe()  ..\r\n");
     
     lag_erase_buffer();
 
     return 1;
 }
 
-int pay_send_to_lagimur(void *param)
+int pay_send_to_langmuirProbe(void *param)
 {
     printf("en pay_send_to_lagmuir\r\n");
     /*
@@ -1542,7 +1542,7 @@ int pay_fp2_get_exec_rate(DAT_Payload_Buff pay_i){
         case dat_pay_debug:
             return 6;       //tick_rate in taskHousekeeping is 10sec => every 60 sec = 1min
             break;
-        case dat_pay_lagmuirProbe:
+        case dat_pay_langmuirProbe:
             return 6;       //tick_rate in taskHousekeeping is 10sec => every 60 sec = 1min
             break;
         case dat_pay_gps:
@@ -1586,7 +1586,7 @@ unsigned int pay_fp2_get_run_take_num_exec_times(DAT_Payload_Buff pay_i){
         case dat_pay_debug:
             max_exec_times = pay_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
-        case dat_pay_lagmuirProbe:
+        case dat_pay_langmuirProbe:
             max_exec_times = pay_exec_times;    // if tick is 1 min => 1 orbit of 95 min => 95 execution_times
             break;
         case dat_pay_gps:
@@ -1677,17 +1677,17 @@ void pay_fp2_exec_run_xxx(DAT_Payload_Buff pay_i, PAY_xxx_State state){
                     break;
             }
             break;
-        case dat_pay_lagmuirProbe:
+        case dat_pay_langmuirProbe:
             switch (state){
                 case pay_xxx_state_run_init:
                     arg = 0;
-                    pay_init_lagmuirProbe(&arg);
+                    pay_init_langmuirProbe(&arg);
                     break;
                 case pay_xxx_state_run_take:
-                    pay_take_lagmuirProbe(&arg);
+                    pay_take_langmuirProbe(&arg);
                     break;
                 case pay_xxx_state_run_stop:
-                    pay_stop_lagmuirProbe(&arg);
+                    pay_stop_langmuirProbe(&arg);
                     break;
                 //ignore the rest of states
                 case pay_xxx_state_active:
@@ -1814,8 +1814,8 @@ PAY_xxx_State pay_get_state(DAT_Payload_Buff pay_i){
         case dat_pay_debug:
             pay_i_state = pay_get_state_debug(NULL);
             break;
-        case dat_pay_lagmuirProbe:
-            pay_i_state = pay_get_state_lagmuirProbe(NULL);
+        case dat_pay_langmuirProbe:
+            pay_i_state = pay_get_state_langmuirProbe(NULL);
             break;
         case dat_pay_gps:
             pay_i_state = pay_get_state_gps(NULL);
@@ -1858,8 +1858,8 @@ void pay_set_state(DAT_Payload_Buff pay_i, PAY_xxx_State state){
         case dat_pay_debug:
             pay_set_state_debug(&arg_state);
             break;
-        case dat_pay_lagmuirProbe:
-            pay_set_state_lagmuirProbe(&arg_state);
+        case dat_pay_langmuirProbe:
+            pay_set_state_langmuirProbe(&arg_state);
             break;
         case dat_pay_gps:
             pay_set_state_gps(&arg_state);

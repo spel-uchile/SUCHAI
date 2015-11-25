@@ -115,7 +115,7 @@ typedef enum _DAT_Payload{
     dat_pay_tmEstado=0,
     dat_pay_battery,
     dat_pay_debug,
-    dat_pay_lagmuirProbe,   //pay_i=3
+    dat_pay_langmuirProbe,   //pay_i=3
     dat_pay_gps,
     dat_pay_camera,         //pay_i=5
     dat_pay_sensTemp,   

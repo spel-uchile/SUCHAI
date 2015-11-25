@@ -114,7 +114,7 @@ int srp_memEEPROM_initial_state(void * param){
     //PAYLOAD
     #if (SCH_PAY_LANGMUIR_ONBOARD==1)
         arg = pay_xxx_state_active;
-        pay_set_state_lagmuirProbe(&arg);
+        pay_set_state_langmuirProbe(&arg);
     #else
         arg = pay_xxx_state_inactive;
         pay_set_state_lagmuirProbe(&arg);

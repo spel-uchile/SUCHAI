@@ -196,17 +196,18 @@ int thk_suchai_deployment(void *param)
 {
     printf("[thk_suchai_deployment] Suchai deployment routine..\r\n");
 
-    int arg = 1200;
-    trx_set_beacon_level(&arg); // 12 Volts => no Beacon
+    int lvl;
+    #if (SCH_TDEPLOYMENT_VERBOSE>=1)
+        printf("\n[thk_deploy_antenna] Starting TRX silence .. \r\n");
+            lvl = (12000UL);
+            trx_set_beacon_level((void *)&lvl);
+    #endif
     
     int delay_min = *( (int*)param );
-//    portTickType xLastWakeTime = xTaskGetTickCount();
-//    portTickType delay_60s    = 60000;    //Task period in [ms]
-//    portTickType delay_tick_60s = delay_60s / portTICK_RATE_MS; //Task period in ticks
+    printf("[thk_suchai_deployment] delay_min = %d\r\n", delay_min);
 
     unsigned long initial_tick_10ms = xTaskGetTickCount(); //get initial tick-time
-    //unsigned long silent_time_10ms = (180000);     // 30 minutes = 1800 sec = 180000 [10ms]
-    unsigned long silent_time_10ms = delay_min*60*100; // time_s*100 [ms] = time_ms
+    unsigned long silent_time_10ms = delay_min*(60UL)*(100UL); // time_s*100 [ms] = time_ms
     unsigned long final_tick_10ms = initial_tick_10ms + silent_time_10ms;
 
     printf("[thk_suchai_deployment] initial_tick_10ms = %lu | final_tick_10ms = %lu \r\n", initial_tick_10ms, final_tick_10ms);
@@ -214,18 +215,19 @@ int thk_suchai_deployment(void *param)
     // print rtc time
     rtc_print(NULL);
 
-    //take picture
-    #if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==1 )
-        #if(SCH_THOUSEKEEPING_SILENT_REALTIME==1)
-            pay_takePhoto_camera(NULL); //takes 10min to complete
-        #else
-            printf("  Jumping pay_takePhoto_camera(NULL) call, it takes 10min to complete ..\r\n");
-        #endif
-    #endif
+//    //take picture
+//    #if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==1 )
+//        #if(SCH_THOUSEKEEPING_SILENT_REALTIME==1)
+//            pay_takePhoto_camera(NULL); //takes 10min to complete
+//        #else
+//            printf("  Jumping pay_takePhoto_camera(NULL) call, it takes 10min to complete ..\r\n");
+//        #endif
+//    #endif
 
     // print rtc time
     rtc_print(NULL);
 
+    // Waiting time
     #if(SCH_THOUSEKEEPING_ANT_DEP_REALTIME == 1)
         unsigned int elapsed_mins = 0;
         while(TRUE){
@@ -237,7 +239,8 @@ int thk_suchai_deployment(void *param)
             printf("[thk_suchai_deployment] Waiting for timeout, cu_tick_10ms = %lu, elapsed_mins = %d\r\n", cu_tick_10ms, elapsed_mins);
             //vTaskDelayUntil(&xLastWakeTime, delay_tick_60s); //Suspend task 60 sec
             ClrWdt();
-            __delay_ms(60000);  //delay 60sec
+            __delay_ms(60000UL);  //delay 60sec
+            ClrWdt();
             elapsed_mins++;
 
         }
@@ -255,22 +258,29 @@ int thk_suchai_deployment(void *param)
     // print rtc time
     rtc_print(NULL);
 
+    //delay 60sec to avoid drain-out the EPS
     #if (SCH_THOUSEKEEPING_ANT_DEP_REALTIME == 1)
         ClrWdt();
-        __delay_ms(60000);  //delay 60sec to avoid drain-out the EPS
+        __delay_ms(60000);
 
         //other "only once"-tasks
         //..
     #endif
 
-    arg = SCH_TRX_BEACON_BAT_LVL;
-    trx_set_beacon_level(&arg);
+    //Restore TRX capabilities
+    #if (SCH_TDEPLOYMENT_VERBOSE>=1)
+        printf("\n[thk_deploy_antenna] Ending TRX silence .. \r\n");
+            lvl = SCH_TRX_BEACON_BAT_LVL;
+            trx_set_beacon_level((void *)&lvl);
+    #endif
+    __delay_ms(2000);   // make sure to print the promot
+
 
     return 1;
 }
 
 #define THK_SILENT_TIME_MIN 30          ///< cuantos "minutos" (65,535[s]) estara en inactividad antes de iniciarse
-#define THK_MAX_TRIES_ANT_DEPLOY 10     ///< cuantas veces tratara desplegar la antena antes de anunciar fracaso
+#define THK_MAX_TRIES_ANT_DEPLOY 15     ///< cuantas veces tratara desplegar la antena antes de anunciar fracaso
 #define THK_DEPLOY_TIME 45311           ///< 2*THK_DEPLOY_TIME/1000 indica cuantos "ms" estara activo el bus de 3.3V quemando el nilon
 #define THK_REST_DEPLOY_TIME 5000       ///< cuantos "ms" estara inactivo el bus de 3.3V descanzando de tratar de quemar el nilon
 #define THK_RECHECK_TIME 2000           ///< despues de cuantos "ms" RE-chequeara que efectivamente se desplego la antena

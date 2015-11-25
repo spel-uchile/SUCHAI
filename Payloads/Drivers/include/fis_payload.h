@@ -32,6 +32,9 @@
 #define FIS_SRAND_SEEDS     (4)//(FIS_ROUNDS)
 //maximun size for the buffer
 #define FIS_MAX_SENS_BUFF_LEN (1000)
+
+#define FIS_NUM_ROUNDS          (2)
+#define FIS_NUM_ITERATIONS      (3)
         
 /*
 #if (SCH_PAY_FIS_ONBOARD==1)

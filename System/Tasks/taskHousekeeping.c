@@ -64,7 +64,7 @@ void taskHousekeeping(void *param)
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
         #else
             NewCmd.cmdId = thk_id_suchai_deployment;
-            NewCmd.param = 2;  //in minutes
+            NewCmd.param = 6;  //in minutes
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
         #endif
     }

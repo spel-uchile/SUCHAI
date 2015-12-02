@@ -35,7 +35,7 @@ typedef enum{
     //stateVar
     tcm_id_sendTM_tmEstado, ///< @cmd
     //Payload
-    tcm_id_sendTM_all_pay_i, ///< @cmd
+    tcm_id_sendTM_all_pay_i, ///< @cmd 0x8004
     tcm_id_sendTM_pay_i, ///< @cmd  0x8005
     tcm_id_sendTM_battery,
     //Debug

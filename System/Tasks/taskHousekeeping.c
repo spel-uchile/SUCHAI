@@ -26,7 +26,7 @@ extern xQueueHandle dispatcherQueue; /* Commands queue */
 void taskHousekeeping(void *param)
 {
     #if SCH_THOUSEKEEPING_VERBOSE
-        printf(">>[Houskeeping] Started\r\n");
+        printf(">>[Housekeeping] Started\r\n");
     #endif
 
     portTickType delay_ms    = 10000;    //Task period in [ms]
@@ -64,7 +64,7 @@ void taskHousekeeping(void *param)
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
         #else
             NewCmd.cmdId = thk_id_suchai_deployment;
-            NewCmd.param = 6;  //in minutes
+            NewCmd.param = 3;  //in minutes
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
         #endif
     }
@@ -128,22 +128,22 @@ void taskHousekeeping(void *param)
         /* 1 minute actions */
         if((elapsed_sec % check_1min) == 0)
         {
-            #if (SCH_THOUSEKEEPING_VERBOSE>=1)
-                printf("[Houskeeping]:    1[min] actions ..\r\n");
+            #if (SCH_THOUSEKEEPING_VERBOSE>=2)
+                printf("[Houskeeping] 1[min] actions ..\r\n");
             #endif
             //Add commands below ..
 
-            //print StateVars, debug purposes
-            NewCmd.cmdId = srp_id_print_STA_stateVar;
-            NewCmd.param = 1;
-            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+//            //print StateVars, debug purposes
+//            NewCmd.cmdId = srp_id_print_STA_stateVar;
+//            NewCmd.param = 1;
+//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
         }
 
         /* 5 minutes actions */
         if((elapsed_sec % check_5min) == 0)
         {
-            #if (SCH_THOUSEKEEPING_VERBOSE>=2)
-                printf("[Houskeeping]:    5[min] actions ..\r\n");
+            #if (SCH_THOUSEKEEPING_VERBOSE>=1)
+                printf("[Houskeeping] 5[min] actions ..\r\n");
             #endif
             //Add commands below ..
         }
@@ -155,7 +155,7 @@ void taskHousekeeping(void *param)
             elapsed_sec = 0; //Prevent overflow
 
             #if (SCH_THOUSEKEEPING_VERBOSE>=1)
-                printf("[Houskeeping]:      1[hr] actions ..\r\n");
+                printf("[Houskeeping] 1[hr] actions ..\r\n");
             #endif
             //Add commands below ..
 
@@ -170,7 +170,7 @@ void taskHousekeeping(void *param)
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
             NewCmd.cmdId = trx_id_ping;
-            NewCmd.param = 5;   // ping to TRX (node 5 according to CSP)
+            NewCmd.param = 5;   // ping to TRX to avoid reset to defaults (node 5 according to CSP)
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
         }

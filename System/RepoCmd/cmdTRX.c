@@ -217,6 +217,7 @@ int trx_set_tx_baud(void *param)
  */
 int trx_get_tx_baud(void *param)
 {
+    //printf("trx_get_tx_baud ..\r\n");
     int result2;
     result2 = com_get_conf(&TRX_CONFIG, NODE_COM, com_timeout);
 

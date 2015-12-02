@@ -137,6 +137,7 @@ int rtc_print(void *param)
     yy = RTC_get_year();
     xSemaphoreGive(rtcPrintSem);
 
+    RTC_ReadRegister(RTC_FLAGS_REG);
     printf(">> %d/%d/%d %d:%d:%d\n", dd, mo, yy, hour, min, sec);
 
 //    unsigned long int date_time = RTC_encode_datetime(yy, mo, dd, hour, min, sec);

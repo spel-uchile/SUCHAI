@@ -29,14 +29,14 @@ void taskFlightPlan3(void *param)
 #endif
 
 #if SCH_TFLIGHTPLAN3_REALTIME
-    unsigned int min_check_period_ms = 10000;      /* check every x ms  */
-    portTickType xDelay_ticks = (min_check_period_ms) / portTICK_RATE_MS;
+    unsigned int tick_period_ms = 10000;      /* check every x ms  */
+    portTickType xDelay_ticks = (tick_period_ms) / portTICK_RATE_MS;
     #if (SCH_THOUSEKEEPING_USE == 1)
         portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
     #endif
 #else
-    unsigned int min_check_period_ms = 1000;      /* check every 2sec  */
-    portTickType xDelay_ticks = (min_check_period_ms) / portTICK_RATE_MS;
+    unsigned int tick_period_ms = 1000;      /* check every 2sec  */
+    portTickType xDelay_ticks = (tick_period_ms) / portTICK_RATE_MS;
     portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
 #endif
 
@@ -57,7 +57,7 @@ void taskFlightPlan3(void *param)
     #endif
 
     int ticks_elapsed = 1;
-    int res_ticks = (60*(SCH_TFLIGHTPLAN_RESOLUTION))/(2*(min_check_period_ms/1000));
+    int res_ticks = (60*(SCH_TFLIGHTPLAN_RESOLUTION))/(2*(tick_period_ms/1000));
     while(1)
     {
         /* min_check_period_ms actions */
@@ -79,13 +79,13 @@ void taskFlightPlan3(void *param)
         //Add commands below ..
 
         #if (SCH_TFLIGHTPLAN3_VERBOSE>=1)
-            printf("[FlightPlan3] min_check_period_ms (%d) actions, ticks_elapsed/res_ticks = %u/%u ..\r\n", min_check_period_ms, ticks_elapsed, res_ticks);
+            printf("[FlightPlan3] min_check_period_ms (%d) actions, ticks_elapsed/res_ticks = %u/%u ..\r\n", tick_period_ms, ticks_elapsed, res_ticks);
         #endif
 
         //execute regular/cyclic payloads ..
         if(sta_get_BusStateVar(sta_ppc_opMode)==STA_PPC_OPMODE_NORMAL){
             NewCmd.cmdId = pay_id_fp2_default_fsm;
-            NewCmd.param = min_check_period_ms;
+            NewCmd.param = tick_period_ms;
             xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
         }
 

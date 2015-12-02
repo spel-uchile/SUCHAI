@@ -93,7 +93,7 @@ typedef enum{
     pay_id_init_expFis, ///< @cmd   //0x6027
     pay_id_take_expFis, ///< @cmd   //0x6028
     pay_id_stop_expFis, ///< @cmd   //0x6029
-    pay_id_debug_expFis, ///< @cmd  //0x602A
+    pay_id_adhoc_expFis, ///< @cmd  //0x602A
     pay_id_testDAC_expFis, ////< @cmd  //0x602B
 
     pay_id_gps_model, ///< @cmd
@@ -124,7 +124,7 @@ typedef enum{
     pay_id_take_langmuirProbe, ///< @cmd
     pay_id_stop_langmuirProbe, ///< @cmd
     pay_id_send_to_langmuirProbe, ///< @cmd
-    pay_id_adhoc_langmuirProbe, ///< @cmd   63
+    pay_id_adhoc_langmuirProbe, ///< @cmd   69 <=> Ox6045
             
     //*********************
     pay_id_last_one    //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
@@ -180,7 +180,7 @@ int pay_set_state_expFis(void *param);
 int pay_init_expFis(void *param);
 int pay_take_expFis(void *param);
 int pay_stop_expFis(void *param);
-int pay_debug_expFis(void *param);
+int pay_adhoc_expFis(void *param);
 int pay_testDAC_expFis(void *param);
 //sensTemp
 int pay_isAlive_sensTemp(void *param);

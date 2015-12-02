@@ -95,7 +95,8 @@ void vApplicationIdleHook(void)
 
 void vApplicationStackOverflowHook(xTaskHandle* pxTask, signed char* pcTaskName)
 {
-    printf(">> Stak overflow! - TaskName: %s\n", pcTaskName);
+    printf(">> [%s] Stack overflow! \r\n", pcTaskName);
+    __delay_ms(2000);
     ppc_reset(NULL);
 }
 

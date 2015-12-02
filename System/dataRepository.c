@@ -332,7 +332,7 @@ BOOL dat_set_Payload_Buff(DAT_Payload_Buff pay_i, int value){
 //        }
 //    }
 
-    //Obtiene nextIndx (posicion a la que guardar)
+    //Obtiene nextIndx (posicion en la que se ha de guardar)
     nextIndx = dat_get_NextPayIndx(pay_i);
 
     #if (SCH_DATAREPOSITORY_VERBOSE>=2)
@@ -392,7 +392,7 @@ BOOL dat_set_Payload_Buff_at_indx(DAT_Payload_Buff pay_i, int value, unsigned in
 
 //Retorna FALSE si el indiex es invalido, TRUE si todo OK
 BOOL dat_get_Payload_Buff(DAT_Payload_Buff pay_i, unsigned int indx, int *value){
-    unsigned int desiredIndx, maxIndx;
+    unsigned int desiredIndx, nextIndx;
 
    // Descarta si pay_i invalido
     if(pay_i>=dat_pay_last_one){
@@ -404,10 +404,11 @@ BOOL dat_get_Payload_Buff(DAT_Payload_Buff pay_i, unsigned int indx, int *value)
 
    // Descarta si indx invalido (fuera de rango)
     desiredIndx = indx;
-    maxIndx = dat_get_MaxPayIndx(pay_i);
-    if(desiredIndx > maxIndx){
+    //maxIndx = dat_get_MaxPayIndx(pay_i);
+    nextIndx = dat_get_NextPayIndx(pay_i);
+    if(desiredIndx > nextIndx){
         #if (SCH_DATAREPOSITORY_VERBOSE>=1)
-            printf("dat_get_PayloadBuff: indx > maxIndx\n");
+            printf("dat_get_PayloadBuff: indx > nextIndx (%04u)\n", nextIndx);
         #endif
         return FALSE;
     }

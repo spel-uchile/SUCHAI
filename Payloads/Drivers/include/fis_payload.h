@@ -23,7 +23,7 @@
 //cantidad maxima de frencuencias
 //#define FIS_MAX_FREQS (1)
 //cantidad de puntos de de cada se�al generada (largo)
-#define FIS_SIGNAL_POINTS (1000)
+#define FIS_SIGNAL_POINTS (100)
 //numero de muestras por punto generado de la se�al (minimo 2 para cumplir con Nyquist)
 #define FIS_SAMPLES_PER_POINT (2)
 //cantidad de muestras que tiene una se�al/waveform

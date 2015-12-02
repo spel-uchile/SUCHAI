@@ -32,6 +32,7 @@ typedef enum{
     srp_id_debug=((unsigned int)SCH_CMD_SRP*0x100), ///< @cmd_first
 
     //De display
+    srp_id_print_MemEEPROM_Vars, ///< @cmd  0x9001 
     srp_id_print_STA_stateVar, ///< @cmd
 
     //De update en general de dat_stateVar
@@ -55,6 +56,7 @@ void srp_onResetCmdSRP();
 //****************************************************
 int srp_debug(void *param);
 int srp_print_STA_stateVar(void *param);
+int srp_print_MemEEPROM_Vars(void *param);
 // command's to update dat_stateVar
 int srp_increment_STA_stateVar_hoursWithoutReset(void *param);
 int srp_increment_STA_stateVar_hoursAlive(void *param);

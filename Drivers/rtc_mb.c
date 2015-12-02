@@ -66,6 +66,7 @@ unsigned char RTC_ReadRegister(unsigned int reg)
 	char ret;
         char address[] = {RTC_ID, (char)reg};
         i2c1_master_fgets(&ret, 1, address, 2);
+        //printf("reg[0x%02X  0x%02X] = 0x%02X\r\n", address[0], address[1], ret);
 	return (unsigned char)ret;
 }
 
@@ -175,8 +176,9 @@ int RTC_restart_osc(void)
         RTC_WriteRegister(RTC_SEC_REG,0x00);
 
         /* Wait before clear the flag (See M41T81S Datasheet) */
-        long i;
-        for(i = 0x00FFFFFF; i>0; i--);
+        __delay_ms(4000);
+//        long i;
+//        for(i = 0x00FFFFFF; i>0; i--);
 
         /* Clear OF flag */
         RTC_WriteRegister(RTC_FLAGS_REG,0x00);
@@ -197,7 +199,7 @@ int RTC_get_hours(void)
     unsigned char dat;
     unsigned int hours;
 
-    dat=RTC_ReadRegister(RTC_HRS_REG);
+    dat = RTC_ReadRegister(RTC_HRS_REG);
     // Unidades
     hours = dat & 0x0F;
     // Decenas y sumo

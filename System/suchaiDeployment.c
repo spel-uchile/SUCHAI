@@ -343,7 +343,7 @@ void dep_init_suchai_tasks(void)
         #if (SCH_TDEPLOYMENT_VERBOSE>=2)
             printf("    * Creating taskHousekeeping\r\n");
         #endif
-        xTaskCreate(taskHousekeeping, (signed char *)"HKP", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskHouskeepingHandle);
+        xTaskCreate(taskHousekeeping, (signed char *)"HKP", 1.5*configMINIMAL_STACK_SIZE, NULL, 2, &taskHouskeepingHandle);
         __delay_ms(300);
     #endif
     
@@ -351,7 +351,7 @@ void dep_init_suchai_tasks(void)
         #if (SCH_TDEPLOYMENT_VERBOSE>=2)
             printf("    * Creating taskCommunications\r\n");
         #endif
-        xTaskCreate(taskComunications, (signed char *)"COM", 3*configMINIMAL_STACK_SIZE, NULL, 2, &taskComunicationsHandle);
+        xTaskCreate(taskComunications, (signed char *)"COM", 4*configMINIMAL_STACK_SIZE, NULL, 2, &taskComunicationsHandle);
         __delay_ms(300);
     #endif
 
@@ -375,7 +375,7 @@ void dep_init_suchai_tasks(void)
             #if (SCH_TDEPLOYMENT_VERBOSE>=2)
                     printf("    * Creating taskFlightPlan3\r\n");
             #endif
-            xTaskCreate(taskFlightPlan3, (signed char *)"flightplan2", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlan3Handle);
+            xTaskCreate(taskFlightPlan3, (signed char *)"flightplan3", 2*configMINIMAL_STACK_SIZE, NULL, 2, &taskFlightPlan3Handle);
             __delay_ms(300);
         #endif
     }

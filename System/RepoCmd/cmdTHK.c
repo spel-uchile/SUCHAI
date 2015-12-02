@@ -263,7 +263,7 @@ int thk_suchai_deployment(void *param)
         ClrWdt();
         __delay_ms(60000);
 
-        //other "only once"-tasks
+        //other "only once" tasks
         //..
     #endif
 

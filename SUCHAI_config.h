@@ -35,10 +35,10 @@
 #define SCH_PAY_SENSTEMP_ONBOARD            (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 #define SCH_PAY_TMESTADO_ONBOARD            (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 #define SCH_PAY_BATTERY_ONBOARD             (0)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
-#define SCH_PAY_GYRO_ONBOARD                (1)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
+#define SCH_PAY_GYRO_ONBOARD                (0)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_PAY_GPS_ONBOARD                 (0)  ///< Onboard => UART4 en uso, 1 pin(es) en modo Switch
 #define SCH_PAY_CAM_nMEMFLASH_ONBOARD       (0)  ///< Onboard => SPI-1 asignado a la Camara. Offboard => SPI-1 asignado a memFlash
-#define SCH_PAY_FIS_ONBOARD                 (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
+#define SCH_PAY_FIS_ONBOARD                 (0)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 #define SCH_PAY_DEBUG_ONBOARD               (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 
 /******************************************************************************/
@@ -47,7 +47,7 @@
 /* Main Tasks configurations */
 #define SCH_THOUSEKEEPING_USE                    (1)    ///< 1 = use it, 0 = do not use it
 #define SCH_TCONSOLE_USE                         (1)    ///< 1 = use it, 0 = do not use it
-#define SCH_TFLIGHTPLAN_USE                      (0)    ///< 0 = do not use it, 1 = FP, 2 = FP2, 3 = FP3
+#define SCH_TFLIGHTPLAN_USE                      (3)    ///< 0 = do not use it, 1 = FP, 2 = FP2, 3 = FP3
 #define SCH_TCOMMUNICATION_USE                   (SCH_TRX_ONBOARD)  ///< 1 = use it, 0 = do not use it
 /* Id Tasks configs */
 #define SCH_TCONSOLE_IDORIG                     (0x1101)

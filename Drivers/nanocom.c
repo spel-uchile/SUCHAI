@@ -152,7 +152,7 @@ void com_csp_initialization(void){
     csp_i2c_init(SCH_I2C1_ADDR, 0, 400);
 
     csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
-    csp_route_start_task(2*configMINIMAL_STACK_SIZE, 3);
+    csp_route_start_task(3*configMINIMAL_STACK_SIZE, 3);
 
     /* Create socket without any socket options */
     csp_socket_t *sock = csp_socket(CSP_SO_NONE);

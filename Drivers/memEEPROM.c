@@ -74,6 +74,17 @@ int readIntEEPROM1(unsigned char indx){
  */
 int init_memEEPROM(void){
     //nothing to do
+    //printf("[init_memEEPROM] mem_last_one = %d\r\n", mem_last_one);
+    printf("===============================\r\n");
+    printf("MemEEPROM_Vars content: \r\n");
+    printf("===============================\r\n");
+
+    MemEEPROM_Vars indxVar; int val;
+    for(indxVar=0; indxVar<mem_last_one; indxVar++){
+        val = mem_getVar(indxVar);
+        printf("    * mem_getVar(%d = %s) = 0x%X = %d \r\n", indxVar, mem_MemEEPROM_VarsToString(indxVar), val, val);
+    }
+    printf("===============================\r\n");
     
     //check if working normally
     return memEEPROM_isAlive();
@@ -119,3 +130,110 @@ int mem_getVar( unsigned char indxVar){
     value = readIntEEPROM1( (unsigned char)indxVar );
     return value;
 }
+
+char * mem_MemEEPROM_VarsToString(MemEEPROM_Vars var_i){
+    char *pc;
+    switch(var_i){
+        //address 0 is ALWAYS used to make sure MemEEPROM is working r/w values (isAlive)
+        case mem_MemEEPROM_testVal:
+            pc = "mem_MemEEPROM_testVal";
+            break;
+        //PPC => (C&DH subsystem)
+        case mem_ppc_opMode:
+            pc = "mem_ppc_opMode";
+            break;
+        case mem_ppc_hoursAlive:
+            pc = "mem_ppc_hoursAlive";
+            break;
+        case mem_ppc_resetCounter:
+            pc = "mem_ppc_resetCounter";
+            break;
+        //DEP => (C&DH subsystem)
+        case mem_dep_ant_deployed:
+            pc = "mem_dep_ant_deployed";
+            break;
+        case mem_dep_ant_tries:
+            pc = "mem_dep_ant_tries";
+            break;
+        case mem_dep_year:
+            pc = "mem_dep_year";
+            break;
+        case mem_dep_month:
+            pc = "mem_dep_month";
+            break;
+        case mem_dep_week_day:
+            pc = "mem_dep_week_day";
+            break;
+        case mem_dep_day_number:
+            pc = "mem_dep_day_number";
+            break;
+        case mem_dep_hours:
+            pc = "mem_dep_hours";
+            break;
+        case mem_dep_minutes:
+            pc = "mem_dep_minutes";
+            break;
+        case mem_dep_seconds:
+            pc = "mem_dep_seconds";
+            break;
+            //Flight Plan
+        case mem_fpl_index:
+            pc = "mem_fpl_index";
+            break;
+            //PAYLOAD
+        case mem_pay_langmuirProbe_state:
+            pc = "mem_pay_langmuirProbe_state";
+            break;
+        case mem_pay_sensTemp_state:
+            pc = "mem_pay_sensTemp_state";
+            break;
+        case mem_pay_gps_state:
+            pc = "mem_pay_gps_state";
+            break;
+        case mem_pay_expFis_state:
+            pc = "mem_pay_expFis_state";
+            break;
+        case mem_pay_camera_state:
+            pc = "mem_pay_camera_state";
+            break;
+        case mem_pay_gyro_state:
+            pc = "mem_pay_gyro_state";
+            break;
+        case mem_pay_tmEstado_state:
+            pc = "mem_pay_tmEstado_state";
+            break;
+        case mem_pay_battery_state:
+            pc = "mem_pay_battery_state";
+            break;
+        case mem_pay_debug_state:
+            pc = "mem_pay_debug_state";
+            break;
+            //TRX
+        case mem_trx_count_tm:
+            pc = "mem_trx_count_tm";
+            break;
+        case mem_trx_count_tc:
+            pc = "mem_trx_count_tc";
+            break;
+        case mem_trx_day_last_tc:
+            pc = "mem_trx_day_last_tc";
+            break;
+        case mem_trx_beacon_period:
+            pc = "mem_trx_beacon_period";
+            break;
+        case mem_trx_beacon_bat_lvl:
+            pc = "mem_trx_beacon_bat_lvl";
+            break;
+        case mem_trx_rx_baud:
+            pc = "mem_trx_rx_baud";
+            break;
+        case mem_trx_tx_baud:
+            pc = "mem_trx_tx_baud";
+            break;
+        default:
+            pc = "unknown MemEEPROM_Vars";
+            break;
+    }
+    return pc;
+}
+

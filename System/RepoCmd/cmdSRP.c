@@ -31,6 +31,7 @@ void srp_onResetCmdSRP(){
 
     srpFunction[(unsigned char)srp_id_debug] = srp_debug;
     //De display
+    srpFunction[(unsigned char)srp_id_print_MemEEPROM_Vars] = srp_print_MemEEPROM_Vars;
     srpFunction[(unsigned char)srp_id_print_STA_stateVar] = srp_print_STA_stateVar;
     //De update en general en sta_stateVar
     srpFunction[(unsigned char)srp_id_increment_STA_stateVar_hoursAlive] = srp_increment_STA_stateVar_hoursAlive;
@@ -200,6 +201,9 @@ int srp_memEEPROM_initial_state(void * param){
     arg = 0;    //not deployed
     trx_initialize(&arg);
 
+    printf("[srp_memEEPROM_initial_state] All MemEEPROM_Vars variables:\r\n");
+    srp_print_MemEEPROM_Vars(NULL);
+
     printf("[srp_memEEPROM_initial_state] All STA_StateVar variables:\r\n");
     //print all SatatusVars
     srp_print_STA_stateVar(NULL);
@@ -227,6 +231,22 @@ int srp_print_STA_stateVar(void *param)
     for(indxVar=0; indxVar<sta_busStateVar_last_one; indxVar++){
         val = sta_get_BusStateVar(indxVar);
         printf("    * sta_get_stateVar(%d = %s) = 0x%X = %d \r\n", indxVar, sta_BusStateVarToString(indxVar), val, val);
+    }
+    printf("===============================\r\n");
+
+    return 1;
+}
+
+int srp_print_MemEEPROM_Vars(void *param)
+{
+    printf("===============================\r\n");
+    printf("MemEEPROM_Vars content: \r\n");
+    printf("===============================\r\n");
+
+    MemEEPROM_Vars indxVar; int val;
+    for(indxVar=0; indxVar<mem_last_one; indxVar++){
+        val = mem_getVar(indxVar);
+        printf("    * mem_getVar(%d = %s) = 0x%X = %d \r\n", indxVar, mem_MemEEPROM_VarsToString(indxVar), val, val);
     }
     printf("===============================\r\n");
 

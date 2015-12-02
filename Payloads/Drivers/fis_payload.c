@@ -20,7 +20,7 @@
 #include "fis_payload.h"
 #include "interfaz_ADC.h"
 
-#define _FISICA_VERBOSE_ITERATE      (1)
+#define _FISICA_VERBOSE_ITERATE      (0)
 #define _FISICA_VERBOSE_TIMER4_ISR   (0)
 #define _FISICA_VERBOSE_TIMER5_ISR   (0)
 #define _FISICA_VERBOSE_TIMER4_CFG   (0)
@@ -311,12 +311,6 @@ Fis_States fis_next_state_logic(Fis_States curr_state){
             curr_state = FIS_WAITING;
         break;
         case FIS_WAITING:
-//            if(fis_sample == FIS_SIGNAL_SAMPLES && fis_current_round == fis_rounds && fis_signal_period_ind == (fis_signal_period_len-1)) {
-//                curr_state = FIS_DONE;
-//            }
-//            else{
-//                curr_state = FIS_WAITING;
-//            }
             curr_state = FIS_DONE;
         break;
         case FIS_DONE:
@@ -334,49 +328,21 @@ Fis_States fis_next_state_logic(Fis_States curr_state){
 Fis_States fis_current_state_control(Fis_States curr_state){
     printf("[fis_current_state_control] curr_state is %d\r\n", curr_state);
 
-    static unsigned int fis_round;
-    static unsigned int fis_iteration;
-    static unsigned int fis_DAC_period_us = 100;    // 0.1 ms
-    static unsigned int fis_ADC_period_us = 50;     // 0.05 ms
-
     switch(curr_state){
         case FIS_OFF:
             // do nothing ..
         break;
         case FIS_READY:
-            printf("    Configuring expFis ..\n");
-            printf("    Round %d/%d\n", fis_round, FIS_NUM_ROUNDS);
-            printf("    Iteration %d/%d \n", fis_iteration, FIS_NUM_ITERATIONS);
-            printf("    DAC period %d [us]\n", fis_DAC_period_us);
-            printf("    ADC period %d [us]\n", fis_ADC_period_us);
-
+            //
         break;
         case FIS_RUNNING:
-            printf("    Starting expFis ..\n");
-
-            for(fis_round=1; fis_round<=FIS_NUM_ROUNDS; fis_round++){
-                printf("    Round %d/%d\n", fis_round, FIS_NUM_ROUNDS);
-                for(fis_iteration=1; fis_iteration<=FIS_NUM_ITERATIONS; fis_iteration++){
-                    printf("    Iteration %d/%d \n", fis_iteration, FIS_NUM_ITERATIONS);
-                    printf("    Filling sens_buff ..\n");
-
-                    // write DAC
-                    // wait
-                    __delay_us(fis_ADC_period_us)
-                    // read ADC
-                    // wait
-                    __delay_us(fis_ADC_period_us)
-                    // read ADC
-                    // save into sens_buff[]
-                }
-                // save sens_buff[] into SD mem
-            }
+            ///
         break;
         case FIS_WAITING:
             //
         break;
         case FIS_DONE:
-            printf("    expFis completed\n");
+            //
         break;
         default:
             printf("[fis_current_state_control] ERROR: curr_state in default state\r\n");
@@ -507,11 +473,11 @@ void fis_run(const unsigned int period){
     fis_ADC_config();   //configura los registros del ADC
     fis_Timer4_config(period_DAC);  //DAC
     fis_Timer5_config(period_ADC);  //ADC
-    //fis_Timer45_begin();
     fis_state = FIS_STATE_WORKING;
     #if (_FISICA_VERBOSE_ITERATE > 0)
         printf("expFis ISRs are up..\r\n");
     #endif
+    fis_Timer45_begin();
 }
 
 /* 
@@ -570,7 +536,7 @@ void fis_ADC_config(void){
     config2 = ADC_VREF_AVDD_AVSS & ADC_SCAN_ON & ADC_INTR_EACH_CONV & ADC_ALT_BUF_OFF & ADC_ALT_INPUT_OFF;
     /* AD1CON3
      * AD1CON2bits.SMPI controla los flag de interrupciones en el registro AD1IF
-     * El flag de interrupcion se setea despu�s de la cantidad de conversiones correspondientes
+     * El flag de interrupcion se setea despu?s de la cantidad de conversiones correspondientes
      * por el valor en estos bits. SMPI tiene un maximo de 16, ya que hay 16 buffers del ADC
      * config3 = 0x6A00 = 0b 0110 1010 0000 0000
      * i want  = 0x0A00 = 0b 0000 1010 0000 0000
@@ -626,7 +592,7 @@ void fis_ADC_config(void){
  */
 void fis_Timer4_config(unsigned int period){    //CONFIGURAR EL POSTSCALER A 64
     //                      7654321076543210
-    unsigned int config = 0b1000000000100000; //T4_ON & T4_GATE_OFF & T4_IDLE_CON & T4_PS_1_64 & T4_SOURCE_INT & T4_32BIT_MODE_OFF;
+    unsigned int config = 0b0000000000100000; //T4_ON & T4_GATE_OFF & T4_IDLE_CON & T4_PS_1_64 & T4_SOURCE_INT & T4_32BIT_MODE_OFF;
    
     WriteTimer4(0x0000);
     OpenTimer4( config, period );
@@ -655,7 +621,7 @@ void fis_Timer4_config(unsigned int period){    //CONFIGURAR EL POSTSCALER A 64
  */
 void fis_Timer5_config(unsigned int period){//CONFIGURAR EL POSTSCALER A 64
     //                      7654321076543210
-    unsigned int config = 0b1000000000100000; //T5_ON & T5_GATE_OFF & T5_IDLE_CON & T5_PS_1_64 & T5_SOURCE_INT;
+    unsigned int config = 0b0000000000100000; //T5_ON & T5_GATE_OFF & T5_IDLE_CON & T5_PS_1_64 & T5_SOURCE_INT;
     WriteTimer5(0x0000);
     OpenTimer5( config, period );
     EnableIntT5;
@@ -706,7 +672,7 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
         //if(fis_current_round < FIS_ROUNDS){    //there are some waveforms left
             //fis_current_round++;
             //srand(seed[fis_current_round]);
-            //falta introducir un metodo para cambiar el periodo de la se�al!!!
+            //falta introducir un metodo para cambiar el periodo de la se?al!!!
             #if _FISICA_VERBOSE_TIMER4_ISR > 0
                 printf("    srand(%d)\n",seed[fis_current_round]);
             #endif

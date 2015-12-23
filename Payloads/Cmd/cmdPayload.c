@@ -248,7 +248,7 @@ int pay_exec_expFis(void *param){
             #endif
         }
         //MUCH POWER!
-        printf("Clearing WDT to avoid reset ( MUCH POWER! ) ");
+        printf("Clearing WDT to avoid reset ( MUCH POWER! ) \n");
         ClrWdt();
     }
 
@@ -262,6 +262,7 @@ int pay_exec_expFis(void *param){
     }
     //return -1 if failed (rc < 0)
     //return +1 if succesfull (rc > 0)
+    printf("pay_exec finished\n");
     return (rc < 0)? 0 : 1;
 
 }
@@ -273,10 +274,12 @@ int pay_adhoc_expFis(void *param){
 //    }
 //    return 1;
 
-    int frec_array[] = {10, 50, 100, 200, 500, 1000, 5000, 10000};
-    int len_frec_array = 8;
+    unsigned int frec_array[] = {10, 15, 20, 30, 60, 100, 200, 400, 600, 
+        1000, 4000, 8000, 12000, 20000, 35000, 50000};
+    int len_frec_array = 16;
     
-    int res, i, frec;
+    int res, i;
+    unsigned int frec;
     for(i=0;i<len_frec_array;i++){
         frec = frec_array[i];
         res = pay_conf_expFis(&frec);

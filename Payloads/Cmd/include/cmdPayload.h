@@ -64,7 +64,7 @@ typedef enum{
     pay_id_debug_sensTemp, ///< @cmd
 
     pay_id_isAlive_gyro, ///< @cmd  //0x600F
-    pay_id_get_state_gyro, ///< @cmd
+    pay_id_get_state_gyro, ///< @cmd    //0x6010
     pay_id_set_state_gyro, ///< @cmd
     pay_id_init_gyro, ///< @cmd
     pay_id_take_gyro, ///< @cmd
@@ -75,14 +75,14 @@ typedef enum{
     pay_id_get_state_camera, ///< @cmd
     pay_id_set_state_camera, ///< @cmd
     pay_id_init_camera, ///< @cmd
-    pay_id_take_camera, ///< @cmd
+    pay_id_take_camera, ///< @cmd   //0x601A
     pay_id_stop_camera, ///< @cmd
     pay_id_takePhoto_camera, ///< @cmd
     pay_id_get_savedPhoto_camera, ///< @cmd
 
     pay_id_isAlive_gps, ///< @cmd   //0X601E
-    pay_id_get_state_gps, ///< @cmd
-    pay_id_set_state_gps, ///< @cmd
+    pay_id_get_state_gps, ///< @cmd //0x601F
+    pay_id_set_state_gps, ///< @cmd //0x6020
     pay_id_init_gps, ///< @cmd
     pay_id_take_gps, ///< @cmd
     pay_id_stop_gps, ///< @cmd

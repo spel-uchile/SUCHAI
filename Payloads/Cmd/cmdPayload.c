@@ -923,20 +923,22 @@ int pay_init_gps(void *param){
         pay_save_date_time_to_Payload_Buff(dat_pay_gps);
     #endif
 
-    return 0;
-//    //configure Payload
-//    int res;
-//    res = 0;    //not implemented yet => always dead ..
-//
-//    //check SW and CHECK pins (not definitive)
-//    PPC_GPS_SWITCH = 0;
-//    printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
-//    PPC_GPS_SWITCH = 1;
-//    __delay_ms(50); //wait while port write takes effect
-//    printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
-//    printf("  sta_pay_gps_isAlive = %d \r\n", sta_get_stateVar(sta_pay_gps_isAlive) );
-//
-//    return pay_isAlive_gps(NULL);
+//    return 0;
+    //configure Payload
+    int res;
+    res = 0;    //not implemented yet => always dead ..
+
+    //check SW and CHECK pins (not definitive)
+    PPC_GPS_SWITCH = 0;
+    printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
+    PPC_GPS_SWITCH = 1;
+    __delay_ms(100); //wait while port write takes effect
+    printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
+    printf("  sta_pay_gps_isAlive = %d \r\n", sta_get_PayStateVar(sta_pay_gps_isAlive) );
+
+    pay_gps_model(NULL);
+
+    return pay_isAlive_gps(NULL);
 }
 int pay_take_gps(void *param){
     printf("pay_take_gps ..\r\n");
@@ -964,7 +966,7 @@ int pay_stop_gps(void *param){
 
     printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
     PPC_GPS_SWITCH = 0;
-    __delay_ms(50); //wait while port write takes effect
+    __delay_ms(100); //wait while port write takes effect
     printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
 
     return 1;
@@ -972,15 +974,15 @@ int pay_stop_gps(void *param){
 //       // FUNCTIONAL
 //       if((strcmp(con_cmd, "model") == 0) )
 int pay_gps_model(void *param){
-    con_printf("Model command returned: ");
+    printf("Model command returned: ");
     unsigned char suc_model;
     suc_model = gps_model();
     __delay_ms(5);
     //
-    con_printf("Exitcode: ");
+    printf("Exitcode: ");
     __delay_ms(2);
     con_putc(suc_model+0x30);
-    con_printf("\n\r");
+    printf("\n\r");
     __delay_ms(5);
 
     gps_clear_buffer();
@@ -1484,6 +1486,7 @@ void pay_fp2_simultaneous(void)
         //continue if it's no time for pay_i yet
         pay_i_tick_rate = pay_fp2_get_exec_rate(pay_i);
         if( exec_tick%pay_i_tick_rate != 0 ){continue;}
+        
 
         #if (SCH_TFLIGHTPLAN2_VERBOSE>=1)
             printf("  pay_i = %d = %s \r\n", pay_i, dat_get_payload_name(pay_i) );

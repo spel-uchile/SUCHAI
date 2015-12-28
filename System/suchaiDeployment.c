@@ -388,7 +388,7 @@ void dep_init_suchai_tasks(void)
 int dep_init_sysbus_hw(void *param)
 {
     int resp;
-    STA_BusStateVar hw_isAlive;
+    //STA_BusStateVar hw_isAlive;
 
     #if (SCH_TDEPLOYMENT_VERBOSE>=1)
         printf("\n[dep_init_bus_hw] Initializig external hardware...\r\n");
@@ -438,8 +438,7 @@ int dep_init_sysbus_hw(void *param)
             printf("    * External TRX .. ");
         #endif
         //Check if suchai is deployed to select correct trx configuration
-        hw_isAlive = sta_dep_ant_deployed;
-        int deployed = sta_get_BusStateVar(hw_isAlive);
+        int deployed = sta_get_BusStateVar(sta_dep_ant_deployedAlive);
         //Initialize trx
         resp  = trx_initialize(&deployed);
         //hw_isAlive = sta_TRX_isAlive;
@@ -499,8 +498,7 @@ int dep_init_sysbus_hw(void *param)
         #if (SCH_TDEPLOYMENT_VERBOSE>=2)
             printf("    * External Antenna .. ");
         #endif
-        hw_isAlive = sta_AntSwitch_isOpen;
-        resp = sta_get_BusStateVar(hw_isAlive);
+        resp = sta_get_BusStateVar(sta_AntSwitch_isOpen);
         //hw_isAlive = sta_Antenna_isDeployed;
         //sta_set_stateVar(hw_isAlive, resp);
         #if (SCH_TDEPLOYMENT_VERBOSE>=2)

@@ -65,14 +65,18 @@ int srp_increment_STA_stateVar_hoursAlive(void *param){
     return 1;
 }
 int srp_increment_STA_stateVar_nSended_tm(void *param){
-    int arg = sta_get_BusStateVar(sta_trx_count_tm)+1;
-    trx_set_count_tm(&arg);
+    #if (SCH_TRX_ONBOARD==1)
+        int arg = sta_get_BusStateVar(sta_trx_count_tm)+1;
+        trx_set_count_tm(&arg);
+    #endif
 
     return 1;
 }
 int srp_increment_STA_stateVar_nReceived_tc(void *param){
-    int arg = sta_get_BusStateVar(sta_trx_count_tc)+1;
-    trx_set_count_tc(&arg);
+    #if (SCH_TRX_ONBOARD==1)
+        int arg = sta_get_BusStateVar(sta_trx_count_tc)+1;
+        trx_set_count_tc(&arg);
+    #endif
     return 1;
 }
 

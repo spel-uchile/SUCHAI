@@ -22,8 +22,8 @@
 /* Bus Onboard */
 #define SCH_SYSBUS_ONBOARD                  (1)  //< Onboard => I2C1 en uso
 #define SCH_PAYBUS_ONBOARD                  (1)  ///< Onboard => I2C3 en uso
-#define SCH_ANTENNA_ONBOARD                 (1) ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
-#define SCH_TRX_ONBOARD                     (1) ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
+#define SCH_ANTENNA_ONBOARD                 (0) ///< Onboard => 3 pin(es) en modo Switch, 1 pin(es) en modo Check
+#define SCH_TRX_ONBOARD                     (0) ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
 #define SCH_RTC_ONBOARD                     (1) ///< 1 = Onboard 0 = Not Onboard
 #define SCH_MEMEEPROM_ONBOARD               (1) ///< 1 = Onboard 0 = Not Onboard
 #define SCH_EPS_ONBOARD                     (0) ///< Onboard => I2C1 en uso
@@ -35,10 +35,10 @@
 #define SCH_PAY_SENSTEMP_ONBOARD            (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 #define SCH_PAY_TMESTADO_ONBOARD            (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 #define SCH_PAY_BATTERY_ONBOARD             (0)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
-#define SCH_PAY_GYRO_ONBOARD                (0)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
-#define SCH_PAY_GPS_ONBOARD                 (0)  ///< Onboard => UART4 en uso, 1 pin(es) en modo Switch
-#define SCH_PAY_CAM_nMEMFLASH_ONBOARD       (0)  ///< Onboard => SPI-1 asignado a la Camara. Offboard => SPI-1 asignado a memFlash
-#define SCH_PAY_FIS_ONBOARD                 (0)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
+#define SCH_PAY_GYRO_ONBOARD                (1)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
+#define SCH_PAY_GPS_ONBOARD                 (1)  ///< Onboard => UART4 en uso, 1 pin(es) en modo Switch
+#define SCH_PAY_CAM_nMEMFLASH_ONBOARD       (1)  ///< Onboard => SPI-1 asignado a la Camara. Offboard => SPI-1 asignado a memFlash
+#define SCH_PAY_FIS_ONBOARD                 (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 #define SCH_PAY_DEBUG_ONBOARD               (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 
 /******************************************************************************/

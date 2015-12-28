@@ -98,12 +98,6 @@ void taskHousekeeping(void *param)
             #endif
             //Add commands below ..
 
-            //test trx ping
-//            sta_get_stateVar(sta_TRX_isAlive);
-//            NewCmd.cmdId = trx_id_isAlive;
-//            NewCmd.param = 0;
-//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-
             //update SOC and other stuctures
             #if (SCH_EPS_ONBOARD==1)
                 NewCmd.cmdId = eps_id_update_internal_vars;
@@ -158,6 +152,12 @@ void taskHousekeeping(void *param)
                 printf("[Houskeeping] 1[hr] actions ..\r\n");
             #endif
             //Add commands below ..
+
+            //test trx ping
+            sta_get_BusStateVar(sta_TRX_isAlive);
+            NewCmd.cmdId = trx_id_isAlive;
+            NewCmd.param = 0;
+            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
             // hoursWithoutReset++
             NewCmd.cmdId = srp_id_increment_STA_stateVar_hoursWithoutReset;

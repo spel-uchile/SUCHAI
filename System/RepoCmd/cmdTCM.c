@@ -109,7 +109,8 @@ int tcm_sendTM_all_pay_i(void *param){
     for(pay_i=0; pay_i<dat_pay_last_one; pay_i++)
     {
         // Do not send TM if payloads are not onbard
-        if(SCH_PAY_FIS_ONBOARD==0 && pay_i==dat_pay_expFis){continue;}
+        //special case, not executed by FP2
+        //if(SCH_PAY_FIS_ONBOARD==0 && pay_i==dat_pay_expFis){continue;}
         if(SCH_PAY_GPS_ONBOARD==0 && pay_i==dat_pay_gps){continue;}
         if(SCH_PAY_BATTERY_ONBOARD==0 && pay_i==dat_pay_battery){continue;}
         if(SCH_PAY_DEBUG_ONBOARD==0 && pay_i==dat_pay_debug){continue;}
@@ -117,7 +118,8 @@ int tcm_sendTM_all_pay_i(void *param){
         if(SCH_PAY_LANGMUIR_ONBOARD==0 && pay_i==dat_pay_langmuirProbe){continue;}
         if(SCH_PAY_TMESTADO_ONBOARD==0 && pay_i==dat_pay_tmEstado){continue;}
         if(SCH_PAY_SENSTEMP_ONBOARD==0 && pay_i==dat_pay_sensTemp){continue;}
-        if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==0 && pay_i==dat_pay_camera){continue;}
+        //special case, not executed by FP2
+        //if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==0 && pay_i==dat_pay_camera){continue;}
         printf("sending pay_i = %s", dat_get_payload_name(pay_i));
         tcm_sendTM_pay_i( (void *)(&pay_i) );
     }

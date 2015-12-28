@@ -476,30 +476,32 @@ char* sta_BusStateVarToString(STA_BusStateVar var_i){
         /* Revisar de aqui hacia abajo si aun son necesarios !!! */
 
         //TRX => (Communication subsystem)
-        case sta_trx_opmode:           // Operation mode
-            pc = "sta_trx_opmode";
-     	    break;
-        case sta_trx_count_tm:         // number of sended TM
-            pc = "sta_trx_count_tm";
-     	    break;
-        case sta_trx_count_tc:         // number of received TC
-            pc = "sta_trx_count_tc";
-     	    break;
-        case sta_trx_day_last_tc:      // day of the last received tc (since 1/1/00)
-            pc = "sta_trx_day_last_tc";
-     	    break;
-        case sta_trx_beacon_period:
-            pc = "sta_trx_beacon_period";
-            break;
-        case sta_trx_beacon_bat_lvl:
-            pc = "sta_trx_beacon_bat_lvl";
-            break;
-        case sta_trx_rx_baud:
-            pc = "sta_trx_rx_baud";
-            break;
-        case sta_trx_tx_baud:
-            pc = "sta_trx_tx_baud";
-            break;
+        #if (SCH_TRX_ONBOARD==1)
+            case sta_trx_opmode:           // Operation mode
+                pc = "sta_trx_opmode";
+                break;
+            case sta_trx_count_tm:         // number of sended TM
+                pc = "sta_trx_count_tm";
+                break;
+            case sta_trx_count_tc:         // number of received TC
+                pc = "sta_trx_count_tc";
+                break;
+            case sta_trx_day_last_tc:      // day of the last received tc (since 1/1/00)
+                pc = "sta_trx_day_last_tc";
+                break;
+            case sta_trx_beacon_period:
+                pc = "sta_trx_beacon_period";
+                break;
+            case sta_trx_beacon_bat_lvl:
+                pc = "sta_trx_beacon_bat_lvl";
+                break;
+            case sta_trx_rx_baud:
+                pc = "sta_trx_rx_baud";
+                break;
+            case sta_trx_tx_baud:
+                pc = "sta_trx_tx_baud";
+                break;
+        #endif
         default:
             pc = "unknown BusStateVar";
             break;

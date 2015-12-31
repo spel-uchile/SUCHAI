@@ -988,9 +988,9 @@ void GPIO_PC104_init(void)
         iPPSInput(IN_FN_PPS_U4RX,IN_PIN_PPS_RP18);
 
         //UART4 para GPS
-        ConfigRS232(25, RS2_M_UART4);
-        //EnableIntU4RX;
-        //SetPriorityIntU4RX(5);
+        ConfigRS232(8, RS2_M_UART4);
+        EnableIntU4RX;
+        SetPriorityIntU4RX(5);
     #else
         // H2.15	PGED3/AN4/C1INB/RP28/CN6/RB4 (Pin 21) => pin es RB4
         _PCFG4=1; 			//pin 0-ADC 1- I/O

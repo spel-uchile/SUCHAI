@@ -83,7 +83,7 @@ typedef enum{
     pay_id_isAlive_gps, ///< @cmd   //0X601E
     pay_id_get_state_gps, ///< @cmd
     pay_id_set_state_gps, ///< @cmd
-    pay_id_init_gps, ///< @cmd
+    pay_id_init_gps, ///< @cmd      //0X6021
     pay_id_take_gps, ///< @cmd
     pay_id_stop_gps, ///< @cmd
            

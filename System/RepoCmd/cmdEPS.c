@@ -88,39 +88,34 @@ int  eps_readreg(void *param)
 {
     unsigned char argu = *((unsigned char *)(param));
     int lectura;
-    #if(SCH_CMDEPS_VERBOSE > 1)
-        char buffer[40];
-    #endif
 
     if(argu<32){
         lectura = (int)ADCReadEPS(argu);
         #if(SCH_CMDEPS_VERBOSE > 1)
-            sprintf (buffer, "Lectura ADC: reg[%d]=", argu);
-            con_printf(buffer);
+            printf("Lectura ADC: reg[%d]=", argu);
         #endif
     }
     else if(argu==32){
             lectura = (int)StatusReadEPS();
             #if(SCH_CMDEPS_VERBOSE > 1)
-                con_printf("Lectura Status:");
+                printf("Lectura Status:");
             #endif
     }
     else if(argu==33){
         lectura = (int)VersionReadEPS();
         #if(SCH_CMDEPS_VERBOSE > 1)
-            con_printf("Lectura Version:");
+            printf("Lectura Version:");
         #endif
     }
     else {
         lectura = (int)readEPSvars(EPS_ID_current_dir_est);
         #if(SCH_CMDEPS_VERBOSE > 1)
-            con_printf("Estimacion Current Direction (0-Ch, 1-Disch):");
+            printf("Estimacion Current Direction (0-Ch, 1-Disch):");
         #endif
     }
 
     #if(SCH_CMDEPS_VERBOSE > 1)
-        sprintf (buffer, "%d (dec), 0x%X (hex)\r\n", lectura, lectura);
-        con_printf(buffer);
+        printf("%d (dec), 0x%X (hex)\r\n", lectura, lectura);
     #endif
     
     return lectura;

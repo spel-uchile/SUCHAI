@@ -929,40 +929,98 @@ int pay_init_gps(void *param){
     res = 0;    //not implemented yet => always dead ..
 
     //check SW and CHECK pins (not definitive)
-    PPC_GPS_SWITCH = 0;
+    //PPC_GPS_SWITCH = 0;
     printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
     PPC_GPS_SWITCH = 1;
     __delay_ms(100); //wait while port write takes effect
     printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
     printf("  sta_pay_gps_isAlive = %d \r\n", sta_get_PayStateVar(sta_pay_gps_isAlive) );
 
-    pay_gps_model(NULL);
+//    int i;
+//    for(i=0;i<10;i++){
+//        gps_exe_cmd(TRUE);
+//    }
+    
+//    pay_gps_model(NULL);
+//    pay_gps_serial(NULL);
+//    pay_gps_senddn(NULL);
+//    pay_gps_jmesg(NULL);
+//    pay_gps_jsat(NULL);
 
     return pay_isAlive_gps(NULL);
 }
 int pay_take_gps(void *param){
     printf("pay_take_gps ..\r\n");
 
-    #if(PAY_TSPAIR_nSLIST == 0)
-        //save date_time in 2ints
-        pay_save_date_time_to_Payload_Buff(dat_pay_gps);
-    #endif
+//    #if(PAY_TSPAIR_nSLIST == 0)
+//        //save date_time in 2ints
+//        pay_save_date_time_to_Payload_Buff(dat_pay_gps);
+//    #endif
 
-    //in case of failure
-    if( pay_isAlive_gps(NULL) == 0 ){
-        printf("gps is not alive!..\r\n");
-        dat_set_Payload_Buff(dat_pay_gps ,0xFAFA);
-        //turn GPS off
-        PPC_GPS_SWITCH = 0;
-        return 0;
+    unsigned int gps_cmdnum = *((unsigned int *)param);
+    unsigned char *gps_buff;
+    unsigned int i=0, gps_buff_len = 0;
+    
+//    gps_buff = gps_exec_cmd(22);
+//    gps_buff_len = strlen((const char*)gps_buff);
+//    printf("gps_buff: %s", gps_buff);
+//    for(i=0; i<gps_buff_len; i++){
+//        dat_set_Payload_Buff(dat_pay_gps, gps_buff[i]);
+//        printf("gps_buff[%d] = %c \r\n", i, gps_buff[i]);
+//    }
+//    gps_clear_buffer();
+//    gps_clearUARTbuffer();
+//
+//    gps_buff = gps_exec_cmd(23);
+//    gps_buff_len = strlen((const char*)gps_buff);
+//    printf("gps_buff: %s", gps_buff);
+//    for(i=0; i<gps_buff_len; i++){
+//        dat_set_Payload_Buff(dat_pay_gps, gps_buff[i]);
+//        printf("gps_buff[%d] = %c \r\n", i, gps_buff[i]);
+//    }
+//    gps_clear_buffer();
+//    gps_clearUARTbuffer();
+//
+//    gps_buff = gps_exec_cmd(24);
+//    gps_buff_len = strlen((const char*)gps_buff);
+//    printf("gps_buff: %s", gps_buff);
+//    for(i=0; i<gps_buff_len; i++){
+//        dat_set_Payload_Buff(dat_pay_gps, gps_buff[i]);
+//        printf("gps_buff[%d] = %c \r\n", i, gps_buff[i]);
+//    }
+//    gps_clear_buffer();
+//    gps_clearUARTbuffer();
+
+    gps_buff = gps_exec_cmd(gps_cmdnum);    // RMC nmea sentence
+    gps_buff_len = strlen((const char*)gps_buff);
+    printf("gps_buff: %s", gps_buff);
+    for(i=0; i<gps_buff_len; i++){
+        dat_set_Payload_Buff(dat_pay_gps, gps_buff[i]);
+        //printf("gps_buff[%d] = %c \r\n", i, gps_buff[i]);
     }
-
-    //save data
+    gps_clear_buffer();
+    gps_clearUARTbuffer();
 
     return 1;
 }
 int pay_stop_gps(void *param){
     printf("pay_stop_gps ..\r\n");
+
+    //Save time from RTC and GPS to compare
+    pay_save_date_time_to_Payload_Buff(dat_pay_gps);
+    unsigned char *gps_buff;
+    unsigned int i=0, gps_buff_len = 0;
+    gps_buff = gps_exec_cmd(25);    // RMC nmea sentence
+    gps_buff_len = strlen((const char*)gps_buff);
+    printf("gps_buff: %s", gps_buff);
+    for(i=0; i<gps_buff_len; i++){
+        dat_set_Payload_Buff(dat_pay_gps, gps_buff[i]);
+        printf("gps_buff[%d] = %c \r\n", i, gps_buff[i]);
+    }
+    gps_clear_buffer();
+    gps_clearUARTbuffer();
+
+    //update RTC time
 
     printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
     PPC_GPS_SWITCH = 0;
@@ -974,93 +1032,28 @@ int pay_stop_gps(void *param){
 //       // FUNCTIONAL
 //       if((strcmp(con_cmd, "model") == 0) )
 int pay_gps_model(void *param){
-    printf("Model command returned: ");
-    unsigned char suc_model;
-    suc_model = gps_model();
-    __delay_ms(5);
-    //
-    printf("Exitcode: ");
-    __delay_ms(2);
-    con_putc(suc_model+0x30);
-    printf("\n\r");
-    __delay_ms(5);
-
-    gps_clear_buffer();
-    gps_clearUARTbuffer();
     return 1;
 }
 
-//       // FUNCTIONAL
-//       if(strcmp(con_cmd, "serialn") == 0)
 int pay_gps_serial(void *param){
-    con_printf("Serial number command returned: ");
-    unsigned char suc_sn;
-    suc_sn = gps_serialn();
-    __delay_ms(5);
-    con_printf("Exitcode: ");
-    __delay_ms(2);
-    con_putc(suc_sn+0x30);
-    con_printf("\n\r");
-    __delay_ms(5);
-
-    gps_clear_buffer();
-    gps_clearUARTbuffer();
     return 1;
 }
 
 //       // FUNCTIONAL
 //       if(strcmp(con_cmd, "senddm") == 0)
 int pay_gps_senddn(void *param){
-    con_printf("dm command returned: ");			// Turn off all periodic messages
-    unsigned char retdm;
-    retdm = gps_senddm();
-    __delay_ms(5);
-    con_printf("Exitcode: ");
-    __delay_ms(2);
-    con_putc(retdm+0x30);				// Put the exitcode
-    con_printf("\n\r");
-    __delay_ms(5);
-
-    gps_clear_buffer();
-    gps_clearUARTbuffer();
     return 1;
 }
 
 //       // BETA (NOT TOTALLY FUNCTIONAL)
 //       if(strcmp(con_cmd, "jmesg") == 0)
 int pay_gps_jmesg(void *param){
-    unsigned char pove;
-    con_printf("PO/VE ==========================================");
-    con_printf("\n\r");
-    pove = gps_jmsg();
-    __delay_ms(5);
-    con_printf("Exitcode: ");
-    __delay_ms(2);
-    con_putc(pove+0x30);
-    con_printf("\n\r");
-    __delay_ms(5);
-
-    gps_clear_buffer();
-    gps_clearUARTbuffer();
     return 1;
 }
 
 //       // BETA (NOT TOTALLY FUNCTIONAL)
 //       if(strcmp(con_cmd, "jsat") == 0)
 int pay_gps_jsat(void *param){
-    unsigned char np;
-    con_printf("STATUS =============================================");
-    con_printf("\n\r");
-    np = gps_jsat();
-    __delay_ms(5);
-    con_printf("Exitcode: ");
-    __delay_ms(2);
-    con_putc(np+0x30);
-    con_printf("\n\r");
-    __delay_ms(5);
-
-    gps_clear_buffer();
-    gps_clearUARTbuffer();
     return 1;
 }
 
@@ -1196,6 +1189,7 @@ int pay_adhoc_langmuirProbe(void* param)
     int i, j;
 
     //save initial data
+    pay_save_date_time_to_Payload_Buff(dat_pay_langmuirProbe);
     printf("    calling lag_read_cal_packet ..\r\n");
     int lenbuff_cal = lag_read_cal_packet(FALSE);
     for(i=0; i<lenbuff_cal; i++){
@@ -1791,6 +1785,7 @@ void pay_fp2_exec_run_xxx(DAT_Payload_Buff pay_i, PAY_xxx_State state){
                     pay_init_gps(&arg);
                     break;
                 case pay_xxx_state_run_take:
+                    arg = 25;   //gps_cmdnum => RMC nmea sentence
                     pay_take_gps(&arg);
                     break;
                 case pay_xxx_state_run_stop:

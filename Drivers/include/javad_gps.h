@@ -33,10 +33,14 @@ v1.00 (15/04/2013)        	:Initial release
 //void __delay_ms(unsigned long d);   // Estan definidas estas funciones en algun otro lado?
 //void __delay_us(unsigned long d);   // ""
 
+unsigned char *gps_exec_cmd(unsigned int cmd_num);
 unsigned char gps_send_cmd(unsigned char* cmd);
 void gps_clearUARTbuffer(void );        // esta funcion puede que no este en serial_com.h Revisar si es necesaria
+int gps_wait_busy_wtimeout(void);
 
 void gps_clear_buffer(void );
+unsigned char *gps_get_buffer(void);
+void gps_print_buffer(void );
 unsigned char gps_parse(unsigned char success, unsigned char* buf);
 unsigned char gps_serialn(void );
 unsigned char gps_model(void );
@@ -51,6 +55,8 @@ unsigned char gps_parse_jsat(unsigned char success, unsigned char* buf);
 unsigned char gps_jsat(void );
 
 
+
+int gps_exe_cmd(BOOL verb);
 
 #ifdef	__cplusplus
 }

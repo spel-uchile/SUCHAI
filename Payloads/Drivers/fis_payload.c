@@ -217,9 +217,7 @@ unsigned int fis_iterate_config(unsigned int inputSignalPeriod, int rounds){
  * @return 
  *          TRUE if the iteration was successfull
  *          FALSE if not
- */
-
-void fis_iterate(unsigned int *rc, unsigned int timeout_seg){
+ */void fis_iterate(unsigned int *rc, unsigned int timeout_seg){
     #if _FISICA_VERBOSE_ITERATE > 0
         printf("fis_iterate...\n");
     #endif

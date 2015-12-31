@@ -23,7 +23,7 @@
 //cantidad maxima de frencuencias
 //#define FIS_MAX_FREQS (1)
 //cantidad de puntos de de cada se�al generada (largo)
-#define FIS_SIGNAL_POINTS (100)
+#define FIS_SIGNAL_POINTS (10000)
 //numero de muestras por punto generado de la se�al (minimo 2 para cumplir con Nyquist)
 #define FIS_SAMPLES_PER_POINT (2)
 //cantidad de muestras que tiene una se�al/waveform
@@ -33,8 +33,8 @@
 //maximun size for the buffer
 #define FIS_MAX_SENS_BUFF_LEN (1000)
 
-#define FIS_NUM_ROUNDS          (2)
-#define FIS_NUM_ITERATIONS      (3)
+#define FIS_NUM_ROUNDS          (1)
+//#define FIS_NUM_ITERATIONS      (3)
         
 /*
 #if (SCH_PAY_FIS_ONBOARD==1)

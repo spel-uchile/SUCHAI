@@ -99,12 +99,13 @@ unsigned char gps_flag_lastline     = 0;			// This variable indicates when the M
 unsigned char gps_aux[]             = {0x00, 0x00, 0x00};	// This is a variable to check for some particular set of characters in a sentence
 unsigned long gps_cmdl              = 0;			// This variable stores the length of a command
 
-unsigned char gps_data[250];
-
 //Serial ports configuration registers
 #define GPS_BRATE           34 		// 115200 Bd (BREGH=1) @ 32MHz
 #define GPS_U_ENABLE        0x8008		// Enable UART, BREGH=1, 1 stop, no parity
 #define GPS_U_TX            0x0400 		// Enable transmission, clear all flags
+#define GPS_BUFF_LEN        (100) 		// Enable transmission, clear all flags
+
+unsigned char gps_data[GPS_BUFF_LEN];
 //
 
 unsigned char *gps_exec_cmd(unsigned int cmd_num){
@@ -279,11 +280,11 @@ void gps_print_buffer(void){
 void gps_clear_buffer(void ){
     gps_buffer = gps_data;
     unsigned int i;
-    for (i=0; i<249; i++){		// Limit for i should be length(buffer)-1. In this case, length is 250.
+    for (i=0; i<(GPS_BUFF_LEN-1); i++){		// Limit for i should be length(buffer)-1. In this case, length is GPS_BUFF_LEN.
         gps_buffer[i] = '\0';
     }
-    //gps_buffer[248] = '\n';
-    gps_buffer[249] = '\0';
+    //gps_buffer[(GPS_BUFF_LEN-2)] = '\n';
+    gps_buffer[(GPS_BUFF_LEN-1)] = '\0';
 
     gps_buffer = gps_data;  // set back gps_buffer pointer to the first character of gps_data
 }
@@ -1206,15 +1207,15 @@ void __attribute__((__interrupt__, auto_psv)) _U4RXInterrupt(void ){
     gps_data[gps_flag_isr_counter] = c;
     gps_flag_isr_counter++;
 
-    if(gps_flag_isr_counter >= 250){ //Overflow
-        gps_data[249] = '\0';
+    if(gps_flag_isr_counter >= GPS_BUFF_LEN){ //Overflow
+        gps_data[(GPS_BUFF_LEN-1)] = '\0';
         gps_flag_isr_counter = 0;
         DisableIntU4RX;
     }
 
     if(c=='\n'){  // New line => end of cmd
         gps_data[gps_flag_isr_counter] = '\0';
-        gps_data[249] = '\0';
+        gps_data[(GPS_BUFF_LEN-1)] = '\0';
         gps_flag_isr_counter = 0;
         DisableIntU4RX;
         gps_flag_isr_busy = 0;

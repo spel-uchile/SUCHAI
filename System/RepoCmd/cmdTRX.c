@@ -73,16 +73,15 @@ void trx_onResetCmdTRX(void){
  * @return 1 Ok, 0 Fail
  */
 int trx_isAlive(void *param){
-    //int arg = NODE_COM;
-    //return trx_ping(&arg);
+    #if (SCH_TRX_ONBOARD == 0)
+        return 0;
+    #endif
+
+    int arg = NODE_COM;
+    return trx_ping(&arg);
     
     //return trx_getstatus(NULL);
     //return trx_read_conf(NULL);
-    #if (SCH_TRX_ONBOARD == 1)
-        return 1;
-    #else
-        return 0;
-    #endif
 }
 
 /**

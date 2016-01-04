@@ -82,8 +82,8 @@ void pay_onResetCmdPAY(void){
     payFunction[(unsigned char)pay_id_stop_gps] = pay_stop_gps;
     pay_sysReq[(unsigned char)pay_id_stop_gps] =  CMD_SYSREQ_MIN + SCH_PAY_GPS_SYS_REQ;
 
-    payFunction[(unsigned char)pay_id_gps_model] = pay_gps_model;
-    pay_sysReq[(unsigned char)pay_id_gps_model] =  CMD_SYSREQ_MIN;
+    payFunction[(unsigned char)pay_id_gps_updateRTC] = pay_gps_updateRTC;
+    pay_sysReq[(unsigned char)pay_id_gps_updateRTC] =  CMD_SYSREQ_MIN;
     payFunction[(unsigned char)pay_id_gps_serial] = pay_gps_serial;
     pay_sysReq[(unsigned char)pay_id_gps_serial] =  CMD_SYSREQ_MIN;
     payFunction[(unsigned char)pay_id_gps_senddn] = pay_gps_senddn;
@@ -498,14 +498,14 @@ int pay_init_debug(void *param){
 int pay_take_debug(void *param){
     printf("pay_take_debug ..\r\n");
 
-//    #if(PAY_TSPAIR_nSLIST == 1)
-//        //save date_time in 2ints
-//        pay_save_date_time_to_Payload_Buff(dat_pay_debug);
-//    #endif
+    #if(PAY_TSPAIR_nSLIST == 1)
+        //save date_time in 2ints
+        pay_save_date_time_to_Payload_Buff(dat_pay_debug);
+    #endif
 
     //save data
-    int i;
-    for(i=0;i<1;i++){
+    unsigned int i, num_per_take = 1;
+    for(i=0;i<num_per_take;i++){
         pay_debug_cnt++;
         dat_set_Payload_Buff(dat_pay_debug, pay_debug_cnt);
     }
@@ -590,16 +590,19 @@ int pay_take_gyro(void *param){
     //in case of failure
     if( pay_isAlive_gyro(NULL) == 0){
         dat_set_Payload_Buff(dat_pay_gyro ,0xFAFA);
-        printf("pay_take_gyro() failure\r\n");
+        printf("pay_take_gyro failure\r\n");
         return 1;
     }
 
-    //save data
+    //take and save data
     GYR_DATA res_data;
+    gyr_init_config();
     gyr_take_samples(FALSE, &res_data);
     dat_set_Payload_Buff(dat_pay_gyro, res_data.a_x);
     dat_set_Payload_Buff(dat_pay_gyro, res_data.a_y);
     dat_set_Payload_Buff(dat_pay_gyro, res_data.a_z);
+
+    printf("pay_take_gyro a_x = %d, a_y = %d, a_z = %d \r\n", res_data.a_x, res_data.a_y, res_data.a_z);
     
     return 1;
 }
@@ -898,7 +901,9 @@ int pay_camera_get_1int_from_2bytes(void){
 }
 //******************************************************************************
 int pay_isAlive_gps(void *param){
-    if(SCH_PAY_GPS_ONBOARD == 0){return 0;}
+    unsigned char *gps_buff = gps_exec_cmd(5);    // gps_cmd_rcv_model
+    unsigned int gps_buff_len = strlen((const char*)gps_buff);
+    if(gps_buff_len != 0){return 1;}
     return 0;
 }
 int pay_get_state_gps(void *param){
@@ -921,39 +926,32 @@ int pay_init_gps(void *param){
     lenBuff = (unsigned int)(200);   //(1440)  //numero de 10-minutos en un dia
     dat_reset_Payload_Buff(pay_i);
 
-    #if(PAY_TSPAIR_nSLIST == 0)
-        //save date_time in 2ints
-        pay_save_date_time_to_Payload_Buff(dat_pay_gps);
-    #endif
+//    #if(PAY_TSPAIR_nSLIST == 0)
+//        //save date_time in 2ints
+//        pay_save_date_time_to_Payload_Buff(dat_pay_gps);
+//    #endif
 
-//    return 0;
-    //configure Payload
-    int res;
-    res = 0;    //not implemented yet => always dead ..
-
-    //check SW and CHECK pins (not definitive)
-    //PPC_GPS_SWITCH = 0;
+    //Power GPS on
     printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
     PPC_GPS_SWITCH = 1;
     __delay_ms(100); //wait while port write takes effect
     printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
+
+    //check isAlive status
+    printf("  sta_pay_gps_isAlive = %d \r\n", sta_get_PayStateVar(sta_pay_gps_isAlive) );
+    __delay_ms(4000); //wait GPS boots
     printf("  sta_pay_gps_isAlive = %d \r\n", sta_get_PayStateVar(sta_pay_gps_isAlive) );
 
-//    int i;
-//    for(i=0;i<10;i++){
-//        gps_exe_cmd(TRUE);
-//    }
-    
-//    pay_gps_model(NULL);
-//    pay_gps_serial(NULL);
-//    pay_gps_senddn(NULL);
-//    pay_gps_jmesg(NULL);
-//    pay_gps_jsat(NULL);
-
-    return pay_isAlive_gps(NULL);
+    return 1;
 }
 int pay_take_gps(void *param){
     printf("pay_take_gps ..\r\n");
+
+    //Power GPS on
+    printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
+    PPC_GPS_SWITCH = 1;
+    __delay_ms(100); //wait while port write takes effect
+    printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
 
 //    #if(PAY_TSPAIR_nSLIST == 0)
 //        //save date_time in 2ints
@@ -963,44 +961,18 @@ int pay_take_gps(void *param){
     unsigned int gps_cmdnum = *((unsigned int *)param);
     unsigned char *gps_buff;
     unsigned int i=0, gps_buff_len = 0;
-    
-//    gps_buff = gps_exec_cmd(22);
-//    gps_buff_len = strlen((const char*)gps_buff);
-//    printf("gps_buff: %s", gps_buff);
-//    for(i=0; i<gps_buff_len; i++){
-//        dat_set_Payload_Buff(dat_pay_gps, gps_buff[i]);
-//        printf("gps_buff[%d] = %c \r\n", i, gps_buff[i]);
-//    }
-//    gps_clear_buffer();
-//    gps_clearUARTbuffer();
-//
-//    gps_buff = gps_exec_cmd(23);
-//    gps_buff_len = strlen((const char*)gps_buff);
-//    printf("gps_buff: %s", gps_buff);
-//    for(i=0; i<gps_buff_len; i++){
-//        dat_set_Payload_Buff(dat_pay_gps, gps_buff[i]);
-//        printf("gps_buff[%d] = %c \r\n", i, gps_buff[i]);
-//    }
-//    gps_clear_buffer();
-//    gps_clearUARTbuffer();
-//
-//    gps_buff = gps_exec_cmd(24);
-//    gps_buff_len = strlen((const char*)gps_buff);
-//    printf("gps_buff: %s", gps_buff);
-//    for(i=0; i<gps_buff_len; i++){
-//        dat_set_Payload_Buff(dat_pay_gps, gps_buff[i]);
-//        printf("gps_buff[%d] = %c \r\n", i, gps_buff[i]);
-//    }
-//    gps_clear_buffer();
-//    gps_clearUARTbuffer();
 
-    gps_buff = gps_exec_cmd(gps_cmdnum);    // RMC nmea sentence
+    // Get "gps_cmdnum" command
+    // gps_cmdnum = 25 => RMC nmea sentence
+    gps_buff = gps_exec_cmd(gps_cmdnum);
     gps_buff_len = strlen((const char*)gps_buff);
     printf("gps_buff: %s", gps_buff);
     for(i=0; i<gps_buff_len; i++){
         dat_set_Payload_Buff(dat_pay_gps, gps_buff[i]);
         //printf("gps_buff[%d] = %c \r\n", i, gps_buff[i]);
     }
+
+    //Erase gps_buff
     gps_clear_buffer();
     gps_clearUARTbuffer();
 
@@ -1018,23 +990,69 @@ int pay_stop_gps(void *param){
     printf("gps_buff: %s", gps_buff);
     for(i=0; i<gps_buff_len; i++){
         dat_set_Payload_Buff(dat_pay_gps, gps_buff[i]);
-        printf("gps_buff[%d] = %c \r\n", i, gps_buff[i]);
+        //printf("gps_buff[%d] = %c \r\n", i, gps_buff[i]);
     }
-    gps_clear_buffer();
-    gps_clearUARTbuffer();
 
-    //update RTC time
+    //update RTC time using GPS time
+    //0123456789012345678901234567890123456789
+    //$GNRMC,150957.00,V,,,,,,,311215,,,N*69
+    unsigned int gps_hh = (gps_buff[7] - '0')*10 + (gps_buff[8] - '0')*1;
+    unsigned int gps_mm = (gps_buff[9] - '0')*10 + (gps_buff[10] - '0')*1;
+    unsigned int gps_ss = (gps_buff[11] - '0')*10 + (gps_buff[12] - '0')*1;
+    printf("Updating RTC => gps_hh = %d gps_mm = %d gps_ss = %d \r\n", gps_hh, gps_mm, gps_ss);
+    //rtc_adjust_year(&gps_hh);
+    //rtc_adjust_month(&gps_hh);
+    //rtc_adjust_day(&gps_hh);
+    //rtc_adjust_weekday(&gps_hh);
+    rtc_adjust_hour(&gps_hh);
+    rtc_adjust_minutes(&gps_mm);
+    rtc_adjust_seconds(&gps_ss);
+    rtc_print(NULL);
 
+    //Power GPS off
     printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
     PPC_GPS_SWITCH = 0;
     __delay_ms(100); //wait while port write takes effect
     printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );
 
+    //Erase gps_buff
+    gps_clear_buffer();
+    gps_clearUARTbuffer();
+
     return 1;
 }
 //       // FUNCTIONAL
 //       if((strcmp(con_cmd, "model") == 0) )
-int pay_gps_model(void *param){
+int pay_gps_updateRTC(void *param){
+    printf("pay_gps_updateRTC ..\r\n");
+
+    //Get time from GPS
+    unsigned char *gps_buff;
+    unsigned int gps_buff_len = 0;
+    gps_buff = gps_exec_cmd(25);    // RMC nmea sentence
+    gps_buff_len = strlen((const char*)gps_buff);
+    printf("gps_buff: %s", gps_buff);
+
+    //update RTC time using GPS time
+    //01234567890123456789
+    //$GNRMC,150957.00,V,,,,,,,311215,,,N*69
+    unsigned int gps_hh = (gps_buff[7] - '0')*10 + (gps_buff[8] - '0')*1;
+    unsigned int gps_mm = (gps_buff[9] - '0')*10 + (gps_buff[10] - '0')*1;
+    unsigned int gps_ss = (gps_buff[11] - '0')*10 + (gps_buff[12] - '0')*1;
+    printf("gps_hh = %d gps_mm = %d gps_ss = %d \r\n", gps_hh, gps_mm, gps_ss);
+    //rtc_adjust_year(&gps_hh);
+    //rtc_adjust_month(&gps_hh);
+    //rtc_adjust_day(&gps_hh);
+    //rtc_adjust_weekday(&gps_hh);
+    rtc_adjust_hour(&gps_hh);
+    rtc_adjust_minutes(&gps_mm);
+    rtc_adjust_seconds(&gps_ss);
+    rtc_print(NULL);
+
+    //Erase gps_buff
+    gps_clear_buffer();
+    gps_clearUARTbuffer();
+
     return 1;
 }
 
@@ -1153,11 +1171,12 @@ int pay_init_langmuirProbe(void *param){
 int pay_take_langmuirProbe(void *param){
     printf("pay_take_langmuirProbe ..\r\n");
 
+    #if(PAY_TSPAIR_nSLIST == 1)
+        //save date_time in 2ints
+        pay_save_date_time_to_Payload_Buff(dat_pay_langmuirProbe);
+    #endif
+
     //(15 secs delay between commands with an increased delay)
-
-    //save date_time in 2ints
-    pay_save_date_time_to_Payload_Buff(dat_pay_langmuirProbe);
-
     //save data
     int i;
 
@@ -1370,12 +1389,19 @@ int pay_take_sensTemp(void *param){
     int val;
     val=sensTemp_take(ST1_ADDRESS, FALSE);
     dat_set_Payload_Buff(dat_pay_sensTemp, val);
+    printf("pay_take_sensTemp t1 = %d \r\n", val);
+
     val=sensTemp_take(ST2_ADDRESS, FALSE);
     dat_set_Payload_Buff(dat_pay_sensTemp, val);
+    printf("pay_take_sensTemp t2 = %d \r\n", val);
+
     val=sensTemp_take(ST3_ADDRESS, FALSE);
     dat_set_Payload_Buff(dat_pay_sensTemp, val);
+    printf("pay_take_sensTemp t3 = %d \r\n", val);
+
     val=sensTemp_take(ST4_ADDRESS, FALSE);
     dat_set_Payload_Buff(dat_pay_sensTemp, val);
+    printf("pay_take_sensTemp t4 = %d \r\n", val);
 
     return 1;
 }

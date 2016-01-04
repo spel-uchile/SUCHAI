@@ -320,7 +320,7 @@ void dep_init_suchai_tasks(void)
     /* Crating base tasks */
     printf("\n[main] Starting base tasks...\r\n");
     #if(SCH_TASKEXECUTER_INSIDE_TASKDISPATCHER==1)
-        xTaskCreate(taskDispatcher, (signed char *)"DIS", 4*configMINIMAL_STACK_SIZE, NULL, 4, &taskDispatcherHandle);
+        xTaskCreate(taskDispatcher, (signed char *)"DIS", 4.5*configMINIMAL_STACK_SIZE, NULL, 4, &taskDispatcherHandle);
     #else
         xTaskCreate(taskExecuter, (signed char *)"EXE", 3*configMINIMAL_STACK_SIZE, NULL, 4, &taskExecuterHandle);
         xTaskCreate(taskDispatcher, (signed char *)"DIS", 1.5*configMINIMAL_STACK_SIZE, NULL, 3, &taskDispatcherHandle);

@@ -211,7 +211,7 @@
       <logicalFolder name="f3" displayName="Portable" projectFiles="true">
         <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/port.c</itemPath>
         <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/portasm_PIC24.S</itemPath>
-        <itemPath>../FreeRTOS/Source/portable/MemMang/heap_2.c</itemPath>
+        <itemPath>../FreeRTOS/Source/portable/MemMang/heap_1.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f4" displayName="System" projectFiles="true">
         <logicalFolder name="RepoCmd" displayName="RepoCmd" projectFiles="true">

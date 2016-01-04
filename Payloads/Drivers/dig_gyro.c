@@ -463,10 +463,13 @@ void gyr_take_samples(BOOL verb, GYR_DATA *res_data){
     }
     gyr_config_FIFO_mode(0x01);         // Mode to FIFO mode
 
-    while(!GYR_INT2){
+    int counts = 0;
+    while(!GYR_INT2 && counts<10 ){
         if(verb){
             con_printf("GYR_INT2=0\r\n");
         }
+        __delay_ms(1000);
+        counts++;
     }
     __delay_ms(50);
 

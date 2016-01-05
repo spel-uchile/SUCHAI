@@ -101,7 +101,8 @@ void pay_onResetCmdPAY(void){
     payFunction[(unsigned char)pay_id_stop_expFis] = pay_stop_expFis;
     payFunction[(unsigned char)pay_id_adhoc_expFis] = pay_adhoc_expFis;
     payFunction[(unsigned char)pay_id_testDAC_expFis] = pay_testDAC_expFis;
-
+    payFunction[(unsigned char)pay_id_print_seed] = pay_print_seed;
+    
     payFunction[(unsigned char)pay_id_isAlive_battery] = pay_isAlive_battery;
     payFunction[(unsigned char)pay_id_get_state_battery] = pay_get_state_battery;
     payFunction[(unsigned char)pay_id_set_state_battery] = pay_set_state_battery;
@@ -182,7 +183,7 @@ int pay_test_dataRepo(void *param){
 int pay_conf_expFis(void *param){
     //Array of time values between each sample of the ADC
     //int len = 1;
-    unsigned int inputSignalPeriod = *((unsigned int *) param);
+    unsigned int adcPeriod = *((unsigned int *) param);
 
 //    if(inputSignalPeriod < 75) {
 //        printf("periodo muy pequeno!\n Abortando...\n");
@@ -192,11 +193,11 @@ int pay_conf_expFis(void *param){
     int rounds = 1;    //number of iterations done for each ADC_period value
         //debug Info
     #if FIS_CMD_VERBOSE > 0
-        printf("    rounds = %d\n", rounds);
-        printf("    adc period = %d\n", inputSignalPeriod);
+        printf("    rounds = %u\n", rounds);
+        printf("    adc period = %u\n", adcPeriod);
     #endif
     //configure Payload
-    if (!(fis_iterate_config(inputSignalPeriod, rounds) == FIS_STATE_READY)) {
+    if (!(fis_iterate_config(adcPeriod, rounds) == FIS_STATE_READY)) {
         return 0;
     }
     printf("    expFis is READY!\n");
@@ -238,7 +239,7 @@ int pay_exec_expFis(void *param){
             dat_set_Payload_Buff(dat_pay_expFis, temp);
             //dat_set_Payload_Buff_at_indx(dat_pay_expFis, temp, expFis_gpb_indx);
             #if FIS_CMD_VERBOSE > 0
-                printf("    dat_set_Payload_Buff(%d)\n",temp);
+                printf("    dat_set_Payload_Buff(%u)\n",temp);
             #endif
 
             #if FIS_CMD_VERBOSE > 0
@@ -318,13 +319,22 @@ int pay_set_state_expFis(void *param){
 }
 
 int pay_testDAC_expFis(void *param){
-    printf("pay_testDAC_expFis ..\r\n");
+    printf("pay_testDAC_expFis ...\r\n");
 
     unsigned int value = *((unsigned int *) param);
     #if FIS_CMD_VERBOSE
         printf("     parameter value = %u\n", value);
     #endif
     fis_testDAC(value);
+    return 1;
+}
+
+int pay_print_seed(void* param) {
+    printf("pay_print_seed ...\r\n");
+
+    fis_payload_print_seed();
+    
+    printf("pay_print_seed ... finished \r\n");
     return 1;
 }
 
@@ -718,7 +728,7 @@ int pay_set_state_camera(void *param){
     int value = *( (int*)param );
     MemEEPROM_Vars mem_eeprom_var = mem_pay_camera_state;
     writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;
+    return 1;pay_print_seed;
 }
 int pay_init_camera(void *param){
     printf("pay_init_camera ..\r\n");

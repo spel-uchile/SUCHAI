@@ -110,5 +110,6 @@ void fis_payload_writeDAC(unsigned int arg);
 
 void fis_iterate_pause(void);
 void fis_iterate_resume(void);
+void fis_payload_print_seed(void);
 
 #endif

@@ -369,6 +369,17 @@ void fis_testDAC(unsigned int value){
         printf("    Ok\n");
     #endif
 }
+void fis_payload_print_seed(void){
+    unsigned int temp;
+    printf("    fis_payload_print_seed ...\n");
+    fis_seed_init();
+    printf("    srand is set, printing random values ...\n");
+    
+    for(temp = 0; temp < FIS_SIGNAL_POINTS; temp++){
+        printf("    rand() = %d \n",rand());
+    }
+}
+
 
 /*
  * Writes a Digital value in the input Port of this Payload, using the DAC

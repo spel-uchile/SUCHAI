@@ -117,16 +117,13 @@ int srp_memEEPROM_initial_state(void * param){
     drp_fpl_set_index(&arg);
 
     //PAYLOAD
-    dat_reset_Payload_Buff(dat_pay_langmuirProbe);
     #if (SCH_PAY_LANGMUIR_ONBOARD==1)
         arg = pay_xxx_state_active;
         pay_set_state_langmuirProbe(&arg);
     #else
         arg = pay_xxx_state_inactive;
-        pay_set_state_lagmuirProbe(&arg);
+        pay_set_state_langmuirProbe(&arg);
     #endif
-
-    dat_reset_Payload_Buff(dat_pay_sensTemp);
     #if (SCH_PAY_SENSTEMP_ONBOARD==1)
         arg = pay_xxx_state_active;
         pay_set_state_sensTemp(&arg);
@@ -134,8 +131,6 @@ int srp_memEEPROM_initial_state(void * param){
         arg = pay_xxx_state_inactive;
         pay_set_state_sensTemp(&arg);
     #endif
-
-    dat_reset_Payload_Buff(dat_pay_gps);
     #if (SCH_PAY_GPS_ONBOARD==1)
         arg = pay_xxx_state_active;
         pay_set_state_gps(&arg);
@@ -143,8 +138,6 @@ int srp_memEEPROM_initial_state(void * param){
         arg = pay_xxx_state_inactive;
         pay_set_state_gps(&arg);
     #endif
-
-    dat_reset_Payload_Buff(dat_pay_expFis);
     #if (SCH_PAY_FIS_ONBOARD==1)
         //arg = sta_pay_xxx_state_active;
         arg = pay_xxx_state_inactive;   //special case, not executed by FP2
@@ -153,8 +146,6 @@ int srp_memEEPROM_initial_state(void * param){
         arg = pay_xxx_state_inactive;
         pay_set_state_expFis(&arg);
     #endif
-
-    dat_reset_Payload_Buff(dat_pay_camera);
     #if (SCH_PAY_CAM_nMEMFLASH_ONBOARD==1)
         //  arg = sta_pay_xxx_state_active;
         arg = pay_xxx_state_inactive;   //special case, not executed by FP2
@@ -163,8 +154,6 @@ int srp_memEEPROM_initial_state(void * param){
         arg = pay_xxx_state_inactive;
         pay_set_state_camera(&arg);
     #endif
-
-    dat_reset_Payload_Buff(dat_pay_gyro);
     #if (SCH_PAY_GYRO_ONBOARD==1)
         arg = pay_xxx_state_active;
         pay_set_state_gyro(&arg);
@@ -172,8 +161,6 @@ int srp_memEEPROM_initial_state(void * param){
         arg = pay_xxx_state_inactive;
         pay_set_state_gyro(&arg);
     #endif
-
-    dat_reset_Payload_Buff(dat_pay_tmEstado);
     #if (SCH_PAY_TMESTADO_ONBOARD==1)
         arg = pay_xxx_state_active;
         pay_set_state_tmEstado(&arg);
@@ -181,17 +168,14 @@ int srp_memEEPROM_initial_state(void * param){
         arg = pay_xxx_state_inactive;
         pay_set_state_tmEstado(&arg);
     #endif
-
-    dat_reset_Payload_Buff(dat_pay_battery);
     #if (SCH_PAY_BATTERY_ONBOARD==1)
-        arg = pay_xxx_state_active;
+        //arg = sta_pay_xxx_state_active;
+        arg = pay_xxx_state_inactive;   //special case, not executed by FP2
         pay_set_state_battery(&arg);
     #else
         arg = pay_xxx_state_inactive;
         pay_set_state_battery(&arg);
     #endif
-
-    dat_reset_Payload_Buff(dat_pay_debug);
     #if (SCH_PAY_DEBUG_ONBOARD==1)
         arg = pay_xxx_state_active;
         pay_set_state_debug(&arg);

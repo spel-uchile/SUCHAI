@@ -575,7 +575,7 @@ int drp_executeBeforeFlight(void *param){
     #endif
 
     drp_DAT_FlightPlan_EBF();
-    //drp_DAT_Payload_Buff_EBF();
+    drp_DAT_Payload_Buff_EBF();
 
     return 1;
 }
@@ -583,7 +583,21 @@ void drp_DAT_Payload_Buff_EBF(void){
     #if (SCH_CMDDRP_VERBOSE>=1)
         printf("    Setting Payload_Buff in launch configuration..\n");
     #endif
-    //nothing to do..
+
+    //Reset all payload buff
+    DAT_Payload_Buff pay_i;
+    unsigned int nextIndx;
+    int pay_i_state;
+    for(pay_i=0;pay_i<dat_pay_last_one;pay_i++){
+        dat_reset_Payload_Buff(pay_i);
+        #if (SCH_CMDDRP_VERBOSE>=1)
+            printf("      dat_reset_Payload_Buff(pay_i = %s)\r\n", dat_get_payload_name(pay_i));
+            nextIndx = dat_get_NextPayIndx(pay_i);
+            pay_i_state = pay_get_state(pay_i);
+            printf("      pay_i = %s, pay_i_state = %d, nextIndx = %u \r\n", dat_get_payload_name(pay_i), pay_i_state, nextIndx);
+        #endif
+    }
+
 }
 void drp_DAT_FlightPlan_EBF(void){
     #if (SCH_CMDDRP_VERBOSE>=1)

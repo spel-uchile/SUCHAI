@@ -34,7 +34,7 @@
 #define SCH_PAY_LANGMUIR_ONBOARD            (1)  ///< Ocupa UART3_en_H1.19_y_H1.20
 #define SCH_PAY_SENSTEMP_ONBOARD            (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 #define SCH_PAY_TMESTADO_ONBOARD            (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
-#define SCH_PAY_BATTERY_ONBOARD             (0)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
+#define SCH_PAY_BATTERY_ONBOARD             (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 #define SCH_PAY_GYRO_ONBOARD                (1)  ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_PAY_GPS_ONBOARD                 (1)  ///< Onboard => UART4 en uso, 1 pin(es) en modo Switch
 #define SCH_PAY_CAM_nMEMFLASH_ONBOARD       (1)  ///< Onboard => SPI-1 asignado a la Camara. Offboard => SPI-1 asignado a memFlash
@@ -134,7 +134,7 @@
 #define SCH_I2C3_ADDR           (0xF4) ///< I2C 3 Slave address
 
 /* TRX and COMM configs */
-#define SCH_TRX_BEACON_PERIOD              (0.5*60)   ///< [s] Periodo del beacon en segundos (UINT16)
+#define SCH_TRX_BEACON_PERIOD              (30)   ///< [s] Periodo del beacon en segundos (UINT16)
 #define SCH_TRX_BEACON_WPM                 (20)     ///< Velocidad del beacon en palabras por minuto 1-255
 #define SCH_TRX_BEACON_BAT_LVL             (500)    ///< Nivel de bateria minimo para transmitir beacon
 #define SCH_TRX_BEACON_MODE                (0)      ///< Tipo de beacon 0=CW, 1=Cw+FM, 2=FM

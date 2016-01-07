@@ -22,32 +22,18 @@
 //#define FIS_ROUNDS    (1)
 //cantidad maxima de frencuencias
 //#define FIS_MAX_FREQS (1)
-//cantidad de puntos de de cada se�al generada (largo)
-#define FIS_SIGNAL_POINTS (10000)
-//numero de muestras por punto generado de la se�al (minimo 2 para cumplir con Nyquist)
-#define FIS_SAMPLES_PER_POINT (2)
-//cantidad de muestras que tiene una se�al/waveform
+//cantidad de puntos de de cada se?al generada (largo)
+#define FIS_SIGNAL_POINTS (1000) //(10000)
+//numero de muestras por punto generado de la se?al (minimo 2 para cumplir con Nyquist)
+#define FIS_SAMPLES_PER_POINT (4)
+//cantidad de muestras que tiene una se?al/waveform
 #define FIS_SIGNAL_SAMPLES ((FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT))
 //number of seed for the srand() function calls
 #define FIS_SRAND_SEEDS     (4)//(FIS_ROUNDS)
 //maximun size for the buffer
 #define FIS_MAX_SENS_BUFF_LEN (1000)
 
-#define FIS_NUM_ROUNDS          (1)
-//#define FIS_NUM_ITERATIONS      (3)
-        
-/*
-#if (SCH_PAY_FIS_ONBOARD==1)
-    #if ((FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT)) <= (FIS_MAX_SENS_BUFF_LEN)
-        //size of sens_buff is equal to the size of a waveform, times the samples for each point
-        #define FIS_SENS_BUFF_LEN ((FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT))
-    #else
-        #define FIS_SENS_BUFF_LEN FIS_MAX_SENS_BUFF_LEN
-    #endif
-#else
-    #define FIS_SENS_BUFF_LEN   1U
-#endif
-*/
+#define FIS_NUM_ROUNDS  (1)
 
 #define FIS_SENS_BUFF_LEN (100)
 unsigned int fis_get_total_number_of_samples(void);

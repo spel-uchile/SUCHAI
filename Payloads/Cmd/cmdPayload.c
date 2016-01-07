@@ -102,6 +102,7 @@ void pay_onResetCmdPAY(void){
     payFunction[(unsigned char)pay_id_adhoc_expFis] = pay_adhoc_expFis;
     payFunction[(unsigned char)pay_id_testDAC_expFis] = pay_testDAC_expFis;
     payFunction[(unsigned char)pay_id_print_seed] = pay_print_seed;
+    payFunction[(unsigned char)pay_id_testFreq_expFis] = pay_testFreq_expFis;
     
     payFunction[(unsigned char)pay_id_isAlive_battery] = pay_isAlive_battery;
     payFunction[(unsigned char)pay_id_get_state_battery] = pay_get_state_battery;
@@ -179,7 +180,6 @@ int pay_test_dataRepo(void *param){
     return 1;
 }
 
-//******************************************************************************
 int pay_conf_expFis(void *param){
     //Array of time values between each sample of the ADC
     //int len = 1;
@@ -217,6 +217,7 @@ int pay_conf_expFis(void *param){
     #endif
     return res;
 }
+
 int pay_exec_expFis(void *param){
     int ind;
     unsigned int temp;
@@ -267,6 +268,7 @@ int pay_exec_expFis(void *param){
     return (rc < 0)? 0 : 1;
 
 }
+
 int pay_adhoc_expFis(void *param){
 //    static Fis_States fis_curr_state = FIS_OFF;
 //    while(fis_curr_state != FIS_DONE){
@@ -274,10 +276,10 @@ int pay_adhoc_expFis(void *param){
 //        fis_curr_state = fis_current_state_control(fis_curr_state);
 //    }
 //    return 1;
-
-    unsigned int frec_array[] = {10, 15, 20, 30, 60, 100, 200, 400, 600, 
-        1000, 4000, 8000, 12000, 20000, 35000, 50000};
-    int len_frec_array = 16;
+    //unsigned int frec_array[] = {10, 15, 20, 30, 60, 100, 200, 400, 600, 
+        //1000, 4000, 8000, 12000, 20000, 35000, 50000};
+    unsigned int frec_array[] = {10, 100, 500, 1000, 5000, 10000};
+    int len_frec_array = 6;
     
     int res, i;
     unsigned int frec;
@@ -336,6 +338,23 @@ int pay_print_seed(void* param) {
     
     printf("pay_print_seed ... finished \r\n");
     return 1;
+}
+
+int pay_testFreq_expFis(void *param){
+
+    unsigned int value = *((unsigned int *) param);
+    unsigned int frec_array[] = {value};
+    int len_frec_array = 1;
+    
+    int res, i;
+    unsigned int frec;
+    for(i=0;i<len_frec_array;i++){
+        frec = frec_array[i];
+        res = pay_conf_expFis(&frec);
+        res = pay_exec_expFis(0);
+    }
+
+    return res;
 }
 
 int pay_init_expFis(void *param){

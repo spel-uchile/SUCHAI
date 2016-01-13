@@ -18,10 +18,6 @@
 #define FIS_STATE_WORKING   (3)
 #define FIS_STATE_DONE (4)
 
-//cantidad de iteraciones que hace para cada frecuencia
-//#define FIS_ROUNDS    (1)
-//cantidad maxima de frencuencias
-//#define FIS_MAX_FREQS (1)
 //cantidad de puntos de de cada se?al generada (largo)
 #define FIS_SIGNAL_POINTS (1000) //(10000)
 //numero de muestras por punto generado de la se?al (minimo 2 para cumplir con Nyquist)
@@ -35,7 +31,7 @@
 
 #define FIS_NUM_ROUNDS  (1)
 
-#define FIS_SENS_BUFF_LEN (100)
+#define FIS_SENS_BUFF_LEN (200)
 unsigned int fis_get_total_number_of_samples(void);
 unsigned int fis_get_sens_buff_size(void);
 BOOL fis_sens_buff_isFull(void);

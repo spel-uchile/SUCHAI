@@ -674,7 +674,7 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
         #endif
     #endif
 
-    if(fis_point == FIS_SIGNAL_POINTS){ //last point of a waveform
+    if(fis_point == FIS_SIGNAL_POINTS || sens_buff_ind == (FIS_SENS_BUFF_LEN)){ //last point of a waveform
 
         fis_point = 0;
         //printf("fis_current_round = %u\n", fis_current_round);
@@ -692,16 +692,17 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
             //return;
         //}
     }                
-    //T4_Clear_Intr_Status_Bit;
-    unsigned int arg = rand();
-    #if _FISICA_VERBOSE_TIMER4_ISR > 0
-        printf("rand(): %X\n",arg);
-    #endif
-    fis_payload_writeDAC(arg);
+    else{//T4_Clear_Intr_Status_Bit;
+        unsigned int arg = rand();
+        #if _FISICA_VERBOSE_TIMER4_ISR > 0
+            printf("rand(): %X\n",arg);
+        #endif
+        fis_payload_writeDAC(arg);
 
-    fis_point++;    //update the global counter 
-    
-    sync = TRUE;
+        fis_point++;    //update the global counter 
+
+        sync = TRUE;
+    }
     IFS1bits.T4IF = 0;
 }
 

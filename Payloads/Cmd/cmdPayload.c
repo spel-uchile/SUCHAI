@@ -181,14 +181,8 @@ int pay_test_dataRepo(void *param){
 }
 
 int pay_conf_expFis(void *param){
-    //Array of time values between each sample of the ADC
-    //int len = 1;
-    unsigned int adcPeriod = *((unsigned int *) param);
 
-//    if(inputSignalPeriod < 75) {
-//        printf("periodo muy pequeno!\n Abortando...\n");
-//        return 0;
-//    }
+    unsigned int adcPeriod = *((unsigned int *) param);
 
     int rounds = 1;    //number of iterations done for each ADC_period value
         //debug Info
@@ -223,7 +217,7 @@ int pay_exec_expFis(void *param){
     unsigned int temp;
     unsigned int timeout = 30;  //max time waiting to fill the sens_buffer
     unsigned int buff_size = fis_get_sens_buff_size();
-    //int value_stored_in_dataRepo;   //debug only
+
     unsigned int fis_state = fis_get_state();    //get the initial state of the Payload
 
     unsigned int rc = 0;    //return code of "fis_iterate" function
@@ -238,23 +232,18 @@ int pay_exec_expFis(void *param){
             //save the data into the Data Repository
             temp = fis_get_sens_buff_i(ind);
             dat_set_Payload_Buff(dat_pay_expFis, temp);
-            //dat_set_Payload_Buff_at_indx(dat_pay_expFis, temp, expFis_gpb_indx);
+
             #if FIS_CMD_VERBOSE > 0
                 printf("    dat_set_Payload_Buff(%u)\n",temp);
             #endif
 
-            #if FIS_CMD_VERBOSE > 0
-                //dat_get_Payload_Buff(dat_pay_expFis,expFis_gpb_indx,&value_stored_in_dataRepo);
-                //printf("    dat_get_Payload_Buff(): %d\n",value_stored_in_dataRepo);
-                //printf("    expFis_gpb_indx: %d\r\n",expFis_gpb_indx);
-            #endif
         }
-        //MUCH POWER!
-        printf("Clearing WDT to avoid reset ( MUCH POWER! ) \n");
+
+        printf("Clearing WDT \n");
         ClrWdt();
     }
 
-    //Payload ended
+    //Payload end
     if(rc<0){   //fis_iterate finished with error
         fis_state = fis_get_state();    //use the state to see the cause of error
         #if FIS_CMD_VERBOSE
@@ -270,16 +259,9 @@ int pay_exec_expFis(void *param){
 }
 
 int pay_adhoc_expFis(void *param){
-//    static Fis_States fis_curr_state = FIS_OFF;
-//    while(fis_curr_state != FIS_DONE){
-//        fis_curr_state = fis_next_state_logic(fis_curr_state);
-//        fis_curr_state = fis_current_state_control(fis_curr_state);
-//    }
-//    return 1;
-    //unsigned int frec_array[] = {10, 15, 20, 30, 60, 100, 200, 400, 600, 
-        //1000, 4000, 8000, 12000, 20000, 35000, 50000};
-    unsigned int frec_array[] = {10, 100, 500, 1000, 5000, 10000};
-    int len_frec_array = 6;
+    
+    unsigned int frec_array[] = {10, 50, 100, 500, 1000, 2000, 4000, 8000, 10000, 16000};
+    int len_frec_array = 10;
     
     int res, i;
     unsigned int frec;

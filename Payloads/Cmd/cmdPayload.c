@@ -944,6 +944,12 @@ int pay_init_gps(void *param){
 
     return 1;
 }
+
+/**
+ * Takes samples from GPS, executing any of available commands
+ * @param param Command sent to GPS see gps_exec_cmd
+ * @return null, but print gps buffer
+ */
 int pay_take_gps(void *param){
     printf("pay_take_gps ..\r\n");
 

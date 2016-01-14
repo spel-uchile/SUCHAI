@@ -95,6 +95,8 @@ typedef enum{
     pay_id_stop_expFis, ///< @cmd              //0x6029
     pay_id_adhoc_expFis, ///< @cmd             //0x602A
     pay_id_testDAC_expFis, ////< @cmd          //0x602B
+    pay_id_print_seed,  ////< @cmd          //0x602C
+    pay_id_testFreq_expFis,////< @cmd          //0x602D
 
     pay_id_gps_updateRTC, ///< @cmd
     pay_id_gps_serial, ///< @cmd
@@ -180,8 +182,10 @@ int pay_set_state_expFis(void *param);
 int pay_init_expFis(void *param);
 int pay_take_expFis(void *param);
 int pay_stop_expFis(void *param);
+int pay_testFreq_expFis(void *param);
 int pay_adhoc_expFis(void *param);
 int pay_testDAC_expFis(void *param);
+int pay_print_seed(void* param);
 //sensTemp
 int pay_isAlive_sensTemp(void *param);
 int pay_get_state_sensTemp(void *param);

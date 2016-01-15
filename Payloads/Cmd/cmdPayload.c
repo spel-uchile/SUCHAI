@@ -1109,11 +1109,16 @@ BOOL pay_deploy_langmuirProbe(int realtime){
     printf("  PPC_LANGMUIR_DEP_SWITCH = %d \r\n", PPC_LANGMUIR_DEP_SWITCH_CHECK );
 
     if(realtime==1){
+
+        __delay_ms(45311);
         ClrWdt();
-        __delay_ms(30000); //wait 30sec to burn nylon
-        __delay_ms(30000); //wait 30sec to burn nylon
-        ClrWdt();
-        __delay_ms(30000); //wait 30sec to burn nylon
+        __delay_ms(45311);
+
+//        ClrWdt();
+//        __delay_ms(30000); //wait 30sec to burn nylon
+//        __delay_ms(30000); //wait 30sec to burn nylon
+//        ClrWdt();
+//        __delay_ms(30000); //wait 30sec to burn nylon
     }
     else{
         ClrWdt();
@@ -1145,16 +1150,23 @@ int pay_set_state_langmuirProbe(void *param){
     writeIntEEPROM1(mem_eeprom_var, value);
     return 1;
 }
+
+/**
+ * Init. langmuir probe including deployment
+ * @param param 1-Force deploymeny, 0-Deploy only first time
+ * @return Bool, langmuir is alive
+ */
 int pay_init_langmuirProbe(void *param){
     printf("pay_init_langmuirProbe ..\r\n");
+    int force_deploy = *((int*)param);
 
-    /* Ceploy langmuir should NOT be here, but there is no way
+    /* Deploy langmuir should NOT be here, but there is no way
      * to check deployment, so its included here */
     #if (SCH_ANTENNA_ONBOARD==1 && SCH_PAY_LANGMUIR_ONBOARD==1)
-        if( sta_get_PayStateVar(sta_pay_langmuirProbe_isDeployed)==0 ){
+        if( sta_get_PayStateVar(sta_pay_langmuirProbe_isDeployed)==0 || force_deploy){
             int rt_mode = SCH_THOUSEKEEPING_ANT_DEP_REALTIME; /* 1=Real Time, 0=Debug Time */
             pay_deploy_langmuirProbe(rt_mode);    //realtime mode
-            //set var lang dep = 1
+            //set var lang dep = 1 b
         }
     #endif
 

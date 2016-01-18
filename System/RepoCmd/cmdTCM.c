@@ -7,7 +7,7 @@
 cmdFunction tcmFunction[TCM_NCMD];
 int tcm_sysReq[TCM_NCMD];
 
-char beacon_buff[COM_MORSE_LEN] = "00SUCHAI0";
+char beacon_buff[COM_MORSE_LEN];
 char *p_beacon_buff = beacon_buff+9;//+strlen(beacon_buff);
 
 extern nanocom_conf_t TRX_CONFIG; /** Global configuration var from cmdTRX.c*/
@@ -231,7 +231,11 @@ int tcm_update_beacon(void *param)
     int ok = 0;
     int val = -1;
     static char buff[10];
-    char *p_buff = p_beacon_buff;
+
+    memset(beacon_buff, '\0', COM_MORSE_LEN);
+    strcpy(beacon_buff, "00SUCHAI0");
+    char *p_buff = beacon_buff + strlen(beacon_buff);
+
 
     #if( SCH_EPS_ONBOARD == 1 )
         double d_val = 0;
@@ -403,10 +407,10 @@ int tcm_update_beacon(void *param)
         ok = 0;
     }
 
-    beacon_buff[COM_MORSE_LEN-1] = '\0';
+//    beacon_buff[COM_MORSE_LEN-1] = '\0';
     
 #if SCH_CMDTCM_VERBOSE
-    printf(">>Beacon: %s\n\r", beacon_buff);
+    printf(">>Beacon: %s  (%d)\n\r", beacon_buff, strlen(beacon_buff));
 #endif
 
     memcpy(TRX_CONFIG.morse_text, beacon_buff, COM_MORSE_LEN);

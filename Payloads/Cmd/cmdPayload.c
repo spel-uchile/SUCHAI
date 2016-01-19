@@ -668,6 +668,7 @@ int pay_init_tmEstado(void *param){
 
 int pay_take_tmEstado(void *param){
     printf("pay_take_tmEstado ..\r\n");
+    int verbose = *( (int*)param );
 
     #if(PAY_TSPAIR_nSLIST == 1)
         //save date_time in 2ints
@@ -680,9 +681,8 @@ int pay_take_tmEstado(void *param){
         var = sta_get_BusStateVar(indxVar);
         dat_set_Payload_Buff(dat_pay_tmEstado, var);
         //__delay_ms(300);
-        #if (_VERBOSE_>=2)
+        if (verbose>=1)
             printf("sta_get_stateVar[%s] = %d\r\n", sta_BusStateVarToString(indxVar), var);
-        #endif
     }
 
     return 1;
@@ -729,7 +729,7 @@ int pay_set_state_camera(void *param){
     int value = *( (int*)param );
     MemEEPROM_Vars mem_eeprom_var = mem_pay_camera_state;
     writeIntEEPROM1(mem_eeprom_var, value);
-    return 1;pay_print_seed;
+    return 1;
 }
 int pay_init_camera(void *param){
     printf("pay_init_camera ..\r\n");

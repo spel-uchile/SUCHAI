@@ -26,7 +26,7 @@
 #define SCH_TRX_ONBOARD                     (1) ///< 0=Ninguno, 1= TRX Gomspace => I2C1 en uso
 #define SCH_RTC_ONBOARD                     (1) ///< 1 = Onboard 0 = Not Onboard
 #define SCH_MEMEEPROM_ONBOARD               (1) ///< 1 = Onboard 0 = Not Onboard
-#define SCH_EPS_ONBOARD                     (1) ///< Onboard => I2C1 en uso
+#define SCH_EPS_ONBOARD                     (0) ///< Onboard => I2C1 en uso
 #define SCH_MEMSD_ONBOARD                   (1) ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
 #define SCH_MGNz_ONBOARD                    (0) ///< Onboard => 1 pin(es) en modo Switch
 
@@ -134,7 +134,8 @@
 #define SCH_I2C3_ADDR           (0xF4) ///< I2C 3 Slave address
 
 /* TRX and COMM configs */
-#define SCH_TRX_BEACON_PERIOD              (2*60)   ///< [s] Periodo del beacon en segundos (UINT16)
+#define SCH_TRX_BEACON_PERIOD              (1*60)   ///< [s] Periodo del beacon en segundos (UINT16)
+#define SCH_TRX_BEACON_UPDATE              (570)   ///< [s] Periodo del actualización del beacon en segundos
 #define SCH_TRX_BEACON_WPM                 (20)     ///< Velocidad del beacon en palabras por minuto 1-255
 #define SCH_TRX_BEACON_BAT_LVL             (500)    ///< Nivel de bateria minimo para transmitir beacon
 #define SCH_TRX_BEACON_MODE                (0)      ///< Tipo de beacon 0=CW, 1=Cw+FM, 2=FM
@@ -148,7 +149,7 @@
 #define SCH_TRX_PORT_DEBUG                 (11)     /// Puerto debug en software de vuelo. Solo imprimie el paquete
 #define SCH_TRX_PORT_CONSOLE               (12)     /// Puerto consola en software de vuelo. Ejecuta comandos de consola
 
-/* Importatnt SysReq configurations */
+/* Important SysReq configurations */
 #define SCH_TCTM_SYS_REQ                    (1)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de telemetria
 #define SCH_BCN_SYS_REQ                     (2)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de beacon
 #define SCH_DEPLOYMENT_SYS_REQ              (0)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de antenna deployment

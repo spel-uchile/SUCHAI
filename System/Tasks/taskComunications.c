@@ -37,6 +37,7 @@ void taskComunications(void *param)
     portTickType delay_ms    = 1000;    //Task period in [ms]
     int xsec = (delay_ms/1000);  //se ejecuta cada Xseg ahora
     portTickType delay_ticks = delay_ms / portTICK_RATE_MS; //Task period in ticks (==dalay_ms/10)
+    portTickType xLastWakeTime = xTaskGetTickCount();
 
     DispCmd TcNewCmd;
     TcNewCmd.cmdId = CMD_CMDNULL;
@@ -56,25 +57,24 @@ void taskComunications(void *param)
     while(1)
     {
         /* Tarea periodica cada 1 Segundos*/
-        //vTaskDelayUntil(&xLastWakeTime, delay_ticks);
-        vTaskDelay(delay_ticks);  //just delay is enough
+        vTaskDelayUntil(&xLastWakeTime, delay_ticks);
+        //vTaskDelay(delay_ticks);  //just delay is enough
         seconds_cnt += xsec;
 
         /* Recibir datos a traves de I2C */
         com_RxI2C(i2cRxQueue);
 
         /* Actualizar y enviar beacon */
-        if(seconds_cnt % SCH_TRX_BEACON_PERIOD == 0)
+        if(seconds_cnt % SCH_TRX_BEACON_UPDATE == 0)
         {
             /* Ajustar el contador a los tipos de beacon que hay*/
             type_cnt = type_cnt % 4;
 
-//       ***** UNCOMMENT TO TEST CHANGES *****
-//            TcNewCmd.cmdId = tcm_id_update_beacon;
-//            TcNewCmd.param = type_cnt;
-//            //printf("[Comunications] seconds_cnt = %d, type_cnt = %d \r\n", seconds_cnt, type_cnt);
-//            /* Queue NewCmd - Non-Blocking (Wait 0.5 task period) */
-//            xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
+            TcNewCmd.cmdId = tcm_id_update_beacon;
+            TcNewCmd.param = type_cnt;
+            printf("[Communications] seconds_cnt = %d, type_cnt = %d \r\n", seconds_cnt, type_cnt);
+            /* Queue NewCmd - Non-Blocking (Wait 0.5 task period) */
+            xQueueSend(dispatcherQueue, &TcNewCmd, delay_ticks/2);
 
             type_cnt++;
             seconds_cnt = 0;

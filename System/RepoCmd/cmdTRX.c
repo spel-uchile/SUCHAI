@@ -403,12 +403,13 @@ int trx_read_conf(void *param)
  */
 int trx_set_beacon(void *param)
 {
-    char stdbeacon[COM_MORSE_LEN] = "00SUCHAI00";
+    static char stdbeacon[COM_MORSE_LEN];
+    memset(stdbeacon, '\0', COM_MORSE_LEN);
 
     switch (*(int *)param)
     {
         case 0:
-            //USe default beacon
+            strcpy(stdbeacon, "00SUCHAI00");
             break;
         case 1:
             strcpy(stdbeacon, "0123456789");
@@ -427,11 +428,7 @@ int trx_set_beacon(void *param)
         printf("Setting beacon: %s\n", stdbeacon);
     #endif
 
-    int len = strlen(stdbeacon) + 1;
-    if(len > COM_MORSE_LEN)
-        return 0;
-
-    memcpy(TRX_CONFIG.morse_text, stdbeacon, len);
+    memcpy(TRX_CONFIG.morse_text, stdbeacon, COM_MORSE_LEN);
     int result = trx_set_conf(NULL);
 
     return result;

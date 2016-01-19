@@ -407,10 +407,16 @@ int tcm_update_beacon(void *param)
         ok = 0;
     }
 
-//    beacon_buff[COM_MORSE_LEN-1] = '\0';
+    
+    ok = trx_read_conf(NULL);
     
 #if SCH_CMDTCM_VERBOSE
     printf(">>Beacon: %s  (%d)\n\r", beacon_buff, strlen(beacon_buff));
+    if(!ok)
+    {
+        printf("Unable to read TRX config! \n\r");
+        return 0;
+    }
 #endif
 
     memcpy(TRX_CONFIG.morse_text, beacon_buff, COM_MORSE_LEN);

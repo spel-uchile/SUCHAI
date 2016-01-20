@@ -750,9 +750,6 @@ int pay_init_camera(void *param){
     printf("  PPC_CAM_HOLD_CHECK = %d\r\n", PPC_CAM_HOLD_CHECK);
     int res = sta_get_PayStateVar(sta_pay_camera_isAlive);
     printf("  sta_pay_camera_isAlive = %d \r\n", res);
-
-    //cam_sync(TRUE);
-    cam_takePhoto_v2(0x02, 0x00, 0x05);
     
     return res;
 }
@@ -770,7 +767,7 @@ int pay_take_camera(void *param){
     }
 
     //BOOL st = pay_cam_takeAndSave_photo(0x07, 0x00, 0x05);
-    BOOL st = pay_cam_takeAndSave_photo(0x02, 0x00, 0x05);
+    BOOL st = pay_cam_takeAndSave_photo(0x03, 0x00, 0x05);
     //BOOL st = pay_cam_takeAndSave_photo(0x02, 0x00, 0x05);
 
     return st;
@@ -787,7 +784,11 @@ int pay_stop_camera(void *param){
 }
 BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
     printf("pay_takeAndSave_photo ..\r\n");
-       
+    
+    printf("Sync camera ..\r\n");
+    int status = cam_sync(TRUE);
+    printf("Sync status (0 => successful) = %d \r\n", status);
+    
     printf(" Taking photo ..\r\n");
     unsigned int photo_byte_length= cam_photo(resolution, qual, pic_type);
     #if (_VERBOSE_>=1)

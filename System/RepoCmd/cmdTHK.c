@@ -215,14 +215,14 @@ int thk_suchai_deployment(void *param)
     // print rtc time
     rtc_print(NULL);
 
-//    //take picture
-//    #if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==1 )
-//        #if(SCH_THOUSEKEEPING_SILENT_REALTIME==1)
-//            pay_takePhoto_camera(NULL); //takes 10min to complete
-//        #else
-//            printf("  Jumping pay_takePhoto_camera(NULL) call, it takes 10min to complete ..\r\n");
-//        #endif
-//    #endif
+    //take picture
+    #if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==1 )
+        #if(SCH_THOUSEKEEPING_SILENT_REALTIME==1)
+            pay_takePhoto_camera(NULL); //takes 10min to complete
+        #else
+            printf("  Jumping pay_takePhoto_camera(NULL) call, it takes 10min to complete ..\r\n");
+        #endif
+    #endif
 
     // print rtc time
     rtc_print(NULL);

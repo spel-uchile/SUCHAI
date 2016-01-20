@@ -157,12 +157,12 @@ int cam_sync(BOOL verb){
         printf("try = %d \r\n", j);
 
         SPI_nSS_1=0;
-        __delay_ms(30); // Camera requirement
+        //__delay_ms(30); // Camera requirement
         for(i=0; i<8; i++){
             recev[i] = SPI_1_transfer(CAM_SYNC[i]);     // Write SYNC command
         }
         SPI_nSS_1=1;
-        __delay_ms(30); // Camera requirement
+        //__delay_ms(30); // Camera requirement
 
         cam_wait_hold_wtimeout(verb);
         // Wait for PPC_CAM_HOLD_CHECK low signal
@@ -461,12 +461,14 @@ int cam_send_cmd_v2(unsigned char* cmd_recev, unsigned char* cmd, int arg1, int 
     
     // Send command
     SPI_nSS_1=0;
-    __delay_ms(30); //camera requirement
+    _LATG9 = 0;
+    //__delay_ms(30); //camera requirement
     for(i=0; i<8; i++){
             cmd_recev[i] = SPI_1_transfer(comm_renew[i]);
     }
     SPI_nSS_1=1;
-    __delay_ms(30); //camera requirement
+    _LATG9 = 1;
+    //__delay_ms(30); //camera requirement
     
     //cam_wait_hold_wtimeout(TRUE);
     

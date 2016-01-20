@@ -746,18 +746,14 @@ int pay_init_camera(void *param){
     // Wait for PPC_CAM_HOLD_CHECK low signal
     __delay_ms(3000);
 
-    int res;    
-//    //configure Payload
-//    int res;
-//    int issync = cam_sync(TRUE);
-//    if(issync == 0x0000){ res = 1; }
-//    else{ res = 0; }
-
     //debug info
     printf("  PPC_CAM_HOLD_CHECK = %d\r\n", PPC_CAM_HOLD_CHECK);
-    res = sta_get_PayStateVar(sta_pay_camera_isAlive);
+    int res = sta_get_PayStateVar(sta_pay_camera_isAlive);
     printf("  sta_pay_camera_isAlive = %d \r\n", res);
 
+    //cam_sync(TRUE);
+    cam_takePhoto_v2(0x02, 0x00, 0x05);
+    
     return res;
 }
 int pay_take_camera(void *param){
@@ -791,92 +787,89 @@ int pay_stop_camera(void *param){
 }
 BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
     printf("pay_takeAndSave_photo ..\r\n");
+       
+    printf(" Taking photo ..\r\n");
+    unsigned int photo_byte_length= cam_photo(resolution, qual, pic_type);
+    #if (_VERBOSE_>=1)
+        printf("    Photo length = %u\r\n", photo_byte_length);
+    #endif
+
+    //in case of errors
+    if(photo_byte_length == 0){
+        printf(" Error: No photo was taken ..\r\n");
+        dat_set_Payload_Buff(dat_pay_camera ,0xFAFA);
+        return FALSE;
+    }
+
+    //calculate  length in ints
+    unsigned int photo_int_length = photo_byte_length/2;    //se guardan 2byten en 1int
+    printf("  Debug info: photo_int_length = %u, photo_byte_length = %d\r\n",
+            photo_int_length, photo_byte_length);
+
+    //Inicializa la estructura de data payload
+    dat_reset_Payload_Buff(dat_pay_camera);
+
+    //prepara variables para guardar foto
+    unsigned int int_r[10];
+    unsigned int num_10sections, rest_10sections;
+
+    num_10sections = photo_int_length/10;
+    rest_10sections = photo_int_length%10;
     
-    //cam_sync(TRUE);
-    cam_takePhoto_v2(resolution, qual, pic_type);
+    printf("  Debug info: num_10sections = %d, rest_10sections = %d\r\n",
+            num_10sections, rest_10sections);
+
+    //warn about duration
+    printf("    Saving data (this might take up tp 15 min) ..\r\n");
+    rtc_print(NULL);
     
-//    printf(" Taking photo ..\r\n");
-//    unsigned int photo_byte_length= cam_photo(resolution, qual, pic_type);
-//    #if (_VERBOSE_>=1)
-//        printf("    Photo length = %u\r\n", photo_byte_length);
-//    #endif
-//
-//    //in case of errors
-//    if(photo_byte_length == 0){
-//        printf(" Error: No photo was taken ..\r\n");
-//        dat_set_Payload_Buff(dat_pay_camera ,0xFAFA);
-//        return FALSE;
-//    }
-//
-//    //calculate  length in ints
-//    unsigned int photo_int_length = photo_byte_length/2;    //se guardan 2byten en 1int
-//    printf("  Debug info: photo_int_length = %u, photo_byte_length = %d\r\n",
-//            photo_int_length, photo_byte_length);
-//
-//    //Inicializa la estructura de data payload
-//    dat_reset_Payload_Buff(dat_pay_camera);
-//
-//    //prepara variables para guardar foto
-//    unsigned int int_r[10];
-//    unsigned int num_10sections, rest_10sections;
-//
-//    num_10sections = photo_int_length/10;
-//    rest_10sections = photo_int_length%10;
-//    
-//    printf("  Debug info: num_10sections = %d, rest_10sections = %d\r\n",
-//            num_10sections, rest_10sections);
-//
-//    //warn about duration
-//    printf("    Saving data (this might take up tp 15 min) ..\r\n");
-//    rtc_print(NULL);
-//    
-//    unsigned int iter;
-//    for(iter = 0; iter<num_10sections; iter++)
-//    {
-//        //get 1 int out of 2 bytes
-//        int_r[0] = pay_camera_get_1int_from_2bytes();
-//        int_r[1] = pay_camera_get_1int_from_2bytes();
-//        int_r[2] = pay_camera_get_1int_from_2bytes();
-//        int_r[3] = pay_camera_get_1int_from_2bytes();
-//        int_r[4] = pay_camera_get_1int_from_2bytes();
-//        int_r[5] = pay_camera_get_1int_from_2bytes();
-//        int_r[6] = pay_camera_get_1int_from_2bytes();
-//        int_r[7] = pay_camera_get_1int_from_2bytes();
-//        int_r[8] = pay_camera_get_1int_from_2bytes();
-//        int_r[9] = pay_camera_get_1int_from_2bytes();
-//
-//        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[0]);
-//        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[1]);
-//        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[2]);
-//        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[3]);
-//        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[4]);
-//        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[5]);
-//        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[6]);
-//        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[7]);
-//        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[8]);
-//        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[9]);
-//
-//        ClrWdt();
-////        printf("  Debug info: saving [%d/%d] ..\r\n",
-////                            iter, num_10sections);
-//    }
-//
-//    for(iter = 0; iter<rest_10sections; iter++)
-//    {
-//        //get 1 int out of 2 bytes
-//        int_r[0] = pay_camera_get_1int_from_2bytes();
-//
-//        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[0]);
-//
-//        ClrWdt();
-//    }
-//
-//    // print rtc time
-//    rtc_print(NULL);
-//
-//    //Chequeo que pay langth sea la mitad que el
-//    printf(" Debug info: NextPayIndx = %u \r\n",
-//            dat_get_NextPayIndx(dat_pay_camera));
+    unsigned int iter;
+    for(iter = 0; iter<num_10sections; iter++)
+    {
+        //get 1 int out of 2 bytes
+        int_r[0] = pay_camera_get_1int_from_2bytes();
+        int_r[1] = pay_camera_get_1int_from_2bytes();
+        int_r[2] = pay_camera_get_1int_from_2bytes();
+        int_r[3] = pay_camera_get_1int_from_2bytes();
+        int_r[4] = pay_camera_get_1int_from_2bytes();
+        int_r[5] = pay_camera_get_1int_from_2bytes();
+        int_r[6] = pay_camera_get_1int_from_2bytes();
+        int_r[7] = pay_camera_get_1int_from_2bytes();
+        int_r[8] = pay_camera_get_1int_from_2bytes();
+        int_r[9] = pay_camera_get_1int_from_2bytes();
+
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[0]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[1]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[2]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[3]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[4]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[5]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[6]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[7]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[8]);
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[9]);
+
+        ClrWdt();
+//        printf("  Debug info: saving [%d/%d] ..\r\n",
+//                            iter, num_10sections);
+    }
+
+    for(iter = 0; iter<rest_10sections; iter++)
+    {
+        //get 1 int out of 2 bytes
+        int_r[0] = pay_camera_get_1int_from_2bytes();
+
+        dat_set_Payload_Buff( dat_pay_camera, (int)int_r[0]);
+
+        ClrWdt();
+    }
+
+    // print rtc time
+    rtc_print(NULL);
+
+    //Chequeo que pay langth sea la mitad que el
+    printf(" Debug info: NextPayIndx = %u \r\n",
+            dat_get_NextPayIndx(dat_pay_camera));
 
     return TRUE;
 }

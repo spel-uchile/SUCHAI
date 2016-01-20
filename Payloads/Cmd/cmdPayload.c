@@ -360,16 +360,18 @@ int pay_stop_expFis(void *param){
     return 1;
 }
 
-//******************************************************************************
+// Battery data payloads
+
 int pay_isAlive_battery(void *param){
-    //EPS based
-    return eps_isAlive(FALSE);
+    return eps_isAlive(param);
 }
+
 int pay_get_state_battery(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_pay_battery_state;
     int res = readIntEEPROM1(mem_eeprom_var);
     return res;
 }
+
 int pay_set_state_battery(void *param){
     int value = *( (int*)param );
     MemEEPROM_Vars mem_eeprom_var = mem_pay_battery_state;

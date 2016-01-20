@@ -12,7 +12,8 @@
 #ifndef CMD_EPS_H
 #define CMD_EPS_H
 
-#include "eps_suchai.h"
+//#include "eps_suchai.h"
+#include "nanopower.h"
 #include "cmdIncludes.h"    //para CMD_XXX
 #include "DebugIncludes.h"  //para con_printf
 #include "SUCHAI_config.h"
@@ -21,7 +22,11 @@
  * Lista de comandos disponibles.
  */
 typedef enum{
-    eps_id_readreg=((unsigned int)(SCH_CMD_EPS)*0x100), ///< @cmd_first
+    eps_id_isAlive=((unsigned int)(SCH_CMD_EPS)*0x100), ///< @cmd_first
+    eps_id_print_hk, ///<@cmd
+            
+    //Olds commands
+    eps_id_readreg, ///< @cmd
     eps_id_status_read, ///< @cmd
 
     eps_id_update_internal_vars, ///< @cmd
@@ -46,6 +51,10 @@ typedef enum{
 void eps_onResetCmdEPS(void);
 
 //Commands
+int eps_isAlive(void *param);
+int eps_print_hk(void *param);
+
+// Olds commands
 int eps_readreg(void *param);
 int eps_status_read(void *param);
 

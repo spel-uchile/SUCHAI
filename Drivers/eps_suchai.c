@@ -128,26 +128,6 @@ int eps_initialize(void){
 
     return eps_isAlive(FALSE);
 }
-int eps_isAlive(BOOL verbose){
-
-    if(SCH_EPS_ONBOARD == 0){return 0;}
-    
-    int ver = VersionReadEPS();
-
-    if( verbose == TRUE ){
-        //    printf("\r\n*********************************\n");
-        printf("eps_isAlive, version = %d \r\n", ver);
-        //    printf("*********************************\n");
-    }
-
-    int version = (258);
-    if( ver==version ){
-        return 1;
-    }
-    else{
-        return 0;
-    }
-}
 
 /*------------------------------------------------------------------------------
  *				Initializate EPS

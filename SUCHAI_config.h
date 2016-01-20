@@ -45,9 +45,9 @@
 /* Tasks */
 /******************************************************************************/
 /* Main Tasks configurations */
-#define SCH_THOUSEKEEPING_USE                    (1)    ///< 1 = use it, 0 = do not use it
+#define SCH_THOUSEKEEPING_USE                    (0)    ///< 1 = use it, 0 = do not use it
 #define SCH_TCONSOLE_USE                         (1)    ///< 1 = use it, 0 = do not use it
-#define SCH_TFLIGHTPLAN_USE                      (3)    ///< 0 = do not use it, 1 = FP, 2 = FP2, 3 = FP3
+#define SCH_TFLIGHTPLAN_USE                      (0)    ///< 0 = do not use it, 1 = FP, 2 = FP2, 3 = FP3
 #define SCH_TCOMMUNICATION_USE                   (SCH_TRX_ONBOARD)  ///< 1 = use it, 0 = do not use it
 /* Id Tasks configs */
 #define SCH_TCONSOLE_IDORIG                     (0x1101)
@@ -166,7 +166,7 @@
 #define SCH_RS232_SUCHAI_VERBOSE            (1)   ///< 1=verboso 0=austero
 #define SCH_RTC_MB_VERBOSE                  (1)   ///< 1=verboso 0=austero
 #define SCH_TRASNCEIVER_VERBOSE             (1)   ///< 1=verboso 0=austero
-#define SCH_CAMERA_VERBOSE                  (1)   ///< 1=verboso 0=austero
+#define SCH_CAMERA_VERBOSE                  (2)   ///< 1=verboso 0=austero
 #define SCH_GYRO_VERBOSE                    (1)   ///< 1=verboso 0=austero
 #define SCH_FISICA_VERBOSE                  (1)   ///< 1=verboso 0=austero
 #define SCH_LANGMUIR_VERBOSE                (1)   ///< 1=verboso 0=austero

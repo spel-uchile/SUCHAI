@@ -634,8 +634,8 @@ void GPIO_PC104_init(void)
     #if (SCH_PAY_CAM_nMEMFLASH_ONBOARD==1)
         //Pines para la Camara con SPI-1 (SCK1, SDI1, SDO1 nSS1 y nWP)
         // H1.13	C1IND/RP21/CN8/PMA5/RG6 (Pin 10) => pin es RP21 (SCK)
-        //iPPSOutput(OUT_PIN_PPS_RP21,OUT_FN_PPS_SCK1);
-        iPPSOutput(RPOR10bits.RP21R,0x08);
+        iPPSOutput(OUT_PIN_PPS_RP21,OUT_FN_PPS_SCK1OUT);
+        //iPPSOutput(RPOR10bits.RP21R,0x08);
 
         // H1.14	C1INC/RP26/CN9/PMA4/RG7 (Pin 11) => pin es RP26 (SDI)
         _TRISG7=1;			//pin 0-output 1-input.

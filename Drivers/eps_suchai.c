@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "nanopower.h"
 #include "eps_suchai.h"
 #include "SUCHAI_config.h"
 
@@ -130,7 +131,8 @@ int eps_initialize(void){
 }
 int eps_isAlive(BOOL verbose){
 
-    if(SCH_EPS_ONBOARD == 0){return 0;}
+    if(SCH_EPS_ONBOARD == 0)
+        return 0;
     
     int ver = VersionReadEPS();
 

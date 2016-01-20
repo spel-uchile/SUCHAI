@@ -42,3 +42,9 @@ int cam_isAlive(void);
 
 int send_comm(unsigned char* cmd, int arg1, int arg2, int arg3, int arg4);
 
+
+unsigned int cam_takePhoto_v2(int resolution, int qual, int pic_type);
+unsigned int cam_sync_v2(void);
+int cam_send_cmd_v2(unsigned char* cmd_recev, unsigned char* cmd, int arg1, int arg2, int arg3, int arg4);
+int cam_check_cmd_recev_v2(unsigned char* cmd_recev, unsigned char* cmd, int arg1, int arg2, int arg3, int arg4);
+

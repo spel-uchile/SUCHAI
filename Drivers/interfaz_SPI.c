@@ -22,16 +22,16 @@
 unsigned char SPI_1_transfer(unsigned char a){
 	WriteSPI1(a);
 	while(!SPI1_Rx_Buf_Full){}	// espera mientras llega la trama. 
-                                        /*
-                                        SPIxIF (interrupt flag de transferenecia completa) se levanta cuando
-                                        se shiftea (envia y captura) el ultimo bit -b0- de SPIxSR.
-                                        SPIxSTAT.SPIxRBF se levanta cuando SPIxSR pasa la trama a SPIxRxBUF.
-                                        Pero ambos (SPIxSTAT.SPIxRBF y SPIxIF) se levantan UN CICLO DE fcy DESPUES del sampling y no
-                                        una vez terminado el clock SCK.
+        /*
+        SPIxIF (interrupt flag de transferenecia completa) se levanta cuando
+        se shiftea (envia y captura) el ultimo bit -b0- de SPIxSR.
+        SPIxSTAT.SPIxRBF se levanta cuando SPIxSR pasa la trama a SPIxRxBUF.
+        Pero ambos (SPIxSTAT.SPIxRBF y SPIxIF) se levantan UN CICLO DE fcy DESPUES del sampling y no
+        una vez terminado el clock SCK.
 
-                                         Si SPIxRBF=1 => hay un dato a leer, si no se lee antes de recibir otra trama se
-                                         produce overflow y se levanta el flag SPIxSTAT.SPIROV
-                                         */
+        Si SPIxRBF=1 => hay un dato a leer, si no se lee antes de recibir otra trama se
+        produce overflow y se levanta el flag SPIxSTAT.SPIROV
+        */
 	while(SPI_SCK_1){}				// espera mientras SCK no baje de su ultimo clock
 	unsigned char b= ReadSPI1();
 	return b;
@@ -50,29 +50,29 @@ void clear_overflow_SPI_1(void){
 }
 void Open_SPI_1_default(void){
     unsigned int spi1con1, spi1con2, spi1stat;
-    spi1con1=ENABLE_SCK_PIN&ENABLE_SDO_PIN&SPI_MODE16_OFF&SPI_SMP_OFF&SPI_CKE_ON&SLAVE_ENABLE_OFF&CLK_POL_ACTIVE_HIGH&
-    MASTER_ENABLE_ON&SEC_PRESCAL_8_1&PRI_PRESCAL_1_1 ;//SPIxCON1
-    spi1con2=FRAME_ENABLE_OFF&FRAME_SYNC_OUTPUT&FRAME_POL_ACTIVE_LOW&FRAME_SYNC_EDGE_PRECEDE&FIFO_BUFFER_DISABLE ; //SPIxCON2
-    spi1stat=SPI_ENABLE&SPI_IDLE_CON&SPI_RX_OVFLOW_CLR ; //SPIxSTAT
-    //spi1con1 = 0x0329;
-    //spi1con2 = 0x0000;
-    //zpi1stat = 0x0000;
+    spi1con1 = ENABLE_SCK_PIN&ENABLE_SDO_PIN&SPI_MODE16_OFF&SPI_SMP_OFF&SPI_CKE_ON&SLAVE_ENABLE_OFF&CLK_POL_ACTIVE_LOW&
+    MASTER_ENABLE_ON&SEC_PRESCAL_8_1&PRI_PRESCAL_4_1;//SPIxCON1
+    spi1con2 = FRAME_ENABLE_OFF&FRAME_SYNC_OUTPUT&FRAME_POL_ACTIVE_LOW&FRAME_SYNC_EDGE_PRECEDE&FIFO_BUFFER_DISABLE ; //SPIxCON2
+    spi1stat = SPI_ENABLE&SPI_IDLE_CON&SPI_RX_OVFLOW_CLR ; //SPIxSTAT
+//    spi1con1 = 0x0329;
+//    spi1con2 = 0x0000;
+//    spi1stat = 0x0000;
     OpenSPI1(spi1con1, spi1con2, spi1stat);
 }
 //-------------------------------------------------------------------------------------------------------------------------------
 unsigned char SPI_2_transfer(unsigned char a){
 	WriteSPI2(a);
 	while(!SPI2_Rx_Buf_Full){}	// espera mientras llega la trama. 
-                                        /*
-                                        SPIxIF (interrupt flag de transferenecia completa) se levanta cuando
-                                        se shiftea (envia y captura) el ultimo bit -b0- de SPIxSR.
-                                        SPIxSTAT.SPIxRBF se levanta cuando SPIxSR pasa la trama a SPIxRxBUF.
-                                        Pero ambos (SPIxSTAT.SPIxRBF y SPIxIF) se levantan UN CICLO DE fcy DESPUES del sampling y no
-                                        una vez terminado el clock SCK.
+        /*
+        SPIxIF (interrupt flag de transferenecia completa) se levanta cuando
+        se shiftea (envia y captura) el ultimo bit -b0- de SPIxSR.
+        SPIxSTAT.SPIxRBF se levanta cuando SPIxSR pasa la trama a SPIxRxBUF.
+        Pero ambos (SPIxSTAT.SPIxRBF y SPIxIF) se levantan UN CICLO DE fcy DESPUES del sampling y no
+        una vez terminado el clock SCK.
 
-                                         Si SPIxRBF=1 => hay un dato a leer, si no se lee antes de recivir otra trama se
-                                         produce overflow y se levanta el flag SPIxSTAT.SPIROV
-                                         */
+        Si SPIxRBF=1 => hay un dato a leer, si no se lee antes de recivir otra trama se
+        produce overflow y se levanta el flag SPIxSTAT.SPIROV
+        */
 	while(SPI_SCK_2){}				// espera mientras SCK no baje de su ultimo clock
 	unsigned char b= ReadSPI2();
 	return b;
@@ -101,17 +101,17 @@ void Open_SPI_2_default(void){
 unsigned char SPI_3_transfer(unsigned char a){
 	WriteSPI3(a);
 	while(!SPI3_Rx_Buf_Full){}
-            // espera mientras llega la trama.
-            /*
-            SPIxIF (interrupt flag de transferenecia completa) se levanta cuando
-            se shiftea (envia y captura) el ultimo bit -b0- de SPIxSR.
-            SPIxSTAT.SPIxRBF se levanta cuando SPIxSR pasa la trama a SPIxRxBUF.
-            Pero ambos (SPIxSTAT.SPIxRBF y SPIxIF) se levantan UN CICLO DE fcy
-            DESPUES del sampling y no una vez terminado el clock SCK.
+        // espera mientras llega la trama.
+        /*
+        SPIxIF (interrupt flag de transferenecia completa) se levanta cuando
+        se shiftea (envia y captura) el ultimo bit -b0- de SPIxSR.
+        SPIxSTAT.SPIxRBF se levanta cuando SPIxSR pasa la trama a SPIxRxBUF.
+        Pero ambos (SPIxSTAT.SPIxRBF y SPIxIF) se levantan UN CICLO DE fcy
+        DESPUES del sampling y no una vez terminado el clock SCK.
 
-            Si SPIxRBF=1 => hay un dato a leer, si no se lee antes de recivir
-            otra trama se produce overflow y se levanta el flag SPIxSTAT.SPIROV
-            */
+        Si SPIxRBF=1 => hay un dato a leer, si no se lee antes de recivir
+        otra trama se produce overflow y se levanta el flag SPIxSTAT.SPIROV
+        */
 	while(SPI_SCK_3){}	//espera mientras SCK no baje de su ultimo clock
 	unsigned char b= ReadSPI3();  //NO DESCOMENTAR ESTA LINEA
 	return b; //PORQUE ESO HACE QUE LA ESCRITURA EN EL DAC SEA ERRONEA

@@ -335,14 +335,35 @@ DispCmd con_cmd_handler(void)
        }
 
        /*----------------------- EPS COMMANDS ------------------------*/
-       if(strcmp(con_cmd, "eps_readreg") == 0)
+       if(strcmp(con_cmd, "eps_alive") == 0)
        {
            if(con_arg_count == 1)
            {
                int i;
                i=atoi(con_args[0]);
-               if(StrIsInt(con_args[0]) && i<36){
-                   newCmd.cmdId=0x4000;
+               newCmd.cmdId=eps_id_isAlive;
+               newCmd.param = i;
+
+           }
+           else
+           {
+               newCmd.cmdId = con_id_error_count_arg;
+           }
+
+           con_arg_toolong = FALSE;
+           con_entry_flag = FALSE;
+
+           return newCmd;
+       }
+        
+       if(strcmp(con_cmd, "eps_hk") == 0)
+       {
+           if(con_arg_count == 1)
+           {
+               int i;
+               i=atoi(con_args[0]);
+               if(StrIsInt(con_args[0]) && i<3){
+                   newCmd.cmdId=eps_id_print_hk;
                    newCmd.param = i;
                }
                else{

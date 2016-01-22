@@ -373,7 +373,6 @@ typedef struct
 // toopazo: debe haber una funcioncion de init, aunque sea vacia, debe al menos
 // decir si la EPS responde (isALive)
 int eps_initialize(void);
-int eps_isAlive(BOOL verbose);
 
 void setStateFlagEPS(unsigned char value);
 

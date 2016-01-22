@@ -317,7 +317,7 @@ int ppc_reactToSOC(void* param)
         printf("ppc_reactToSOC()\r\n");
     #endif
          
-    #if( SCH_EPS_ONBOARD == 1 )
+    #if( 0 ) // Deprecated (SCH_EPS_ONBOARD == 1 )
         int current_soc;
         current_soc = sta_get_BusStateVar(sta_eps_soc);
     #else

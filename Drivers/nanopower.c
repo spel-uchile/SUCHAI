@@ -7,13 +7,10 @@
 
 #include <string.h>
 
-#include <nanopower.h>
+#include "nanopower.h"
 
-//#include <util/error.h>
-//#include <util/log.h>
-
-#include <csp.h>
-#include <csp_endian.h>
+#include "csp.h"
+#include "csp_endian.h"
 
 uint8_t node_eps = NODE_EPS;
 

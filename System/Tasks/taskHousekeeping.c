@@ -97,26 +97,6 @@ void taskHousekeeping(void *param)
                 printf("[Houskeeping]:  20[s] actions ..\r\n");
             #endif
             //Add commands below ..
-
-            //update SOC and other stuctures
-            #if (SCH_EPS_ONBOARD==1)
-                NewCmd.cmdId = eps_id_update_internal_vars;
-                NewCmd.param = 0;
-                xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-            #endif
-
-            //make changes if SOC is too low, among others
-//            #if (SCH_TASKDISPATCHER_CHECK_IF_EXECUTABLE==1)
-//                NewCmd.cmdId = ppc_id_reactToSOC;
-//                NewCmd.param = 0;
-//                xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-//            #endif
-
-//            #if (SCH_THOUSEKEEPING_VERBOSE>=2)
-//                NewCmd.cmdId = srp_id_print_STA_stateVar;
-//                NewCmd.param = 0;
-//                xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-//            #endif
         }
 
         /* 1 minute actions */
@@ -126,11 +106,7 @@ void taskHousekeeping(void *param)
                 printf("[Houskeeping] 1[min] actions ..\r\n");
             #endif
             //Add commands below ..
-
-//            //print StateVars, debug purposes
-//            NewCmd.cmdId = srp_id_print_STA_stateVar;
-//            NewCmd.param = 1;
-//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+                
         }
 
         /* 5 minutes actions */
@@ -140,6 +116,12 @@ void taskHousekeeping(void *param)
                 printf("[Houskeeping] 5[min] actions ..\r\n");
             #endif
             //Add commands below ..
+                
+
+//            //print StateVars, debug purposes
+//            NewCmd.cmdId = srp_id_print_STA_stateVar;
+//            NewCmd.param = 1;
+//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
         }
 
         /* 1 hour actions  */
@@ -158,6 +140,12 @@ void taskHousekeeping(void *param)
             NewCmd.cmdId = trx_id_isAlive;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+            
+            //test eps ping
+            sta_get_BusStateVar(sta_EPS_isAlive);
+            NewCmd.cmdId = eps_id_isAlive;
+            NewCmd.param = 0;
+            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
             // hoursWithoutReset++
             NewCmd.cmdId = srp_id_increment_STA_stateVar_hoursWithoutReset;
@@ -167,10 +155,6 @@ void taskHousekeeping(void *param)
             // hoursAlive ++
             NewCmd.cmdId = srp_id_increment_STA_stateVar_hoursAlive;
             NewCmd.param = 0;
-            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-
-            NewCmd.cmdId = trx_id_ping;
-            NewCmd.param = 5;   // ping to TRX to avoid reset to defaults (node 5 according to CSP)
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
 
         }

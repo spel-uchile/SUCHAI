@@ -73,6 +73,7 @@ void trx_onResetCmdTRX(void){
  * @return 1 Ok, 0 Fail
  */
 int trx_isAlive(void *param){
+    printf("trx_isAlive .. \r\n");
     #if (SCH_TRX_ONBOARD == 0)
         return 0;
     #endif
@@ -445,15 +446,15 @@ int trx_ping(void *param)
     int result;
     int node = *((int *)param);
 
-#if SCH_CMDTRX_VERBOSE
-    printf("Sending test frame to node %d...\n", node);
-#endif
+    #if SCH_CMDTRX_VERBOSE
+        printf("Sending test frame to node %d...\n", node);
+    #endif
 
     result = csp_ping(node, com_timeout, 10, CSP_O_NONE);
 
-#if SCH_CMDTRX_VERBOSE
-    printf("Ping to %d of size %d, took %d ms\n", node, 10, result);
-#endif
+    #if SCH_CMDTRX_VERBOSE
+        printf("Ping to %d of size %d, took %d ms\n", node, 10, result);
+    #endif
     
     result = result > 0 ? 1:0;
 

@@ -169,8 +169,7 @@ int srp_memEEPROM_initial_state(void * param){
         pay_set_state_tmEstado(&arg);
     #endif
     #if (SCH_PAY_BATTERY_ONBOARD==1)
-        //arg = sta_pay_xxx_state_active;
-        arg = pay_xxx_state_inactive;   //special case, not executed by FP2
+        arg = pay_xxx_state_active;
         pay_set_state_battery(&arg);
     #else
         arg = pay_xxx_state_inactive;

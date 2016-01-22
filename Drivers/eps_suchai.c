@@ -721,7 +721,7 @@ void updateENERGYEPS(void){
  * Return Value      :  read variable
  * Remarks           :  Designed for EPS CS-1UEPS2-NB-10
  *----------------------------------------------------------------------------*/
-int readEPSvars(char var2read){
+int eps_read_vars(char var2read){
     switch(var2read){
         case EPS_ID_bat0_voltage :
             return BatMes.Voltage;

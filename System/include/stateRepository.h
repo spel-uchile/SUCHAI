@@ -85,18 +85,14 @@ typedef enum{
 
     #if (SCH_EPS_ONBOARD==1)
         //EPS => (Energy subsystem)
-        sta_eps_bat0_voltage,
-        sta_eps_bat0_current,
-        sta_eps_bus5V_current,
-        sta_eps_bus3V_current,
-        sta_eps_bus_battery_current,
-        sta_eps_bat0_temp,
-        sta_eps_panel_pwr,
-        sta_eps_status,
-        sta_eps_soc,
-        sta_eps_socss,
-        sta_eps_state_flag,
-        sta_eps_charging,
+        sta_eps_batt_temp_0,
+        sta_eps_batt_temp_1,
+        sta_eps_battery_voltage,
+        sta_eps_panel_current,
+        sta_eps_panel_voltage_1,
+        sta_eps_panel_voltage_2,
+        sta_eps_panel_voltage_3,
+        sta_eps_system_current,
     #endif
 
     /* Revisar de aqui hacia abajo si aun son necesarios !!! */

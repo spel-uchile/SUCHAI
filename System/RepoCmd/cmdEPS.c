@@ -18,8 +18,6 @@
  */
 
 #include "cmdEPS.h"
-#include "cmdRTC.h"
-#include "csp.h"
 
 cmdFunction epsFunction[EPS_NCMD];
 int eps_sysReq[EPS_NCMD];
@@ -28,11 +26,12 @@ void eps_onResetCmdEPS(void){
     printf("        eps_onResetCmdEPS\n");
 
     int i;
-    for(i=0; i<EPS_NCMD; i++) eps_sysReq[i] = CMD_SYSREQ_MIN;
+    for(i=0; i<EPS_NCMD; i++){eps_sysReq[i] = CMD_SYSREQ_MIN;}
     
     epsFunction[(unsigned char)eps_id_isAlive] = eps_isAlive;
     epsFunction[(unsigned char)eps_id_initialize] = eps_initialize;
     epsFunction[(unsigned char)eps_id_print_hk] = eps_print_hk;
+    epsFunction[(unsigned char)eps_id_read_vars] = eps_read_vars;
 }
 
 /**
@@ -42,18 +41,13 @@ void eps_onResetCmdEPS(void){
  */
 int eps_isAlive(void *param)
 {
-    int ok = 0;
-    ok = csp_ping(NODE_EPS, 1000, 4, CSP_O_NONE);
-    ok = ok > 0 ? 1:0;
-    
-    #if(SCH_CMDEPS_VERBOSE)
-    if(ok)
-        printf("Ok\r\n");
-    else
-        printf("Error\r\n");
+    printf("eps_isAlive .. \r\n");
+    #if (SCH_EPS_ONBOARD == 0)
+        return 0;
     #endif
-    
-	return ok;
+
+    int arg = NODE_EPS;
+    return trx_ping(&arg);
 }
 
 /**
@@ -64,7 +58,7 @@ int eps_isAlive(void *param)
 int eps_initialize(void *param)
 {
     //Nothing to do just test communication
-    return eps_isAlive(NULL);
+    return 1;//eps_isAlive(NULL);
 }
 
 /**
@@ -162,4 +156,77 @@ int eps_print_hk(void *param)
     
 	return 1;
     
+}
+
+int eps_read_vars(void *param){
+    int var2read = *((int *)param);
+    #if (SCH_EPS_VERBOSE >= 2)
+        printf("[eps_read_vars] Reading var %d \r\n", var2read);
+    #endif
+    
+    chkparam_t sta_chkparam;
+    if (!eps_get_hk(&sta_chkparam)) {
+        printf("Error requesting HK\r\n");
+        return 0;
+    }
+    
+    switch(var2read){
+        case EPS_ID_batt_temp_0 :
+            return (int)sta_chkparam.batt_temp[0];
+            break;
+        case EPS_ID_batt_temp_1:
+            return (int)sta_chkparam.batt_temp[1];
+            break;
+        case EPS_ID_bootcount :
+            return (int)sta_chkparam.bootcount;
+            break;        
+        case EPS_ID_battery_voltage :
+            return (int)sta_chkparam.bv;
+            break;
+        case EPS_ID_channel_status :
+            return (int)sta_chkparam.channel_status;
+            break;
+        case EPS_ID_latchup_0 :
+            return (int)sta_chkparam.latchup[0];
+            break;
+        case EPS_ID_panel_current :
+            return (int)sta_chkparam.pc;
+            break;
+        case EPS_ID_ppt_mode :
+            return (int)sta_chkparam.ppt_mode;
+            break;
+        case EPS_ID_panel_voltage_1:
+            return (int)sta_chkparam.pv[0];
+            break;
+        case EPS_ID_panel_voltage_2:
+            return (int)sta_chkparam.pv[1];
+            break;
+        case EPS_ID_panel_voltage_3:
+            return (int)sta_chkparam.pv[2];
+            break;
+        case EPS_ID_reset:
+            return (int)sta_chkparam.reset;
+            break;
+        case EPS_ID_system_current :
+            return (int)sta_chkparam.sc;
+            break;
+        case EPS_ID_sw_errors:
+            return (int)sta_chkparam.sw_errors;
+            break;
+        case EPS_ID_temp_conv1:
+            return (int)sta_chkparam.temp[0];
+            break;
+        case EPS_ID_temp_conv2:
+            return (int)sta_chkparam.temp[1];
+            break;
+        case EPS_ID_temp_conv3:
+            return (int)sta_chkparam.temp[2];
+            break;
+        case EPS_ID_temp_board:
+            return (int)sta_chkparam.temp[3];
+            break;
+        default :
+            return 0;
+            break;
+    }
 }

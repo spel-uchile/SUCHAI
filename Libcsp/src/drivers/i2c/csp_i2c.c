@@ -41,7 +41,7 @@ int i2c_send(int handle, i2c_frame_t * frame, uint16_t timeout)
     if(handle != 0)
         return CSP_ERR_DRIVER;
     
-#if SCH_I2C_SUCHAI_VERBOSE
+#if SCH_I2C_VERBOSE
     printf("To: %d. Size: %d. Data: ", frame->dest, frame->len);
     int i; for(i=0; i<frame->len; i++) printf("0x%X,", frame->data[i]); printf("\n");
 #endif
@@ -61,14 +61,14 @@ int i2c_send(int handle, i2c_frame_t * frame, uint16_t timeout)
 
     if(total == frame->len)
     {
-#if SCH_I2C_SUCHAI_VERBOSE
+#if SCH_I2C_VERBOSE
         printf("Success in I2C driver (%d of %d bytes transmited)\n", total, frame->len);
 #endif
         return E_NO_ERR;
     }
     else
     {
-#if SCH_I2C_SUCHAI_VERBOSE
+#if SCH_I2C_VERBOSE
         printf("Error in I2C driver (%d of %d bytes transmited)\n", total, frame->len);
 #endif
         return CSP_ERR_DRIVER;

@@ -1778,6 +1778,7 @@ void pay_fp2_exec_run_xxx(DAT_Payload_Buff pay_i, PAY_xxx_State state){
                     pay_init_tmEstado(&arg);
                     break;
                 case pay_xxx_state_run_take:
+                    arg = 1;
                     pay_take_tmEstado(&arg);
                     break;
                 case pay_xxx_state_run_stop:

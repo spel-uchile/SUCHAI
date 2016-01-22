@@ -219,6 +219,7 @@ int thk_suchai_deployment(void *param)
     #if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==1 )
         #if(SCH_THOUSEKEEPING_SILENT_REALTIME==1)
             pay_takePhoto_camera(NULL); //takes 10min to complete
+            pay_get_savedPhoto_camera(NULL)
         #else
             printf("  Jumping pay_takePhoto_camera(NULL) call, it takes 10min to complete ..\r\n");
         #endif

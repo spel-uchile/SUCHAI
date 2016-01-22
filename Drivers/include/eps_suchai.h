@@ -414,7 +414,7 @@ void updateSOCEPS(void);
 
 void updateENERGYEPS(void);
 
-int readEPSvars(char var2read);
+int eps_read_vars(char var2read);
 
 char CurrDirEstEPS(void);
 

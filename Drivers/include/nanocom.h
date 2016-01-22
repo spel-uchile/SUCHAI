@@ -18,6 +18,7 @@
 
 /** Default node address */
 #define NODE_COM				5
+#define NODE_EPS				2
 #define NODE_TNC				9
 #define NANOCOM_ADD                             0x05
 

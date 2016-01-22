@@ -55,7 +55,7 @@ int sta_get_BusStateVar(STA_BusStateVar indxVar){
             value = trx_isAlive(NULL);
             break;
         case sta_EPS_isAlive:
-            value = eps_isAlive(FALSE);
+            value = eps_isAlive(NULL);
             break;
         case sta_MemEEPROM_isAlive:
             value = memEEPROM_isAlive();
@@ -161,44 +161,38 @@ int sta_get_BusStateVar(STA_BusStateVar indxVar){
         case sta_rtc_seconds:
             value = RTC_get_seconds();
             break;
-        #if (0) // Deprecaed (SCH_EPS_ONBOARD==1)
-            //EPS => (Energy subsystem)
-            case sta_eps_bat0_voltage:
-                //printf("EPS => (Energy subsystem)\r\n");
-                value = readEPSvars(EPS_ID_bat0_voltage);
+        #if (SCH_EPS_ONBOARD==1)
+            case sta_eps_batt_temp_0:
+                param = EPS_ID_batt_temp_0;
+                value = eps_read_vars(&param);
                 break;
-            case sta_eps_bat0_current:
-                value = readEPSvars(EPS_ID_bat0_current);
+            case sta_eps_batt_temp_1:
+                param = EPS_ID_batt_temp_1;
+                value = eps_read_vars(&param);
                 break;
-            case sta_eps_bus5V_current:
-                value = readEPSvars(EPS_ID_bus5V_current);
+            case sta_eps_battery_voltage:
+                param = EPS_ID_battery_voltage;
+                value = eps_read_vars(&param);
                 break;
-            case sta_eps_bus3V_current:
-                value = readEPSvars(EPS_ID_bus3V_current);
+            case sta_eps_panel_current:
+                param = EPS_ID_panel_current;
+                value = eps_read_vars(&param);
                 break;
-            case sta_eps_bus_battery_current:
-                value = readEPSvars(EPS_ID_bus_battery_current);
+            case sta_eps_panel_voltage_1:
+                param = EPS_ID_panel_voltage_1;
+                value = eps_read_vars(&param);
                 break;
-            case sta_eps_bat0_temp:
-                value = readEPSvars(EPS_ID_bat0_temp);
+            case sta_eps_panel_voltage_2:
+                param = EPS_ID_panel_voltage_2;
+                value = eps_read_vars(&param);
                 break;
-            case sta_eps_panel_pwr:
-                value = readEPSvars(EPS_ID_panel_pwr);
+            case sta_eps_panel_voltage_3:
+                param = EPS_ID_panel_voltage_3;
+                value = eps_read_vars(&param);
                 break;
-            case sta_eps_status:
-                value = readEPSvars(EPS_ID_status);
-                break;
-            case sta_eps_soc:
-                value = readEPSvars(EPS_ID_soc);
-                break;
-            case sta_eps_socss:
-                value = readEPSvars(EPS_ID_socss);
-                break;
-            case sta_eps_state_flag:
-                value = readEPSvars(EPS_ID_state_flag);
-                break;
-            case sta_eps_charging:
-                value = readEPSvars(EPS_ID_current_dir);
+            case sta_eps_system_current:
+                param = EPS_ID_system_current;
+                value = eps_read_vars(&param);
                 break;
         #endif
         #if (SCH_TRX_ONBOARD==1)
@@ -435,41 +429,29 @@ char* sta_BusStateVarToString(STA_BusStateVar var_i){
 
         #if (SCH_EPS_ONBOARD == 1)
             //EPS => (Energy subsystem)
-            case sta_eps_bat0_voltage:
-                pc = "sta_eps_bat0_voltage";
+            case sta_eps_batt_temp_0:
+                pc = "sta_eps_batt_temp_0";
                 break;
-            case sta_eps_bat0_current:
-                pc = "sta_eps_bat0_current";
+            case sta_eps_batt_temp_1:
+                pc = "sta_eps_batt_temp_1";
                 break;
-            case sta_eps_bus5V_current:
-                pc = "sta_eps_bus5V_current";
+            case sta_eps_battery_voltage:
+                pc = "sta_eps_battery_voltage";
                 break;
-            case sta_eps_bus3V_current:
-                pc = "sta_eps_bus3V_current";
+            case sta_eps_panel_current:
+                pc = "sta_eps_panel_current";
                 break;
-            case sta_eps_bus_battery_current:
-                pc = "sta_eps_bus_battery_current";
+            case sta_eps_panel_voltage_1:
+                pc = "sta_eps_panel_voltage_1";
                 break;
-            case sta_eps_bat0_temp:
-                pc = "sta_eps_bat0_temp";
+            case sta_eps_panel_voltage_2:
+                pc = "sta_eps_panel_voltage_2";
                 break;
-            case sta_eps_panel_pwr:
-                pc = "sta_eps_panel_pwr";
+            case sta_eps_panel_voltage_3:
+                pc = "sta_eps_panel_voltage_3";
                 break;
-            case sta_eps_status:
-                pc = "sta_eps_status";
-                break;
-            case sta_eps_soc:
-                pc = "sta_eps_soc";
-                break;
-            case sta_eps_socss:
-                pc = "sta_eps_socss";
-                break;
-            case sta_eps_state_flag:
-                pc = "sta_eps_state_flag";
-                break;
-            case sta_eps_charging:
-                pc = "sta_eps_charging";
+            case sta_eps_system_current:
+                pc = "sta_eps_system_current";
                 break;
         #endif  
 

@@ -9,7 +9,6 @@
         <itemPath>../Drivers/include/pic_pc104_config.h</itemPath>
         <itemPath>../Drivers/include/rs232_suchai.h</itemPath>
         <itemPath>../Drivers/include/console.h</itemPath>
-        <itemPath>../Drivers/include/eps_suchai.h</itemPath>
         <itemPath>../Drivers/include/rtc_mb.h</itemPath>
         <itemPath>../Drivers/include/memSD.h</itemPath>
         <itemPath>../Drivers/include/memFlash.h</itemPath>
@@ -130,7 +129,6 @@
         <itemPath>../Drivers/pic_pc104_config.c</itemPath>
         <itemPath>../Drivers/rs232_suchai.c</itemPath>
         <itemPath>../Drivers/console.c</itemPath>
-        <itemPath>../Drivers/eps_suchai.c</itemPath>
         <itemPath>../Drivers/rtc_mb.c</itemPath>
         <itemPath>../Drivers/memSD.c</itemPath>
         <itemPath>../Drivers/memFlash.c</itemPath>
@@ -266,7 +264,7 @@
         <targetDevice>PIC24FJ256GA110</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>PICkit3PlatformTool</platformTool>
+        <platformTool>ICD3PlatformTool</platformTool>
         <languageToolchain>XC16</languageToolchain>
         <languageToolchainVersion>1.21</languageToolchainVersion>
         <platform>2</platform>
@@ -410,6 +408,9 @@
         <property key="relaxed-math" value="false"/>
         <property key="save-temps" value="false"/>
       </C30Global>
+      <ICD3PlatformTool>
+        <property key="firmware.download.all" value="false"/>
+      </ICD3PlatformTool>
       <PICkit3PlatformTool>
         <property key="firmware.download.all" value="false"/>
       </PICkit3PlatformTool>

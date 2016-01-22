@@ -48,6 +48,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define I2C_SLAVE 	1
 
 /**
+ * Routing
+ */
+#define SPACE_SEGMENT (0x07)
+#define TRX_ADDRESS   (0x05)
+#define EPS_ADDRESS   (0x02)     
+
+
+/**
  * Data structure for I2C frames
  */
 typedef struct __attribute__((packed)) i2c_frame_s {

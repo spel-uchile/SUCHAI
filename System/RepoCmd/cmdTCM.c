@@ -236,11 +236,6 @@ int tcm_update_beacon(void *param)
     strcpy(beacon_buff, "00SUCHAI0");
     char *p_buff = beacon_buff + strlen(beacon_buff);
 
-
-    #if( SCH_EPS_ONBOARD == 1 )
-        double d_val = 0;
-    #endif
-
     //SIMPLE
     if(mode==0)
     {
@@ -358,6 +353,7 @@ int tcm_update_beacon(void *param)
         #else
             val = 0;
         #endif
+
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);
@@ -369,6 +365,7 @@ int tcm_update_beacon(void *param)
         #else
             val = 0;
         #endif
+
         itoa(buff,val/10,10);
         strcpy(p_buff++, buff);
         itoa(buff,val%10,10);

@@ -19,7 +19,7 @@
 
 #include "cmdEPS.h"
 #include "cmdRTC.h"
-#include "eps_suchai.h"
+#include "csp.h"
 
 cmdFunction epsFunction[EPS_NCMD];
 int eps_sysReq[EPS_NCMD];
@@ -31,23 +31,8 @@ void eps_onResetCmdEPS(void){
     for(i=0; i<EPS_NCMD; i++) eps_sysReq[i] = CMD_SYSREQ_MIN;
     
     epsFunction[(unsigned char)eps_id_isAlive] = eps_isAlive;
+    epsFunction[(unsigned char)eps_id_initialize] = eps_initialize;
     epsFunction[(unsigned char)eps_id_print_hk] = eps_print_hk;
-    
-    //Olds commands
-    epsFunction[(unsigned char)eps_id_readreg] = eps_readreg;
-    
-    epsFunction[(unsigned char)eps_id_readreg] = eps_readreg;
-    epsFunction[(unsigned char)eps_id_status_read] = eps_status_read;
-    
-    epsFunction[(unsigned char)eps_id_update_internal_vars] = eps_update_internal_vars;
-    epsFunction[(unsigned char)eps_id_soc_estimation] = eps_soc_estimation;
-    epsFunction[(unsigned char)eps_id_energy_estimation] = eps_energy_estimation;
-
-    epsFunction[(unsigned char)eps_id_current_meassurement] = eps_current_meassurement;
-    epsFunction[(unsigned char)eps_id_panel_pwr_meassuerement] = eps_panel_pwr_meassuerement;
-    epsFunction[(unsigned char)eps_id_pdm_off] = eps_pdm_off;
-    
-    epsFunction[(unsigned char)eps_id_print_all_reg] = eps_print_all_reg;
 }
 
 /**
@@ -58,27 +43,28 @@ void eps_onResetCmdEPS(void){
 int eps_isAlive(void *param)
 {
     int ok = 0;
-    int verbose = *((int *)(param));
-    eps_version_t version;
-    
-    ok = eps_get_version(&version);
-    
-    if(ok)
-    {
-        //TODO: Check correct values
-        ok = version.type == version.type ? 0:1;
-        if(verbose)
-            printf("EPS Version  %s %s %s %s\r\n", version.type, version.ver, version.date, version.time);
-    }
+    ok = csp_ping(NODE_EPS, 1000, 4, CSP_O_NONE);
+    ok = ok > 0 ? 1:0;
     
     #if(SCH_CMDEPS_VERBOSE)
     if(ok)
-        printf("Error\r\n");
-    else
         printf("Ok\r\n");
+    else
+        printf("Error\r\n");
     #endif
     
 	return ok;
+}
+
+/**
+ * Initializes EPS and return current status
+ * @param param *int 1-Verbose, 0-No verbose
+ * @return 1-Ok, 0-Error
+ */
+int eps_initialize(void *param)
+{
+    //Nothing to do just test communication
+    return eps_isAlive(NULL);
 }
 
 /**
@@ -176,192 +162,4 @@ int eps_print_hk(void *param)
     
 	return 1;
     
-}
-
-/**
- * Update various EPS structures (SOC, nergy estimation, etc)
- * @param param
- * @return 
- */
-int eps_update_internal_vars(void *param){
-    updateSOCEPS();
-    updateStatusEPS();
-    updateENERGYEPS();
-
-    return 1;
-}
-
-/**
- * Muestra por consola los valores de todos los ADC de la EPS.
- * @param param ignorado, puede ser NULL
- * @return  siempre retorn 1
- */
-int eps_print_all_reg(void *param){
-    int i;
-
-    printf("Reading EPS regs ..\r\n");
-    rtc_print(NULL);
-
-    for(i=0;i<34;i++){
-        printf("reg[%d] = %d \r\n", i, eps_readreg( (void *)(&i) ) );
-    }
-
-    return 1;
-}
-/*------------------------------------------------------------------------------
- *                              EPS READ REGISTER
- *------------------------------------------------------------------------------
- * Description        : Display the reading of a EPS variable
- * Arguments          : param = 0-33
- *                              0-31 Are the 32 ADC channels (based on the
- *                                   CS-1UEPS2-NB-10 data sheet)
- *                              32   Display the EPS status register
- *                              33   Display the EPS version
- * Return Value       : readed value
- *----------------------------------------------------------------------------*/
-int  eps_readreg(void *param)
-{
-    unsigned char argu = *((unsigned char *)(param));
-    int lectura;
-
-    if(argu<32){
-        lectura = (int)ADCReadEPS(argu);
-        #if(SCH_CMDEPS_VERBOSE > 1)
-            printf("Lectura ADC: reg[%d]=", argu);
-        #endif
-    }
-    else if(argu==32){
-            lectura = (int)StatusReadEPS();
-            #if(SCH_CMDEPS_VERBOSE > 1)
-                printf("Lectura Status:");
-            #endif
-    }
-    else if(argu==33){
-        lectura = (int)VersionReadEPS();
-        #if(SCH_CMDEPS_VERBOSE > 1)
-            printf("Lectura Version:");
-        #endif
-    }
-    else {
-        lectura = (int)readEPSvars(EPS_ID_current_dir_est);
-        #if(SCH_CMDEPS_VERBOSE > 1)
-            printf("Estimacion Current Direction (0-Ch, 1-Disch):");
-        #endif
-    }
-
-    #if(SCH_CMDEPS_VERBOSE > 1)
-        printf("%d (dec), 0x%X (hex)\r\n", lectura, lectura);
-    #endif
-    
-    return lectura;
-
-}
-
-/*------------------------------------------------------------------------------
- *		 	EPS SOC ESTIMATION
- *------------------------------------------------------------------------------
- * Description        : Reads the battery variables, and calculates a SOC estimation
- *                      The readings and estimation are saved internally. Proper
- *                      Data Repository Command must be used to save the variables
- *                      in the data repository
- * Arguments          : void
- * Return Value       : 1 - OK
- *----------------------------------------------------------------------------*/
-int eps_soc_estimation(void *param)
-{
-    updateSOCEPS();
-    return 1;
-}
-
-/*------------------------------------------------------------------------------
- *		 	EPS ENERGY ESTIMATION
- *------------------------------------------------------------------------------
- * Description        : Reads the battery variables, and calculates a ENERGY estimation
- *                      The readings and estimation are saved internally. Proper
- *                      Data Repository Command must be used to save the variables
- *                      in the data repository
- * Arguments          : void
- * Return Value       : 1 - OK
- *----------------------------------------------------------------------------*/
-int eps_energy_estimation(void *param)
-{
-    updateENERGYEPS();
-    return 1;
-}
-
-/*------------------------------------------------------------------------------
- *		 	EPS BUSES CURRENTS MEASSUREMENTS
- *------------------------------------------------------------------------------
- * Description        : Reads the buses currents.
- *                      The readings and estimation are saved internally. Proper
- *                      Data Repository Command must be used to save the variables
- *                      in the data repository
- * Arguments          : void
- * Return Value       : 1 - OK
- *----------------------------------------------------------------------------*/
-int eps_current_meassurement(void *param)
-{
-    BusCurrEPS();
-    return 1;
-}
-
-/*------------------------------------------------------------------------------
- *		 	EPS PANEL POWER MEASSUREMENT
- *------------------------------------------------------------------------------
- * Description        : Reads the panels voltages and currents, and calculates
- *                      the power sourced by the panels.
- *                      The readings and estimation are saved internally. Proper
- *                      Data Repository Command must be used to save the variables
- *                      in the data repository
- * Arguments          : void
- * Return Value       : 1 - OK
- *----------------------------------------------------------------------------*/
-int  eps_panel_pwr_meassuerement(void *param)
-{
-    PnlMesEPS();
-    return 1;
-}
-
-/*------------------------------------------------------------------------------
- *                              EPS STATUS READ
- *------------------------------------------------------------------------------
- * Description        : Reads the EPS status.
- *                      The readings and estimation are saved internally. Proper
- *                      Data Repository Command must be used to save the variables
- *                      in the data repository
- * Arguments          : void
- * Return Value       : 1 - OK
- *----------------------------------------------------------------------------*/
-int  eps_status_read(void *param)
-{
-    updateStatusEPS();
-    return 1;
-}
-
-/**
- * Turn off an EPS energy bus by a limited time performing a hard reset
- *
- * @param param Bus
- *  b0 - batery bus
- *  b1 - 5V bus
- *  b2 - 3.3V bus
- * @return 1 - OK, 0 - Invalid param
- */
-int eps_pdm_off(void *param)
-{
-    int bus = *(int *)param;
-
-    if ((bus >= 0) && (bus <= 7))
-    {
-        #if SCH_EPS_SUCHAI_VERBOSE
-            con_printf("[EPS] Turning of energy bus\n");
-        #endif
-
-        PdmOffEPS((char)bus);
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
 }

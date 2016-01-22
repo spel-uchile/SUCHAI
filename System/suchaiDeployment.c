@@ -276,14 +276,15 @@ int dep_init_adHoc_strcts(void *param)
         printf("\n[dep_init_GnrlStruct] Initializing other structures...\r\n");
     #endif
 
-    #if( SCH_EPS_ONBOARD == 1 )
-        /* Initializing EPS struct */
-        #if (SCH_TDEPLOYMENT_VERBOSE>=2)
-            printf("    * init EPS structs\r\n");
-        #endif
-
-        setStateFlagEPS( (unsigned char)sta_get_BusStateVar(sta_eps_state_flag) );
-    #endif
+    //Deprecated
+//    #if( SCH_EPS_ONBOARD == 1 )
+//        /* Initializing EPS struct */
+//        #if (SCH_TDEPLOYMENT_VERBOSE>=2)
+//            printf("    * init EPS structs\r\n");
+//        #endif
+//
+//        setStateFlagEPS( (unsigned char)sta_get_BusStateVar(sta_eps_state_flag) );
+//    #endif
 
     return 1;
 }
@@ -459,7 +460,7 @@ int dep_init_sysbus_hw(void *param)
         #if (SCH_TDEPLOYMENT_VERBOSE>=2)
             printf("    * External EPS .. ");
         #endif
-        resp  = eps_initialize();
+        resp  = eps_initialize(NULL);
         //hw_isAlive = sta_EPS_isAlive;
         //sta_set_stateVar(hw_isAlive, resp);
         #if (SCH_TDEPLOYMENT_VERBOSE>=2)

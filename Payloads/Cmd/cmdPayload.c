@@ -399,14 +399,15 @@ int pay_take_battery(void *param){
     //pay_save_date_time_to_Payload_Buff(dat_pay_battery);
     unsigned int index = *(int*)param;
 
-    //save data
-    lectura1 = (int)readEPSvars(EPS_ID_bat0_voltage)+0b1111000000000000;
-    lectura2 = (int)readEPSvars(EPS_ID_bat0_current)+0b1111000000000000;
-    lectura3 = (int)readEPSvars(EPS_ID_bat0_temp)+0b1111000000000000;
+    //TODO: Read EPS variables
+//    //save data
+//    lectura1 = (int)readEPSvars(EPS_ID_bat0_voltage)+0b1111000000000000;
+//    lectura2 = (int)readEPSvars(EPS_ID_bat0_current)+0b1111000000000000;
+//    lectura3 = (int)readEPSvars(EPS_ID_bat0_temp)+0b1111000000000000;
     //guarda tres lecturas voltaje, corriente y temperatura de la bateria
-    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura1, index+0);
-    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura2, index+1);
-    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura3, index+2);
+//    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura1, index+0);
+//    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura2, index+1);
+//    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura3, index+2);
 
     printf("writing ..\r\n");
     printf("dat_pay_battery[%d] = %d \r\n", index+0, lectura1);

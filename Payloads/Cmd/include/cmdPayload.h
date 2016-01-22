@@ -25,7 +25,6 @@
 #include "camera.h"
 #include "dig_gyro.h"
 #include "sensTemp.h"
-#include "eps_suchai.h"
 #include "memEEPROM.h"
 #include "javad_gps.h"
 

@@ -27,6 +27,7 @@
 #include "sensTemp.h"
 #include "memEEPROM.h"
 #include "javad_gps.h"
+#include "nanopower.h"
 
 //#include "console.h"
 

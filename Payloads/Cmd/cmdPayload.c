@@ -1027,7 +1027,7 @@ int pay_stop_gps(void *param){
     unsigned int gps_mm = (gps_buff[9] - '0')*10 + (gps_buff[10] - '0')*1;
     unsigned int gps_ss = (gps_buff[11] - '0')*10 + (gps_buff[12] - '0')*1;
         
-    if(gps_hh==00 & gps_mm==00 & gps_ss==00){
+    if((gps_hh==00) & (gps_mm==00) & (gps_ss==00)){
         // $GNRMC,000000.00,V,,,,,,,,,,N*63
         //GPS not locked, don't update RTC
     }

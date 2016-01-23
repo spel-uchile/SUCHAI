@@ -53,7 +53,7 @@ int main(void)
     /* Configure Peripherals */
     /* NOTA: EL TIMER 1 Y SU INTERRUPCION ESTAN CONFIGURADOS POR EL S.0. (FreeRTOS) */
     default_PIC_config();
-
+    
     /* Initializing LibCSP*/
     com_csp_initialization(); //Issue #8: Initialize libcsp before trx
 

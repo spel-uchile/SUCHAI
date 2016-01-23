@@ -515,11 +515,11 @@ int trx_initialize(void *param)
     TRX_CONFIG.morse_bat_level = morse_bat_level;
     TRX_CONFIG.morse_cycle = 1;
     TRX_CONFIG.morse_en_rf_err = 1;
-    TRX_CONFIG.morse_en_rssi = 1;
-    TRX_CONFIG.morse_en_rx_count = 1;
-    TRX_CONFIG.morse_en_temp_a = 1;
-    TRX_CONFIG.morse_en_temp_b = 1;
-    TRX_CONFIG.morse_en_tx_count = 1;
+    TRX_CONFIG.morse_en_rssi = 0;
+    TRX_CONFIG.morse_en_rx_count = 0;
+    TRX_CONFIG.morse_en_temp_a = 0;
+    TRX_CONFIG.morse_en_temp_b = 0;
+    TRX_CONFIG.morse_en_tx_count = 0;
     TRX_CONFIG.morse_en_voltage = 1;
     TRX_CONFIG.morse_enable = 1;
     TRX_CONFIG.morse_inter_delay = morse_inter_delay;

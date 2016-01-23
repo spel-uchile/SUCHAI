@@ -1019,22 +1019,29 @@ int pay_stop_gps(void *param){
         dat_set_Payload_Buff(dat_pay_gps, gps_buff[i]);
         //printf("gps_buff[%d] = %c \r\n", i, gps_buff[i]);
     }
-
+    
     //update RTC time using GPS time
     //0123456789012345678901234567890123456789
     //$GNRMC,150957.00,V,,,,,,,311215,,,N*69
     unsigned int gps_hh = (gps_buff[7] - '0')*10 + (gps_buff[8] - '0')*1;
     unsigned int gps_mm = (gps_buff[9] - '0')*10 + (gps_buff[10] - '0')*1;
     unsigned int gps_ss = (gps_buff[11] - '0')*10 + (gps_buff[12] - '0')*1;
-    printf("Updating RTC => gps_hh = %d gps_mm = %d gps_ss = %d \r\n", gps_hh, gps_mm, gps_ss);
-    //rtc_adjust_year(&gps_hh);
-    //rtc_adjust_month(&gps_hh);
-    //rtc_adjust_day(&gps_hh);
-    //rtc_adjust_weekday(&gps_hh);
-    rtc_adjust_hour(&gps_hh);
-    rtc_adjust_minutes(&gps_mm);
-    rtc_adjust_seconds(&gps_ss);
-    rtc_print(NULL);
+        
+    if(gps_hh==00 & gps_mm==00 & gps_ss==00){
+        // $GNRMC,000000.00,V,,,,,,,,,,N*63
+        //GPS not locked, don't update RTC
+    }
+    else{
+        printf("Updating RTC => gps_hh = %d gps_mm = %d gps_ss = %d \r\n", gps_hh, gps_mm, gps_ss);
+        //rtc_adjust_year(&gps_hh);
+        //rtc_adjust_month(&gps_hh);
+        //rtc_adjust_day(&gps_hh);
+        //rtc_adjust_weekday(&gps_hh);
+        rtc_adjust_hour(&gps_hh);
+        rtc_adjust_minutes(&gps_mm);
+        rtc_adjust_seconds(&gps_ss);
+        rtc_print(NULL);
+    }
 
     //Power GPS off
     printf("  PPC_GPS_SWITCH = %d \r\n", PPC_GPS_SWITCH_CHECK );

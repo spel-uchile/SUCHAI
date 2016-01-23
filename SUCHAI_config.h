@@ -120,8 +120,8 @@
 /* Various aspects */
 /******************************************************************************/
 /* Realtime config */
-#define SCH_THOUSEKEEPING_SILENT_REALTIME   (0)  ///< 1=Realtime 0=Debugtime
-#define SCH_THOUSEKEEPING_ANT_DEP_REALTIME  (0)  ///< 1=Realtime 0=Debugtime
+#define SCH_THOUSEKEEPING_SILENT_REALTIME   (1)  ///< 1=Realtime 0=Debugtime
+#define SCH_THOUSEKEEPING_ANT_DEP_REALTIME  (1)  ///< 1=Realtime 0=Debugtime
 #define SCH_THOUSEKEEPING_REALTIME          (1)  ///< 1=Realtime 0=Debugtime
 #define SCH_TFLIGHTPLAN_REALTIME            (1)  ///< 1=Realtime 0=Debugtime
 #define SCH_TFLIGHTPLAN2_REALTIME           (1)  ///< 1=Realtime 0=Debugtime

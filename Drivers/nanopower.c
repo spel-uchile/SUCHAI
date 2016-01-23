@@ -8,7 +8,6 @@
 #include <string.h>
 
 #include "nanopower.h"
-
 #include "csp.h"
 #include "csp_endian.h"
 

@@ -219,7 +219,7 @@ int thk_suchai_deployment(void *param)
     #if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==1 )
         #if(SCH_THOUSEKEEPING_SILENT_REALTIME==1)
             pay_takePhoto_camera(NULL); //takes 10min to complete
-            pay_get_savedPhoto_camera(NULL)
+            pay_get_savedPhoto_camera(NULL);
         #else
             printf("  Jumping pay_takePhoto_camera(NULL) call, it takes 10min to complete ..\r\n");
         #endif
@@ -233,7 +233,7 @@ int thk_suchai_deployment(void *param)
         unsigned int elapsed_mins = 0;
         while(TRUE){
             unsigned long int cu_tick_10ms = xTaskGetTickCount();
-            if( cu_tick_10ms >= final_tick_10ms || elapsed_mins>35 ){
+            if( cu_tick_10ms >= final_tick_10ms || elapse d_mins>35 ){
                 printf("[thk_suchai_deployment] Waiting timeout, cu_tick_10ms = %lu, elapsed_mins = %d\r\n", cu_tick_10ms, elapsed_mins);
                 break;
             }

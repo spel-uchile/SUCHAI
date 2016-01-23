@@ -39,15 +39,35 @@ void eps_onResetCmdEPS(void){
  * @param param *int 1-Verbose, 0-No verbose
  * @return 1-Ok, 0-Error
  */
-int eps_isAlive(void *param)
+int eps_isAlive(void *param2)
 {
     printf("eps_isAlive .. \r\n");
     #if (SCH_EPS_ONBOARD == 0)
         return 0;
     #endif
 
-    int arg = NODE_EPS;
-    return trx_ping(&arg);
+    int arg = NODE_EPS;    
+    //return trx_ping(&arg);
+    void *param = &arg;
+    uint16_t com_timeout = 5000; //average time is 3000ms
+    
+    int result;
+    int node = *((int *)param);
+
+    #if SCH_CMDTRX_VERBOSE
+        printf("Sending test frame to node %d...\n", node);
+    #endif
+
+    result = csp_ping(node, com_timeout, 10, CSP_O_NONE);
+
+    #if SCH_CMDTRX_VERBOSE
+        printf("Ping to %d of size %d, took %d ms\n", node, 10, result);
+    #endif
+    
+    result = result > 0 ? 1:0;
+
+    return result;
+    
 }
 
 /**

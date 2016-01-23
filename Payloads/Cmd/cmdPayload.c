@@ -388,7 +388,6 @@ int pay_init_battery(void *param){
     dat_reset_Payload_Buff(pay_i);
     //agrego un comentario
 
-
     return pay_isAlive_battery(NULL);
 }
 int pay_take_battery(void *param){

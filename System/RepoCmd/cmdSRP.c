@@ -118,65 +118,63 @@ int srp_memEEPROM_initial_state(void * param){
 
     //PAYLOAD
     #if (SCH_PAY_LANGMUIR_ONBOARD==1)
-        arg = pay_xxx_state_active;
+        arg = pay_xxx_state_inactive;
         pay_set_state_langmuirProbe(&arg);
     #else
         arg = pay_xxx_state_inactive;
         pay_set_state_langmuirProbe(&arg);
     #endif
     #if (SCH_PAY_SENSTEMP_ONBOARD==1)
-        arg = pay_xxx_state_active;
+        arg = pay_xxx_state_inactive;
         pay_set_state_sensTemp(&arg);
     #else
         arg = pay_xxx_state_inactive;
         pay_set_state_sensTemp(&arg);
     #endif
     #if (SCH_PAY_GPS_ONBOARD==1)
-        arg = pay_xxx_state_active;
+        arg = pay_xxx_state_inactive;
         pay_set_state_gps(&arg);
     #else
         arg = pay_xxx_state_inactive;
         pay_set_state_gps(&arg);
     #endif
     #if (SCH_PAY_FIS_ONBOARD==1)
-        //arg = sta_pay_xxx_state_active;
-        arg = pay_xxx_state_inactive;   //special case, not executed by FP2
+        arg = pay_xxx_state_inactive;
         pay_set_state_expFis(&arg);
     #else
         arg = pay_xxx_state_inactive;
         pay_set_state_expFis(&arg);
     #endif
     #if (SCH_PAY_CAM_nMEMFLASH_ONBOARD==1)
-        //  arg = sta_pay_xxx_state_active;
-        arg = pay_xxx_state_inactive;   //special case, not executed by FP2
+        arg = pay_xxx_state_inactive;
         pay_set_state_camera(&arg);
     #else
         arg = pay_xxx_state_inactive;
         pay_set_state_camera(&arg);
     #endif
     #if (SCH_PAY_GYRO_ONBOARD==1)
-        arg = pay_xxx_state_active;
+        arg = pay_xxx_state_inactive;
         pay_set_state_gyro(&arg);
     #else
         arg = pay_xxx_state_inactive;
         pay_set_state_gyro(&arg);
     #endif
     #if (SCH_PAY_TMESTADO_ONBOARD==1)
-        arg = pay_xxx_state_active;
+        arg = pay_xxx_state_inactive;
         pay_set_state_tmEstado(&arg);
     #else
         arg = pay_xxx_state_inactive;
         pay_set_state_tmEstado(&arg);
     #endif
     #if (SCH_PAY_BATTERY_ONBOARD==1)
-        arg = pay_xxx_state_active;
+        arg = pay_xxx_state_inactive;
         pay_set_state_battery(&arg);
     #else
         arg = pay_xxx_state_inactive;
         pay_set_state_battery(&arg);
     #endif
     #if (SCH_PAY_DEBUG_ONBOARD==1)
-        arg = pay_xxx_state_active;
+        arg = pay_xxx_state_inactive;
         pay_set_state_debug(&arg);
     #else
         arg = pay_xxx_state_inactive;

@@ -136,13 +136,11 @@ void taskHousekeeping(void *param)
             //Add commands below ..
 
             //test trx ping
-            sta_get_BusStateVar(sta_TRX_isAlive);
             NewCmd.cmdId = trx_id_isAlive;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
             
             //test eps ping
-            sta_get_BusStateVar(sta_EPS_isAlive);
             NewCmd.cmdId = eps_id_isAlive;
             NewCmd.param = 0;
             xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);

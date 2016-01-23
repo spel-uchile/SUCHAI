@@ -135,7 +135,7 @@ void com_printf_status(nanocom_data_t * com_stat) {
 
 
 //Libcsp defines and functions
-#define MY_ADDRESS (0)
+#define MY_ADDRESS (SCH_TRX_NODE_OBC)
 void com_csp_initialization(void){
     printf("\nInitializing libcsp\n");
     csp_debug_set_level(CSP_INFO, 1);

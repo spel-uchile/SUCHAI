@@ -9,6 +9,7 @@
 #define EPS_H_
 
 #include <stdint.h>
+#include "SUCHAI_config.h"
 
 /* Converted house keeping parameters  */
 typedef struct __attribute__ ((__packed__)) chousekeeping_parameters {
@@ -69,7 +70,7 @@ typedef struct __attribute__((packed)) {
 } eps_bootdelay_t;
 
 /* CSP Address */
-#define NODE_EPS	2
+#define NODE_EPS	(SCH_TRX_NODE_EPS)
 
 /* CSP Port numbers */
 #define EPS_PORT_RESET  7

@@ -17,10 +17,9 @@
 #include "taskTest.h"
 
 /** Default node address */
-#define NODE_COM				5
-#define NODE_EPS				2
-#define NODE_TNC				9
-#define NANOCOM_ADD                             0x05
+#define NODE_COM				SCH_TRX_NODE_TRX
+#define NODE_TNC				SCH_TRX_NODE_TNC
+#define NANOCOM_ADD             NODE_COM
 
 /** Port numbers */
 #define COM_PORT_CONF			7

@@ -127,12 +127,6 @@
 #define SCH_TFLIGHTPLAN2_REALTIME           (1)  ///< 1=Realtime 0=Debugtime
 #define SCH_TFLIGHTPLAN3_REALTIME           (1)  ///< 1=Realtime 0=Debugtime
 
-/*  Peripheral's config */
-#define SCH_UART_DEBUG_PORT     (1) ///< 0-Habilita DB9, 1-Habilita USB
-#define SCH_I2C1_ADDR           (0x00) ///< I2C 1 Slave address
-#define SCH_I2C2_ADDR           (0xF3) ///< I2C 2 Slave address
-#define SCH_I2C3_ADDR           (0xF4) ///< I2C 3 Slave address
-
 /* TRX and COMM configs */
 #define SCH_TRX_BEACON_PERIOD              (1*60)   ///< [s] Periodo del beacon en segundos (UINT16)
 #define SCH_TRX_BEACON_UPDATE              (570)   ///< [s] Periodo del actualización del beacon en segundos
@@ -143,11 +137,22 @@
 #define SCH_TRX_BEACON_POSPONE_NOM         (5*60)   ///< [s] Periodo de inactividad del beacon luego de cada reinicio (excepto el 1ero) (UINT16)
 #define SCH_TRX_RX_BAUD                    (12)     /// RX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
 #define SCH_TRX_TX_BAUD                    (12)     /// TX Baurade 12=1200bps, 24=2400bps, 48=4800bps [48 default]
+#define SCH_TRX_NODE_OBC                   (00)     /// Nodo del OBC
+#define SCH_TRX_NODE_EPS                   (02)     /// Nodo de la EPS
+#define SCH_TRX_NODE_TRX                   (05)     /// Nodo del TRX
+#define SCH_TRX_NODE_TNC                   (09)     /// Nodo del TNC
 #define SCH_TRX_NODE_GND                   (10)     /// Nodo de la estacion terrena
+
 #define SCH_TRX_PORT_TM                    (10)     /// Puerto correspondiente a telemetria (en la estacion terrena)
 #define SCH_TRX_PORT_TC                    (10)     /// Puerto correspondiente a telecomandos (en el software de vuelo)
 #define SCH_TRX_PORT_DEBUG                 (11)     /// Puerto debug en software de vuelo. Solo imprimie el paquete
 #define SCH_TRX_PORT_CONSOLE               (12)     /// Puerto consola en software de vuelo. Ejecuta comandos de consola
+
+/*  Peripheral's config */
+#define SCH_UART_DEBUG_PORT     (1) ///< 0-Habilita DB9, 1-Habilita USB
+#define SCH_I2C1_ADDR           (SCH_TRX_NODE_OBC) ///< I2C 1 Slave address
+#define SCH_I2C2_ADDR           (0xF3) ///< I2C 2 Slave address
+#define SCH_I2C3_ADDR           (0xF4) ///< I2C 3 Slave address
 
 /* Important SysReq configurations */
 #define SCH_TCTM_SYS_REQ                    (1)   ///< Nivel de SOC sobre SYS_REQ_MIN que requieren los comandos de telemetria

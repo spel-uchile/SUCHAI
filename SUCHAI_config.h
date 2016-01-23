@@ -129,7 +129,7 @@
 
 /* TRX and COMM configs */
 #define SCH_TRX_BEACON_PERIOD              (1*60)   ///< [s] Periodo del beacon en segundos (UINT16)
-#define SCH_TRX_BEACON_UPDATE              (570)   ///< [s] Periodo del actualización del beacon en segundos
+#define SCH_TRX_BEACON_UPDATE              (570)    ///< [s] Periodo del actualización del beacon en segundos
 #define SCH_TRX_BEACON_WPM                 (20)     ///< Velocidad del beacon en palabras por minuto 1-255
 #define SCH_TRX_BEACON_BAT_LVL             (500)    ///< Nivel de bateria minimo para transmitir beacon
 #define SCH_TRX_BEACON_MODE                (0)      ///< Tipo de beacon 0=CW, 1=Cw+FM, 2=FM

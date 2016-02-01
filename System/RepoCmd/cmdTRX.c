@@ -118,7 +118,7 @@ int trx_set_operation_mode(void *param)
  */
 int trx_get_count_tm(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tm;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 
@@ -130,7 +130,7 @@ int trx_get_count_tm(void *param){
 int trx_set_count_tm(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tm;
     int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;
 }
 
@@ -141,7 +141,7 @@ int trx_set_count_tm(void *param){
  */
 int trx_get_count_tc(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tc;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 
@@ -153,7 +153,7 @@ int trx_get_count_tc(void *param){
 int trx_set_count_tc(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_trx_count_tc;
     int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;
 }
 
@@ -164,7 +164,7 @@ int trx_set_count_tc(void *param){
  */
 int trx_get_day_last_tc(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_trx_day_last_tc;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 
@@ -176,7 +176,7 @@ int trx_get_day_last_tc(void *param){
 int trx_set_day_last_tc(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_trx_day_last_tc;
     int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;
 }
 
@@ -202,7 +202,7 @@ int trx_set_tx_baud(void *param)
 
     // Save changes to status repo
     MemEEPROM_Vars mem_eeprom_var = mem_trx_tx_baud;
-    writeIntEEPROM1(mem_eeprom_var, baud);
+    mem_setVar(mem_eeprom_var, baud);
 
     // Save changes to device
     result = trx_set_conf(NULL);
@@ -251,7 +251,7 @@ int trx_set_rx_baud(void *param)
 
     // Save changes to status repo
     MemEEPROM_Vars mem_eeprom_var = mem_trx_rx_baud;
-    writeIntEEPROM1(mem_eeprom_var, baud);
+    mem_setVar(mem_eeprom_var, baud);
 
     // Save changes to device
     result = trx_set_conf(NULL);
@@ -293,7 +293,7 @@ int trx_set_beacon_level(void* param)
 
     // Save changes to status repo
     MemEEPROM_Vars mem_eeprom_var = mem_trx_beacon_bat_lvl;
-    writeIntEEPROM1(mem_eeprom_var, (int)beacon_level);
+    mem_setVar(mem_eeprom_var, (int)beacon_level);
 
     // Save changes to device
     TRX_CONFIG.morse_bat_level = beacon_level;
@@ -333,7 +333,7 @@ int trx_set_beacon_period(void* param)
 
     // Save changes to status repo
     MemEEPROM_Vars mem_eeprom_var = mem_trx_beacon_period;
-    writeIntEEPROM1(mem_eeprom_var, (int)beacon_period);
+    mem_setVar(mem_eeprom_var, (int)beacon_period);
 
     // Save changes to device
     TRX_CONFIG.morse_inter_delay = beacon_period;
@@ -499,13 +499,13 @@ int trx_initialize(void *param)
     // Reading settings from status repo
     MemEEPROM_Vars mem_eeprom_var;
     mem_eeprom_var = mem_trx_beacon_period;
-    uint16_t morse_inter_delay = (uint16_t)readIntEEPROM1(mem_eeprom_var);
+    uint16_t morse_inter_delay = (uint16_t)mem_getVar(mem_eeprom_var);
     mem_eeprom_var = mem_trx_beacon_bat_lvl;
-    uint16_t morse_bat_level = (uint16_t)readIntEEPROM1(mem_eeprom_var);
+    uint16_t morse_bat_level = (uint16_t)mem_getVar(mem_eeprom_var);
     mem_eeprom_var = mem_trx_rx_baud;
-    uint8_t rx_baud = (uint8_t)readIntEEPROM1(mem_eeprom_var);
+    uint8_t rx_baud = (uint8_t)mem_getVar(mem_eeprom_var);
     mem_eeprom_var = mem_trx_tx_baud;
-    uint8_t tx_baud = (uint8_t)readIntEEPROM1(mem_eeprom_var);
+    uint8_t tx_baud = (uint8_t)mem_getVar(mem_eeprom_var);
 
     // Generating trx settings
     TRX_CONFIG.do_random = 1;

@@ -29,7 +29,11 @@
  * @sa memSD_isAlive - int memSD_isAlive(void; usa MSD_ARG block = 0 para test.
  * Por lo tanto es un block reservado y no se debe usar.
  */
-#define DAT_GPB_FIRST_BLOCK 31
+#define DAT_RESERVED_BLOCK0 (256*0)
+#define DAT_RESERVED_BLOCK1 (256*1)
+#define DAT_RESERVED_BLOCK2 (256*2)
+#define DAT_RESERVED_BLOCK3 (256*3)
+#define DAT_GPB_FIRST_BLOCK (256*4)
 #define DAT_GPB_0       ( DAT_GPB_FIRST_BLOCK + 256*0 )
 #define DAT_GPB_1       ( DAT_GPB_FIRST_BLOCK + 256*1 )
 #define DAT_GPB_2       ( DAT_GPB_FIRST_BLOCK + 256*2 )

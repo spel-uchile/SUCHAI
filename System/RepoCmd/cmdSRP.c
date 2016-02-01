@@ -287,12 +287,12 @@ void srp_debug4(void){
         //printf("testing address j="); Hex16ToAscii( address); printf(buffer); printf("\n");
 
         printf("writing: ");
-        writeIntEEPROM1(address, data);
+        mem_setVar(address, data);
         itoa(buffer, address,10); printf("value["); printf(buffer); printf("]=");
         itoa(buffer, data,10); printf(buffer); printf("    |    ");
 
         printf("reading: ");
-        unsigned int res = readIntEEPROM1(address);
+        unsigned int res = mem_getVar(address);
         itoa(buffer, address,10); printf("value["); printf(buffer); printf("]=");
         itoa(buffer, res,10); printf(buffer); printf("    |    ");
 

@@ -19,31 +19,35 @@
 
 #include "memEEPROM.h"
 
-void writeEEPROM1(unsigned char address, char data){
-    if( i2c1_slave_ready(MEP_EEPROM_ID, 0x0FFF) == 0 )
+void writeEEPROM(unsigned char eeprom_i, unsigned char address, char data){
+    if( i2c1_slave_ready(eeprom_i, 0x0FFF) == 0 ){
+        printf("i2c1_slave_ready(MEP_EEPROM_ID, 0x0FFF) == 0 \r\n");
         return;
+    }
 
-    char _address[] = {MEP_EEPROM_ID, (char)address};
+    char _address[] = {eeprom_i, (char)address};
     i2c1_master_fputs(&data, 1, _address, 2);
 }
 
-unsigned char readEEPROM1(unsigned char address){
-    if( i2c1_slave_ready(MEP_EEPROM_ID, 0x0FFF) == 0 )
+unsigned char readEEPROM(unsigned char eeprom_i, unsigned char address){
+    if( i2c1_slave_ready(eeprom_i, 0x0FFF) == 0 ){
+        printf("i2c1_slave_ready(MEP_EEPROM_ID, 0x0FFF) == 0 \r\n");
         return 0;
+    }
 
     char ret;
-    char _address[] = {MEP_EEPROM_ID, (char)address};
+    char _address[] = {eeprom_i, (char)address};
     i2c1_master_fgets(&ret, 1, _address, 2);
     return (unsigned char)ret;
 }
 
-void writeIntEEPROM1(unsigned char indx, int value){
+void writeIntEEPROM(unsigned char eeprom_i, unsigned char indx, int value){
     if(indx>0x7F){return;}    //memEEPROM es de 256 Byte => 127int
 
     unsigned char dataLSB=(unsigned char)value;
     unsigned char dataMSB=(unsigned char)(value>>8);
 
-    writeEEPROM1(indx, dataLSB);
+    writeEEPROM(eeprom_i, indx, dataLSB);
     /*
     char ret[6];
     unsigned long i; for(i=0xFFF;i>0;i--){
@@ -54,16 +58,16 @@ void writeIntEEPROM1(unsigned char indx, int value){
         a=a++;
         ret[1]=a;
     }*/
-    writeEEPROM1(255-indx, dataMSB);
-
+    writeEEPROM(eeprom_i, 255-indx, dataMSB);
 }
-int readIntEEPROM1(unsigned char indx){
+int readIntEEPROM(unsigned char eeprom_i, unsigned char indx){
+    int value;
     if(indx>0x7F){return 0;}    //memEEPROM es de 256 Byte => 127int
 
-    unsigned char dataLSB = readEEPROM1(indx);
-    unsigned char dataMSB = readEEPROM1(255-indx);
+    unsigned char dataLSB = readEEPROM(eeprom_i, indx);
+    unsigned char dataMSB = readEEPROM(eeprom_i, 255-indx);
 
-    int value=dataMSB;
+    value=dataMSB;
     value=(value<<8)|( (unsigned int)(dataLSB) );
 
     return value;
@@ -72,9 +76,7 @@ int readIntEEPROM1(unsigned char indx){
 /**
  * Funcion a llamar luego de un Reset del PIC, y antes de usar la memEEPROM.
  */
-int init_memEEPROM(void){
-    //nothing to do
-    //printf("[init_memEEPROM] mem_last_one = %d\r\n", mem_last_one);
+int mem_init_EEPROM(void){   
     printf("===============================\r\n");
     printf("MemEEPROM_Vars content: \r\n");
     printf("===============================\r\n");
@@ -86,14 +88,13 @@ int init_memEEPROM(void){
     }
     printf("===============================\r\n");
     
-    //check if working normally
-    return memEEPROM_isAlive();
+    return mem_EEPROM_isAlive();
 }
 /**
  * Check if MemEEPROM is working
  * @return  1 = is working 0 = not working
  */
-int memEEPROM_isAlive(void)
+int mem_EEPROM_isAlive(void)
 {
     //check if working normally
 
@@ -118,16 +119,25 @@ int memEEPROM_isAlive(void)
     return 1;
 }
 
-void mem_setVar( unsigned char indxVar, int value){
-    //Para el caso de guardar las variables en la memI2C
-    writeIntEEPROM1( (unsigned char)indxVar, value);
+void mem_setVar(MemEEPROM_Vars var_i, int value){
+    #if(MEM_USE_MEMSD_nMEMEEPROM == 0)
+        writeIntEEPROM(MEP_EEPROM1_ID, (unsigned char)var_i, value);
+        //writeIntEEPROM1(MEP_EEPROM2_ID, (unsigned char)var_i, value);
+    #else
+        msd_setVar_256BlockExtMem(DAT_RESERVED_BLOCK1, (unsigned int)var_i, value);
+    #endif
 }
 
 
-int mem_getVar( unsigned char indxVar){
+int mem_getVar(MemEEPROM_Vars var_i){
     int value;
-    //Para el caso de obtener las variables de la memI2C
-    value = readIntEEPROM1( (unsigned char)indxVar );
+    #if(MEM_USE_MEMSD_nMEMEEPROM == 0)
+        value = readIntEEPROM(MEP_EEPROM1_ID, (unsigned char)var_i);
+        //value = readIntEEPROM1(MEP_EEPROM2_ID, (unsigned char)var_i);
+    #else
+        msd_getVar_256BlockExtMem(DAT_RESERVED_BLOCK1, (unsigned int)var_i, &value);
+    #endif
+    
     return value;
 }
 
@@ -237,3 +247,58 @@ char * mem_MemEEPROM_VarsToString(MemEEPROM_Vars var_i){
     return pc;
 }
 
+void mem_test_EEPROM(void){
+    printf("mem_test_EEPROM() \r\n");
+    
+    unsigned int address=0;
+    unsigned int data=0xA000;
+    char buffer[10];
+
+    printf("(Destructive) Testing memEEPROM1 ..\r\n");
+    for(address=MEP_FIRST_ADDR;address<=MEP_LAST_ADDR;address++, data++){
+        //printf("testing address j="); Hex16ToAscii( address); printf(buffer); printf("\n");
+
+        printf("writing: ");
+        //mem_setVar(address, data);
+        writeIntEEPROM(MEP_EEPROM1_ID, address, data);
+        itoa(buffer, address,10); printf("value["); printf(buffer); printf("]=");
+        itoa(buffer, data,10); printf(buffer); printf("  |  ");
+
+        printf("reading: ");
+        //unsigned int res = mem_getVar(address);
+        unsigned int res = readIntEEPROM(MEP_EEPROM1_ID, address);
+        itoa(buffer, address,10); printf("value["); printf(buffer); printf("]=");
+        itoa(buffer, res,10); printf(buffer); printf("  |  ");
+
+        printf("comparing: ");
+        if(data==res){ printf("ok"); }
+        else{ printf("fail"); }
+        printf("\n");
+        
+        ClrWdt();
+    }
+    
+    printf("(Destructive) Testing memEEPROM2 ..\r\n");
+    for(address=MEP_FIRST_ADDR;address<=MEP_LAST_ADDR;address++, data++){
+        //printf("testing address j="); Hex16ToAscii( address); printf(buffer); printf("\n");
+
+        printf("writing: ");
+        //mem_setVar(address, data);
+        writeIntEEPROM(MEP_EEPROM2_ID, address, data);
+        itoa(buffer, address,10); printf("value["); printf(buffer); printf("]=");
+        itoa(buffer, data,10); printf(buffer); printf("  |  ");
+
+        printf("reading: ");
+        //unsigned int res = mem_getVar(address);
+        unsigned int res = readIntEEPROM(MEP_EEPROM2_ID, address);
+        itoa(buffer, address,10); printf("value["); printf(buffer); printf("]=");
+        itoa(buffer, res,10); printf(buffer); printf("  |  ");
+
+        printf("comparing: ");
+        if(data==res){ printf("ok"); }
+        else{ printf("fail"); }
+        printf("\n");
+        
+        ClrWdt();
+    }
+}

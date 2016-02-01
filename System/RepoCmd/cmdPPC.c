@@ -68,13 +68,13 @@ void ppc_onResetCmdPPC(void){
 
 int ppc_get_opMode(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_ppc_opMode;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int ppc_set_opMode(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_ppc_opMode;
     int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;   //se asume operacion exitosa
 }
 
@@ -139,25 +139,25 @@ int ppc_get_lastResetSource(void* param){
 }
 int ppc_get_hoursAlive(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_ppc_hoursAlive;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int ppc_set_hoursAlive(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_ppc_hoursAlive;
     int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;   //se asume operacion exitosa
 }
 
 int ppc_get_resetCounter(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_ppc_resetCounter;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int ppc_set_resetCounter(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_ppc_resetCounter;
     int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;   //se asume operacion exitosa
 }
 

@@ -288,7 +288,7 @@ int pay_isAlive_expFis(void *param){
  */
 int pay_get_state_expFis(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_pay_expFis_state;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 /*
@@ -298,7 +298,7 @@ int pay_get_state_expFis(void *param){
 int pay_set_state_expFis(void *param){
     int value = *( (int*)param );
     MemEEPROM_Vars mem_eeprom_var = mem_pay_expFis_state;
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;
 }
 
@@ -368,14 +368,14 @@ int pay_isAlive_battery(void *param){
 
 int pay_get_state_battery(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_pay_battery_state;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 
 int pay_set_state_battery(void *param){
     int value = *( (int*)param );
     MemEEPROM_Vars mem_eeprom_var = mem_pay_battery_state;
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;
 }
 
@@ -485,13 +485,13 @@ int pay_isAlive_debug(void *param){
 }
 int pay_get_state_debug(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_pay_debug_state;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int pay_set_state_debug(void *param){
     int value = *( (int*)param );
     MemEEPROM_Vars mem_eeprom_var = mem_pay_debug_state;
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;
 }
 static unsigned int pay_debug_cnt;
@@ -542,13 +542,13 @@ int pay_isAlive_gyro(void *param){
 }
 int pay_get_state_gyro(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_pay_gyro_state;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int pay_set_state_gyro(void *param){
     int value = *( (int*)param );
     MemEEPROM_Vars mem_eeprom_var = mem_pay_gyro_state;
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;
 }
 int pay_debug_gyro(void *param){
@@ -638,13 +638,13 @@ int pay_isAlive_tmEstado(void *param){
 }
 int pay_get_state_tmEstado(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_pay_tmEstado_state;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int pay_set_state_tmEstado(void *param){
     int value = *( (int*)param );
     MemEEPROM_Vars mem_eeprom_var = mem_pay_tmEstado_state;
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;
 }
 int pay_init_tmEstado(void *param){
@@ -729,13 +729,13 @@ int pay_isAlive_camera(void *param){
 }
 int pay_get_state_camera(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_pay_camera_state;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int pay_set_state_camera(void *param){
     int value = *( (int*)param );
     MemEEPROM_Vars mem_eeprom_var = mem_pay_camera_state;
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;
 }
 int pay_init_camera(void *param){
@@ -762,6 +762,8 @@ int pay_init_camera(void *param){
 }
 int pay_take_camera(void *param){
     printf("pay_take_camera ..\r\n");
+    
+    int resol = *((int *)param);
 
     //save date time of the photo
     //pay_save_date_time_to_Payload_Buff(dat_pay_camera);   //save date_time in 2ints
@@ -774,7 +776,7 @@ int pay_take_camera(void *param){
     }
 
     //BOOL st = pay_cam_takeAndSave_photo(0x07, 0x00, 0x05);
-    BOOL st = pay_cam_takeAndSave_photo(0x03, 0x00, 0x05);
+    BOOL st = pay_cam_takeAndSave_photo(resol, 0x00, 0x05);
     //BOOL st = pay_cam_takeAndSave_photo(0x02, 0x00, 0x05);
 
     return st;
@@ -797,6 +799,7 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
     printf("Sync status (0 => successful) = %d \r\n", status);
     
     printf(" Taking photo ..\r\n");
+    printf(" cam_photo(%d, %d, %d) \r\n", resolution, qual, pic_type);
     unsigned int photo_byte_length= cam_photo(resolution, qual, pic_type);
     #if (_VERBOSE_>=1)
         printf("    Photo length = %u\r\n", photo_byte_length);
@@ -858,8 +861,7 @@ BOOL pay_cam_takeAndSave_photo(int resolution, int qual, int pic_type){
         dat_set_Payload_Buff( dat_pay_camera, (int)int_r[9]);
 
         ClrWdt();
-//        printf("  Debug info: saving [%d/%d] ..\r\n",
-//                            iter, num_10sections);
+        //printf("      saving [%d/%d] ..\r\n", iter, num_10sections);
     }
 
     for(iter = 0; iter<rest_10sections; iter++)
@@ -892,7 +894,7 @@ int pay_takePhoto_camera(void *param){
 
     pay_init_camera(NULL);
     __delay_ms(10000);
-    int st = pay_take_camera(NULL);
+    int st = pay_take_camera(param);
     __delay_ms(1000);
     pay_stop_camera(NULL);
 
@@ -929,13 +931,13 @@ int pay_isAlive_gps(void *param){
 }
 int pay_get_state_gps(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_pay_gps_state;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int pay_set_state_gps(void *param){
     int value = *( (int*)param );
     MemEEPROM_Vars mem_eeprom_var = mem_pay_gps_state;
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;
 }
 int pay_init_gps(void *param){
@@ -1158,13 +1160,13 @@ int pay_isAlive_langmuirProbe(void *param){
 }
 int pay_get_state_langmuirProbe(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_pay_langmuirProbe_state;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int pay_set_state_langmuirProbe(void *param){
     int value = *( (int*)param );
     MemEEPROM_Vars mem_eeprom_var = mem_pay_langmuirProbe_state;
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;
 }
 
@@ -1372,13 +1374,13 @@ int pay_isAlive_sensTemp(void *param){
 }
 int pay_get_state_sensTemp(void *param){
     MemEEPROM_Vars mem_eeprom_var = mem_pay_sensTemp_state;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int pay_set_state_sensTemp(void *param){
     int value = *( (int*)param );
     MemEEPROM_Vars mem_eeprom_var = mem_pay_sensTemp_state;
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;
 }
 int pay_init_sensTemp(void *param){

@@ -58,7 +58,7 @@ int sta_get_BusStateVar(STA_BusStateVar indxVar){
             value = eps_isAlive(NULL);
             break;
         case sta_MemEEPROM_isAlive:
-            value = memEEPROM_isAlive();
+            value = mem_EEPROM_isAlive();
             break;
         case sta_MemSD_isAlive:
             value = memSD_isAlive();

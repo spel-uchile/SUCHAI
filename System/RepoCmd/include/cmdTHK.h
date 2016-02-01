@@ -32,7 +32,7 @@
 typedef enum{
     //de debug
     thk_id_debug=((unsigned int)SCH_CMD_THK*0x100), ///< @cmd_first
-    thk_id_debug2, ///< @cmd
+    thk_id_test_antenna_deployment, ///< @cmd
 
     //de EBF
     thk_id_executeBeforeFlight, ///< @cmd
@@ -91,6 +91,7 @@ int thk_deploy_antenna(void *param);
 int thk_get_AntSwitch_isOpen(void* param);
 int thk_deployment_registration(void *param);
 int thk_silent_time_and_pictures(void *param);
+int thk_test_antenna_deployment(void *param);
 
 //antenna registration
 int thk_get_dep_ant_deployed(void* param);

@@ -132,7 +132,7 @@ int drp_print_dat_PayloadVar(void *param){
 
 int drp_fpl_get_index(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_fpl_index;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 
@@ -152,7 +152,7 @@ int drp_fpl_set_index(void *param)
 {
     MemEEPROM_Vars mem_eeprom_var = mem_fpl_index;
     int value = *((int*)param);
-    writeIntEEPROM1(mem_eeprom_var, value);
+    mem_setVar(mem_eeprom_var, value);
     return 1;   //se asume operacion exitosa
 }
 
@@ -283,33 +283,7 @@ int drp_fpl_check_and_exec(void *param){
 }
 
 int drp_debug(void *param){
-    int ind=*((int*)param);
-
-    printf("drp_debug(%d)..\n", ind);
-
-    printf("nothing to do here\n");
-
-//    switch(ind){
-//        case 1:
-//            drp_debug1();
-//            break;
-//        case 2:
-//            drp_debug2();
-//            break;
-//        case 3:
-//            drp_debug3();
-//            break;
-//        case 4:
-//            drp_debug4();
-//            break;
-//        case 5:
-//            drp_debug5();
-//            break;
-//        default:
-//            //
-//            break;
-//    }
-
+    mem_test_EEPROM();
     return 1;
 }
 //void drp_debug1(void){

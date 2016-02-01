@@ -28,7 +28,7 @@
 #define SCH_MEMEEPROM_ONBOARD               (1) ///< 1 = Onboard 0 = Not Onboard
 #define SCH_EPS_ONBOARD                     (1) ///< Onboard => I2C1 en uso
 #define SCH_MEMSD_ONBOARD                   (1) ///< Onboard => SPI3 en uso, 1 pin(es) en modo Switch (nSS)
-#define SCH_MGNz_ONBOARD                    (0) ///< Onboard => 1 pin(es) en modo Switch
+#define SCH_MGN_ONBOARD                     (0) ///< Onboard => 1 pin(es) en modo Switch
 
 /* Payloads Onboard */
 #define SCH_PAY_LANGMUIR_ONBOARD            (1)  ///< Ocupa UART3_en_H1.19_y_H1.20
@@ -39,7 +39,7 @@
 #define SCH_PAY_GPS_ONBOARD                 (1)  ///< Onboard => UART4 en uso, 1 pin(es) en modo Switch
 #define SCH_PAY_CAM_nMEMFLASH_ONBOARD       (1)  ///< Onboard => SPI-1 asignado a la Camara. Offboard => SPI-1 asignado a memFlash
 #define SCH_PAY_FIS_ONBOARD                 (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
-#define SCH_PAY_DEBUG_ONBOARD               (0)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
+#define SCH_PAY_DEBUG_ONBOARD               (1)  ///< 1 = Onboard (automatic)  0 = Offboard (or manually operated)
 
 /******************************************************************************/
 /* Tasks */

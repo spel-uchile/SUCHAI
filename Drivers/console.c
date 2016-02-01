@@ -572,7 +572,7 @@ DispCmd con_cmd_handler(void)
        {
            if(con_arg_count == 0)
            {
-               memEEPROM_isAlive(); //TODO: FIXME
+               mem_EEPROM_isAlive(); //TODO: FIXME
            }
            else
            {

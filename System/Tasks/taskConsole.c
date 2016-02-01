@@ -50,19 +50,17 @@ void taskConsole(void *param)
     NewCmd.param = 0;
 
     /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
-    #if (SCH_THOUSEKEEPING_USE == 1)
-        portTickType xLastWakeTime = xTaskGetTickCount();
-        portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
-        while( TRUE ){
-            
-            /* TODO: Infinite loop if EEPROM is not onboard */
-            if( sta_get_BusStateVar(sta_dep_ant_deployed)==1 ){
-                break;
-            }
-            
-            vTaskDelayUntil(&xLastWakeTime, check_deployment_time);
-        }
-    #endif
+//    #if (SCH_THOUSEKEEPING_USE == 1)
+//        portTickType xLastWakeTime = xTaskGetTickCount();
+//        portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
+//        while( TRUE ){            
+//            /* TODO: Infinite loop if EEPROM is not onboard */
+//            if( sta_get_BusStateVar(sta_dep_ant_deployed)==1 ){
+//                break;
+//            }
+//            vTaskDelayUntil(&xLastWakeTime, check_deployment_time);
+//        }
+//    #endif
 
     /* Initializing console */
     con_init();

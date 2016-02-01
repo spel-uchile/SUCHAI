@@ -28,11 +28,11 @@ void taskFlightPlan3(void *param)
         printf(">>[FlightPlan3] Started\r\n");
 #endif
 
-#if SCH_TFLIGHTPLAN3_REALTIME
+#if (SCH_TFLIGHTPLAN3_REALTIME == 1)
     unsigned int tick_period_ms = 10000;      /* check every x ms  */
     portTickType xDelay_ticks = (tick_period_ms) / portTICK_RATE_MS;
     #if (SCH_THOUSEKEEPING_USE == 1)
-        portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
+        //portTickType check_deployment_time = (10000) / portTICK_RATE_MS;      /* check every 10sec  */
     #endif
 #else
     unsigned int tick_period_ms = 1000;      /* check every 2sec  */
@@ -47,14 +47,14 @@ void taskFlightPlan3(void *param)
 
     /*Avoid the acummulation of commands while the SUCHAI is still deploying.. */
     portTickType xLastWakeTime = xTaskGetTickCount();
-    #if (SCH_THOUSEKEEPING_USE == 1)
-        while( TRUE ){
-            if( sta_get_BusStateVar(sta_dep_ant_deployed)==1 ){
-                break;
-            }
-            vTaskDelayUntil(&xLastWakeTime, check_deployment_time);
-        }
-    #endif
+//    #if (SCH_THOUSEKEEPING_USE == 1)
+//        while( TRUE ){
+//            if( sta_get_BusStateVar(sta_dep_ant_deployed)==1 ){
+//                break;
+//            }
+//            vTaskDelayUntil(&xLastWakeTime, check_deployment_time);
+//        }
+//    #endif
 
     int ticks_elapsed = 1;
     int res_ticks = (60*(SCH_TFLIGHTPLAN_RESOLUTION))/(2*(tick_period_ms/1000));
@@ -83,11 +83,11 @@ void taskFlightPlan3(void *param)
         #endif
 
         //execute regular/cyclic payloads ..
-        if(sta_get_BusStateVar(sta_ppc_opMode)==STA_PPC_OPMODE_NORMAL){
+        //if(sta_get_BusStateVar(sta_ppc_opMode)==STA_PPC_OPMODE_NORMAL){
             NewCmd.cmdId = pay_id_fp2_default_fsm;
             NewCmd.param = tick_period_ms;
             xQueueSend(dispatcherQueue, (const void *) &NewCmd, portMAX_DELAY);
-        }
+        //}
 
         if(ticks_elapsed >= res_ticks){
             ticks_elapsed = 1;

@@ -32,7 +32,7 @@ void thk_onResetCmdTHK(){
     thkFunction[(unsigned char)thk_id_debug] = thk_debug;
 
     thkFunction[(unsigned char)thk_id_executeBeforeFlight] = thk_executeBeforeFlight;
-    thkFunction[(unsigned char)thk_id_debug2] = thk_debug2;
+    thkFunction[(unsigned char)thk_id_test_antenna_deployment] = thk_test_antenna_deployment;
     
     thkFunction[(unsigned char)thk_id_silent_time_and_pictures] = thk_silent_time_and_pictures;
     thkFunction[(unsigned char)thk_id_get_AntSwitch_isOpen] = thk_get_AntSwitch_isOpen;
@@ -58,81 +58,60 @@ void thk_onResetCmdTHK(){
 
 //------------------------------------------------------------------------------
 int thk_debug(void *param){
-    unsigned int address=0;
-    unsigned int data=0x1000;
-
-    printf("(Destructive) Testing memEEPROM\r\n");
-    for(address=MEP_FIRST_ADDR; address<=MEP_LAST_ADDR; address++, data++){
-        //con_printf("testing address j="); Hex16ToAscii( address); con_printf(buffer); con_printf("\n");
-
-        printf("writing: ");
-        writeIntEEPROM1(address, data);
-        printf("value[%d] = %d \r\n", address, data);
-
-        printf("reading: ");
-        unsigned int res = readIntEEPROM1(address);
-        printf("value[%d] = %d \r\n", address, res);
-
-        printf("comparing: ");
-        if(data==res){ printf("ok\r\n"); }
-        else{ printf("fail\r\n"); }
+    unsigned int i;
+    printf("Testing AntSwitch_isOpen state ..\r\n");
+    for(i=0; i<10; i++){
+        printf("  sta_get_BusStateVar(sta_AntSwitch_isOpen) = %d \r\n", sta_get_BusStateVar(sta_AntSwitch_isOpen));
+        __delay_ms(500);
     }
-
-    unsigned int indxVar;
-    data = -1;  //0xFFFF
-
-    for(indxVar=MEP_FIRST_ADDR; indxVar<=MEP_LAST_ADDR; indxVar++){
-        writeIntEEPROM1(indxVar, data);
-    }
-
     return 1;
 }
 
 //-----------------------------------------------------
 int thk_get_dep_ant_deployed(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_ant_deployed;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int thk_get_dep_ant_tries(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_ant_tries;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 //rtc
 int thk_get_dep_year(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_year;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int thk_get_dep_month(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_month;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int thk_get_dep_week_day(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_week_day;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int thk_get_dep_day_number(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_day_number;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int thk_get_dep_hours(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_hours;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int thk_get_dep_minutes(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_minutes;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 int thk_get_dep_seconds(void* param){
     MemEEPROM_Vars mem_eeprom_var = mem_dep_seconds;
-    int res = readIntEEPROM1(mem_eeprom_var);
+    int res = mem_getVar(mem_eeprom_var);
     return res;
 }
 
@@ -140,61 +119,67 @@ int thk_get_dep_seconds(void* param){
 //int thk_set_dep_ant_deployed(void* param){
 //    MemEEPROM_Vars mem_eeprom_var = mem_dep_ant_deployed;
 //    int value = *((int*)param);
-//    writeIntEEPROM1(mem_eeprom_var, value);
+//    mem_setVar(mem_eeprom_var, value);
 //    return 1;   //se asume operacion exitosa
 //}
 //int thk_set_dep_ant_tries(void* param){
 //    MemEEPROM_Vars mem_eeprom_var = mem_dep_ant_tries;
 //    int value = *((int*)param);
-//    writeIntEEPROM1(mem_eeprom_var, value);
+//    mem_setVar(mem_eeprom_var, value);
 //    return 1;   //se asume operacion exitosa
 //}
 //int thk_set_dep_year(void* param){
 //    MemEEPROM_Vars mem_eeprom_var = mem_dep_year;
 //    int value = *((int*)param);
-//    writeIntEEPROM1(mem_eeprom_var, value);
+//    mem_setVar(mem_eeprom_var, value);
 //    return 1;   //se asume operacion exitosa
 //}
 //int thk_set_dep_month(void* param){
 //    MemEEPROM_Vars mem_eeprom_var = mem_dep_month;
 //    int value = *((int*)param);
-//    writeIntEEPROM1(mem_eeprom_var, value);
+//    mem_setVar(mem_eeprom_var, value);
 //    return 1;   //se asume operacion exitosa
 //}
 //int thk_set_dep_week_day(void* param){
 //    MemEEPROM_Vars mem_eeprom_var = mem_dep_week_day;
 //    int value = *((int*)param);
-//    writeIntEEPROM1(mem_eeprom_var, value);
+//    mem_setVar(mem_eeprom_var, value);
 //    return 1;   //se asume operacion exitosa
 //}
 //int thk_set_dep_day_number(void* param){
 //    MemEEPROM_Vars mem_eeprom_var = mem_dep_day_number;
 //    int value = *((int*)param);
-//    writeIntEEPROM1(mem_eeprom_var, value);
+//    mem_setVar(mem_eeprom_var, value);
 //    return 1;   //se asume operacion exitosa
 //}
 //int thk_set_dep_hours(void* param){
 //    MemEEPROM_Vars mem_eeprom_var = mem_dep_hours;
 //    int value = *((int*)param);
-//    writeIntEEPROM1(mem_eeprom_var, value);
+//    mem_setVar(mem_eeprom_var, value);
 //    return 1;   //se asume operacion exitosa
 //}
 //int thk_set_dep_minutes(void* param){
 //    MemEEPROM_Vars mem_eeprom_var = mem_dep_minutes;
 //    int value = *((int*)param);
-//    writeIntEEPROM1(mem_eeprom_var, value);
+//    mem_setVar(mem_eeprom_var, value);
 //    return 1;   //se asume operacion exitosa
 //}
 //int thk_set_dep_seconds(void* param){
 //    MemEEPROM_Vars mem_eeprom_var = mem_dep_seconds;
 //    int value = *((int*)param);
-//    writeIntEEPROM1(mem_eeprom_var, value);
+//    mem_setVar(mem_eeprom_var, value);
 //    return 1;   //se asume operacion exitosa
 //}
 //------------------------------------------------------------------------------
 int thk_suchai_deployment(void *param)
-{
-    printf("[thk_suchai_deployment] Suchai deployment routine..\r\n");
+{    
+    if( sta_get_BusStateVar(sta_dep_ant_deployed) == 0 ){
+        printf("[thk_suchai_deployment] Starting antenna deployment ..\r\n");
+    }
+    else{
+        printf("[thk_suchai_deployment] Antennas already deployed ..\r\n");
+        return 1;
+    }
 
     int lvl;
     #if (SCH_TDEPLOYMENT_VERBOSE>=1)
@@ -217,11 +202,12 @@ int thk_suchai_deployment(void *param)
 
     //take picture
     #if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==1 )
-        #if(SCH_THOUSEKEEPING_SILENT_REALTIME==1)
-            pay_takePhoto_camera(NULL); //takes 10min to complete
+        #if(SCH_THOUSEKEEPING_SILENT_REALTIME == 1)
+            int resol = 0x03;
+            pay_takePhoto_camera((void *)&resol); //takes 10min to complete
             pay_get_savedPhoto_camera(NULL);
         #else
-            printf("  Jumping pay_takePhoto_camera(NULL) call, it takes 10min to complete ..\r\n");
+            printf("  Skipping pay_takePhoto_camera(NULL) call ..\r\n");
         #endif
     #endif
 
@@ -404,6 +390,74 @@ int thk_deploy_antenna(void *param)
     return 0;
 }
 
+int thk_test_antenna_deployment(void *param){
+    #if (SCH_TDEPLOYMENT_VERBOSE>=1)
+        printf("\n[thk_test_antenna_demployment] Testing Antenna ..\r\n");
+        //rtc_print(NULL);
+    #endif
+
+    unsigned int delay_recheck_dep_time;
+    delay_recheck_dep_time = (THK_RECHECK_TIME);
+
+    #if (SCH_TDEPLOYMENT_VERBOSE>=1)
+        int ant_state = thk_get_AntSwitch_isOpen(&delay_recheck_dep_time);
+        printf("    thk_get_AntSwitch_isOpen(&delay_recheck_dep_time) = %d \r\n", ant_state);
+        rtc_print(NULL);
+    #endif
+    
+    #if(SCH_ANTENNA_ONBOARD == 1)
+    {
+        unsigned int delay_dep_time, delay_rest_dep_time;
+        unsigned int test_time = *((int *)param);
+        delay_dep_time = (test_time);
+        delay_rest_dep_time = (test_time);
+            
+        #if (SCH_TDEPLOYMENT_VERBOSE>=2)
+            printf("      Burning ANT1 for %d ms.. \r\n", delay_dep_time);
+        #endif
+        PPC_ANT12_SWITCH=1;
+        PPC_ANT1_SWITCH=1;
+        PPC_ANT2_SWITCH=0;
+        __delay_ms(delay_dep_time);
+        ClrWdt();
+
+        #if (SCH_TDEPLOYMENT_VERBOSE>=2)
+            printf("          Taking a rest .. \r\n");
+        #endif
+        PPC_ANT12_SWITCH=0;
+        PPC_ANT1_SWITCH=0;
+        PPC_ANT2_SWITCH=0;
+        __delay_ms(delay_rest_dep_time);
+        ClrWdt();
+
+        #if (SCH_TDEPLOYMENT_VERBOSE>=2)
+            printf("      Burning ANT2 for %d ms.. \r\n", delay_dep_time);
+        #endif
+        PPC_ANT12_SWITCH=1;
+        PPC_ANT1_SWITCH=0;
+        PPC_ANT2_SWITCH=1;        
+        __delay_ms(delay_dep_time);
+        ClrWdt();
+
+        #if (SCH_TDEPLOYMENT_VERBOSE>=2)
+            printf("          Taking a rest .. \r\n");
+        #endif
+        PPC_ANT12_SWITCH=0;
+        PPC_ANT1_SWITCH=0;
+        PPC_ANT2_SWITCH=0;
+        __delay_ms(delay_rest_dep_time);
+        ClrWdt();
+    }
+    #endif
+
+    #if (SCH_TDEPLOYMENT_VERBOSE>=1)
+        ant_state = thk_get_AntSwitch_isOpen(&delay_recheck_dep_time);
+        printf("    thk_get_AntSwitch_isOpen(&delay_recheck_dep_time) = %d \r\n", ant_state);
+        rtc_print(NULL);
+    #endif        
+    
+    return 1;
+}
 /**
  *
  * @param param
@@ -444,32 +498,32 @@ int thk_deployment_registration(void *param)
     //Reset antenna DEP variables (EBF routine)
     if(dep_tries == (-1) ) {
         mem_eeprom_var = mem_dep_ant_deployed; value = 0;
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
 
         mem_eeprom_var = mem_dep_ant_tries; value = 0;
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
 
         //RTC
         mem_eeprom_var = mem_dep_year; value = 0;
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
 
         mem_eeprom_var = mem_dep_month; value = 0;
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
         
         mem_eeprom_var = mem_dep_day_number; value = 0;
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
         
         mem_eeprom_var = mem_dep_week_day; value = 0;
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
         
         mem_eeprom_var = mem_dep_hours; value = 0;
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
         
         mem_eeprom_var = mem_dep_minutes; value = 0;
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
         
         mem_eeprom_var = mem_dep_seconds; value = 0;
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
         return 1;
     }
     // Antennas were NOT deployed
@@ -487,33 +541,33 @@ int thk_deployment_registration(void *param)
     //Register only if valid_dep_tries == TRUE;
     if( valid_dep_tries == TRUE ){
         mem_eeprom_var = mem_dep_ant_deployed; value = dep_state;
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
 
         mem_eeprom_var = mem_dep_ant_tries; value = dep_tries;
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
 
 
         //RTC
         mem_eeprom_var = mem_dep_year; value = RTC_get_year();
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
 
         mem_eeprom_var = mem_dep_month; value = RTC_get_month();
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
 
         mem_eeprom_var = mem_dep_day_number; value = RTC_get_day_num();
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
 
         mem_eeprom_var = mem_dep_week_day; value = RTC_get_week_day();
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
 
         mem_eeprom_var = mem_dep_hours; value = RTC_get_hours();
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
 
         mem_eeprom_var = mem_dep_minutes; value = RTC_get_minutes();
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
 
         mem_eeprom_var = mem_dep_seconds; value = RTC_get_seconds();
-        writeIntEEPROM1(mem_eeprom_var, value);
+        mem_setVar(mem_eeprom_var, value);
 
         return 1;
     }

@@ -3,16 +3,23 @@
 
 #include "i2c_comm.h"
 #include "DebugIncludes.h"
+#include <stdlib.h>
 
 //#define MEP_EEPROM_ID 0b1010000 /* I2C node address (7bit hex) */
-#define MEP_EEPROM_ID   0b01010000 /* I2C node address (7bit hex), mem 1 */
-//#define MEP_EEPROM_ID   0b01010111 /* I2C node address (7bit hex), mem 2 */
+#define MEP_EEPROM1_ID   0b01010000 /* I2C node address (7bit hex), mem 1 */
+#define MEP_EEPROM2_ID   0b01010111 /* I2C node address (7bit hex), mem 2 */
 
 //#define MEP_EEPROM1_IDW 0b10100000 /* I2C node address Write */
 //#define MEP_EEPROM1_IDR 0b10100001 /* I2C node address Read */
 
 #define MEP_FIRST_ADDR 0x00
 #define MEP_LAST_ADDR 0x7F  //127
+
+#define MEM_USE_MEMSD_nMEMEEPROM (1)
+
+#if(MEM_USE_MEMSD_nMEMEEPROM == 1)
+    #include "dataRepository.h"
+#endif
 
 /**
  * EEMPROM Variables, this variables MUST be reset-resistant
@@ -63,18 +70,20 @@ typedef enum{
     mem_last_one     //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo
 }MemEEPROM_Vars;
 
-void writeEEPROM1(unsigned char address, char data);
-unsigned char readEEPROM1(unsigned char address);
+void writeEEPROM(unsigned char eeprom_i, unsigned char address, char data);
+unsigned char readEEPROM(unsigned char eeprom_i, unsigned char address);
 
-void writeIntEEPROM1(unsigned char indx, int value);
-int readIntEEPROM1(unsigned char indx);
+void writeIntEEPROM(unsigned char eeprom_i, unsigned char indx, int value);
+int readIntEEPROM(unsigned char eeprom_i, unsigned char indx);
 
-int init_memEEPROM(void);
-int memEEPROM_isAlive(void);
+int mem_init_EEPROM(void);
+int mem_EEPROM_isAlive(void);
 
-void mem_setVar( unsigned char indxVar, int value);
-int mem_getVar( unsigned char indxVar);
+void mem_setVar(MemEEPROM_Vars var_i, int value);
+int mem_getVar(MemEEPROM_Vars var_i);
 
 char * mem_MemEEPROM_VarsToString(MemEEPROM_Vars var_i);
+
+void mem_test_EEPROM(void);
 
 #endif /* MEM_EEPROM_H   */

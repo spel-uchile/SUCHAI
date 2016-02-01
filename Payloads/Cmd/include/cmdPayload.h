@@ -50,14 +50,14 @@ typedef enum{
 
     pay_id_isAlive_tmEstado, ///< @cmd
     pay_id_get_state_tmEstado, ///< @cmd
-    pay_id_set_state_tmEstado, ///< @cmd
+    pay_id_set_state_tmEstado, ///< @cmd        //0x6004
     pay_id_init_tmEstado, ///< @cmd
     pay_id_take_tmEstado, ///< @cmd
     pay_id_stop_tmEstado, ///< @cmd
 
     pay_id_isAlive_sensTemp, ///< @cmd          //0x6008
     pay_id_get_state_sensTemp, ///< @cmd
-    pay_id_set_state_sensTemp, ///< @cmd
+    pay_id_set_state_sensTemp, ///< @cmd        //0x600A
     pay_id_init_sensTemp, ///< @cmd
     pay_id_take_sensTemp, ///< @cmd
     pay_id_stop_sensTemp, ///< @cmd
@@ -110,7 +110,7 @@ typedef enum{
     pay_id_init_battery, ///< @cmd
     pay_id_take_battery, ///< @cmd
     pay_id_stop_battery, ///< @cmd
-    pay_id_execute_experiment_battery,  ///<@cmd    49
+    pay_id_execute_experiment_battery,  ///<@cmd    
 
     pay_id_isAlive_debug, ///< @cmd
     pay_id_get_state_debug, ///< @cmd
@@ -121,12 +121,12 @@ typedef enum{
     
     pay_id_isAlive_langmuirProbe, ///< @cmd
     pay_id_get_state_langmuirProbe, ///< @cmd
-    pay_id_set_state_langmuirProbe, ///< @cmd   //Ox6040
+    pay_id_set_state_langmuirProbe, ///< @cmd   //Ox6042
     pay_id_init_langmuirProbe, ///< @cmd
     pay_id_take_langmuirProbe, ///< @cmd
     pay_id_stop_langmuirProbe, ///< @cmd
-    pay_id_send_to_langmuirProbe, ///< @cmd      //Ox6044
-    pay_id_adhoc_langmuirProbe, ///< @cmd   69 <=> Ox6045
+    pay_id_send_to_langmuirProbe, ///< @cmd      //Ox6046
+    pay_id_adhoc_langmuirProbe, ///< @cmd   69 <=> Ox6047
             
     //*********************
     pay_id_last_one    //Elemento sin sentido, solo se utiliza para marcar el largo del arreglo

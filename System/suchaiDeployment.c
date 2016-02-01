@@ -395,12 +395,32 @@ int dep_init_sysbus_hw(void *param)
         printf("\n[dep_init_bus_hw] Initializig external hardware...\r\n");
     #endif
 
+    #if (SCH_MEMSD_ONBOARD==1)
+    {
+        #if (SCH_TDEPLOYMENT_VERBOSE>=2)
+            printf("    * External MemSD .. ");
+        #endif
+        //resp = dat_sd_init();
+        resp =  SD_init_memSD();
+        //hw_isAlive = sta_MemSD_isAlive;
+        //sta_set_stateVar(hw_isAlive, resp);
+        #if (SCH_TDEPLOYMENT_VERBOSE>=2)
+            if(resp == 0x01){
+                printf("Ok\r\n");
+            }
+            else{
+                printf("Fail\r\n");
+            }
+        #endif
+    }
+    #endif
+
     #if (SCH_SYSBUS_ONBOARD==1 && SCH_MEMEEPROM_ONBOARD==1 )
     {
         #if (SCH_TDEPLOYMENT_VERBOSE>=2)
             printf("    * External MemEEPROM .. ");
         #endif
-        resp = init_memEEPROM();
+        resp = mem_init_EEPROM();
         //hw_isAlive = sta_MemEEPROM_isAlive;
         //sta_set_stateVar(hw_isAlive, resp);
         #if (SCH_TDEPLOYMENT_VERBOSE>=2)
@@ -462,26 +482,6 @@ int dep_init_sysbus_hw(void *param)
         #endif
         resp  = eps_initialize(NULL);
         //hw_isAlive = sta_EPS_isAlive;
-        //sta_set_stateVar(hw_isAlive, resp);
-        #if (SCH_TDEPLOYMENT_VERBOSE>=2)
-            if(resp == 0x01){
-                printf("Ok\r\n");
-            }
-            else{
-                printf("Fail\r\n");
-            }
-        #endif
-    }
-    #endif
-
-    #if (SCH_MEMSD_ONBOARD==1)
-    {
-        #if (SCH_TDEPLOYMENT_VERBOSE>=2)
-            printf("    * External MemSD .. ");
-        #endif
-        //resp = dat_sd_init();
-        resp =  SD_init_memSD();
-        //hw_isAlive = sta_MemSD_isAlive;
         //sta_set_stateVar(hw_isAlive, resp);
         #if (SCH_TDEPLOYMENT_VERBOSE>=2)
             if(resp == 0x01){

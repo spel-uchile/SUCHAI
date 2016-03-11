@@ -76,11 +76,11 @@ int drp_fpl_check_and_exec(void* param);
 void drp_DAT_FlightPlan_EBF(void);
 void drp_DAT_Payload_Buff_EBF(void);
 
-void drp_debug1(void);
-void drp_debug2(void);
-void drp_debug3(void);
-void drp_debug4(void);
-void drp_debug5(void);
+//void drp_debug1(void);
+//void drp_debug2(void);
+//void drp_debug3(void);
+//void drp_debug4(void);
+//void drp_debug5(void);
 
 
 #endif /* CMD_DRP_H */

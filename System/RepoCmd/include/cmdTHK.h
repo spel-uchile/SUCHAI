@@ -31,15 +31,15 @@
  */
 typedef enum{
     //de debug
-    thk_id_debug=((unsigned int)SCH_CMD_THK*0x100), ///< @cmd_first
-    thk_id_test_antenna_deployment, ///< @cmd
+    thk_id_hw_check=((unsigned int)SCH_CMD_THK*0x100), ///< @cmd_first
+    thk_id_test_antenna_deployment, ///< @cmd   0xA001
 
     //de EBF
-    thk_id_executeBeforeFlight, ///< @cmd
+    thk_id_executeBeforeFlight, ///< @cmd       0xA002
 
     //Deplyment
-    thk_id_suchai_deployment, ///< @cmd
-    thk_id_deploy_antenna, ///< @cmd
+    thk_id_suchai_deployment, ///< @cmd         0xA003
+    thk_id_deploy_antenna, ///< @cmd            0xA004
     thk_id_get_AntSwitch_isOpen, ///< @cmd
     thk_id_silent_time_and_pictures, ///< @cmd
     thk_id_deployment_registration, ///< @cmd
@@ -78,7 +78,7 @@ void thk_onResetCmdTHK();
 
 //Comandos
 //****************************************************
-int thk_debug(void *param);
+int thk_hw_check(void *param);
 int thk_executeBeforeFlight(void *param);
 int thk_debug2(void *param);
 int thk_suchai_deployment(void *param);

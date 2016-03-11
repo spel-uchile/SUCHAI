@@ -1175,19 +1175,25 @@ int pay_set_state_langmuirProbe(void *param){
  * @param param 1-Force deploymeny, 0-Deploy only first time
  * @return Bool, langmuir is alive
  */
+static int first_time_langmuirProbe = 0;
 int pay_init_langmuirProbe(void *param){
     printf("pay_init_langmuirProbe ..\r\n");
-    int force_deploy = *((int*)param);
-
-    /* Deploy langmuir should NOT be here, but there is no way
-     * to check deployment, so its included here */
-    #if (SCH_ANTENNA_ONBOARD==1 && SCH_PAY_LANGMUIR_ONBOARD==1)
-        if( sta_get_PayStateVar(sta_pay_langmuirProbe_isDeployed)==0 || force_deploy){
+    
+    int arg = *((int *)param);
+    if(first_time_langmuirProbe == 0 && arg != (-1)){
+        first_time_langmuirProbe = 1;
+        
+        ClrWdt();
+        /////////////// There is no better place than this one /////////////////////
+        /* Deploy langmuir should NOT be here, but there is no way
+         * to check deployment, so its included here */
+        #if (SCH_ANTENNA_ONBOARD==1 && SCH_PAY_LANGMUIR_ONBOARD==1)
             int rt_mode = SCH_THOUSEKEEPING_ANT_DEP_REALTIME; /* 1=Real Time, 0=Debug Time */
             pay_deploy_langmuirProbe(rt_mode);    //realtime mode
             //set var lang dep = 1 b
-        }
-    #endif
+        #endif
+        ClrWdt();
+    }
 
     //configure Payload_Buff
     DAT_Payload_Buff pay_i;

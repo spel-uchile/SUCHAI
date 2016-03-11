@@ -15,11 +15,11 @@
 #define MEP_FIRST_ADDR 0x00
 #define MEP_LAST_ADDR 0x7F  //127
 
-#define MEM_USE_MEMSD_nMEMEEPROM (1)
+//#define MEM_USE_MEMSD_nMEMEEPROM (1)
 
-#if(MEM_USE_MEMSD_nMEMEEPROM == 1)
-    #include "dataRepository.h"
-#endif
+//#if(MEM_USE_MEMSD_nMEMEEPROM == 1)
+#include "dataRepository.h"
+//#endif
 
 /**
  * EEMPROM Variables, this variables MUST be reset-resistant

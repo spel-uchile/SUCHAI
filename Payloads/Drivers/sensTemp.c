@@ -42,6 +42,7 @@ unsigned char sensTemp_read_reg(char dir, char reg){
 //******************************************************************************
 BOOL sensTemp_isAlive(unsigned char sens_x){
     char w_reg, r_reg;
+    BOOL result = TRUE;
 
     //        76543210
     w_reg = 0b01101000;
@@ -50,9 +51,12 @@ BOOL sensTemp_isAlive(unsigned char sens_x){
     r_reg = sensTemp_read_reg( (char)sens_x, STx_REG_CONFIG);
     //        76543210
     r_reg = 0b01111111 & r_reg;     //erase and ignore OS/ALERT bit
+    printf("sensTemp_isAlive: SensTemp[%d] = ", sens_x);
     if(r_reg != w_reg){ 
-        printf("sensTemp_isAlive: SensTemp[%d] = FALSE !!\n", sens_x);
-        return FALSE;
+        result &= FALSE;
+        printf("FALSE !!\n");
+    }else{
+        printf("TRUE !!\n");
     }
 
     //        76543210
@@ -62,12 +66,15 @@ BOOL sensTemp_isAlive(unsigned char sens_x){
     r_reg = sensTemp_read_reg( (char )sens_x, STx_REG_CONFIG);
     //        76543210
     r_reg = 0b01111111 & r_reg;     //erase and ignore OS/ALERT bit
+    printf("sensTemp_isAlive: SensTemp[%d] = ", sens_x);
     if(r_reg != w_reg){ 
-        printf("sensTemp_isAlive: SensTemp[%d] = FALSE !!\n", sens_x);
-        return FALSE;
+        result &= FALSE;
+        printf("FALSE !!\n");
+    }else{
+        printf("TRUE !!\n");
     }
 
-    return TRUE;
+    return result;
 }
 
 BOOL sensTemp_init(unsigned char sens_x){

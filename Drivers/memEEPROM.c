@@ -18,6 +18,9 @@
  */
 
 #include "memEEPROM.h"
+#include "cmdSRP.h"
+
+static unsigned int MEM_USE_MEMSD_nMEMEEPROM = 1;
 
 void writeEEPROM(unsigned char eeprom_i, unsigned char address, char data){
     if( i2c1_slave_ready(eeprom_i, 0x0FFF) == 0 ){
@@ -80,6 +83,31 @@ int mem_init_EEPROM(void){
     printf("===============================\r\n");
     printf("MemEEPROM_Vars content: \r\n");
     printf("===============================\r\n");
+    
+    MEM_USE_MEMSD_nMEMEEPROM = 0;
+    printf("  MEM_USE_MEMSD_nMEMEEPROM = %d \r\n", MEM_USE_MEMSD_nMEMEEPROM);
+    int stat = mem_EEPROM_isAlive();
+    if(stat == 0){
+        printf("  mem_EEPROM_isAlive() is NOT alive, switching to backup Hw (memSD) \r\n");
+        MEM_USE_MEMSD_nMEMEEPROM = 1;
+        printf("  MEM_USE_MEMSD_nMEMEEPROM = %d \r\n", MEM_USE_MEMSD_nMEMEEPROM);
+        //printf("  Reset SUCHAI to EBF mode \r\n");
+        //thk_executeBeforeFlight(NULL);
+        srp_executeBeforeFlight(NULL);
+        
+        int stat = mem_EEPROM_isAlive();
+        if(stat == 0){
+            printf("  mem_EEPROM_isAlive() is NOT alive, memEEPROM and memSD are not responding \r\n");
+            return 0;
+        }
+        else{
+            printf("  mem_EEPROM_isAlive() is alive, memSD is responding \r\n");
+        }
+    }
+    else{
+        printf("  mem_EEPROM_isAlive() is alive, memEEPROM is responding \r\n");
+    }
+    
 
     MemEEPROM_Vars indxVar; int val;
     for(indxVar=0; indxVar<mem_last_one; indxVar++){
@@ -97,6 +125,7 @@ int mem_init_EEPROM(void){
 int mem_EEPROM_isAlive(void)
 {
     //check if working normally
+    int stat = 1;
 
     int indxVar;    //DAT_StateVar indxVar;
     int wvalue,rvalue;
@@ -108,35 +137,41 @@ int mem_EEPROM_isAlive(void)
     rvalue = 0;
     mem_setVar(indxVar, wvalue);
     rvalue = mem_getVar(indxVar);
-    if(rvalue!=wvalue){return 0;}
+    if(rvalue!=wvalue){
+        stat = 0;
+    }
 
     wvalue = 5006;
     rvalue = 0x00;
     mem_setVar(indxVar, wvalue);
     rvalue = mem_getVar(indxVar);
-    if(rvalue!=wvalue){return 0;}
-
-    return 1;
+    if(rvalue!=wvalue){
+        stat = 0;
+    }
+    
+    return stat;
 }
 
 void mem_setVar(MemEEPROM_Vars var_i, int value){
-    #if(MEM_USE_MEMSD_nMEMEEPROM == 0)
+    if(MEM_USE_MEMSD_nMEMEEPROM == 0){
         writeIntEEPROM(MEP_EEPROM1_ID, (unsigned char)var_i, value);
         //writeIntEEPROM1(MEP_EEPROM2_ID, (unsigned char)var_i, value);
-    #else
+    }
+    else{
         msd_setVar_256BlockExtMem(DAT_RESERVED_BLOCK1, (unsigned int)var_i, value);
-    #endif
+    }
 }
 
 
 int mem_getVar(MemEEPROM_Vars var_i){
     int value;
-    #if(MEM_USE_MEMSD_nMEMEEPROM == 0)
+    if(MEM_USE_MEMSD_nMEMEEPROM == 0){
         value = readIntEEPROM(MEP_EEPROM1_ID, (unsigned char)var_i);
         //value = readIntEEPROM1(MEP_EEPROM2_ID, (unsigned char)var_i);
-    #else
+    }
+    else{
         msd_getVar_256BlockExtMem(DAT_RESERVED_BLOCK1, (unsigned int)var_i, &value);
-    #endif
+    }
     
     return value;
 }

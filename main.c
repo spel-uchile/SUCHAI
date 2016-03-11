@@ -60,6 +60,17 @@ int main(void)
     /* System initialization */
     dep_init_suchai_hw();
     dep_init_suchai_repos();
+    
+///////////////////////////////////////////////
+// Uncomment section only for debug purposes //
+///////////////////////////////////////////////
+//    int arg_param = 1;
+//    thk_executeBeforeFlight((void *)&arg_param);
+//    int tries = 1;
+//    thk_deployment_registration(&tries);
+///////////////////////////////////////////////
+// Uncomment section only for debug purposes //
+///////////////////////////////////////////////
 
     /* Crating SUCHAI tasks */
     dep_init_suchai_tasks();

@@ -29,7 +29,7 @@ void thk_onResetCmdTHK(){
     for(i=0; i<THK_NCMD; i++) thk_sysReq[i] = CMD_SYSREQ_MIN;
 
     //De display
-    thkFunction[(unsigned char)thk_id_debug] = thk_debug;
+    thkFunction[(unsigned char)thk_id_hw_check] = thk_hw_check;
 
     thkFunction[(unsigned char)thk_id_executeBeforeFlight] = thk_executeBeforeFlight;
     thkFunction[(unsigned char)thk_id_test_antenna_deployment] = thk_test_antenna_deployment;
@@ -57,13 +57,128 @@ void thk_onResetCmdTHK(){
 }
 
 //------------------------------------------------------------------------------
-int thk_debug(void *param){
-    unsigned int i;
-    printf("Testing AntSwitch_isOpen state ..\r\n");
-    for(i=0; i<10; i++){
-        printf("  sta_get_BusStateVar(sta_AntSwitch_isOpen) = %d \r\n", sta_get_BusStateVar(sta_AntSwitch_isOpen));
-        __delay_ms(500);
+int thk_hw_check(void *param){
+    
+    printf("[thk_debug]  Testing SUCHAI satellite Hw ..\r\n");
+    int arg_param;
+    
+    int arg_ebf = *((int *)param);
+    if(arg_ebf == 1){
+//        arg_param = 1;
+//        thk_executeBeforeFlight((void *)&arg_param);
+//        int tries = 1;
+//        thk_deployment_registration(&tries);
     }
+    
+    
+    ClrWdt();
+    printf("[thk_debug]    Testing Subsystem OBC ..\r\n");
+    printf("[thk_debug]      mem_EEPROM_isAlive = %d \r\n", mem_EEPROM_isAlive());
+    printf("[thk_debug]      memSD_isAlive = %d \r\n", memSD_isAlive());
+    printf("[thk_debug]      RTC_isAlive = %d \r\n", RTC_isAlive());
+    printf("[thk_debug]    Testing Subsystem TRX ..\r\n");
+    printf("[thk_debug]      trx_isAlive = %d \r\n", trx_isAlive(NULL));
+    printf("[thk_debug]    Testing Subsystem EPS ..\r\n");
+    printf("[thk_debug]      eps_isAlive = %d \r\n", eps_isAlive(NULL));
+    printf("[thk_debug]      eps_print_hk(0) \r\n"); eps_print_hk(0); __delay_ms(1000);
+    printf("[thk_debug]    Testing Subsystem PAY ..\r\n");
+    //typedef enum _DAT_Payload{
+    //    dat_pay_tmEstado=0,
+    //    dat_pay_battery,
+    //    dat_pay_debug,
+    //    dat_pay_langmuirProbe,   //pay_i=3
+    //    dat_pay_gps,
+    //    dat_pay_camera,         //pay_i=5
+    //    dat_pay_sensTemp,   
+    //    dat_pay_gyro,           //pay_i=7
+    //    dat_pay_expFis,     
+    //    //*************
+    //    dat_pay_last_one    //Se utiliza para marcar el largo del arreglo.
+    //                        //Y para indicar el ID de TM de stateVar
+    //}DAT_Payload_Buff;
+     
+    ClrWdt();
+    printf("[thk_debug]      tmEstado ..\r\n");
+    pay_init_tmEstado(NULL);
+    pay_take_tmEstado(NULL);
+    pay_stop_tmEstado(NULL);
+    
+//    pay_init_battery(NULL);
+//    pay_take_battery(NULL);
+//    pay_stop_battery(NULL);
+    
+//    pay_init_debug(NULL);
+//    pay_take_debug(NULL);
+//    pay_stop_debug(NULL);
+ 
+    ClrWdt();
+    printf("[thk_debug]      langmuirProbe ..\r\n");
+    arg_param = -1;
+    pay_init_langmuirProbe((void *)&arg_param); ClrWdt();
+    pay_take_langmuirProbe(NULL); ClrWdt();
+    pay_stop_langmuirProbe(NULL);
+    
+    ClrWdt();
+    printf("[thk_debug]      gps ..\r\n");
+    pay_init_gps(NULL);
+    pay_take_gps(NULL);
+    pay_stop_gps(NULL);
+
+    ClrWdt();
+    int resol = 0x03;
+    pay_takePhoto_camera((void *)&resol);
+//    pay_get_savedPhoto_camera(NULL);
+//    pay_init_camera(NULL);
+//    pay_take_camera(NULL);
+//    pay_stop_camera(NULL);
+       
+    ClrWdt();
+    printf("[thk_debug]      sensTemp ..\r\n");
+    pay_init_sensTemp(NULL);
+    pay_take_sensTemp(NULL);
+    pay_stop_sensTemp(NULL);
+
+    ClrWdt();
+    printf("[thk_debug]      gyro ..\r\n");
+    pay_init_gyro(NULL);
+    pay_take_gyro(NULL);
+    pay_stop_gyro(NULL);
+
+//    pay_init_expFis(NULL);
+//    pay_take_expFis(NULL);
+//    pay_stop_expFis(NULL);
+    
+    ClrWdt();
+    printf("[thk_debug]    srp_print_STA_stateVar ..\r\n");
+    srp_print_STA_stateVar(NULL);
+    printf("[thk_debug]    srp_print_MemEEPROM_Vars ..\r\n");
+    srp_print_MemEEPROM_Vars(NULL);
+    //printf("[thk_debug]    drp_print_dat_FlightPlan ..\r\n");
+    //drp_print_dat_FlightPlan(NULL);
+    printf("[thk_debug]    drp_print_dat_PayloadIndxs ..\r\n");
+    drp_print_dat_PayloadIndxs(NULL);
+    printf("[thk_debug]    drp_print_dat_PayloadVar ..\r\n");
+    DAT_Payload_Buff pay_i = 0;
+    for(pay_i=0; pay_i<dat_pay_last_one; pay_i++){
+        drp_print_dat_PayloadVar(&pay_i);
+    }
+    printf("[thk_debug]    eps_print_hk ..\r\n");
+    eps_print_hk(0);
+
+    arg_param = 10000;
+    thk_test_antenna_deployment((void *)&arg_param);
+    
+    if(arg_ebf == 1){
+        printf("[thk_debug]    thk_executeBeforeFlight ..\r\n");
+        arg_param = 1;
+        thk_executeBeforeFlight((void *)&arg_param);
+    }
+    if(arg_ebf >= 1){
+        printf("[thk_debug]    thk_deployment_registration ..\r\n");
+        int tries = 1;
+        thk_deployment_registration(&tries);
+    }
+    
     return 1;
 }
 
@@ -260,8 +375,9 @@ int thk_suchai_deployment(void *param)
             lvl = SCH_TRX_BEACON_BAT_LVL;
             trx_set_beacon_level((void *)&lvl);
     #endif
-    __delay_ms(2000);   // make sure to print the promot
 
+    ClrWdt();
+    __delay_ms(2000);   // make sure to print the prompt
 
     return 1;
 }
@@ -371,8 +487,8 @@ int thk_deploy_antenna(void *param)
                 #if (SCH_TDEPLOYMENT_VERBOSE>=1)
                     printf("    ANTENNA DEPLOYED SUCCESSFULLY [%d TRIES]\r\n", tries_indx);
                     rtc_print(NULL);
-                #endif
-                return 1;
+                #endif 
+                //return 1;     =>>> try  HK_MAX_TRIES_ANT_DEPLOY   always !!!!!!
             }
         }
     }
@@ -657,65 +773,7 @@ int thk_silent_time_and_pictures(void *param){
 
     return 1;
 }
-//------------------------------------------------------------------------------
-int thk_debug2(void *param){
-    rtc_print(NULL);
-    
-    printf("Bus Hardware (initialized in dep_init_bus_hw)..\r\n");
-    /* this info is updated at start-up vy dep_init_bus_hw()..*/
-    printf("PPC_MB_nOE_USB_nINT_CHECK = %d \r\n", PPC_MB_nOE_USB_nINT_CHECK );
-    printf("PPC_MB_nOE_MHX_CHECK = %d \r\n", PPC_MB_nOE_MHX_CHECK );
-    printf("PPC_MB_nON_MHX_CHECK = %d \r\n", PPC_MB_nON_MHX_CHECK );
-    printf("PPC_MB_nON_SD_CHECK = %d \r\n", PPC_MB_nON_SD_CHECK );
-    printf("sta_RTC_isAlive = %d \r\n", sta_get_BusStateVar(sta_RTC_isAlive) );
-    printf("sta_TRX_isAlive = %d \r\n", sta_get_BusStateVar(sta_TRX_isAlive) );
-    printf("sta_EPS_isAlive = %d \r\n", sta_get_BusStateVar(sta_EPS_isAlive) );
-    printf("sta_MemEEPROM_isAlive = %d \r\n", sta_get_BusStateVar(sta_MemEEPROM_isAlive) );
-    printf("sta_MemSD_isAlive = %d \r\n", sta_get_BusStateVar(sta_MemSD_isAlive) );
-    printf("sta_SUCHAI_isDeployed = %d \r\n", sta_get_BusStateVar(sta_AntSwitch_isOpen) );
-    #if (SCH_ANTENNA_ONBOARD==1)
-        int ant12 = PPC_ANT12_CHECK;
-        printf("PPC_ANT12_CHECK = %d => ", ant12 );
-        if(ant12==1){
-            printf("Antenna NOT deployed \r\n");
-        }
-        else{
-            printf("Antenna deployed \r\n");
-        }
-    #endif
-    printf("******************************************\r\n");
 
-    printf("Payload Hardware (initialized by each pay_init_xxx)..\r\n");
-    /* this info is updated at start-up by dep_init_bus_hw()..*/
-    #if (SCH_PAY_SENSTEMP_ONBOARD==1)
-        pay_init_sensTemp(NULL);
-        pay_stop_sensTemp(NULL);
-    #endif
-    #if (SCH_PAY_GYRO_ONBOARD==1)
-        pay_init_gyro(NULL);
-        pay_stop_gyro(NULL);
-    #endif
-    #if (SCH_PAY_CAM_nMEMFLASH_ONBOARD==1)
-        pay_init_camera(NULL);
-        pay_stop_camera(NULL);
-
-    #endif
-    #if (SCH_PAY_GPS_ONBOARD==1)
-        pay_init_gps(NULL);
-        pay_stop_gps(NULL);
-    #endif
-    #if (SCH_PAY_FIS_ONBOARD==1)
-        pay_init_expFis(NULL);
-        pay_stop_expFis(NULL);
-    #endif
-    pay_init_tmEstado(NULL);
-    printf("******************************************\r\n");
-
-    rtc_print(NULL);
-
-    //thk_executeBeforeFlight(NULL);
-    return 1;
-}
 //------------------------------------------------------------------------------
 int thk_executeBeforeFlight(void *param){
     printf("thk_executeBeforeFlight()..\n");
@@ -735,7 +793,7 @@ int thk_executeBeforeFlight(void *param){
         printf("%d segundos..\r\n", i);
     }
 
-    ppc_reset(NULL);
+    //ppc_reset(NULL);
 
     return 1;
 }

@@ -1181,6 +1181,7 @@ int pay_init_langmuirProbe(void *param){
     
     int arg = *((int *)param);
     if(first_time_langmuirProbe == 0 && arg != (-1)){
+        printf("[pay_init_langmuirProbe] Deploying LangmuirProbe ..\r\n");
         first_time_langmuirProbe = 1;
         
         ClrWdt();

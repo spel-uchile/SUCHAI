@@ -295,6 +295,12 @@ int thk_suchai_deployment(void *param)
         printf("[thk_suchai_deployment] Antennas already deployed ..\r\n");
         return 1;
     }
+    
+    //EPS
+    int res, arg;
+    arg = 1;
+    res = eps_print_hk(&arg);
+    printf("        * eps_print_hk: %d\r\n", res);
 
     int lvl;
     #if (SCH_TDEPLOYMENT_VERBOSE>=1)

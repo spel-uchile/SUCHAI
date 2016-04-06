@@ -1,0 +1,178 @@
+Ok
+    * External MemEEPROM .. ===============================
+MemEEPROM_Vars content: 
+===============================
+  MEM_USE_MEMSD_nMEMEEPROM = 0 
+  mem_EEPROM_isAlive() is alive, memEEPROM is responding 
+    * mem_getVar(0 = mem_MemEEPROM_testVal) = 0x138E = 5006 
+    * mem_getVar(1 = mem_ppc_opMode) = 0x0 = 0 
+    * mem_getVar(2 = mem_ppc_hoursAlive) = 0x1 = 1 
+    * mem_getVar(3 = mem_ppc_resetCounter) = 0x29 = 41 
+    * mem_getVar(4 = mem_dep_ant_deployed) = 0x0 = 0 
+    * mem_getVar(5 = mem_dep_ant_tries) = 0x10 = 16 
+    * mem_getVar(6 = mem_dep_year) = 0x10 = 16 
+    * mem_getVar(7 = mem_dep_month) = 0x3 = 3 
+    * mem_getVar(8 = mem_dep_week_day) = 0x6 = 6 
+    * mem_getVar(9 = mem_dep_day_number) = 0x17 = 23 
+    * mem_getVar(10 = mem_dep_hours) = 0x11 = 17 
+    * mem_getVar(11 = mem_dep_minutes) = 0x1C = 28 
+    * mem_getVar(12 = mem_dep_seconds) = 0xC = 12 
+    * mem_getVar(13 = mem_fpl_index) = 0x0 = 0 
+    * mem_getVar(14 = mem_pay_langmuirProbe_state) = 0x0 = 0 
+    * mem_getVar(15 = mem_pay_sensTemp_state) = 0x0 = 0 
+    * mem_getVar(16 = mem_pay_gps_state) = 0x0 = 0 
+    * mem_getVar(17 = mem_pay_expFis_state) = 0x0 = 0 
+    * mem_getVar(18 = mem_pay_camera_state) = 0x0 = 0 
+    * mem_getVar(19 = mem_pay_gyro_state) = 0x0 = 0 
+    * mem_getVar(20 = mem_pay_tmEstado_state) = 0x0 = 0 
+    * mem_getVar(21 = mem_pay_battery_state) = 0x0 = 0 
+    * mem_getVar(22 = mem_pay_debug_state) = 0x0 = 0 
+    * mem_getVar(23 = mem_trx_count_tm) = 0x0 = 0 
+    * mem_getVar(24 = mem_trx_count_tc) = 0x0 = 0 
+    * mem_getVar(25 = mem_trx_day_last_tc) = 0x0 = 0 
+    * mem_getVar(26 = mem_trx_beacon_period) = 0x3C = 60 
+    * mem_getVar(27 = mem_trx_beacon_bat_lvl) = 0x2EE0 = 12000 
+    * mem_getVar(28 = mem_trx_rx_baud) = 0xC = 12 
+    * mem_getVar(29 = mem_trx_tx_baud) = 0xC = 12 
+===============================
+Ok
+    * External RTC .. Ok
+    * External TRX ..       * trx_initialize, first time on => TRX_CONFIG.morse_pospone = 300 
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Ok
+    * External EPS .. Ok
+    * External Antenna .. Fail (NOT Deployed)
+Antenna Deployment is carried out (if pending) by Task Housekeeping
+
+[suchaiDeployment] dep_init_suchai_repos()..
+
+[dep_init_stateRepo] Initializing state repository..
+    * sta_onReset_BusStateRepo()..
+    [sta_onResetStatRepo] Important STA_StateVar variables:
+        * ppc_get_resetCounter: 42
+            * NOT the First time on, resetCounter = 42
+        * ppc_get_lastResetSource: EXTERNAL_Reset
+        * ppc_get_hoursAlive: 1
+        * ppc_get_hoursWithoutReset: 0
+        * ppc_get_wdt_state: 1
+        * ppc_get_osc: Oscillator is PRIMARY_OSC_WITH_PLL
+        * thk_get_AntSwitch_isOpen: 0
+            * Antenna Deployment rely on this var AND others
+        * thk_get_dep_ant_deployed: 0
+            * Antenna Deployment is pending
+    * sta_onReset_PayStateRepo()..
+
+[dep_init_cmdRepo] Initializing command repository..
+    * Attaching cmdPPC..
+        ppc_onResetCmdPPC
+    * Attaching cmdCON..
+        con_onResetCmdCON
+    * Attaching cmdTRX..
+        trx_onResetCmdTRX
+    * Attaching cmdEPS..
+        eps_onResetCmdEPS
+    * Attaching cmdSRP..
+        srp_onResetCmdSRP
+    * Attaching cmdDRP..
+        drp_onResetCmdDRP
+    * Attaching cmdPAY..
+        pay_onResetCmdPAY
+    * Attaching cmdRTC..
+        rtc_onResetCmdRTC
+    * Attaching cmdTCM..
+        tcm_onResetCmdTCM
+    * Attaching cmdTHK..
+        thk_onResetCmdTHK
+
+[dep_init_Repos] Initializing data repositories..
+    * onReset data Repository..
+        DAT_TeleCmd_Buff starting block <=> 1024
+        DAT_FlightPlan starting block <=> 1280
+        DAT_nextIndx starting block <=> 1536
+        DAT_maxIndx starting block <=> 1792
+        DAT_Payload_Buff[0] starting block <=> 2048 | number of Payloads = 9
+        DAT_AuxBuff[0] starting block <=> 4352 | number of Auxs = 13
+        * onReset Fligh Plan..
+        * onReset Payloads..
+
+[dep_init_GnrlStruct] Initializing other structures...
+
+[main] Starting base tasks...
+
+[dep_launch_tasks] Starting all tasks...
+    * Creating taskConsole
+    * Creating taskHousekeeping
+    * Creating taskCommunications
+    * Creating taskFlightPlan3
+
+Starting FreeRTOS [->]
+[Dispatcher] Started
+>>[Console] Started>
+>>[Comunications] Started
+>[Housekeeping] Started
+[Dispatcher] Orig: 0x1102 | Cmd: 0xA003 | Param: 31
+[thk_suchai_deployment] Starting antenna deployment ..
+Requesting EPS HK data
+>>[FlightPlan3] Started
+______________________________________________________________________________
+                     ___ _   _  ___ _  _   _   ___ 
+                    / __| | | |/ __| || | /_\ |_ _|
+                    \__ \ |_| | (__| __ |/ _ \ | | 
+                    |___/\___/ \___|_||_/_/ \_\___|
+______________________________________________________________________________
+
+ADC sample:
+Temp 1 25
+Temp 2 25
+Temp 3 25
+Temp PCB 25
+BV 7319
+PC 0
+SC 131
+PV1 2911
+PV2 3158
+PV3 3071
+Latch up 1 0
+Latch up 2 0
+Latch up 3 0
+Latch up 4 0
+Latch up 5 0
+Latch up 6 0
+User Channel Status FC
+1111 1100
+Battery temperature 1 0
+Battery temperature 2 0
+Reset 7   BootCount 302   SW Err 0   PPT mode 2
+        * eps_print_hk: 1
+
+[thk_deploy_antenna] Starting TRX silence .. 
+trx_set_beacon_level ..
+[6554] (null):-23131 FREE: Buffer already free A5A5
+Current TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+[thk_suchai_deployment] delay_min = 31
+[thk_suchai_deployment] initial_tick_10ms = 424 | final_tick_10ms = 186424 
+>> 24/3/16 12:1:12
+pay_takePhoto_camera ..
+pay_init_camera ..
+  PPC_CAM_SWITCH = 0
+  PPC_CAM_SWITCH = 1
+  PPC_CAM_HOLD_CHECK = 1
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 1 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 700 

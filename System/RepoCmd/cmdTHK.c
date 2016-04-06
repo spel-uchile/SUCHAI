@@ -19,6 +19,12 @@
 
 #include "cmdTHK.h"
 
+#define THK_SILENT_TIME_MIN 30          ///< cuantos "minutos" (65,535[s]) estara en inactividad antes de iniciarse
+#define THK_MAX_TRIES_ANT_DEPLOY 15     ///< cuantas veces tratara desplegar la antena antes de anunciar fracaso
+#define THK_DEPLOY_TIME 45311           ///< 2*THK_DEPLOY_TIME/1000 indica cuantos "ms" estara activo el bus de 3.3V quemando el nilon
+#define THK_REST_DEPLOY_TIME 5000       ///< cuantos "ms" estara inactivo el bus de 3.3V descanzando de tratar de quemar el nilon
+#define THK_RECHECK_TIME 2000           ///< despues de cuantos "ms" RE-chequeara que efectivamente se desplego la antena
+
 cmdFunction thkFunction[THK_NCMD];
 int thk_sysReq[THK_NCMD];
 
@@ -288,8 +294,23 @@ int thk_get_dep_seconds(void* param){
 //------------------------------------------------------------------------------
 int thk_suchai_deployment(void *param)
 {    
+    __delay_ms(1000);
     if( sta_get_BusStateVar(sta_dep_ant_deployed) == 0 ){
         printf("[thk_suchai_deployment] Starting antenna deployment ..\r\n");
+        BOOL trust_AntSwitch = FALSE;
+        unsigned int delay_recheck_dep_time = (THK_RECHECK_TIME);
+        if( thk_get_AntSwitch_isOpen(&delay_recheck_dep_time) == 0 ){
+            trust_AntSwitch = TRUE;
+            #if (SCH_TDEPLOYMENT_VERBOSE>=1)
+                printf("    AntSwitch can be trusted \r\n");
+            #endif 
+        }
+        else{
+            trust_AntSwitch = FALSE;
+            #if (SCH_TDEPLOYMENT_VERBOSE>=1)
+                printf("    AntSwitch can NOT be trusted \r\n");
+            #endif 
+        }
     }
     else{
         printf("[thk_suchai_deployment] Antennas already deployed ..\r\n");
@@ -322,13 +343,15 @@ int thk_suchai_deployment(void *param)
     rtc_print(NULL);
 
     //take picture
-    #if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==1 )
-        #if(SCH_THOUSEKEEPING_SILENT_REALTIME == 1)
-            int resol = 0x03;
-            pay_takePhoto_camera((void *)&resol); //takes 10min to complete
-            pay_get_savedPhoto_camera(NULL);
-        #else
-            printf("  Skipping pay_takePhoto_camera(NULL) call ..\r\n");
+    #if(SCH_THOUSEKEEPING_ANT_DEP_REALTIME == 1)
+        #if(SCH_PAY_CAM_nMEMFLASH_ONBOARD==1 )
+            #if(SCH_THOUSEKEEPING_SILENT_REALTIME == 1)
+                int resol = 0x03;
+                pay_takePhoto_camera((void *)&resol); //takes 10min to complete
+                pay_get_savedPhoto_camera(NULL);
+            #else
+                printf("  Skipping pay_takePhoto_camera(NULL) call ..\r\n");
+            #endif
         #endif
     #endif
 
@@ -388,11 +411,6 @@ int thk_suchai_deployment(void *param)
     return 1;
 }
 
-#define THK_SILENT_TIME_MIN 30          ///< cuantos "minutos" (65,535[s]) estara en inactividad antes de iniciarse
-#define THK_MAX_TRIES_ANT_DEPLOY 15     ///< cuantas veces tratara desplegar la antena antes de anunciar fracaso
-#define THK_DEPLOY_TIME 45311           ///< 2*THK_DEPLOY_TIME/1000 indica cuantos "ms" estara activo el bus de 3.3V quemando el nilon
-#define THK_REST_DEPLOY_TIME 5000       ///< cuantos "ms" estara inactivo el bus de 3.3V descanzando de tratar de quemar el nilon
-#define THK_RECHECK_TIME 2000           ///< despues de cuantos "ms" RE-chequeara que efectivamente se desplego la antena
 /**
  * Deploys satellite antennas
  * @param param 1 realime, 0 debug time
@@ -410,20 +428,14 @@ int thk_deploy_antenna(void *param)
     int mode= *( (int *)param );
     if(mode)
     {
-//        delay_dep_time = (THK_DEPLOY_TIME) / portTICK_RATE_MS;
-//        delay_rest_dep_time = (THK_REST_DEPLOY_TIME) / portTICK_RATE_MS;
-//        delay_recheck_dep_time = (THK_RECHECK_TIME) / portTICK_RATE_MS;
         delay_dep_time = (THK_DEPLOY_TIME);
         delay_rest_dep_time = (THK_REST_DEPLOY_TIME);
         delay_recheck_dep_time = (THK_RECHECK_TIME);
     }
     else
     {
-//        delay_dep_time = (600) / portTICK_RATE_MS;
-//        delay_rest_dep_time = (400) / portTICK_RATE_MS;
-//        delay_recheck_dep_time = (200) / portTICK_RATE_MS;
-        delay_dep_time = (600);
-        delay_rest_dep_time = (400);
+        delay_dep_time = (60);
+        delay_rest_dep_time = (40);
         delay_recheck_dep_time = (200);
     }
     
@@ -432,6 +444,21 @@ int thk_deploy_antenna(void *param)
 
     #if(SCH_ANTENNA_ONBOARD == 1)
     {
+        /* Check if AntSwitch can be trusted */
+        BOOL trust_AntSwitch = FALSE;
+        if( thk_get_AntSwitch_isOpen(&delay_recheck_dep_time) == 0 ){
+            trust_AntSwitch = TRUE;
+            #if (SCH_TDEPLOYMENT_VERBOSE>=1)
+                printf("    AntSwitch can be trusted \r\n");
+            #endif 
+        }
+        else{
+            trust_AntSwitch = FALSE;
+            #if (SCH_TDEPLOYMENT_VERBOSE>=1)
+                printf("    AntSwitch can NOT be trusted \r\n");
+            #endif 
+        }
+        
         for(tries_indx=1; tries_indx<=THK_MAX_TRIES_ANT_DEPLOY; tries_indx++)
         {
             #if (SCH_TDEPLOYMENT_VERBOSE>=2)
@@ -488,25 +515,36 @@ int thk_deploy_antenna(void *param)
 
             if( thk_get_AntSwitch_isOpen(&delay_recheck_dep_time) == 1 )
             {
-                thk_deployment_registration(&tries_indx);
-
-                #if (SCH_TDEPLOYMENT_VERBOSE>=1)
-                    printf("    ANTENNA DEPLOYED SUCCESSFULLY [%d TRIES]\r\n", tries_indx);
-                    rtc_print(NULL);
-                #endif 
-                //return 1;     =>>> try  HK_MAX_TRIES_ANT_DEPLOY   always !!!!!!
+                if(trust_AntSwitch == TRUE){
+                    thk_deployment_registration(&tries_indx);
+                    #if (SCH_TDEPLOYMENT_VERBOSE>=1)
+                        printf("    ANTENNA DEPLOYED SUCCESSFULLY [%d TRIES]\r\n", tries_indx);
+                        rtc_print(NULL);
+                    #endif 
+                    return 1;
+                }
+                else{
+                    /* AntSwitch could not be trusted 
+                     * try HK_MAX_TRIES_ANT_DEPLOY times and assume
+                     * it will work
+                     */
+                }
             }
         }
     }
     #endif
 
     //after the for() tries_indx == THK_MAX_TRIES_ANT_DEPLOY+1
-    tries_indx = THK_MAX_TRIES_ANT_DEPLOY+1; //por si acaso
+    /* Ya que no se corrobora con "thk_get_AntSwitch_isOpen", se confia 
+     * en que alguno de los THK_MAX_TRIES_ANT_DEPLOY funcionará.
+     * */
+    tries_indx = THK_MAX_TRIES_ANT_DEPLOY;
     thk_deployment_registration(&tries_indx);
 
     #if (SCH_TDEPLOYMENT_VERBOSE>=2)
         printf("    ANTENNA DEPLOY FAIL [%d TRIES]\r\n", THK_MAX_TRIES_ANT_DEPLOY);
-        rtc_print(NULL);
+        int arg = 1;
+        rtc_print(&arg);
     #endif
 
     return 0;

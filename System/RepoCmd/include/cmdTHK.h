@@ -22,6 +22,7 @@
 #include "cmdRTC.h"
 #include "cmdDRP.h"
 #include "cmdSRP.h"
+#include "cmdPPC.h"
 #include "cmdPayload.h"
 
 #include "memEEPROM.h"

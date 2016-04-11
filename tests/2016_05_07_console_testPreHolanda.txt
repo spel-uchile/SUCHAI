@@ -1,0 +1,1635 @@
+    Setting Payload_Buff in launch configuration..
+      dat_reset_Payload_Buff(pay_i = dat_pay_tmEstado)
+      pay_i = dat_pay_tmEstado, pay_i_state = 0, nextIndx = 0 
+      dat_reset_Payload_Buff(pay_i = dat_pay_battery)
+      pay_i = dat_pay_battery, pay_i_state = 0, nextIndx = 0 
+      dat_reset_Payload_Buff(pay_i = dat_pay_debug)
+      pay_i = dat_pay_debug, pay_i_state = 0, nextIndx = 0 
+      dat_reset_Payload_Buff(pay_i = dat_pay_lagmuirProbe)
+      pay_i = dat_pay_lagmuirProbe, pay_i_state = 0, nextIndx = 0 
+      dat_reset_Payload_Buff(pay_i = dat_pay_gps)
+      pay_i = dat_pay_gps, pay_i_state = 0, nextIndx = 0 
+      dat_reset_Payload_Buff(pay_i = dat_pay_camera)
+      pay_i = dat_pay_camera, pay_i_state = 0, nextIndx = 0 
+      dat_reset_Payload_Buff(pay_i = dat_pay_sensTemp)
+      pay_i = dat_pay_sensTemp, pay_i_state = 0, nextIndx = 0 
+      dat_reset_Payload_Buff(pay_i = dat_pay_gyro)
+      pay_i = dat_pay_gyro, pay_i_state = 0, nextIndx = 0 
+      dat_reset_Payload_Buff(pay_i = dat_pay_expFis)
+      pay_i = dat_pay_expFis, pay_i_state = 0, nextIndx = 0 
+  srp_executeBeforeFlight()..
+[srp_memEEPROM_initial_state] ..
+[Housekeeping] xLastWakeTime + xDelay_ticks < xTickCount, update xLastWakeTime to xTickCount ..
+[FlightPlan3] xLastWakeTime + xDelay_ticks < xTickCount, update xLastWakeTime to xTickCount ..
+[FlightPlan3] min_check_period_ms (10000) actions, ticks_elapsed/reCurrent TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+trx_set_beacon_level ..
+[s_ticks = 2/3 ..
+6554] (null):-23131 FREE: Buffer already free A5A5
+Current TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 38400, max temp: 15360
+MORSE: enable: 1, mode: 0,  delay 15360, pospone 11265, wpm 20, batt level 57390, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 1280
+Current TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+[6554] (null):-23131 FREE: Buffer already free A5A5
+[FlightPlan3] min_check_period_ms (10000) actions, ticks_elapsed/res_ticks = 3/3 ..
+Current TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 38400, max temp: 15360
+MORSE: enable: 1, mode: 0,  delay 15360, pospone 11265, wpm 20, batt level 57390, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 1280
+      * trx_initialize, first time on => TRX_CONFIG.morse_pospone = 300 
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+[srp_memEEPROM_initial_state] All MemEEPROM_Vars variables:
+===============================
+MemEEPROM_Vars content: 
+===============================
+    * mem_getVar(0 = mem_MemEEPROM_testVal) = 0x138E = 5006 
+    * mem_getVar(1 = mem_ppc_opMode) = 0x0 = 0 
+    * mem_getVar(2 = mem_ppc_hoursAlive) = 0x0 = 0 
+    * mem_getVar(3 = mem_ppc_resetCounter) = 0xFFFF = -1 
+    * mem_getVar(4 = mem_dep_ant_deployed) = 0x0 = 0 
+    * mem_getVar(5 = mem_dep_ant_tries) = 0x0 = 0 
+    * mem_getVar(6 = mem_dep_year) = 0x0 = 0 
+    * mem_getVar(7 = mem_dep_month) = 0x0 = 0 
+    * mem_getVar(8 = mem_dep_week_day) = 0x0 = 0 
+    * mem_getVar(9 = mem_dep_day_number) = 0x0 = 0 
+    * mem_getVar(10 = mem_dep_hours) = 0x0 = 0 
+    * mem_getVar(11 = mem_dep_minutes) = 0x0 = 0 
+    * mem_getVar(12 = mem_dep_seconds) = 0x0 = 0 
+    * mem_getVar(13 = mem_fpl_index) = 0x0 = 0 
+    * mem_getVar(14 = mem_pay_langmuirProbe_state) = 0x0 = 0 
+    * mem_getVar(15 = mem_pay_sensTemp_state) = 0x0 = 0 
+    * mem_getVar(16 = mem_pay_gps_state) = 0x0 = 0 
+    * mem_getVar(17 = mem_pay_expFis_state) = 0x0 = 0 
+    * mem_getVar(18 = mem_pay_camera_state) = 0x0 = 0 
+    * mem_getVar(19 = mem_pay_gyro_state) = 0x0 = 0 
+    * mem_getVar(20 = mem_pay_tmEstado_state) = 0x0 = 0 
+    * mem_getVar(21 = mem_pay_battery_state) = 0x0 = 0 
+    * mem_getVar(22 = mem_pay_debug_state) = 0x0 = 0 
+    * mem_getVar(23 = mem_trx_count_tm) = 0x0 = 0 
+    * mem_getVar(24 = mem_trx_count_tc) = 0x0 = 0 
+    * mem_getVar(25 = mem_trx_day_last_tc) = 0x0 = 0 
+    * mem_getVar(26 = mem_trx_beacon_period) = 0x3C = 60 
+    * mem_getVar(27 = mem_trx_beacon_bat_lvl) = 0x2EE0 = 12000 
+    * mem_getVar(28 = mem_trx_rx_baud) = 0xC = 12 
+    * mem_getVar(29 = mem_trx_tx_baud) = 0xC = 12 
+===============================
+[srp_memEEPROM_initial_state] All STA_StateVar variables:
+===============================
+StateVar content: 
+===============================
+    * sta_get_stateVar(0 = sta_RTC_isAlive) = 0x1 = 1 
+trx_isAlive .. 
+Sending test frame to node 5...
+Ping to 5 of size 10, took 60 ms
+    * sta_get_stateVar(1 = sta_TRX_isAlive) = 0x1 = 1 
+eps_isAlive .. 
+Sending test frame to node 2...
+[6554] (null):-23131 FREE: Buffer already free A5A5
+Ping to 2 of size 10, took 1070 ms
+    * sta_get_stateVar(2 = sta_EPS_isAlive) = 0x1 = 1 
+    * sta_get_stateVar(3 = sta_MemEEPROM_isAlive) = 0x1 = 1 
+    * sta_get_stateVar(4 = sta_MemSD_isAlive) = 0x1 = 1 
+    * sta_get_stateVar(5 = sta_AntSwitch_isOpen) = 0x0 = 0 
+    * sta_get_stateVar(6 = sta_fpl_index) = 0x0 = 0 
+    * sta_get_stateVar(7 = sta_ppc_opMode) = 0x0 = 0 
+    * sta_get_stateVar(8 = sta_ppc_lastResetSource) = 0x4 = 4 
+    * sta_get_stateVar(9 = sta_ppc_hoursAlive) = 0x0 = 0 
+    * sta_get_stateVar(10 = sta_ppc_hoursWithoutReset) = 0x0 = 0 
+    * sta_get_stateVar(11 = sta_ppc_resetCounter) = 0xFFFF = -1 
+    * sta_get_stateVar(12 = sta_ppc_wdt) = 0x1 = 1 
+    * sta_get_stateVar(13 = sta_ppc_osc) = 0x4 = 4 
+    * sta_get_stateVar(14 = sta_ppc_MB_nOE_USB_nINT_stat) = 0x0 = 0 
+    * sta_get_stateVar(15 = sta_ppc_MB_nOE_MHX_stat) = 0x1 = 1 
+    * sta_get_stateVar(16 = sta_ppc_MB_nON_MHX_stat) = 0x0 = 0 
+    * sta_get_stateVar(17 = sta_ppc_MB_nON_SD_stat) = 0x0 = 0 
+    * sta_get_stateVar(18 = sta_dep_ant_deployed) = 0x0 = 0 
+    * sta_get_stateVar(19 = sta_dep_ant_tries) = 0x0 = 0 
+    * sta_get_stateVar(20 = sta_dep_year) = 0x0 = 0 
+    * sta_get_stateVar(21 = sta_dep_month) = 0x0 = 0 
+    * sta_get_stateVar(22 = sta_dep_week_day) = 0x0 = 0 
+    * sta_get_stateVar(23 = sta_dep_day_number) = 0x0 = 0 
+    * sta_get_stateVar(24 = sta_dep_hours) = 0x0 = 0 
+    * sta_get_stateVar(25 = sta_dep_minutes) = 0x0 = 0 
+    * sta_get_stateVar(26 = sta_dep_seconds) = 0x0 = 0 
+    * sta_get_stateVar(27 = sta_rtc_year) = 0x10 = 16 
+    * sta_get_stateVar(28 = sta_rtc_month) = 0x4 = 4 
+    * sta_get_stateVar(29 = sta_rtc_week_day) = 0x7 = 7 
+    * sta_get_stateVar(30 = sta_rtc_day_number) = 0x7 = 7 
+    * sta_get_stateVar(31 = sta_rtc_hours) = 0xF = 15 
+    * sta_get_stateVar(32 = sta_rtc_minutes) = 0x1D = 29 
+    * sta_get_stateVar(33 = sta_rtc_seconds) = 0x8 = 8 
+[6554] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(34 = sta_eps_batt_temp_0) = 0x0 = 0 
+[6554] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(35 = sta_eps_batt_temp_1) = 0x0 = 0 
+[6554] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(36 = sta_eps_battery_voltage) = 0x2036 = 8246 
+[6554] (null):-23131 FREE: Buffer already free A5A5
+[FlightPlan3] min_check_period_ms (10000) actions, ticks_elapsed/res_ticks = 1/3 ..
+    * sta_get_stateVar(37 = sta_eps_panel_current) = 0x0 = 0 
+[6554] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(38 = sta_eps_panel_voltage_1) = 0xA41 = 2625 
+[6554] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(39 = sta_eps_panel_voltage_2) = 0xD06 = 3334 
+[6554] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(40 = sta_eps_panel_voltage_3) = 0xC09 = 3081 
+[6554] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(41 = sta_eps_system_current) = 0x77 = 119 
+    * sta_get_stateVar(42 = sta_trx_opmode) = 0x1 = 1 
+    * sta_get_stateVar(43 = sta_trx_count_tm) = 0x0 = 0 
+    * sta_get_stateVar(44 = sta_trx_count_tc) = 0x0 = 0 
+    * sta_get_stateVar(45 = sta_trx_day_last_tc) = 0x0 = 0 
+[6554] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(46 = sta_trx_beacon_period) = 0x3C = 60 
+[6554] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(47 = sta_trx_beacon_bat_lvl) = 0x2EE0 = 12000 
+[6554] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(48 = sta_trx_rx_baud) = 0xC = 12 
+[6554] (null):-23131 FREE: Buffer already free A5A5
+    * sta_get_stateVar(49 = sta_trx_tx_baud) = 0xC = 12 
+===============================
+****************************************************
+thk_executeBeforeFlight finalizo
+Para quedar en config de vuelo, se
+DEBE apagar el SUCHAI, hagalo ANTES de:
+****************************************************
+10 segundos..
+9 segundos..
+8 segundos..
+7 segundos..
+          ÿ
+--------- SUCHAI BOOT SEQUENCE ---------
+
+Initializing sattelite bus
+    * Microcontroller IO pins
+    * CubesatKit MB
+    * PC104 Bus
+
+Initilizing Microcontroller
+    * Reset status
+    * Setting oscillator
+    * mPWRMGNT_Regulator_ActiveInSleep
+    * Enabling WDT
+
+Initializing libcsp
+[14732] l  :0 Binding socket 0 to port 0
+
+    * Conn table:
+[00 33BA] S:0, 0 -> 0, 0 -> 0, sock: 0
+[01 33D4] S:1, 0 -> 0, 0 -> 0, sock: 11DC
+[02 33EE] S:0, 0 -> 0, 0 -> 0, sock: 0
+[03 3408] S:0, 0 -> 0, 0 -> 0, sock: 0
+[04 3422] S:0, 0 -> 0, 0 -> 0, sock: 0
+
+    * Route table:
+Node  Interface  Address
+   0  LOOP       0
+   *  I2C        255
+
+[suchaiDeployment] dep_init_suchai_hw()..
+
+[dep_init_bus_hw] Initializig external hardware...
+    * External MemSD .. Ok
+    * External MemEEPROM .. ===============================
+MemEEPROM_Vars content: 
+===============================
+  MEM_USE_MEMSD_nMEMEEPROM = 0 
+  mem_EEPROM_isAlive() is alive, memEEPROM is responding 
+    * mem_getVar(0 = mem_MemEEPROM_testVal) = 0x138E = 5006 
+    * mem_getVar(1 = mem_ppc_opMode) = 0x0 = 0 
+    * mem_getVar(2 = mem_ppc_hoursAlive) = 0x0 = 0 
+    * mem_getVar(3 = mem_ppc_resetCounter) = 0xFFFF = -1 
+    * mem_getVar(4 = mem_dep_ant_deployed) = 0x0 = 0 
+    * mem_getVar(5 = mem_dep_ant_tries) = 0x0 = 0 
+    * mem_getVar(6 = mem_dep_year) = 0x0 = 0 
+    * mem_getVar(7 = mem_dep_month) = 0x0 = 0 
+    * mem_getVar(8 = mem_dep_week_day) = 0x0 = 0 
+    * mem_getVar(9 = mem_dep_day_number) = 0x0 = 0 
+    * mem_getVar(10 = mem_dep_hours) = 0x0 = 0 
+    * mem_getVar(11 = mem_dep_minutes) = 0x0 = 0 
+    * mem_getVar(12 = mem_dep_seconds) = 0x0 = 0 
+    * mem_getVar(13 = mem_fpl_index) = 0x0 = 0 
+    * mem_getVar(14 = mem_pay_langmuirProbe_state) = 0x0 = 0 
+    * mem_getVar(15 = mem_pay_sensTemp_state) = 0x0 = 0 
+    * mem_getVar(16 = mem_pay_gps_state) = 0x0 = 0 
+    * mem_getVar(17 = mem_pay_expFis_state) = 0x0 = 0 
+    * mem_getVar(18 = mem_pay_camera_state) = 0x0 = 0 
+    * mem_getVar(19 = mem_pay_gyro_state) = 0x0 = 0 
+    * mem_getVar(20 = mem_pay_tmEstado_state) = 0x0 = 0 
+    * mem_getVar(21 = mem_pay_battery_state) = 0x0 = 0 
+    * mem_getVar(22 = mem_pay_debug_state) = 0x0 = 0 
+    * mem_getVar(23 = mem_trx_count_tm) = 0x0 = 0 
+    * mem_getVar(24 = mem_trx_count_tc) = 0x0 = 0 
+    * mem_getVar(25 = mem_trx_day_last_tc) = 0x0 = 0 
+    * mem_getVar(26 = mem_trx_beacon_period) = 0x3C = 60 
+    * mem_getVar(27 = mem_trx_beacon_bat_lvl) = 0x2EE0 = 12000 
+    * mem_getVar(28 = mem_trx_rx_baud) = 0xC = 12 
+    * mem_getVar(29 = mem_trx_tx_baud) = 0xC = 12 
+===============================
+Ok
+    * External RTC .. Ok
+    * External TRX ..       * trx_initialize, first time on => TRX_CONFIG.morse_pospone = 300 
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Ok
+    * External EPS .. Ok
+    * External Antenna .. Fail (NOT Deployed)
+Antenna Deployment is carried out (if pending) by Task Housekeeping
+
+[suchaiDeployment] dep_init_suchai_repos()..
+
+[dep_init_stateRepo] Initializing state repository..
+    * sta_onReset_BusStateRepo()..
+    [sta_onResetStatRepo] Important STA_StateVar variables:
+        * ppc_get_resetCounter: 0
+            * First time on, resetCounter = 0
+        * ppc_get_lastResetSource: EXTERNAL_Reset
+        * ppc_get_hoursAlive: 0
+        * ppc_get_hoursWithoutReset: 0
+        * ppc_get_wdt_state: 1
+        * ppc_get_osc: Oscillator is PRIMARY_OSC_WITH_PLL
+        * thk_get_AntSwitch_isOpen: 0
+            * Antenna Deployment rely on this var AND others
+        * thk_get_dep_ant_deployed: 0
+            * Antenna Deployment is pending
+    * sta_onReset_PayStateRepo()..
+
+[dep_init_cmdRepo] Initializing command repository..
+    * Attaching cmdPPC..
+        ppc_onResetCmdPPC
+    * Attaching cmdCON..
+        con_onResetCmdCON
+    * Attaching cmdTRX..
+        trx_onResetCmdTRX
+    * Attaching cmdEPS..
+        eps_onResetCmdEPS
+    * Attaching cmdSRP..
+        srp_onResetCmdSRP
+    * Attaching cmdDRP..
+        drp_onResetCmdDRP
+    * Attaching cmdPAY..
+        pay_onResetCmdPAY
+    * Attaching cmdRTC..
+        rtc_onResetCmdRTC
+    * Attaching cmdTCM..
+        tcm_onResetCmdTCM
+    * Attaching cmdTHK..
+        thk_onResetCmdTHK
+
+[dep_init_Repos] Initializing data repositories..
+    * onReset data Repository..
+        DAT_TeleCmd_Buff starting block <=> 1024
+        DAT_FlightPlan starting block <=> 1280
+        DAT_nextIndx starting block <=> 1536
+        DAT_maxIndx starting block <=> 1792
+        DAT_Payload_Buff[0] starting block <=> 2048 | number of Payloads = 9
+        DAT_AuxBuff[0] starting block <=> 4352 | number of Auxs = 13
+        * onReset Fligh Plan..
+        * onReset Payloads..
+
+[dep_init_GnrlStruct] Initializing other structures...
+
+[main] Starting base tasks...
+
+[dep_launch_tasks] Starting all tasks...
+    * Creating taskConsole
+    * Creating taskHousekeeping
+    * Creating taskCommunications
+    * Creating taskFlightPlan3
+
+Starting FreeRTOS [->]
+[Dispatcher] Started
+>>[Console] Started>
+>>[Comunications] Started
+>[Housekeeping] Started
+[Dispatcher] Orig: 0x1102 | Cmd: 0xA003 | Param: 31
+[thk_suchai_deployment] Starting antenna deployment ..
+    AntSwitch can be trusted 
+Requesting EPS HK data
+>>[FlightPlan3] Started
+______________________________________________________________________________
+                     ___ _   _  ___ _  _   _   ___ 
+                    / __| | | |/ __| || | /_\ |_ _|
+                    \__ \ |_| | (__| __ |/ _ \ | | 
+                    |___/\___/ \___|_||_/_/ \_\___|
+______________________________________________________________________________
+
+ADC sample:
+Temp 1 24
+Temp 2 25
+Temp 3 24
+Temp PCB 24
+BV 8246
+PC 0
+SC 119
+PV1 2572
+PV2 3315
+PV3 3071
+Latch up 1 0
+Latch up 2 0
+Latch up 3 0
+Latch up 4 0
+Latch up 5 0
+Latch up 6 0
+User Channel Status FC
+1111 1100
+Battery temperature 1 0
+Battery temperature 2 0
+Reset 7   BootCount 321   SW Err 0   PPT mode 2
+        * eps_print_hk: 1
+
+[thk_deploy_antenna] Starting TRX silence .. 
+trx_set_beacon_level ..
+[6554] (null):-23131 FREE: Buffer already free A5A5
+Current TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+[thk_suchai_deployment] delay_min = 31
+[thk_suchai_deployment] initial_tick_10ms = 424 | final_tick_10ms = 186424 
+>> 7/4/16 15:29:40
+pay_takePhoto_camera ..
+pay_init_camera ..
+  PPC_CAM_SWITCH = 0
+  PPC_CAM_SWITCH = 1
+  PPC_CAM_HOLD_CHECK = 1
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 1 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 700 
+  PPC_CAM_HOLD_CHECK = 0
+  sta_pay_camera_isAlive = 1 
+pay_take_camera ..
+pay_takeAndSave_photo ..
+Sync camera ..
+try = 0 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 1 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+try = 1 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 1 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+received ACK 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+Sync status (0 => successful) = 0 
+ Taking photo ..
+ cam_photo(3, 0, 5) 
+send_comm(INITIAL, 0x00, 0x87, resolution, resolution);
+INITIAL was successful
+QUALITY was successful
+GETPIC was successful
+    Photo length = 4784
+  Debug info: photo_int_length = 2392, photo_byte_length = 4784
+  Debug info: num_10sections = 239, rest_10sections = 2
+    Saving data (this might take up tp 15 min) ..
+>> 7/4/16 15:29:54
+          ÿ
+--------- SUCHAI BOOT SEQUENCE ---------
+
+Initializing sattelite bus
+    * Microcontroller IO pins
+    * CubesatKit MB
+    * PC104 Bus
+
+Initilizing Microcontroller
+    * Reset status
+    * Setting oscillator
+    * mPWRMGNT_Regulator_ActiveInSleep
+    * Enabling WDT
+
+Initializing libcsp
+[14732] l  :0 Binding socket 0 to port 0
+
+    * Conn table:
+[00 33BA] S:0, 0 -> 0, 0 -> 0, sock: 0
+[01 33D4] S:1, 0 -> 0, 0 -> 0, sock: 11DC
+[02 33EE] S:0, 0 -> 0, 0 -> 0, sock: 0
+[03 3408] S:0, 0 -> 0, 0 -> 0, sock: 0
+[04 3422] S:0, 0 -> 0, 0 -> 0, sock: 0
+
+    * Route table:
+Node  Interface  Address
+   0  LOOP       0
+   *  I2C        255
+
+[suchaiDeployment] dep_init_suchai_hw()..
+
+[dep_init_bus_hw] Initializig external hardware...
+    * External MemSD .. Ok
+    * External MemEEPROM .. ===============================
+MemEEPROM_Vars content: 
+===============================
+  MEM_USE_MEMSD_nMEMEEPROM = 0 
+  mem_EEPROM_isAlive() is alive, memEEPROM is responding 
+    * mem_getVar(0 = mem_MemEEPROM_testVal) = 0x138E = 5006 
+    * mem_getVar(1 = mem_ppc_opMode) = 0x0 = 0 
+    * mem_getVar(2 = mem_ppc_hoursAlive) = 0x0 = 0 
+    * mem_getVar(3 = mem_ppc_resetCounter) = 0x0 = 0 
+    * mem_getVar(4 = mem_dep_ant_deployed) = 0x0 = 0 
+    * mem_getVar(5 = mem_dep_ant_tries) = 0x0 = 0 
+    * mem_getVar(6 = mem_dep_year) = 0x0 = 0 
+    * mem_getVar(7 = mem_dep_month) = 0x0 = 0 
+    * mem_getVar(8 = mem_dep_week_day) = 0x0 = 0 
+    * mem_getVar(9 = mem_dep_day_number) = 0x0 = 0 
+    * mem_getVar(10 = mem_dep_hours) = 0x0 = 0 
+    * mem_getVar(11 = mem_dep_minutes) = 0x0 = 0 
+    * mem_getVar(12 = mem_dep_seconds) = 0x0 = 0 
+    * mem_getVar(13 = mem_fpl_index) = 0x0 = 0 
+    * mem_getVar(14 = mem_pay_langmuirProbe_state) = 0x0 = 0 
+    * mem_getVar(15 = mem_pay_sensTemp_state) = 0x0 = 0 
+    * mem_getVar(16 = mem_pay_gps_state) = 0x0 = 0 
+    * mem_getVar(17 = mem_pay_expFis_state) = 0x0 = 0 
+    * mem_getVar(18 = mem_pay_camera_state) = 0x0 = 0 
+    * mem_getVar(19 = mem_pay_gyro_state) = 0x0 = 0 
+    * mem_getVar(20 = mem_pay_tmEstado_state) = 0x0 = 0 
+    * mem_getVar(21 = mem_pay_battery_state) = 0x0 = 0 
+    * mem_getVar(22 = mem_pay_debug_state) = 0x0 = 0 
+    * mem_getVar(23 = mem_trx_count_tm) = 0x0 = 0 
+    * mem_getVar(24 = mem_trx_count_tc) = 0x0 = 0 
+    * mem_getVar(25 = mem_trx_day_last_tc) = 0x0 = 0 
+    * mem_getVar(26 = mem_trx_beacon_period) = 0x3C = 60 
+    * mem_getVar(27 = mem_trx_beacon_bat_lvl) = 0x2EE0 = 12000 
+    * mem_getVar(28 = mem_trx_rx_baud) = 0xC = 12 
+    * mem_getVar(29 = mem_trx_tx_baud) = 0xC = 12 
+===============================
+Ok
+    * External RTC .. Ok
+    * External TRX ..       * trx_initialize, first time on => TRX_CONFIG.morse_pospone = 300 
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Ok
+    * External EPS .. Ok
+    * External Antenna .. Fail (NOT Deployed)
+Antenna Deployment is carried out (if pending) by Task Housekeeping
+
+[suchaiDeployment] dep_init_suchai_repos()..
+
+[dep_init_stateRepo] Initializing state repository..
+    * sta_onReset_BusStateRepo()..
+    [sta_onResetStatRepo] Important STA_StateVar variables:
+        * ppc_get_resetCounter: 1
+            * NOT the First time on, resetCounter = 1
+        * ppc_get_lastResetSource: EXTERNAL_Reset
+        * ppc_get_hoursAlive: 0
+        * ppc_get_hoursWithoutReset: 0
+        * ppc_get_wdt_state: 1
+        * ppc_get_osc: Oscillator is PRIMARY_OSC_WITH_PLL
+        * thk_get_AntSwitch_isOpen: 0
+            * Antenna Deployment rely on this var AND others
+        * thk_get_dep_ant_deployed: 0
+            * Antenna Deployment is pending
+    * sta_onReset_PayStateRepo()..
+
+[dep_init_cmdRepo] Initializing command repository..
+    * Attaching cmdPPC..
+        ppc_onResetCmdPPC
+    * Attaching cmdCON..
+        con_onResetCmdCON
+    * Attaching cmdTRX..
+        trx_onResetCmdTRX
+    * Attaching cmdEPS..
+        eps_onResetCmdEPS
+    * Attaching cmdSRP..
+        srp_onResetCmdSRP
+    * Attaching cmdDRP..
+        drp_onResetCmdDRP
+    * Attaching cmdPAY..
+        pay_onResetCmdPAY
+    * Attaching cmdRTC..
+        rtc_onResetCmdRTC
+    * Attaching cmdTCM..
+        tcm_onResetCmdTCM
+    * Attaching cmdTHK..
+        thk_onResetCmdTHK
+
+[dep_init_Repos] Initializing data repositories..
+    * onReset data Repository..
+        DAT_TeleCmd_Buff starting block <=> 1024
+        DAT_FlightPlan starting block <=> 1280
+        DAT_nextIndx starting block <=> 1536
+        DAT_maxIndx starting block <=> 1792
+        DAT_Payload_Buff[0] starting block <=> 2048 | number of Payloads = 9
+        DAT_AuxBuff[0] starting block <=> 4352 | number of Auxs = 13
+        * onReset Fligh Plan..
+        * onReset Payloads..
+
+[dep_init_GnrlStruct] Initializing other structures...
+
+[main] Starting base tasks...
+
+[dep_launch_tasks] Starting all tasks...
+    * Creating taskConsole
+    * Creating taskHousekeeping
+    * Creating taskCommunications
+    * Creating taskFlightPlan3
+
+Starting FreeRTOS [->]
+[Dispatcher] Started
+>>[Console] Started>
+>>[Comunications] Started
+>[Housekeeping] Started
+[Dispatcher] Orig: 0x1102 | Cmd: 0xA003 | Param: 31
+[thk_suchai_deployment] Starting antenna deployment ..
+    AntSwitch can be trusted 
+Requesting EPS HK data
+>>[FlightPlan3] Started
+______________________________________________________________________________
+                     ___ _   _  ___ _  _   _   ___ 
+                    / __| | | |/ __| || | /_\ |_ _|
+                    \__ \ |_| | (__| __ |/ _ \ | | 
+                    |___/\___/ \___|_||_/_/ \_\___|
+______________________________________________________________________________
+
+ADC sample:
+Temp 1 24
+Temp 2 25
+Temp 3 24
+Temp PCB 24
+BV 8246
+PC 0
+SC 119
+PV1 2738
+PV2 3372
+PV3 3081
+Latch up 1 0
+Latch up 2 0
+Latch up 3 0
+Latch up 4 0
+Latch up 5 0
+Latch up 6 0
+User Channel Status FC
+1111 1100
+Battery temperature 1 0
+Battery temperature 2 0
+Reset 7   BootCount 322   SW Err 0   PPT mode 2
+        * eps_print_hk: 1
+
+[thk_deploy_antenna] Starting TRX silence .. 
+trx_set_beacon_level ..
+[6554] (null):-23131 FREE: Buffer already free A5A5
+Current TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+[thk_suchai_deployment] delay_min = 31
+[thk_suchai_deployment] initial_tick_10ms = 424 | final_tick_10ms = 186424 
+>> 7/4/16 15:30:30
+pay_takePhoto_camera ..
+pay_init_camera ..
+  PPC_CAM_SWITCH = 0
+  PPC_CAM_SWITCH = 1
+  PPC_CAM_HOLD_CHECK = 1
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 1 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 700 
+  PPC_CAM_HOLD_CHECK = 0
+  sta_pay_camera_isAlive = 1 
+pay_take_camera ..
+pay_takeAndSave_photo ..
+Sync camera ..
+try = 0 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 1 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+try = 1 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 1 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+received ACK 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+Sync status (0 => successful) = 0 
+ Taking photo ..
+ cam_photo(3, 0, 5) 
+send_comm(INITIAL, 0x00, 0x87, resolution, resolution);
+INITIAL was successful
+QUALITY was successful
+GETPIC was successful
+    Photo length = 4736
+  Debug info: photo_int_length = 2368, photo_byte_length = 4736
+  Debug info: num_10sections = 236, rest_10sections = 8
+    Saving data (this might take up tp 15 min) ..
+>> 7/4/16 15:30:45
+          ÿ
+--------- SUCHAI BOOT SEQUENCE ---------
+
+Initializing sattelite bus
+    * Microcontroller IO pins
+    * CubesatKit MB
+    * PC104 Bus
+
+Initilizing Microcontroller
+    * Reset status
+    * Setting oscillator
+    * mPWRMGNT_Regulator_ActiveInSleep
+    * Enabling WDT
+
+Initializing libcsp
+[14732] l  :0 Binding socket 0 to port 0
+
+    * Conn table:
+[00 33BA] S:0, 0 -> 0, 0 -> 0, sock: 0
+[01 33D4] S:1, 0 -> 0, 0 -> 0, sock: 11DC
+[02 33EE] S:0, 0 -> 0, 0 -> 0, sock: 0
+[03 3408] S:0, 0 -> 0, 0 -> 0, sock: 0
+[04 3422] S:0, 0 -> 0, 0 -> 0, sock: 0
+
+    * Route table:
+Node  Interface  Address
+   0  LOOP       0
+   *  I2C        255
+
+[suchaiDeployment] dep_init_suchai_hw()..
+
+[dep_init_bus_hw] Initializig external hardware...
+    * External MemSD .. Ok
+    * External MemEEPROM .. ===============================
+MemEEPROM_Vars content: 
+===============================
+  MEM_USE_MEMSD_nMEMEEPROM = 0 
+  mem_EEPROM_isAlive() is alive, memEEPROM is responding 
+    * mem_getVar(0 = mem_MemEEPROM_testVal) = 0x138E = 5006 
+    * mem_getVar(1 = mem_ppc_opMode) = 0x0 = 0 
+    * mem_getVar(2 = mem_ppc_hoursAlive) = 0x0 = 0 
+    * mem_getVar(3 = mem_ppc_resetCounter) = 0x1 = 1 
+    * mem_getVar(4 = mem_dep_ant_deployed) = 0x0 = 0 
+    * mem_getVar(5 = mem_dep_ant_tries) = 0x0 = 0 
+    * mem_getVar(6 = mem_dep_year) = 0x0 = 0 
+    * mem_getVar(7 = mem_dep_month) = 0x0 = 0 
+    * mem_getVar(8 = mem_dep_week_day) = 0x0 = 0 
+    * mem_getVar(9 = mem_dep_day_number) = 0x0 = 0 
+    * mem_getVar(10 = mem_dep_hours) = 0x0 = 0 
+    * mem_getVar(11 = mem_dep_minutes) = 0x0 = 0 
+    * mem_getVar(12 = mem_dep_seconds) = 0x0 = 0 
+    * mem_getVar(13 = mem_fpl_index) = 0x0 = 0 
+    * mem_getVar(14 = mem_pay_langmuirProbe_state) = 0x0 = 0 
+    * mem_getVar(15 = mem_pay_sensTemp_state) = 0x0 = 0 
+    * mem_getVar(16 = mem_pay_gps_state) = 0x0 = 0 
+    * mem_getVar(17 = mem_pay_expFis_state) = 0x0 = 0 
+    * mem_getVar(18 = mem_pay_camera_state) = 0x0 = 0 
+    * mem_getVar(19 = mem_pay_gyro_state) = 0x0 = 0 
+    * mem_getVar(20 = mem_pay_tmEstado_state) = 0x0 = 0 
+    * mem_getVar(21 = mem_pay_battery_state) = 0x0 = 0 
+    * mem_getVar(22 = mem_pay_debug_state) = 0x0 = 0 
+    * mem_getVar(23 = mem_trx_count_tm) = 0x0 = 0 
+    * mem_getVar(24 = mem_trx_count_tc) = 0x0 = 0 
+    * mem_getVar(25 = mem_trx_day_last_tc) = 0x0 = 0 
+    * mem_getVar(26 = mem_trx_beacon_period) = 0x3C = 60 
+    * mem_getVar(27 = mem_trx_beacon_bat_lvl) = 0x2EE0 = 12000 
+    * mem_getVar(28 = mem_trx_rx_baud) = 0xC = 12 
+    * mem_getVar(29 = mem_trx_tx_baud) = 0xC = 12 
+===============================
+Ok
+    * External RTC .. Ok
+    * External TRX ..       * trx_initialize, first time on => TRX_CONFIG.morse_pospone = 300 
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Ok
+    * External EPS .. Ok
+    * External Antenna .. Fail (NOT Deployed)
+Antenna Deployment is carried out (if pending) by Task Housekeeping
+
+[suchaiDeployment] dep_init_suchai_repos()..
+
+[dep_init_stateRepo] Initializing state repository..
+    * sta_onReset_BusStateRepo()..
+    [sta_onResetStatRepo] Important STA_StateVar variables:
+        * ppc_get_resetCounter: 2
+            * NOT the First time on, resetCounter = 2
+        * ppc_get_lastResetSource: EXTERNAL_Reset
+        * ppc_get_hoursAlive: 0
+        * ppc_get_hoursWithoutReset: 0
+        * ppc_get_wdt_state: 1
+        * ppc_get_osc: Oscillator is PRIMARY_OSC_WITH_PLL
+        * thk_get_AntSwitch_isOpen: 0
+            * Antenna Deployment rely on this var AND others
+        * thk_get_dep_ant_deployed: 0
+            * Antenna Deployment is pending
+    * sta_onReset_PayStateRepo()..
+
+[dep_init_cmdRepo] Initializing command repository..
+    * Attaching cmdPPC..
+        ppc_onResetCmdPPC
+    * Attaching cmdCON..
+        con_onResetCmdCON
+    * Attaching cmdTRX..
+        trx_onResetCmdTRX
+    * Attaching cmdEPS..
+        eps_onResetCmdEPS
+    * Attaching cmdSRP..
+        srp_onResetCmdSRP
+    * Attaching cmdDRP..
+        drp_onResetCmdDRP
+    * Attaching cmdPAY..
+        pay_onResetCmdPAY
+    * Attaching cmdRTC..
+        rtc_onResetCmdRTC
+    * Attaching cmdTCM..
+        tcm_onResetCmdTCM
+    * Attaching cmdTHK..
+        thk_onResetCmdTHK
+
+[dep_init_Repos] Initializing data repositories..
+    * onReset data Repository..
+        DAT_TeleCmd_Buff starting block <=> 1024
+        DAT_FlightPlan starting block <=> 1280
+        DAT_nextIndx starting block <=> 1536
+        DAT_maxIndx starting block <=> 1792
+        DAT_Payload_Buff[0] starting block <=> 2048 | number of Payloads = 9
+        DAT_AuxBuff[0] starting block <=> 4352 | number of Auxs = 13
+        * onReset Fligh Plan..
+        * onReset Payloads..
+
+[dep_init_GnrlStruct] Initializing other structures...
+
+[main] Starting base tasks...
+
+[dep_launch_tasks] Starting all tasks...
+    * Creating taskConsole
+    * Creating taskHousekeeping
+    * Creating taskCommunications
+    * Creating taskFlightPlan3
+
+Starting FreeRTOS [->]
+[Dispatcher] Started
+>>[Console] Started>
+>>[Comunications] Started
+>[Housekeeping] Started
+[Dispatcher] Orig: 0x1102 | Cmd: 0xA003 | Param: 31
+[thk_suchai_deployment] Starting antenna deployment ..
+    AntSwitch can be trusted 
+Requesting EPS HK data
+>>[FlightPlan3] Started
+______________________________________________________________________________
+                     ___ _   _  ___ _  _   _   ___ 
+                    / __| | | |/ __| || | /_\ |_ _|
+                    \__ \ |_| | (__| __ |/ _ \ | | 
+                    |___/\___/ \___|_||_/_/ \_\___|
+______________________________________________________________________________
+
+ADC sample:
+Temp 1 24
+Temp 2 25
+Temp 3 24
+Temp PCB 24
+BV 8246
+PC 0
+SC 119
+PV1 2801
+PV2 3390
+PV3 3081
+Latch up 1 0
+Latch up 2 0
+Latch up 3 0
+Latch up 4 0
+Latch up 5 0
+Latch up 6 0
+User Channel Status FC
+1111 1100
+Battery temperature 1 0
+Battery temperature 2 0
+Reset 7   BootCount 323   SW Err 0   PPT mode 2
+        * eps_print_hk: 1
+
+[thk_deploy_antenna] Starting TRX silence .. 
+trx_set_beacon_level ..
+[6554] (null):-23131 FREE: Buffer already free A5A5
+Current TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+[thk_suchai_deployment] delay_min = 31
+[thk_suchai_deployment] initial_tick_10ms = 424 | final_tick_10ms = 186424 
+>> 7/4/16 15:31:44
+pay_takePhoto_camera ..
+pay_init_camera ..
+  PPC_CAM_SWITCH = 0
+  PPC_CAM_SWITCH = 1
+  PPC_CAM_HOLD_CHECK = 1
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 1 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 700 
+  PPC_CAM_HOLD_CHECK = 0
+  sta_pay_camera_isAlive = 1 
+pay_take_camera ..
+pay_takeAndSave_photo ..
+Sync camera ..
+try = 0 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 1 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+try = 1 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 1 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+received ACK 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+Sync status (0 => successful) = 0 
+ Taking photo ..
+ cam_photo(3, 0, 5) 
+send_comm(INITIAL, 0x00, 0x87, resolution, resolution);
+INITIAL was successful
+QUALITY was successful
+GETPIC was successful
+    Photo length = 5136
+  Debug info: photo_int_length = 2568, photo_byte_length = 5136
+  Debug info: num_10sections = 256, rest_10sections = 8
+    Saving data (this might take up tp 15 min) ..
+>> 7/4/16 15:31:58
+          ÿ
+--------- SUCHAI BOOT SEQUENCE ---------
+
+Initializing sattelite bus
+    * Microcontroller IO pins
+    * CubesatKit MB
+    * PC104 Bus
+
+Initilizing Microcontroller
+    * Reset status
+    * Setting oscillator
+    * mPWRMGNT_Regulator_ActiveInSleep
+    * Enabling WDT
+
+Initializing libcsp
+[14732] l  :0 Binding socket 0 to port 0
+
+    * Conn table:
+[00 33BA] S:0, 0 -> 0, 0 -> 0, sock: 0
+[01 33D4] S:1, 0 -> 0, 0 -> 0, sock: 11DC
+[02 33EE] S:0, 0 -> 0, 0 -> 0, sock: 0
+[03 3408] S:0, 0 -> 0, 0 -> 0, sock: 0
+[04 3422] S:0, 0 -> 0, 0 -> 0, sock: 0
+
+    * Route table:
+Node  Interface  Address
+   0  LOOP       0
+   *  I2C        255
+
+[suchaiDeployment] dep_init_suchai_hw()..
+
+[dep_init_bus_hw] Initializig external hardware...
+    * External MemSD .. Ok
+    * External MemEEPROM .. ===============================
+MemEEPROM_Vars content: 
+===============================
+  MEM_USE_MEMSD_nMEMEEPROM = 0 
+  mem_EEPROM_isAlive() is alive, memEEPROM is responding 
+    * mem_getVar(0 = mem_MemEEPROM_testVal) = 0x138E = 5006 
+    * mem_getVar(1 = mem_ppc_opMode) = 0x0 = 0 
+    * mem_getVar(2 = mem_ppc_hoursAlive) = 0x0 = 0 
+    * mem_getVar(3 = mem_ppc_resetCounter) = 0x2 = 2 
+    * mem_getVar(4 = mem_dep_ant_deployed) = 0x0 = 0 
+    * mem_getVar(5 = mem_dep_ant_tries) = 0x0 = 0 
+    * mem_getVar(6 = mem_dep_year) = 0x0 = 0 
+    * mem_getVar(7 = mem_dep_month) = 0x0 = 0 
+    * mem_getVar(8 = mem_dep_week_day) = 0x0 = 0 
+    * mem_getVar(9 = mem_dep_day_number) = 0x0 = 0 
+    * mem_getVar(10 = mem_dep_hours) = 0x0 = 0 
+    * mem_getVar(11 = mem_dep_minutes) = 0x0 = 0 
+    * mem_getVar(12 = mem_dep_seconds) = 0x0 = 0 
+    * mem_getVar(13 = mem_fpl_index) = 0x0 = 0 
+    * mem_getVar(14 = mem_pay_langmuirProbe_state) = 0x0 = 0 
+    * mem_getVar(15 = mem_pay_sensTemp_state) = 0x0 = 0 
+    * mem_getVar(16 = mem_pay_gps_state) = 0x0 = 0 
+    * mem_getVar(17 = mem_pay_expFis_state) = 0x0 = 0 
+    * mem_getVar(18 = mem_pay_camera_state) = 0x0 = 0 
+    * mem_getVar(19 = mem_pay_gyro_state) = 0x0 = 0 
+    * mem_getVar(20 = mem_pay_tmEstado_state) = 0x0 = 0 
+    * mem_getVar(21 = mem_pay_battery_state) = 0x0 = 0 
+    * mem_getVar(22 = mem_pay_debug_state) = 0x0 = 0 
+    * mem_getVar(23 = mem_trx_count_tm) = 0x0 = 0 
+    * mem_getVar(24 = mem_trx_count_tc) = 0x0 = 0 
+    * mem_getVar(25 = mem_trx_day_last_tc) = 0x0 = 0 
+    * mem_getVar(26 = mem_trx_beacon_period) = 0x3C = 60 
+    * mem_getVar(27 = mem_trx_beacon_bat_lvl) = 0x2EE0 = 12000 
+    * mem_getVar(28 = mem_trx_rx_baud) = 0xC = 12 
+    * mem_getVar(29 = mem_trx_tx_baud) = 0xC = 12 
+===============================
+Ok
+    * External RTC ..           ÿ
+--------- SUCHAI BOOT SEQUENCE ---------
+
+Initializing sattelite bus
+    * Microcontroller IO pins
+    * CubesatKit MB
+    * PC104 Bus
+
+Initilizing Microcontroller
+    * Reset status
+    * Setting oscillator
+    * mPWRMGNT_Regulator_ActiveInSleep
+    * Enabling WDT
+
+Initializing libcsp
+[14732] l  :0 Binding socket 0 to port 0
+
+    * Conn table:
+[00 33BA] S:0, 0 -> 0, 0 -> 0, sock: 0
+[01 33D4] S:1, 0 -> 0, 0 -> 0, sock: 11DC
+[02 33EE] S:0, 0 -> 0, 0 -> 0, sock: 0
+[03 3408] S:0, 0 -> 0, 0 -> 0, sock: 0
+[04 3422] S:0, 0 -> 0, 0 -> 0, sock: 0
+
+    * Route table:
+Node  Interface  Address
+   0  LOOP       0
+   *  I2C        255
+
+[suchaiDeployment] dep_init_suchai_hw()..
+
+[dep_init_bus_hw] Initializig external hardware...
+    * External MemSD .. Ok
+    * External MemEEPROM .. ===============================
+MemEEPROM_Vars content: 
+===============================
+  MEM_USE_MEMSD_nMEMEEPROM = 0 
+  mem_EEPROM_isAlive() is alive, memEEPROM is responding 
+    * mem_getVar(0 = mem_MemEEPROM_testVal) = 0x138E = 5006 
+    * mem_getVar(1 = mem_ppc_opMode) = 0x0 = 0 
+    * mem_getVar(2 = mem_ppc_hoursAlive) = 0x0 = 0 
+    * mem_getVar(3 = mem_ppc_resetCounter) = 0x2 = 2 
+    * mem_getVar(4 = mem_dep_ant_deployed) = 0x0 = 0 
+    * mem_getVar(5 = mem_dep_ant_tries) = 0x0 = 0 
+    * mem_getVar(6 = mem_dep_year) = 0x0 = 0 
+    * mem_getVar(7 = mem_dep_month) = 0x0 = 0 
+    * mem_getVar(8 = mem_dep_week_day) = 0x0 = 0 
+    * mem_getVar(9 = mem_dep_day_number) = 0x0 = 0 
+    * mem_getVar(10 = mem_dep_hours) = 0x0 = 0 
+    * mem_getVar(11 = mem_dep_minutes) = 0x0 = 0 
+    * mem_getVar(12 = mem_dep_seconds) = 0x0 = 0 
+    * mem_getVar(13 = mem_fpl_index) = 0x0 = 0 
+    * mem_getVar(14 = mem_pay_langmuirProbe_state) = 0x0 = 0 
+    * mem_getVar(15 = mem_pay_sensTemp_state) = 0x0 = 0 
+    * mem_getVar(16 = mem_pay_gps_state) = 0x0 = 0 
+    * mem_getVar(17 = mem_pay_expFis_state) = 0x0 = 0 
+    * mem_getVar(18 = mem_pay_camera_state) = 0x0 = 0 
+    * mem_getVar(19 = mem_pay_gyro_state) = 0x0 = 0 
+    * mem_getVar(20 = mem_pay_tmEstado_state) = 0x0 = 0 
+    * mem_getVar(21 = mem_pay_battery_state) = 0x0 = 0 
+    * mem_getVar(22 = mem_pay_debug_state) = 0x0 = 0 
+    * mem_getVar(23 = mem_trx_count_tm) = 0x0 = 0 
+    * mem_getVar(24 = mem_trx_count_tc) = 0x0 = 0 
+    * mem_getVar(25 = mem_trx_day_last_tc) = 0x0 = 0 
+    * mem_getVar(26 = mem_trx_beacon_period) = 0x3C = 60 
+    * mem_getVar(27 = mem_trx_beacon_bat_lvl) = 0x2EE0 = 12000 
+    * mem_getVar(28 = mem_trx_rx_baud) = 0xC = 12 
+    * mem_getVar(29 = mem_trx_tx_baud) = 0xC = 12 
+===============================
+Ok
+    * External RTC .. Ok
+    * External TRX ..       * trx_initialize, first time on => TRX_CONFIG.morse_pospone = 300 
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Ok
+    * External EPS .. Ok
+    * External Antenna .. Fail (NOT Deployed)
+Antenna Deployment is carried out (if pending) by Task Housekeeping
+
+[suchaiDeployment] dep_init_suchai_repos()..
+
+[dep_init_stateRepo] Initializing state repository..
+    * sta_onReset_BusStateRepo()..
+    [sta_onResetStatRepo] Important STA_StateVar variables:
+        * ppc_get_resetCounter: 3
+            * NOT the First time on, resetCounter = 3
+        * ppc_get_lastResetSource: EXTERNAL_Reset
+        * ppc_get_hoursAlive: 0
+        * ppc_get_hoursWithoutReset: 0
+        * ppc_get_wdt_state: 1
+        * ppc_get_osc: Oscillator is PRIMARY_OSC_WITH_PLL
+        * thk_get_AntSwitch_isOpen: 0
+            * Antenna Deployment rely on this var AND others
+        * thk_get_dep_ant_deployed: 0
+            * Antenna Deployment is pending
+    * sta_onReset_PayStateRepo()..
+
+[dep_init_cmdRepo] Initializing command repository..
+    * Attaching cmdPPC..
+        ppc_onResetCmdPPC
+    * Attaching cmdCON..
+        con_onResetCmdCON
+    * Attaching cmdTRX..
+        trx_onResetCmdTRX
+    * Attaching cmdEPS..
+        eps_onResetCmdEPS
+    * Attaching cmdSRP..
+        srp_onResetCmdSRP
+    * Attaching cmdDRP..
+        drp_onResetCmdDRP
+    * Attaching cmdPAY..
+        pay_onResetCmdPAY
+    * Attaching cmdRTC..
+        rtc_onResetCmdRTC
+    * Attaching cmdTCM..
+        tcm_onResetCmdTCM
+    * Attaching cmdTHK..
+        thk_onResetCmdTHK
+
+[dep_init_Repos] Initializing data repositories..
+    * onReset data Repository..
+        DAT_TeleCmd_Buff starting block <=> 1024
+        DAT_FlightPlan starting block <=> 1280
+        DAT_nextIndx starting block <=> 1536
+        DAT_maxIndx starting block <=> 1792
+        DAT_Payload_Buff[0] starting block <=> 2048 | number of Payloads = 9
+        DAT_AuxBuff[0] starting block <=> 4352 | number of Auxs = 13
+        * onReset Fligh Plan..
+        * onReset Payloads..
+
+[dep_init_GnrlStruct] Initializing other structures...
+
+[main] Starting base tasks...
+
+[dep_launch_tasks] Starting all tasks...
+    * Creating taskConsole
+    * Creating taskHousekeeping
+    * Creating taskCommunications
+    * Creating taskFlightPlan3
+
+Starting FreeRTOS [->]
+[Dispatcher] Started
+>>[Console] Started>
+>>[Comunications] Started
+>[Housekeeping] Started
+[Dispatcher] Orig: 0x1102 | Cmd: 0xA003 | Param: 31
+          ÿ
+--------- SUCHAI BOOT SEQUENCE ---------
+
+Initializing sattelite bus
+    * Microcontroller IO pins
+    * CubesatKit MB
+    * PC104 Bus
+
+Initilizing Microcontroller
+    * Reset status
+    * Setting oscillator
+    * mPWRMGNT_Regulator_ActiveInSleep
+    * Enabling WDT
+
+Initializing libcsp
+[14732] l  :0 Binding socket 0 to port 0
+
+    * Conn table:
+[00 33BA] S:0, 0 -> 0, 0 -> 0, sock: 0
+[01 33D4] S:1, 0 -> 0, 0 -> 0, sock: 11DC
+[02 33EE] S:0, 0 -> 0, 0 -> 0, sock: 0
+[03 3408] S:0, 0 -> 0, 0 -> 0, sock: 0
+[04 3422] S:0, 0 -> 0, 0 -> 0, sock: 0
+
+    * Route table:
+Node  Interface  Address
+   0  LOOP       0
+   *  I2C        255
+
+[suchaiDeployment] dep_init_suchai_hw()..
+
+[dep_init_bus_hw] Initializig external hardware...
+    * External MemSD .. Ok
+    * External MemEEPROM .. ===============================
+MemEEPROM_Vars content: 
+===============================
+  MEM_USE_MEMSD_nMEMEEPROM = 0 
+  mem_EEPROM_isAlive() is alive, memEEPROM is responding 
+    * mem_getVar(0 = mem_MemEEPROM_testVal) = 0x138E = 5006 
+    * mem_getVar(1 = mem_ppc_opMode) = 0x0 = 0 
+    * mem_getVar(2 = mem_ppc_hoursAlive) = 0x0 = 0 
+    * mem_getVar(3 = mem_ppc_resetCounter) = 0x3 = 3 
+    * mem_getVar(4 = mem_dep_ant_deployed) = 0x0 = 0 
+    * mem_getVar(5 = mem_dep_ant_tries) = 0x0 = 0 
+    * mem_getVar(6 = mem_dep_year) = 0x0 = 0 
+    * mem_getVar(7 = mem_dep_month) = 0x0 = 0 
+    * mem_getVar(8 = mem_dep_week_day) = 0x0 = 0 
+    * mem_getVar(9 = mem_dep_day_number) = 0x0 = 0 
+    * mem_getVar(10 = mem_dep_hours) = 0x0 = 0 
+    * mem_getVar(11 = mem_dep_minutes) = 0x0 = 0 
+    * mem_getVar(12 = mem_dep_seconds) = 0x0 = 0 
+    * mem_getVar(13 = mem_fpl_index) = 0x0 = 0 
+    * mem_getVar(14 = mem_pay_langmuirProbe_state) = 0x0 = 0 
+    * mem_getVar(15 = mem_pay_sensTemp_state) = 0x0 = 0 
+    * mem_getVar(16 = mem_pay_gps_state) = 0x0 = 0 
+    * mem_getVar(17 = mem_pay_expFis_state) = 0x0 = 0 
+    * mem_getVar(18 = mem_pay_camera_state) = 0x0 = 0 
+    * mem_getVar(19 = mem_pay_gyro_state) = 0x0 = 0 
+    * mem_getVar(20 = mem_pay_tmEstado_state) = 0x0 = 0 
+    * mem_getVar(21 = mem_pay_battery_state) = 0x0 = 0 
+    * mem_getVar(22 = mem_pay_debug_state) = 0x0 = 0 
+    * mem_getVar(23 = mem_trx_count_tm) = 0x0 = 0 
+    * mem_getVar(24 = mem_trx_count_tc) = 0x0 = 0 
+    * mem_getVar(25 = mem_trx_day_last_tc) = 0x0 = 0 
+    * mem_getVar(26 = mem_trx_beacon_period) = 0x3C = 60 
+    * mem_getVar(27 = mem_trx_beacon_bat_lvl) = 0x2EE0 = 12000 
+    * mem_getVar(28 = mem_trx_rx_baud) = 0xC = 12 
+    * mem_getVar(29 = mem_trx_tx_baud) = 0xC = 12 
+===============================
+Ok
+    * External RTC .. Ok
+    * External TRX ..       * trx_initialize, first time on => TRX_CONFIG.morse_pospone = 300 
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Ok
+    * External EPS .. Ok
+    * External Antenna .. Fail (NOT Deployed)
+Antenna Deployment is carried out (if pending) by Task Housekeeping
+
+[suchaiDeployment] dep_init_suchai_repos()..
+
+[dep_init_stateRepo] Initializing state repository..
+    * sta_onReset_BusStateRepo()..
+    [sta_onResetStatRepo] Important STA_StateVar variables:
+        * ppc_get_resetCounter: 4
+            * NOT the First time on, resetCounter = 4
+        * ppc_get_lastResetSource: EXTERNAL_Reset
+        * ppc_get_hoursAlive: 0
+        * ppc_get_hoursWithoutReset: 0
+        * ppc_get_wdt_state: 1
+        * ppc_get_osc: Oscillator is PRIMARY_OSC_WITH_PLL
+        * thk_get_AntSwitch_isOpen: 0
+            * Antenna Deployment rely on this var AND others
+        * thk_get_dep_ant_deployed: 0
+            * Antenna Deployment is pending
+    * sta_onReset_PayStateRepo()..
+
+[dep_init_cmdRepo] Initializing command repository..
+    * Attaching cmdPPC..
+        ppc_onResetCmdPPC
+    * Attaching cmdCON..
+        con_onResetCmdCON
+    * Attaching cmdTRX..
+        trx_onResetCmdTRX
+    * Attaching cmdEPS..
+        eps_onResetCmdEPS
+    * Attaching cmdSRP..
+        srp_onResetCmdSRP
+    * Attaching cmdDRP..
+        drp_onResetCmdDRP
+    * Attaching cmdPAY..
+        pay_onResetCmdPAY
+    * Attaching cmdRTC..
+        rtc_onResetCmdRTC
+    * Attaching cmdTCM..
+        tcm_onResetCmdTCM
+    * Attaching cmdTHK..
+        thk_onResetCmdTHK
+
+[dep_init_Repos] Initializing data repositories..
+    * onReset data Repository..
+        DAT_TeleCmd_Buff starting block <=> 1024
+        DAT_FlightPlan starting block <=> 1280
+        DAT_nextIndx starting block <=> 1536
+        DAT_maxIndx starting block <=> 1792
+        DAT_Payload_Buff[0] starting block <=> 2048 | number of Payloads = 9
+        DAT_AuxBuff[0] starting block <=> 4352 | number of Auxs = 13
+        * onReset Fligh Plan..
+        * onReset Payloads..
+
+[dep_init_GnrlStruct] Initializing other structures...
+
+[main] Starting base tasks...
+
+[dep_launch_tasks] Starting all tasks...
+    * Creating taskConsole
+    * Creating taskHousekeeping
+    * Creating taskCommunications
+    * Creating taskFlightPlan3
+
+Starting FreeRTOS [->]
+[Dispatcher] Started
+>>[Console] Started>
+>>[Comunications] Started
+>[Housekeeping] Started
+[Dispatcher] Orig: 0x1102 | Cmd: 0xA003 | Param: 31
+[thk_suchai_deployment] Starting antenna deployment ..
+    AntSwitch can be trusted 
+Requesting EPS HK data
+>>[FlightPlan3] Started
+______________________________________________________________________________
+                     ___ _   _  ___ _  _   _   ___ 
+                    / __| | | |/ __| || | /_\ |_ _|
+                    \__ \ |_| | (__| __ |/ _ \ | | 
+                    |___/\___/ \___|_||_/_/ \_\___|
+______________________________________________________________________________
+
+ADC sample:
+Temp 1 24
+Temp 2 25
+Temp 3 25
+Temp PCB 24
+BV 8246
+PC 0
+SC 119
+PV1 2700
+PV2 3343
+PV3 3081
+Latch up 1 0
+Latch up 2 0
+Latch up 3 0
+Latch up 4 0
+Latch up 5 0
+Latch up 6 0
+User Channel Status FC
+1111 1100
+Battery temperature 1 0
+Battery temperature 2 0
+Reset 7   BootCount 326   SW Err 0   PPT mode 2
+        * eps_print_hk: 1
+
+[thk_deploy_antenna] Starting TRX silence .. 
+trx_set_beacon_level ..
+[6554] (null):-23131 FREE: Buffer already free A5A5
+Current TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+[thk_suchai_deployment] delay_min = 31
+[thk_suchai_deployment] initial_tick_10ms = 424 | final_tick_10ms = 186424 
+>> 7/4/16 15:33:30
+pay_takePhoto_camera ..
+pay_init_camera ..
+  PPC_CAM_SWITCH = 0
+  PPC_CAM_SWITCH = 1
+  PPC_CAM_HOLD_CHECK = 1
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 1 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 700 
+  PPC_CAM_HOLD_CHECK = 0
+  sta_pay_camera_isAlive = 1 
+pay_take_camera ..
+pay_takeAndSave_photo ..
+Sync camera ..
+try = 0 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 1 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+try = 1 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 1 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+received ACK 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 0 
+Sync status (0 => successful) = 0 
+ Taking photo ..
+ cam_photo(3, 0, 5) 
+send_comm(INITIAL, 0x00, 0x87, resolution, resolution);
+INITIAL was successful
+QUALITY was successful
+GETPIC was successful
+    Photo length = 4608
+  Debug info: photo_int_length = 2304, photo_byte_length = 4608
+  Debug info: num_10sections = 230, rest_10sections = 4
+    Saving data (this might take up tp 15 min) ..
+>> 7/4/16 15:33:45
+>> 7/4/16 15:36:15
+ Debug info: NextPayIndx = 2304 
+pay_stop_camera ..
+  PPC_CAM_SWITCH = 1
+  PPC_CAM_SWITCH = 0
+[pay_get_savedPhoto_camera]: NextPayIndx = 2304 
+>> 7/4/16 15:36:17
+FFD8FFE000114A464946000101010000000000000AFFDB004300080606070605080707070909080A0C140D0C0B0B0C1912130F141D1A1F1E1D1A1C1C20242E2720222C231C1C2837292C30313434341F27393D38323C2E333432FFDB0043010909090C0B0C180D0D1832211C213232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFC400B5100002010303020403050504040000017D01020300041105122131410613516107227114328191A1082342B1C11552D1F02433627282090A161718191A25262728292A3435363738393A434445464748494A535455565758595A636465666768696A737475767778797A838485868788898A92939495969798999AA2A3A4A5A6A7A8A9AAB2B3B4B5B6B7B8B9BAC2C3C4C5C6C7C8C9CAD2D3D4D5D6D7D8D9DAE1E2E3E4E5E6E7E8E9EAF1F2F3F4F5F6F7F8F9FAFFC4001F0100030101010101010101010000000000000102030405060708090A0BFFC400B51100020102040403040705040400010277000102031104052131061241510761711322328108144291A1B1C109233352F0156272D10A162434E125F11718191A262728292A35363738393A434445464748494A535455565758595A636465666768696A737475767778797A82838485868788898A92939495969798999AA2A3A4A5A6A7A8A9AAB2B3B4B5B6B7B8B9BAC2C3C4C5C6C7C8C9CAD2D3D4D5D6D7D8D9DAE2E3E4E5E6E7E8E9EAF2F3F4F5F6F7F8F9FAFFC0001108007800A003012100021101031101FFDA000C03010002110311003F00815303DA8794283CD796A3A9F3D56A5919D71739CD64DD4EADD5ABB211B238A9DE73B98D7371D40359525CE188CD6A8FA1C353B21A25C0CE693CE1BF39ABB9D84C66574C03DE90106B48B108EBBD481D69D0923071ECC0D3EA07A1F8475C116977E2FEF2DEDED808E325E3F9DB8380AD9E381E86B78EB763AB4A89697F14A4313852377E46B0C4FF000E5E86B45FBC8D4B281E4120F332A8A5BB67A81FD68BE41348A884E1154648F415A50D2947D08A9ACD95E2DD14AA55CA90463149E1D5B87D6E579A5122BA48CBC7206D39C9EFDEB1AAFF007B04FB9A43E19331843BD98F6CE07D6BB3D3E0F32EE0840E19D57F5ADA5B95038C695147DE159D75360122B8A31D6E7C6579DF44644F73C124D65DD5C8C673DAB648EAC252EA625CDD658E2A8924B13567BF4E3688B934BF8D3B1A1244DB549A955C55A7624B30A34BF7158F19E0528421C6075AD3A5C93A687478AE3C3E6192509712C9E626573D0631FCEB9678AE34DBF2A4B47344DD41C107D4572B9293676D4A32842323DB7C2D6CB368D1DFDC5ECCAD1DBED282439958F40477E79CFB55B1B43F3275F715A4651518AB9838C9C9E824491B5DA6641B49C83918AA5A0B1B6B9D4AE25B952A2D1C409800866C21FAFDE27F0ACA725ED617F32E09F2BB15A240D3C2A06177AFF3AED3C3C8B26B56C323018B75F404D6CDAB9493B33CB37ACC1B24F1E959F7B2B423E57603EB5825647C4D38734AE615CDEB1424B64FBD635CDF364E08FCAAD1EFE1A95914FCD773D01FC29EECF1E0BA2E0F7C0A773D151D004EBDD07E43FC29EB2239C6C03F014C9275200E36E3FDD14F55E782A33E8B57662BA2681EF0DDA2C584C7030300D5F40A222F7000704FDC4393C8F5E2A5C9A5634824DDDAD0EA2C60F36C637008490ED50CBD38CE79FA551B0F06DCEA3A8C97133FFA1C72ED67C60B1EB802B09BE4526BA1D7297B48C4F55B2D27CDB38DD5B6AF200E98C7E15A36FE1C86E2D6E4995FCF8D37A0046081D73C5674B090714DB339D692763060F0E5BDACB390F266690BB720E0E3B71542C2D45EDCAC3C06604E71515682E78ABEE38547665D7F0F26EE653D71C0ABDA3F82EDF52BB78DAEE68C2A6ECA81EA3FC6B4FA9A4F71AC43B6C7975ADC659C67A8AA5AACA4C4707915BA5A1F2985A472F753B72BEBE959ED93C9A0F729C6C87C1C31F4ABED1F9B62E08E546453474D2574D19CB1923AD4AC8106052EA644A99DCA3D6B56CD2D42B2CE9219320AB678C77E2A9393D2234A3BB37B4F8E3967896DC0E9B79E32491FFD7AEBB4DF025FEB6EF6E6068E348F3938E7247B8AE69D2AAA49C8F4A152972351D8B76DE0BD534EB936A905BB36C2ECA641BD150E0100F383BB9C7AF7AEBA6B1687C3AD33C6632D72300F7E0F35738CBD9C9C8E7D39A296C6FF00872C8CFA1427771B9B8C0F535A90E9E619CB67E5DA41E3AE456D497EED3F226A35A994DA53F98DF2E4E38E05717E1D83FE264D95E5236FC3902B2AA9FB487A8FA3372455563D79622AC682C6CAF669CCCFB480367515D1232A56BEA7CE6D74F1B164620D55B9BF3E48121DCCD9FCAB3479987A764500CAEC993F30357B4C82CEEAFA486EA3015949041C608A68ED43B56B0B4B46845B7F1039F9B3D0D24083CA20F42314EDAE874D05B841A5C6EB2B9E153A0F7A8A5B3889E33E98CD690A4A4AECE59BE5762A30685FEE92A3BD3BED24F4CD2BF2E81B9AD617782B1FA2E735DE786FC7BAAE8AE9B2E3CF8070629BE618F407A8FC2BB609548599CDCF2A73BA3D27C3FE24B0F16EA7E75A4A34FD55232A55A35904899C9009C13D3A715A7E2C8B518B488BCCB8B592313A642DB943DFFDB3FCAB83111E58B523D1A735269A353C2BFF0020087D0B3E3FEFA35B5514FE1444FE26263BE066BCCFC290B49AACF18196304800F7C8A9ACFF00790354D352B1D2B689724710F7CF2E3AFE74FB4D1AE63790CB08DA471861D6B7934453693D4F93E6B900100161EA2A9C85A70372B1DA38C0E82B33960AC861C970554F03D2951E48E4320CEE3DF141A0EF39DDCB104927D2AE25C4E130B0123D714236A72925A21A97F3C2245DA76BF506940BB9543889CABF4C0EB56A52B59194D5E5763CDB5E649682418CE4FB0EB4D92185F3E5C73E7FDA503FAD0DBEA2B12240B130E6E172391B6B42CE2324D1450C17133B7046E0327DAB48392D8CE6A3D4DFD0F53BCD135782F2C6DE3668DF2A5DF19FC8743CD7A0F8B7C4BE2F8DA4FB669508D295A195258977C4C08071B9B19CFCDDB8E3F1BAD17BC9051946FEE9DFF850DECDA0DBCA5EDE3562C7CB111383B8F7DDFD2BA040E07CEC18FB0C573AE5B686BADF51D5E7BE111B7C4D20EFB641FAD6153E389AC3E091E85456C647C3BC88CEE38CF4A274F24210C486148446CE118649C1146199771CED3D0D27E431CB95DB5B317FA91548E9A0CCB99B3E67FBDC568DBEA0A2386304E5703A1A71766613D5933DD164705BA8FEA6ABABFBD36EE41303B9031EC715B9A66B175650A456E96CAC0E7CD36C8D275FEF1048FC2BA68ABAB1CF55972D11A47DC7A939359FACEBDAB46EF66BA9DD1B29307C86949418E318E98AD314BDC33C2CFDF67B87C24F123EB5E166B7921733D9BEC790630E1B241FAD77DE6367FD4BFE6BFE35C0A292B1DCF577239EECDBC7BDADAE1C7A46A18FE40D705E18948F153911B125A5F97A11C9F5AC6B6928FA9AD35EEC8F40F35B3FEA24FCD7FC697CC6FF009E2FFA7F8D6F6F332B799F124E0E14F618CD24B864553D8D4F52511B1404023240A7EF696311A6F2AB9217AE33468046EFB50290770F5AD2B39FCCB76F5514236A2ECCA2159F248CE7B9352246EB920D02F6526AE381758DB703DA951E999B4D3B3346DB2D6BBB03EF81FCEB42D8124718AEEC3EC71D76745A6445A54503258E00F53583ADE83AC0D4989D36E7CB276A308C907F1A31924A36270706DB91EA1F0D34BBDF0F68F712C93B24974C09894F08141EBEFC9AEB6E754BE032B75280076635CD0B4A0A48F45AB3D4C6BAD775150717F703E921ACDD3EEE78AE8DC24AE92E58EF0DCE4F5E6B9713A4E1EA6905A33D0349BABA96481249DDB81BB2739F5AE8EB522A249E87C46218E59D44926C523AE2A39D079AE10EE54FE21DE9189565E1873DA912474CED6C669598C988DCC73F9D3A1768F72A9FBC3141517677244B83171B413EA6A78B53962C850841EA0AD5276136DEE4BF6DB79FEFC7E537AA74FCA9C2D56604C4EAC47A7F853DCBE7BAB48B16EEB05A18E4628FE674C73C0FFEBD69583C6F20E49F4C8AECC3B5A23CEAF17A9E83E1AD346E5BD941C2FF00AB04704FAD74FA9307D3FF00E04BFCEB1C6CAF097A1D782872C5799634D6C5881E8C69D72498CE2B2C37F063E87454F899CF5E9241E39C76A6E970BDC5CA468BB9989E3F0C9FD2B9F15F143D4AA7B33D134342D7A09FE1527FA7F5AE92B622AFC47CA13F86AD63687748FB953E62380C477AC796C2386DEF8460E109C64E78C034EC71F3B6CC3741904FF7452288C75603F1AF5B0D0A4A2A5369049CBA082452E4FF002A18859372D7912B733B1BAD86B1CB134E500903B9A918841DC454F0EE5915958820F0476A00E9356BBB28AE229E752D3490A1748D71F36304FB6719AEB3C03169BAC5BCD3BD9812C2E000CD918EC6BB235924A31DCE7546F2BCB63BE60036D51803B0A86F1C9B5DBDB70FE75CF5DFEEA5E876C15A48BBA69FF462A477CD68DCD9ECB61323874E8F818287D08FEB4617F8311547EF98B65650DEEACB6D39658E4CA9653D320E2AAE8ABE5EAF0A44E1CACB8565FE2E3A8AC715F63D474B767A1681190F3B1EC00FF3F956DD6AC99FC47CDF78A0FD40AE2B54D2EEA17BCBA0EBE59CB1E4E707B5367145A52D4E75E42C47CA3800734DDC7FBABF9545CE8B0849EC0034E599C7653F85218BE648549C0C0E29639963955A48F781D4671480961227BA54DA543B7E55A575666C6581721BCC4DE0E3A7B54F37BD62EDEEF30B696926B3A985674DEF80149EB8E001D2BD6FC17A0C5A3D834A166596E31B92418DB8E318ADE9AEA42576742FC4955EECE6023DC7F3A75BF872F466B1F89176C4ED45F726B78246F60645C8CC6E92827B80594FE9FA52C23FDCC4553E23063B76965916DE42973E5968BFDA61DBF2CFE3591A212B7F03A9C1DE2B2C5E8A1EA552DD9EA1A1262C99CF5673F956A55B225B9F394E3E624F4AC2F10F1A3DC9F5403F5156CE2DDA382C53EDC446E62139221DE37E0F3B73CFE9599D436611F987CA24A76CD47490A37B6A4A98303E73F7874FA1A4B90AB75205C6D0DC63D287B0FA96AC46EBD880EBB857753F871F506B53F68893F709F231507AB0C8C9E7A54D3B3AC93EC693BAA0DAEE5CD3FC2B71A75CC732342EF1B8752D07208F7E95D84371A93903726EF60A4FE59AF4E30A0BB9C4AB4FB1A9B5CC4ACF90E47208C73556E41F20FD457257B284BD19D94DDDA65D81B6A45EEC6B43ED063B69E2C02B201D4F420E73FCFF003ACF09FC18953F89989A84AD0446542C197A15EA0D67E8AC7ED56FE9BD7F9D658BDA3EA553EA7B069B1F97A7423D5777E7CD5AAD4C9EE7CE9718F33DAB135E85AE34D9E2420120633EC41FE956CE2BD99E7F244C8C41C6453086C67B562D9D684CFA52E1BDA980A37E368E84E69761672588CE79A96C763474B543A9418EBBEBAAD72FD564B48A049DE748B630570148E5BA60E4FCD59A76ACBD0D9FF01FA94A1D6A4B623134D138F44181F8A907F4AE9B4BF194C668D65BE81D7232C58C6147AFCCB5DD1A87138B3B78F5AB7BC8D4432C530FBDBE13BC0F6C8FE551DCDD4022CBC9B0640C9435E6D6C4D5B38381DB4E11D1A6594691D46C8DDC29C82AA4D4CD3DC91FF1ED27FDF0D5147135630518C6E54A316EED946E59A58DA378D867AFCA6A9D8158EEC2DBB6F92361F2ED3D7AE2A6B57A93B7346DA9508A5B1DF47AF6B91A2A0D164C28007EE9EA5FEDFD6C8FF902499FFAE6F5D71A937BC7F1316A1D19E35337CE6B2F513FB93F4AE93CE384BB50247A8640A63E3D6B096E8EB5B102AFCD56029C7247E5560C047F30ED4D09FBD033DEA3ED0FA1B3A65B88F5085B39F9F3CD742F2DC5BCF71716B3C51CF1383868D58B295407A83F4FC6B172E5AB7F2FD4E98439E8F2F9FE842DE2F9840D1DD69B67348876B6E4C64E707A6292CBC629A76A1F6BB3D16D6162BB4857233EBCE2BAD4EFD0E3F66A2F42F43F1044521946876E256E1A44976923EBB735D91BCFB769115C14D82545936E738CE0F5A26EF4E5E86D06B9923BEF0BE1AC25FF007EB624418ED5AE097FB3C4CAABF7D9C96B385BF9876C0FE55CFE8A71ADC2C47578D8FBD72E3365EA7451DBE47B3D15A191F37CC72CDED597A8BE22357D0E15BA389B8E666FAD44CBB23C1AC5AD4EC5B1028F9EAC01C55213153EFA8F7A69C0B8F6DD51F68B5B1B763FF1FD0FFBD5A3A960B3F183BD30D8E9941FFD6A54FF008DF23493B50F99CEB10E4E4FDE95467F3CFF004A8F35A231006BD774D25BC3764A7FE7D93FF4114DFC12F42A1F123D0BC23266CA71E8C2B7E462578ADF03FEEF133ABF1B38EF113ECB8B86079283F3C62B1EDB106AD0FB6CFD2B931BB2F53A68EC7B2515A191FFD90000000000000000
+>> 7/4/16 15:37:6
+>> 7/4/16 15:37:6
+[thk_suchai_deployment] Waiting for timeout, cu_tick_10ms = 21967, elapsed_mins = 0
+[thk_suchai_deployment] Waiting for timeout, cu_tick_10ms = 27990, elapsed_mins = 1
+[thk_suchai_deployment] Waiting for timeout, cu_tick_10ms = 34012, elapsed_mins = 2
+          ÿ
+--------- SUCHAI BOOT SEQUENCE ---------
+
+Initializing sattelite bus
+    * Microcontroller IO pins
+    * CubesatKit MB
+    * PC104 Bus
+
+Initilizing Microcontroller
+    * Reset status
+    * Setting oscillator
+    * mPWRMGNT_Regulator_ActiveInSleep
+    * Enabling WDT
+
+Initializing libcsp
+[14732] l  :0 Binding socket 0 to port 0
+
+    * Conn table:
+[00 33BA] S:0, 0 -> 0, 0 -> 0, sock: 0
+[01 33D4] S:1, 0 -> 0, 0 -> 0, sock: 11DC
+[02 33EE] S:0, 0 -> 0, 0 -> 0, sock: 0
+[03 3408] S:0, 0 -> 0, 0 -> 0, sock: 0
+[04 3422] S:0, 0 -> 0, 0 -> 0, sock: 0
+
+    * Route table:
+Node  Interface  Address
+   0  LOOP       0
+   *  I2C        255
+
+[suchaiDeployment] dep_init_suchai_hw()..
+
+[dep_init_bus_hw] Initializig external hardware...
+    * External MemSD .. Ok
+    * External MemEEPROM .. ===============================
+MemEEPROM_Vars content: 
+===============================
+  MEM_USE_MEMSD_nMEMEEPROM = 0 
+  mem_EEPROM_isAlive() is alive, memEEPROM is responding 
+    * mem_getVar(0 = mem_MemEEPROM_testVal) = 0x138E = 5006 
+    * mem_getVar(1 = mem_ppc_opMode) = 0x0 = 0 
+    * mem_getVar(2 = mem_ppc_hoursAlive) = 0x0 = 0 
+    * mem_getVar(3 = mem_ppc_resetCounter) = 0x4 = 4 
+    * mem_getVar(4 = mem_dep_ant_deployed) = 0x0 = 0 
+    * mem_getVar(5 = mem_dep_ant_tries) = 0x0 = 0 
+    * mem_getVar(6 = mem_dep_year) = 0x0 = 0 
+    * mem_getVar(7 = mem_dep_month) = 0x0 = 0 
+    * mem_getVar(8 = mem_dep_week_day) = 0x0 = 0 
+    * mem_getVar(9 = mem_dep_day_number) = 0x0 = 0 
+    * mem_getVar(10 = mem_dep_hours) = 0x0 = 0 
+    * mem_getVar(11 = mem_dep_minutes) = 0x0 = 0 
+    * mem_getVar(12 = mem_dep_seconds) = 0x0 = 0 
+    * mem_getVar(13 = mem_fpl_index) = 0x0 = 0 
+    * mem_getVar(14 = mem_pay_langmuirProbe_state) = 0x0 = 0 
+    * mem_getVar(15 = mem_pay_sensTemp_state) = 0x0 = 0 
+    * mem_getVar(16 = mem_pay_gps_state) = 0x0 = 0 
+    * mem_getVar(17 = mem_pay_expFis_state) = 0x0 = 0 
+    * mem_getVar(18 = mem_pay_camera_state) = 0x0 = 0 
+    * mem_getVar(19 = mem_pay_gyro_state) = 0x0 = 0 
+    * mem_getVar(20 = mem_pay_tmEstado_state) = 0x0 = 0 
+    * mem_getVar(21 = mem_pay_battery_state) = 0x0 = 0 
+    * mem_getVar(22 = mem_pay_debug_state) = 0x0 = 0 
+    * mem_getVar(23 = mem_trx_count_tm) = 0x0 = 0 
+    * mem_getVar(24 = mem_trx_count_tc) = 0x0 = 0 
+    * mem_getVar(25 = mem_trx_day_last_tc) = 0x0 = 0 
+    * mem_getVar(26 = mem_trx_beacon_period) = 0x3C = 60 
+    * mem_getVar(27 = mem_trx_beacon_bat_lvl) = 0x2EE0 = 12000 
+    * mem_getVar(28 = mem_trx_rx_baud) = 0xC = 12 
+    * mem_getVar(29 = mem_trx_tx_baud) = 0xC = 12 
+===============================
+Ok
+    * External RTC .. Ok
+    * External TRX ..       * trx_initialize, first time on => TRX_CONFIG.morse_pospone = 300 
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Ok
+    * External EPS .. Ok
+    * External Antenna .. Fail (NOT Deployed)
+Antenna Deployment is carried out (if pending) by Task Housekeeping
+
+[suchaiDeployment] dep_init_suchai_repos()..
+
+[dep_init_stateRepo] Initializing state repository..
+    * sta_onReset_BusStateRepo()..
+    [sta_onResetStatRepo] Important STA_StateVar variables:
+        * ppc_get_resetCounter: 5
+            * NOT the First time on, resetCounter = 5
+        * ppc_get_lastResetSource: EXTERNAL_Reset
+        * ppc_get_hoursAlive: 0
+        * ppc_get_hoursWithoutReset: 0
+        * ppc_get_wdt_state: 1
+        * ppc_get_osc: Oscillator is PRIMARY_OSC_WITH_PLL
+        * thk_get_AntSwitch_isOpen: 0
+            * Antenna Deployment rely on this var AND others
+        * thk_get_dep_ant_deployed: 0
+            * Antenna Deployment is pending
+    * sta_onReset_PayStateRepo()..
+
+[dep_init_cmdRepo] Initializing command repository..
+    * Attaching cmdPPC..
+        ppc_onResetCmdPPC
+    * Attaching cmdCON..
+        con_onResetCmdCON
+    * Attaching cmdTRX..
+        trx_onResetCmdTRX
+    * Attaching cmdEPS..
+        eps_onResetCmdEPS
+    * Attaching cmdSRP..
+        srp_onResetCmdSRP
+    * Attaching cmdDRP..
+        drp_onResetCmdDRP
+    * Attaching cmdPAY..
+        pay_onResetCmdPAY
+    * Attaching cmdRTC..
+        rtc_onResetCmdRTC
+    * Attaching cmdTCM..
+        tcm_onResetCmdTCM
+    * Attaching cmdTHK..
+        thk_onResetCmdTHK
+
+[dep_init_Repos] Initializing data repositories..
+    * onReset data Repository..
+        DAT_TeleCmd_Buff starting block <=> 1024
+        DAT_FlightPlan starting block <=> 1280
+        DAT_nextIndx starting block <=> 1536
+        DAT_maxIndx starting block <=> 1792
+        DAT_Payload_Buff[0] starting block <=> 2048 | number of Payloads = 9
+        DAT_AuxBuff[0] starting block <=> 4352 | number of Auxs = 13
+        * onReset Fligh Plan..
+        * onReset Payloads..
+
+[dep_init_GnrlStruct] Initializing other structures...
+
+[main] Starting base tasks...
+
+[dep_launch_tasks] Starting all tasks...
+    * Creating taskConsole
+    * Creating taskHousekeeping
+    * Creating taskCommunications
+    * Creating taskFlightPlan3
+
+Starting FreeRTOS [->]
+[Dispatcher] Started
+>>[Console] Started>
+>>[Comunications] Started
+>[Housekeeping] Started
+[Dispatcher] Orig: 0x1102 | Cmd: 0xA003 | Param: 31
+[thk_suchai_deployment] Starting antenna deployment ..
+    AntSwitch can be trusted 
+Requesting EPS HK data
+>>[FlightPlan3] Started
+______________________________________________________________________________
+                     ___ _   _  ___ _  _   _   ___ 
+                    / __| | | |/ __| || | /_\ |_ _|
+                    \__ \ |_| | (__| __ |/ _ \ | | 
+                    |___/\___/ \___|_||_/_/ \_\___|
+______________________________________________________________________________
+
+ADC sample:
+Temp 1 25
+Temp 2 26
+Temp 3 25
+Temp PCB 25
+BV 8221
+PC 0
+SC 119
+PV1 2506
+PV2 3252
+PV3 3071
+Latch up 1 0
+Latch up 2 0
+Latch up 3 0
+Latch up 4 0
+Latch up 5 0
+Latch up 6 0
+User Channel Status FC
+1111 1100
+Battery temperature 1 0
+Battery temperature 2 0
+Reset 7   BootCount 327   SW Err 0   PPT mode 2
+        * eps_print_hk: 1
+
+[thk_deploy_antenna] Starting TRX silence .. 
+trx_set_beacon_level ..
+[6554] (null):-23131 FREE: Buffer already free A5A5
+Current TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+Uploading TRX configuration
+FEC: rs 1, random 1, viterbi 0
+RADIO: rx 12, tx 12, preamble 150, max temp: 60
+MORSE: enable: 1, mode: 0,  delay 60, pospone 300, wpm 20, batt level 12000, text 00SUCHAI00
+MORSE: cycle: 1, volt:1 rxc:0 txc:0 tempa:0 tempb:0 rssi:0 rferr:1
+HK: interval 5
+[thk_suchai_deployment] delay_min = 31
+[thk_suchai_deployment] initial_tick_10ms = 424 | final_tick_10ms = 186424 
+>> 7/4/16 15:39:28
+pay_takePhoto_camera ..
+pay_init_camera ..
+  PPC_CAM_SWITCH = 0
+  PPC_CAM_SWITCH = 1
+  PPC_CAM_HOLD_CHECK = 1
+[cam_wait_hold_wtimeout] initial state PPC_CAM_HOLD_CHECK = 1 
+[cam_wait_hold_wtimeout] final state PPC_CAM_HOLD_CHECK = 0 
+[cam_wait_hold_wtimeout] max_msec_hold_wait = 700 
+  PPC_CAM_HOLD_CHECK = 0
+  sta_pay_camera_isAlive = 1 
+          ÿ
+--------- SUCHAI BOOT SEQUENCE ---------
+
+Initializing sattelite bus
+    * Microcontroller IO pins
+    * CubesatKit MB
+    * PC104 Bus
+
+Initilizing Microcontroller
+    * Reset status
+    * Setting oscillator
+    * mPWRMGNT_Regulator_ActiveInSleep
+    * Enabling WDT
+
+Initializing libcsp
+[14732] l  :0 Binding socket 0 to port 0
+
+    * Conn table:
+[00 33BA] S:0, 0 -> 0, 0 -> 0, sock: 0
+[01 33D4] S:1, 0 -> 0, 0 -> 0, sock: 11DC
+[02 33EE] S:0, 0 -> 0, 0 -> 0, sock: 0
+[03 3408] S:0, 0 -> 0, 0 -> 0, sock: 0
+[04 3422] S:0, 0 -> 0, 0 -> 0, sock: 0
+
+    * Route table:
+Node  Interface  Address
+ ÿ

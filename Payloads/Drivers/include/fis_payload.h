@@ -18,20 +18,13 @@
 #define FIS_STATE_WORKING   (3)
 #define FIS_STATE_DONE (4)
 
-//cantidad de puntos de de cada se?al generada (largo)
-#define FIS_SIGNAL_POINTS (1000) //(10000)
-//numero de muestras por punto generado de la se?al (minimo 2 para cumplir con Nyquist)
+#define FIS_SIGNAL_POINTS (16000)
 #define FIS_SAMPLES_PER_POINT (4)
-//cantidad de muestras que tiene una se?al/waveform
 #define FIS_SIGNAL_SAMPLES ((FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT))
-//number of seed for the srand() function calls
-#define FIS_SRAND_SEEDS     (4)//(FIS_ROUNDS)
-//maximun size for the buffer
-#define FIS_MAX_SENS_BUFF_LEN (1000)
+#define FIS_SENS_BUFF_LEN (400)
+#define FIS_POINTS_INB4 (2)
+#define FIS_SRAND_SEEDS     (10)
 
-#define FIS_NUM_ROUNDS  (1)
-
-#define FIS_SENS_BUFF_LEN (200)
 unsigned int fis_get_total_number_of_samples(void);
 unsigned int fis_get_sens_buff_size(void);
 BOOL fis_sens_buff_isFull(void);
@@ -39,7 +32,6 @@ int fis_wait_busy_wtimeout(unsigned int timeout);
 void fis_print_sens_buff(void);
 void fis_sens_buff_init(void);
 unsigned int fis_get_sens_buff_i(int ind);
-//void fis_testDAC(void);
 void fis_testDAC(unsigned int value);
 void fis_Timer45_begin(void);
 unsigned int fis_get_sens_buff_size(void);

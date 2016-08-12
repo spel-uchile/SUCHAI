@@ -40,11 +40,13 @@ static int fis_signal_period_len; //number of elements in "fis_ADC_period"
 static int fis_rounds;   //number of repetitions of the payload for each "ADC_period" value
 static unsigned int fis_current_round;   //index of the current waveform being executed
 static unsigned int fis_point;  //counter for the total waveform points
+static unsigned int fis_aux_points;  //counter for the total waveform points
 static unsigned int fis_sample;  //total number of samples to be done
 static unsigned int seed[FIS_SRAND_SEEDS];  //seeds array with the arguments for srand() calls
 static unsigned int sens_buff[FIS_SENS_BUFF_LEN];   //temporary buffer where the measures are stored
 static int sens_buff_ind;   //index used with sens_buff
 static BOOL sync;
+static BOOL beginValidPoints;
 
 unsigned int fis_get_total_number_of_samples(void){
     return FIS_SIGNAL_POINTS*fis_rounds*FIS_SAMPLES_PER_POINT;
@@ -180,6 +182,7 @@ static void fis_config_reset(void){
     fis_point = 0;
     fis_sample = 0;
     sync = FALSE;
+    beginValidPoints = FALSE;
     fis_state = FIS_STATE_OFF;  //ready for init the execution
     fis_sens_buff_init();  //reset the buffer and clears it
     fis_seed_init();  //reset the seeds used for rand()
@@ -370,13 +373,20 @@ void fis_testDAC(unsigned int value){
     #endif
 }
 void fis_payload_print_seed(void){
-    unsigned int temp;
     printf("    fis_payload_print_seed ...\n");
     fis_seed_init();
     printf("    srand is set, printing random values ...\n");
-    
-    for(temp = 0; temp < FIS_SIGNAL_POINTS; temp++){
-        printf("    rand() = %d \n",rand());
+    unsigned int value = 0;
+    unsigned int i,j,k;
+    unsigned int totalRounds = FIS_SIGNAL_SAMPLES / FIS_SENS_BUFF_LEN;
+    unsigned int dacPoints = FIS_SENS_BUFF_LEN / FIS_SAMPLES_PER_POINT;
+    for(i = 0; i < totalRounds; i++) {
+            for (j = 0; j < FIS_POINTS_INB4; j++) {
+                value = rand();
+            }
+            for(k = 0; k < dacPoints; k++) {
+                printf("    rand() = %u \n",rand());
+            }
     }
 }
 
@@ -391,7 +401,6 @@ void fis_payload_writeDAC(unsigned int arg){
     firstByte = 0x00;
     secondByte = (unsigned char)(myarg>>8);
     thirdByte = (unsigned char) myarg;
-    
     #if _FISICA_VERBOSE_DAC_SPI > 0
         printf("fis_payload_writeDAC\n");
         printf("    arg: %X \n", myarg);
@@ -439,6 +448,9 @@ void fis_iterate_pause(void){
     IEC1bits.T4IE = 0;
     IEC1bits.T5IE = 0;
     
+    unsigned int meanValue = 32766;
+    fis_payload_writeDAC(meanValue);
+    
     #if _FISICA_VERBOSE_ITERATE > 0
         printf("fis_pause_expFis\n");
     //se han sacados todas las muestras, para todas las rondas, para cada una de las frecuencias
@@ -458,7 +470,9 @@ void fis_iterate_pause(void){
  */
 void fis_iterate_resume(void){
     sync = FALSE;
+    beginValidPoints = FALSE;
     sens_buff_ind = 0;
+    fis_aux_points = 0;
     T4CONbits.TON = 1;
     T5CONbits.TON = 1;
     IEC1bits.T4IE = 1;
@@ -673,9 +687,8 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
             printf("PR5 : %u\n",PR5);
         #endif
     #endif
-
-    if(fis_point == FIS_SIGNAL_POINTS || sens_buff_ind == (FIS_SENS_BUFF_LEN)){ //last point of a waveform
-
+    BOOL   condition = (fis_point == FIS_SIGNAL_POINTS || sens_buff_ind == (FIS_SENS_BUFF_LEN)) && sync;
+    if(condition){ //last point of a waveform
         fis_point = 0;
         //printf("fis_current_round = %u\n", fis_current_round);
         //if(fis_current_round < FIS_ROUNDS){    //there are some waveforms left
@@ -698,10 +711,18 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
             printf("rand(): %X\n",arg);
         #endif
         fis_payload_writeDAC(arg);
-
-        fis_point++;    //update the global counter 
-
-        sync = TRUE;
+        
+        if(beginValidPoints == FALSE) {
+            fis_aux_points++;
+            if(fis_aux_points == FIS_POINTS_INB4) {
+                beginValidPoints = TRUE;
+                fis_aux_points = 0;
+            }
+        }
+        else {
+            sync = TRUE;
+            fis_point++;
+        }
     }
     IFS1bits.T4IF = 0;
 }
@@ -746,382 +767,11 @@ void __attribute__((__interrupt__, auto_psv)) _T5Interrupt(void){
             //sens_buff_ind = 0;
             if(fis_sample == FIS_SIGNAL_SAMPLES){
                 fis_current_round++;
-                srand(seed[fis_current_round]);
+                // esta linea esta reseteando el rand asi que se borra
+                //srand(seed[fis_current_round]);
             }
             fis_iterate_pause(); //there are some work to do, we make a pause only
         }
     }
     IFS1bits.T5IF = 0;
 }
-
-////ISR del T4
-////void _ISR _T4Interrupt(void){
-//void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
-//    printf("ISR T4\n");
-//    //unsigned char c= rand();    //generate a random value for test only
-//    //unsigned int arg=c;-
-//    //arg=(arg<<8);
-//    unsigned int arg = 0xFFFF;
-//    printf("Voy a mandar %d por el DAC \n", arg);
-//    fis_payload_writeDAC(arg);
-//
-//    //ClrWdt();
-//    T4_Clear_Intr_Status_Bit;   //clear sthe interruption flag bit
-//}
-////ISR del T5
-////void _ISR _T5Interrupt(void){
-//void __attribute__((__interrupt__, auto_psv)) _T5Interrupt(void){
-//    printf("ISR Timer5\n");
-//    unsigned long i;
-//    unsigned int sens1 = 0;//, sens2;
-//    //unsigned int aux1 = 0;
-//    
-//    //convert ADC_SCAN_AN11
-//    ConvertADC10();   //Starts conversion by clearing sample bit (SAMP)
-//    for(i=0;i<0x0000FFFF;i++){}//busy waiting ? 
-//    
-//    //aux1 = ADC1BUF0;
-//    //printf("ConvertADC10() : %d\n",aux1);
-//    
-//    //convert ADC_SCAN_AN13
-//    //ConvertADC10();   //Starts conversion by clearing sample bit (SAMP)
-//    //for(i=0;i<0x0000000F;i++){} //busy waiting ?
-//    
-//    //aux1 = ADC1BUF0;
-//    //printf("ConvertADC10() : %d\n",aux1);
-//    
-//    //sens2=ReadADC10(0);
-//    //printf("ReadADC10() : %d\n", sens2);
-//    sens1=ReadADC10(0); //reads ADC1BUF0 (the A-D conversion value)
-//    printf("ReadADC10() : %d\n", sens1);
-//
-//    #if (_FISICA_VERBOSE_TIMER_ISR>=2)
-//        printf("sens1 = %d\n", sens1);
-//        //printf("sens2 = %d\n", sens2);
-//    #endif
-//
-//    sens_buff[sens_buff_ind]=sens1; //stores the value measured
-//    sens_buff_ind++;    //updates the index of the intermediate buffer
-//    //sens_buff[sens_buff_ind]=sens2;
-//    //sens_buff_ind++;
-//
-//    #if (_FISICA_VERBOSE_TIMER_ISR>=2)
-//        printf("sens_buff_ind=%d\n", sens_buff_ind);
-//    #endif
-//
-//    if(sens_buff_ind>=(FIS_SENS_BUFF_LEN)){
-//        #if (_FISICA_VERBOSE_TIMER_ISR>=2)
-//            con_printf("ISR T5: sens_buff_ind == FIS_SENS_BUFF_LENGTH\r\n");
-//        #endif
-//        fis_stop_expFis();
-//        //fis_save_sens_buff();
-//    }
-//    
-//    T5_Clear_Intr_Status_Bit;   //clears the interruption flag bit
-//}
-//ISR del ADC
-/*
-void _ISR _ADC1Interrupt(void){
-
-    con_printf("ISR ADC1\r\n");
-
-    int ind, sens; char ret[6];
-    for(ind=0;ind<=1;ind++){
-        sens=ReadADC10(ind);
-
-        Hex16ToAscii(  (unsigned int)ind, ret);
-        con_printf("sens["); con_printf(ret); con_printf("]=");
-        Hex16ToAscii(  (unsigned int)sens, ret); con_printf(ret); con_printf("\r\n");
-    }
-
-    sem_expFis++;
-    if(sem_expFis==0x00FF){
-        
-    }
-    //unsigned long i,j;
-    //for(i=0;i<0x006FFFFF;i++){j=i*1;}
-    //i=j+2;
-    
-    con_printf("fin ISR ADC1\r\n");
-    
-    IFS0bits.AD1IF = 0;
-}
-*/
-
-
-//void hist(void){
-//
-//    DAT_GnrlPurpBuff gpb_frec_i;
-//    unsigned int i,j; unsigned int max;
-//    long v1, v2, mul, ran, prev; unsigned long v1u, v2u;
-//
-//    //realiza multiplicacion para cada frecuencia
-//    max=(2*FIS_SENS_BUFF_LEN);//(FIS_REPEAT_PER_ROUND*FIS_SAMP_PER_ROUND);
-//    for(gpb_frec_i=dat_gpb_expFis_f0; gpb_frec_i<=dat_gpb_expFis_f9; gpb_frec_i++){
-//        for(i=0;i<max;i=i+2){
-//            v1 = (long)dat_getGPB(gpb_frec_i, i);
-//            v2 = (long)dat_getGPB(gpb_frec_i, i+1);
-//            mul=v1*v2;
-//            dat_setGPB(gpb_frec_i, i, (unsigned int)mul);
-//            dat_setGPB(gpb_frec_i, i+1, (unsigned int)(mul>>16) );
-//        }
-//    }
-//
-//    //inicializa buffer del hist
-//    for(i=0;i<(512*2*2);i++){
-//        dat_setGPB(dat_gpb_expFis_hist, i, 0xFFFF);
-//    }
-//
-//    //realiza histograma para cada frecuencia
-//    max=(2*FIS_SENS_BUFF_LEN);//(FIS_REPEAT_PER_ROUND*FIS_SAMP_PER_ROUND);
-//    for(gpb_frec_i=dat_gpb_expFis_f0; gpb_frec_i<=dat_gpb_expFis_f9; gpb_frec_i++){
-//
-//        for(i=0;i<max;i=i+2){
-//            v1u = (unsigned long)dat_getGPB(gpb_frec_i, i);
-//            v2u = (unsigned long)dat_getGPB(gpb_frec_i, i+1);
-//            mul = (long)( (v2u<<16)|v1u );
-//
-//            //esto da aca ya no sirve :/
-//            for(j=0;TRUE;j++){
-//
-//                if(mul < 0 ){
-//                    ran=mul/2;
-//                    if( ran==0 || ran==(-1) ){
-//                        //rango j-esimo negativo
-//                        dat_setGPB(dat_gpb_expFis_hist, j, j);
-//                        //tiene una frecuencia de
-//                        prev = dat_getGPB(dat_gpb_expFis_hist, (10000)+j);
-//                        prev++;
-//                        dat_setGPB(dat_gpb_expFis_hist, (10000)+j, prev);
-//                        break;
-//                    }
-//                }
-//                else{
-//                    ran=mul/2;
-//                    if( ran==0 || ran==1 ){
-//                        //rango j-esimo positivo
-//                        dat_setGPB(dat_gpb_expFis_hist, (10000*2)+j, j);
-//                        //tiene una frecuencia de
-//                        prev = dat_getGPB(dat_gpb_expFis_hist, (10000*3)+j);
-//                        prev++;
-//                        dat_setGPB(dat_gpb_expFis_hist, (10000*3)+j, prev);
-//                        break;
-//                    }
-//                }
-//
-//            }
-//        }
-//    }
-//
-//    /*
-//    int b_dat[50.000];
-//    int b_cntn[512];
-//    int b_cntp[512];
-//    int i,j, ran;
-//    for(i=0;i<50.000;i++){
-//
-//        for(j=0;TRUE;j++){
-//
-//            if(b_dat[i] < 0 ){
-//                ran=b_dat[i]/2;
-//                if( ran==0 || ran==(-1) ){
-//                    b_cntn[j]=b_cntn[j]+1;
-//                    break;
-//                }
-//            }
-//            else{
-//                ran=b_dat[i]/2;
-//                if( ran==0 || ran==1 ){
-//                    b_cntp[j]=b_cntp[j]+1;
-//                    break;
-//                }
-//            }
-//        }
-//    }
-//    */
-//}
-
-//void fis_Timer4_config(unsigned int period){
-//    #if _FISICA_VERBOSE_TIMER_CFG > 0
-//        printf("fis_Timer4_config: Timer4 initializing...\n");
-//    #endif
-//    //Timer 4 as 16-bit synchronous
-//    //PR4 is the period register for Timer4
-//    //                      7654321076543210
-//    //unsigned int config = 0b1000000000110000; //T4_ON & T4_GATE_ON & T4_IDLE_CON & T4_PS_1_1 & T4_SOURCE_INT;
-//    //unsigned int config = T4_OFF & T4_IDLE_CON & T4_GATE_OFF & T4_PS_1_256 & T4_SOURCE_INT & T4_32BIT_MODE_OFF;
-//    //                      7654321076543210
-//    //config = T4_ON & T4_GATE_OFF & T4_IDLE_CON & T4_PS_1_8 & T4_SOURCE_INT & T4_32BIT_MODE_OFF;
-//    //unsigned int period2 = 0b0000000001001011;
-//    //WriteTimer4(0x0000);    //clears the  TMR4 count register
-//    //ClrWdt();
-//    //ConfigIntTimer4(T4_INT_ON & T4_INT_PRIOR_1);
-//    //OpenTimer4(config, period);  //loads T4CON and PR4
-//    T4CON = 0b0000000000000000;
-//    TMR4 = 0b00000z00000000000;
-//    PR4 = period;
-//    IFS1bits.T4IF = 0b0;
-//    IEC1bits.T4IE = 0b1;
-//    IPC6bits.T4IP = 6;
-//    
-//    #if _FISICA_VERBOSE_TIMER_CFG > 0
-//        unsigned int tmp = 0;
-//        tmp = IEC1bits.T4IE;    //enable
-//        //tmp = IEC1 & (1<<11);   
-//        printf("IEC1bits.T4IE: %d\n",tmp);
-//        tmp = IFS1bits.T4IF;    //flag
-//        //tmp = IFS1 & (1<<11);
-//        printf("IFS1bits.T4IF: %d\n",tmp);
-//        tmp = IPC6bits.T4IP;    //priority
-//        //tmp = IPC6 & ((1<<12) | (1<<13) | (1<<14));
-//        printf("IPC6bits.T4IP: %d\n",tmp);
-//        tmp = T4CON;    //register control
-//        printf("T4CON : %X\n",tmp);
-//        tmp = TMR4; //count
-//        printf("TMR4 : %u\n",tmp);
-//        tmp = PR4;  //period
-//        printf("PR4 : %u\n",tmp);
-//        printf("fis_Timer4_config: done\n");
-//    #endif
-//}
-//void fis_Timer5_config(unsigned int period){
-//    #if _FISICA_VERBOSE_TIMER_CFG > 0
-//        printf("fis_Timer5_config: Timer5 initializing...\n");
-//    #endif
-//    //Timer5 is the only timer that offers ADC Trigger Event
-//    //PR5 is the period register for Timer5
-//    //                        7654321076543210
-//    //unsigned int config = T5_OFF & T5_IDLE_CON & T5_GATE_OFF & T5_PS_1_256 & T5_SOURCE_INT;
-//    //WriteTimer5(0x0000);    //clears the TMR5 count register
-//    //ClrWdt();
-//    //ConfigIntTimer5(T5_INT_ON & T5_INT_PRIOR_1);    //Clears the T5IF flag, enables the 
-//    //OpenTimer5(config, period);   //loads T5CON and PR5
-//    T5CON = 0b0000000000000000;
-//    TMR5 = 0b0000000000000000;
-//    PR5 = period;
-//    IFS1bits.T5IF = 0b0;
-//    IEC1bits.T5IE = 0b1;
-//    IPC7bits.T5IP = 7;
-//    #if _FISICA_VERBOSE_TIMER_CFG > 0
-//        unsigned int tmp = 0;
-//        tmp = IEC1bits.T5IE;    //enable
-//        //tmp = IEC1 & (1<<12);
-//        //AQUI SE QUEDA PEGADO Y SE RESETEA!!
-//        
-//        printf("IEC1bits.T5IE: %d\n",tmp);
-//        tmp = IFS1bits.T5IF;    //flag
-//        //tmp = IFS1 & (1<<12);
-//        printf("IFS1bits.T5IF: %d\n",tmp);
-//        tmp = IPC7bits.T5IP;    //priority
-//        //tmp = IPC7 & ((1<<0) | (1<<1) | (1<<2));
-//        printf("IPC7bits.T5IP: %d\n",tmp);
-//        tmp = T5CON;    //register control
-//        printf("T5CON : %X\n",tmp);
-//        tmp = TMR5; //count
-//        printf("TMR5 : %u\n",tmp);
-//        tmp = PR5;  //period
-//        printf("PR5 : %u\n",tmp);
-//        printf("fis_Timer5_config: done\n");
-//    #endif
-//}
-//unsigned int fis_frec_i_to_ADC_period(DAT_GnrlPurpBuff pay_frec_i){
-//    unsigned int ADC_period;
-//    switch(pay_frec_i){
-//        case dat_gpb_expFis_f0:
-//            //              7654321076543210
-//            ADC_period = (0b0000000010110100);
-//            ADC_period = 20;
-//        break;
-//        case dat_gpb_expFis_f1:
-//            //              7654321076543210
-//            ADC_period = (0b0000000010110100);
-//            ADC_period = 21;
-//        break;
-//        case dat_gpb_expFis_f2:
-//            //              7654321076543210
-//            ADC_period = (0b0000000010110100);
-//            ADC_period = 22;
-//        break;
-//        case dat_gpb_expFis_f3:
-//            //              7654321076543210
-//            ADC_period = (0b0000000010110100);
-//            ADC_period = 23;
-//        break;
-//        case dat_gpb_expFis_f4:
-//            //              7654321076543210
-//            ADC_period = (0b0000000010110100);
-//            ADC_period = 24;
-//        break;
-//        case dat_gpb_expFis_f5:
-//            //              7654321076543210
-//            ADC_period = (0b0000000010110100);
-//            ADC_period = 25;
-//        break;
-//        case dat_gpb_expFis_f6:
-//            //              7654321076543210
-//            ADC_period = (0b0000000010110100);
-//            ADC_period = 26;
-//        break;
-//        case dat_gpb_expFis_f7:
-//            //              7654321076543210
-//            ADC_period = (0b0000000010110100);
-//            ADC_period = 27;
-//        break;
-//        case dat_gpb_expFis_f8:
-//            //              7654321076543210
-//            ADC_period = (0b0000000010110100);
-//            ADC_period = 28;
-//        break;
-//        case dat_gpb_expFis_f9:
-//            //              7654321076543210
-//            ADC_period = (0b0000000010110100);
-//            ADC_period = 29;
-//        break;
-//        default:
-//            ADC_period=0;
-//        break;
-//    }
-//
-//    return ADC_period;
-//}
-
-//void fis_save_sens_buff_to_GPB(DAT_GnrlPurpBuff frec_i, int rst_gbp_indx){
-//    unsigned int ind; unsigned long prom=0;
-//
-//    //esperar mientras se termina de llenar el sens_buff (buffer intermedio)
-//    while( sens_buff_ind<(FIS_SENS_BUFF_LEN) ){
-//        __delay_ms(1000);
-//    }
-//
-//    //calculo promedio sens1
-//    for(ind=0;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
-//        prom=prom+sens_buff[ind];
-//    }
-//    prom=prom/FIS_SENS_BUFF_LEN;
-//    //resto el promedio sens1
-//    for(ind=0;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
-//        sens_buff[ind]=sens_buff[ind]-prom;
-//    }
-//
-//    //calculo promedio sens2
-//    for(ind=1;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
-//        prom=prom+sens_buff[ind];
-//    }
-//    prom=prom/FIS_SENS_BUFF_LEN;
-//    //resto el promedio sens2
-//    for(ind=1;ind<FIS_SENS_BUFF_LEN;ind=ind+2){
-//        sens_buff[ind]=sens_buff[ind]-prom;
-//    }
-//
-//    //guardo en memSD
-//    static unsigned int gpb_indx;
-//    if( rst_gbp_indx==1 ){
-//        gpb_indx=0;
-//    }
-//    for(ind=0;ind<FIS_SENS_BUFF_LEN;ind++){
-//        //Set DAT_GnrlPurpBuff
-//        dat_set_GPB(frec_i, gpb_indx, sens_buff[ind] );
-//        gpb_indx++;
-//    }
-//}
-//******************************************************************************

@@ -47,6 +47,7 @@ static unsigned int sens_buff[FIS_SENS_BUFF_LEN];   //temporary buffer where the
 static int sens_buff_ind;   //index used with sens_buff
 static BOOL sync;
 static BOOL beginValidPoints;
+static unsigned int meanValue = RAND_MAX;
 
 unsigned int fis_get_total_number_of_samples(void){
     return FIS_SIGNAL_POINTS*fis_rounds*FIS_SAMPLES_PER_POINT;
@@ -382,10 +383,12 @@ void fis_payload_print_seed(void){
     unsigned int dacPoints = FIS_SENS_BUFF_LEN / FIS_SAMPLES_PER_POINT;
     for(i = 0; i < totalRounds; i++) {
             for (j = 0; j < FIS_POINTS_INB4; j++) {
-                value = rand();
+//                value = rand();
+                value = fisRand();
             }
             for(k = 0; k < dacPoints; k++) {
-                printf("    rand() = %u \n",rand());
+//                printf("    rand() = %u \n",rand());
+                printf("    rand() = %u \n",fisRand());
             }
     }
 }
@@ -447,8 +450,7 @@ void fis_iterate_pause(void){
     T5CONbits.TON = 0;
     IEC1bits.T4IE = 0;
     IEC1bits.T5IE = 0;
-    
-    unsigned int meanValue = 32766;
+
     fis_payload_writeDAC(meanValue);
     
     #if _FISICA_VERBOSE_ITERATE > 0
@@ -706,7 +708,8 @@ void __attribute__((__interrupt__, auto_psv)) _T4Interrupt(void){
         //}
     }                
     else{//T4_Clear_Intr_Status_Bit;
-        unsigned int arg = rand();
+//        unsigned int arg = rand();
+        unsigned int arg = fisRand();
         #if _FISICA_VERBOSE_TIMER4_ISR > 0
             printf("rand(): %X\n",arg);
         #endif

@@ -24,7 +24,7 @@
 #define FIS_SENS_BUFF_LEN (400)
 #define FIS_POINTS_INB4 (2)
 #define FIS_SRAND_SEEDS     (10)
-#define fisRand()   ((rand())<<(2))
+#define fisRand()   ((rand())<<(1))
 
 unsigned int fis_get_total_number_of_samples(void);
 unsigned int fis_get_sens_buff_size(void);

@@ -315,8 +315,8 @@ int pay_testDAC_expFis(void *param){
 
 int pay_print_seed(void* param) {
     printf("pay_print_seed ...\r\n");
-
-    fis_payload_print_seed();
+    unsigned int value = *((unsigned int *) param);
+    fis_payload_print_seed(value);
     
     printf("pay_print_seed ... finished \r\n");
     return 1;

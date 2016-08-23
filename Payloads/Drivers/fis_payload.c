@@ -373,7 +373,7 @@ void fis_testDAC(unsigned int value){
         printf("    Ok\n");
     #endif
 }
-void fis_payload_print_seed(void){
+void fis_payload_print_seed(unsigned int seed){
     printf("    fis_payload_print_seed ...\n");
     fis_seed_init();
     printf("    srand is set, printing random values ...\n");
@@ -381,15 +381,23 @@ void fis_payload_print_seed(void){
     unsigned int i,j,k;
     unsigned int totalRounds = FIS_SIGNAL_SAMPLES / FIS_SENS_BUFF_LEN;
     unsigned int dacPoints = FIS_SENS_BUFF_LEN / FIS_SAMPLES_PER_POINT;
-    for(i = 0; i < totalRounds; i++) {
-            for (j = 0; j < FIS_POINTS_INB4; j++) {
-//                value = rand();
-                value = fisRand();
+    if(seed > 0){    
+        for (i = 0; i < 2000; i++) {
+            for (j = 0; j < 1000; j++) {
+             printf("    rand() = %u \n",fisRand());
+                     ClrWdt();
             }
-            for(k = 0; k < dacPoints; k++) {
-//                printf("    rand() = %u \n",rand());
-                printf("    rand() = %u \n",fisRand());
-            }
+        }
+    }
+    else {
+        for(i = 0; i < totalRounds; i++) {
+                for (j = 0; j < FIS_POINTS_INB4; j++) {
+                    value = fisRand();
+                }
+                for(k = 0; k < dacPoints; k++) {
+                    printf("    rand() = %u \n",fisRand());
+                }
+        }
     }
 }
 

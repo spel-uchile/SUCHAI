@@ -23,7 +23,6 @@
 #define FIS_SIGNAL_SAMPLES ((FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT))
 #define FIS_SENS_BUFF_LEN (400)
 #define FIS_POINTS_INB4 (2)
-#define FIS_SRAND_SEEDS     (10)
 #define fisRand()   ((rand())<<(1))
 
 unsigned int fis_get_total_number_of_samples(void);
@@ -53,7 +52,7 @@ BOOL fis_iterate_isComplete();
  * @param _rounds_per_ADC_period How many rounds there will be for every ADC_period
  * @return the lenght of the internal buffer (FIS_SENS_BUFF_LEN)
  */
-unsigned int fis_iterate_config(unsigned int inputSignalPeriod, int rounds);
+unsigned int fis_iterate_config(unsigned int inputSignalPeriod, unsigned int seedValue, int rounds);
 //unsigned int fis_iterate_config(unsigned int inputSignalPeriod[], int len, int rounds);
 
 /**

@@ -183,15 +183,19 @@ int pay_test_dataRepo(void *param){
 int pay_conf_expFis(void *param){
 
     unsigned int adcPeriod = *((unsigned int *) param);
+// agregar una mascara de bits para extraer el seed con
+// la que se configura l el payload.
 
+    unsigned int seed = 4;
     int rounds = 1;    //number of iterations done for each ADC_period value
         //debug Info
     #if FIS_CMD_VERBOSE > 0
         printf("    rounds = %u\n", rounds);
         printf("    adc period = %u\n", adcPeriod);
+//º        printf("    seed = %u\n", seed);
     #endif
     //configure Payload
-    if (!(fis_iterate_config(adcPeriod, rounds) == FIS_STATE_READY)) {
+    if (!(fis_iterate_config(adcPeriod, seed, rounds) == FIS_STATE_READY)) {
         return 0;
     }
     printf("    expFis is READY!\n");
@@ -234,7 +238,7 @@ int pay_exec_expFis(void *param){
             dat_set_Payload_Buff(dat_pay_expFis, temp);
 
             #if FIS_CMD_VERBOSE > 0
-                printf("    dat_set_Payload_Buff(%u)\n",temp);
+               printf("    dat_set_Payload_Buff(%u)\n",temp);
             #endif
 
         }
@@ -260,18 +264,21 @@ int pay_exec_expFis(void *param){
 
 int pay_adhoc_expFis(void *param){
     
-    unsigned int frec_array[] = {10, 50, 100, 500, 1000, 2000, 4000, 8000, 10000, 16000};
-    int len_frec_array = 10;
-    
-    int res, i;
-    unsigned int frec;
-    for(i=0;i<len_frec_array;i++){
-        frec = frec_array[i];
-        res = pay_conf_expFis(&frec);
-        res = pay_exec_expFis(0);
-    }
+//    unsigned int frec_array[] = {10, 50, 100, 500, 1000, 2000, 4000, 8000, 10000, 16000};
+//    int len_frec_array = 10;
+//    
+//    int res, i;
+//    unsigned int frec;
+//    for(i=0;i<len_frec_array;i++){
+//        frec = frec_array[i];
+//        res = pay_conf_expFis(&frec);
+//        res = pay_exec_expFis(0);
+//    }
+//
+//    return res;
+    printf("no usar este comando, no hace nada :D\n");
+    return 1;
 
-    return res;
 }
 
 int pay_isAlive_expFis(void *param){
@@ -315,8 +322,17 @@ int pay_testDAC_expFis(void *param){
 
 int pay_print_seed(void* param) {
     printf("pay_print_seed ...\r\n");
-    unsigned int value = *((unsigned int *) param);
-    fis_payload_print_seed(value);
+
+//    unsigned int seedIndex = *((unsigned int *) param);
+    unsigned int seedIndex = ((unsigned int*) param)[0];
+    unsigned int mode = ((unsigned int*) param)[1];
+    
+    //if (mode == 7) {
+        fis_payload_print_seed(seedIndex);
+    //}
+    //else{
+        fis_payload_print_seed_full(seedIndex);
+    //}
     
     printf("pay_print_seed ... finished \r\n");
     return 1;
@@ -326,13 +342,14 @@ int pay_testFreq_expFis(void *param){
 
     unsigned int value = *((unsigned int *) param);
     unsigned int frec_array[] = {value};
+    unsigned int seed = {4};
     int len_frec_array = 1;
     
     int res, i;
     unsigned int frec;
     for(i=0;i<len_frec_array;i++){
         frec = frec_array[i];
-        res = pay_conf_expFis(&frec);
+        res = pay_conf_expFis(&frec, &seed);
         res = pay_exec_expFis(0);
     }
 

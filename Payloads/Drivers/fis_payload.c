@@ -42,7 +42,6 @@ static unsigned int fis_current_round;   //index of the current waveform being e
 static unsigned int fis_point;  //counter for the total waveform points
 static unsigned int fis_aux_points;  //counter for the total waveform points
 static unsigned int fis_sample;  //total number of samples to be done
-static unsigned int seed[FIS_SRAND_SEEDS];  //seeds array with the arguments for srand() calls
 static unsigned int sens_buff[FIS_SENS_BUFF_LEN];   //temporary buffer where the measures are stored
 static int sens_buff_ind;   //index used with sens_buff
 static BOOL sync;
@@ -70,12 +69,8 @@ unsigned int fis_get_state(void){
 /* 
  * Initialize the buffer with the seeds values used with rand() in the DAC
  */
-void fis_seed_init(void){
-    unsigned int i;
-    for (i=0; i < FIS_SRAND_SEEDS; i++){
-        seed[i] = i+1000;        
-    }
-    srand(seed[0]);
+ void fis_seed_init(unsigned int seedValue){
+    srand(seedValue);
     
 }
 
@@ -171,7 +166,7 @@ BOOL fis_iterate_isComplete(void){
  * is nedded to use fis_iterate again. Not doing so will certainly end in
  * SEGMENTATOIN FAULTS !! So, don't call its a internal function
  */
-static void fis_config_reset(void){
+static void fis_config_reset(unsigned int seedValue){
     #if _FISICA_VERBOSE_ITERATE > 0
         printf("fis_config_ reset...\n");
     #endif
@@ -186,14 +181,14 @@ static void fis_config_reset(void){
     beginValidPoints = FALSE;
     fis_state = FIS_STATE_OFF;  //ready for init the execution
     fis_sens_buff_init();  //reset the buffer and clears it
-    fis_seed_init();  //reset the seeds used for rand()
+    fis_seed_init(seedValue);  //reset the seeds used for rand()
 }
 
-unsigned int fis_iterate_config(unsigned int inputSignalPeriod, int rounds){
+unsigned int fis_iterate_config(unsigned int inputSignalPeriod, unsigned int seed, int rounds){
     #if _FISICA_VERBOSE_ITERATE > 0
         printf("fis_iterate_config..\n");
     #endif 
-    fis_config_reset();
+    fis_config_reset(seed);
     
     int len = 1;
     fis_signal_period = inputSignalPeriod;
@@ -373,30 +368,37 @@ void fis_testDAC(unsigned int value){
         printf("    Ok\n");
     #endif
 }
-void fis_payload_print_seed(unsigned int seed){
-    printf("    fis_payload_print_seed ...\n");
-    fis_seed_init();
+void fis_payload_print_seed(unsigned int seedValue){
+    printf("    fis_payload_print_seed %d...\n", seedValue);
+    fis_seed_init(seedValue);
     printf("    srand is set, printing random values ...\n");
     unsigned int value = 0;
     unsigned int i,j,k;
     unsigned int totalRounds = FIS_SIGNAL_SAMPLES / FIS_SENS_BUFF_LEN;
     unsigned int dacPoints = FIS_SENS_BUFF_LEN / FIS_SAMPLES_PER_POINT;
-    if(seed > 0){    
-        for (i = 0; i < 2000; i++) {
-            for (j = 0; j < 1000; j++) {
-             printf("    rand() = %u \n",fisRand());
-                     ClrWdt();
-            }
+    for(i = 0; i < totalRounds; i++) {
+        for (j = 0; j < FIS_POINTS_INB4; j++) {
+            value = fisRand();
+        }
+        for(k = 0; k < dacPoints; k++) {
+            printf("    rand() = %u \n",fisRand());
         }
     }
-    else {
-        for(i = 0; i < totalRounds; i++) {
-                for (j = 0; j < FIS_POINTS_INB4; j++) {
-                    value = fisRand();
-                }
-                for(k = 0; k < dacPoints; k++) {
-                    printf("    rand() = %u \n",fisRand());
-                }
+}
+
+void fis_payload_print_seed_full(unsigned int seedValue){
+    printf("    fis_payload_print_seed_full %d...\n", seedValue);
+    fis_seed_init(seedValue);
+    printf("    srand is set, printing random values ...\n");
+    unsigned int i,j,k;
+    unsigned int totalRounds = FIS_SIGNAL_SAMPLES / FIS_SENS_BUFF_LEN;
+    unsigned int dacPoints = FIS_SENS_BUFF_LEN / FIS_SAMPLES_PER_POINT;
+    for(i = 0; i < totalRounds; i++) {
+        for (j = 0; j < FIS_POINTS_INB4; j++) {
+            printf("    rand() = %u \n",fisRand());
+        }
+        for(k = 0; k < dacPoints; k++) {
+            printf("    rand() = %u \n",fisRand());
         }
     }
 }
@@ -428,6 +430,7 @@ void fis_payload_writeDAC(unsigned int arg){
     r = SPI_3_transfer(thirdByte);
     
     SPI_nSS_3 = 1;  //SPI: Slave Select PIN inactive
+    printf("    arg: %u \n", myarg);
 }
 
 void fis_iterate_stop(void){

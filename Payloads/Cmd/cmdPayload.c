@@ -180,7 +180,7 @@ int pay_test_dataRepo(void *param){
     return 1;
 }
 
-int pay_conf_expFis(void *param){
+int pay_conf_expFis(void *param, unsigned int theSeed){
 
     unsigned int adcPeriod = *((unsigned int *) param);
 // agregar una mascara de bits para extraer el seed con
@@ -323,16 +323,17 @@ int pay_testDAC_expFis(void *param){
 int pay_print_seed(void* param) {
     printf("pay_print_seed ...\r\n");
 
-//    unsigned int seedIndex = *((unsigned int *) param);
-    unsigned int seedIndex = ((unsigned int*) param)[0];
-    unsigned int mode = ((unsigned int*) param)[1];
+    unsigned int seedIndex = *((unsigned int *) param);
+    //unsigned int seedIndex = ((unsigned int*) param)[0];
+    //unsigned int mode = ((unsigned int*) param)[1];
+    unsigned int mode = 1;
     
-    //if (mode == 7) {
+    if (mode == 1) {
         fis_payload_print_seed(seedIndex);
-    //}
-    //else{
+    }
+    else{
         fis_payload_print_seed_full(seedIndex);
-    //}
+    }
     
     printf("pay_print_seed ... finished \r\n");
     return 1;
@@ -342,14 +343,14 @@ int pay_testFreq_expFis(void *param){
 
     unsigned int value = *((unsigned int *) param);
     unsigned int frec_array[] = {value};
-    unsigned int seed = {4};
+    unsigned int seed = 4;
     int len_frec_array = 1;
     
     int res, i;
     unsigned int frec;
     for(i=0;i<len_frec_array;i++){
         frec = frec_array[i];
-        res = pay_conf_expFis(&frec, &seed);
+        res = pay_conf_expFis(&frec, seed);
         res = pay_exec_expFis(0);
     }
 

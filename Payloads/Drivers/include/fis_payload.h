@@ -18,9 +18,9 @@
 #define FIS_STATE_WORKING   (3)
 #define FIS_STATE_DONE (4)
 
-#define FIS_SIGNAL_POINTS (16000)
-#define FIS_SAMPLES_PER_POINT (4)
-#define FIS_SIGNAL_SAMPLES ((FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT))
+#define FIS_SIGNAL_POINTS (16000L)
+#define FIS_SAMPLES_PER_POINT (4L)
+#define FIS_SIGNAL_SAMPLES ((unsigned int)(FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT))
 #define FIS_SENS_BUFF_LEN (400)
 #define FIS_POINTS_INB4 (2)
 #define fisRand()   ((rand())<<(1))
@@ -85,5 +85,5 @@ void fis_payload_writeDAC(unsigned int arg);
 void fis_iterate_pause(void);
 void fis_iterate_resume(void);
 void fis_payload_print_seed(unsigned int seed);
-
+void fis_payload_print_seed_full(unsigned int seed);
 #endif

@@ -32,11 +32,9 @@
  * Global parameters being used in the execution of this payload
  */
 static unsigned int fis_state;    //working state
-static unsigned int fis_signal_period_ind;    //Index of the  "fis_ADC_period" being executed 
-//static const unsigned int* fis_signal_period; //Array with the values of "ADC_period"
-//static unsigned int fis_signal_period[FIS_MAX_FREQS];
 static unsigned int fis_signal_period;
-static int fis_signal_period_len; //number of elements in "fis_ADC_period"
+static unsigned int fis_seed;
+static BOOL fis_seed_is_set = FALSE;
 static int fis_rounds;   //number of repetitions of the payload for each "ADC_period" value
 static unsigned int fis_current_round;   //index of the current waveform being executed
 static unsigned int fis_point;  //counter for the total waveform points
@@ -71,7 +69,8 @@ unsigned int fis_get_state(void){
  */
  void fis_seed_init(unsigned int seedValue){
     srand(seedValue);
-    
+    fis_seed = seedValue;
+    fis_seed_is_set = TRUE;
 }
 
 /* 
@@ -117,7 +116,7 @@ void fis_print_sens_buff(void){
 /*
  * Erase all the values stored inside "sen_buff"
  */
-void fis_sens_buff_init(void){
+void fis_sens_buff_reset(void){
     printf("sens_buff reset \n");
     int ind;
     for(ind = 0; ind < FIS_SENS_BUFF_LEN ; ind++){
@@ -143,7 +142,7 @@ unsigned int fis_get_sens_buff_i(int ind){
  *          FALSE if not
  */
 BOOL fis_sens_buff_isFull(void){
-//esperar mientras se termina de llenar el sens_buff (buffer intermedio)
+    
     if( sens_buff_ind < FIS_SENS_BUFF_LEN ){
         return FALSE;
     }
@@ -166,43 +165,42 @@ BOOL fis_iterate_isComplete(void){
  * is nedded to use fis_iterate again. Not doing so will certainly end in
  * SEGMENTATOIN FAULTS !! So, don't call its a internal function
  */
-static void fis_config_reset(unsigned int seedValue){
+unsigned int fis_reset_iteration_variables(void){
     #if _FISICA_VERBOSE_ITERATE > 0
         printf("fis_config_ reset...\n");
     #endif
 
-    fis_signal_period = 0;
-    fis_signal_period_len = fis_rounds = 0;
     fis_current_round = 0;
-    fis_signal_period_ind = 0;
     fis_point = 0;
     fis_sample = 0;
+    fis_aux_points = 0;
     sync = FALSE;
     beginValidPoints = FALSE;
-    fis_state = FIS_STATE_OFF;  //ready for init the execution
-    fis_sens_buff_init();  //reset the buffer and clears it
-    fis_seed_init(seedValue);  //reset the seeds used for rand()
+    fis_state = FIS_STATE_READY;  //ready for init the execution
+    fis_sens_buff_reset();  //reset the buffer and clears it
+
+    return fis_state;
 }
 
-unsigned int fis_iterate_config(unsigned int inputSignalPeriod, unsigned int seed, int rounds){
-    #if _FISICA_VERBOSE_ITERATE > 0
-        printf("fis_iterate_config..\n");
-    #endif 
-    fis_config_reset(seed);
-    
-    int len = 1;
-    fis_signal_period = inputSignalPeriod;
-    fis_signal_period_len = len;   
+unsigned int fis_set_seed(unsigned int seed, int rounds){
+    fis_seed_init(seed);
     fis_rounds = rounds;
-
-    fis_signal_period = inputSignalPeriod;
-    #if _FISICA_VERBOSE_ITERATE > 0
-        printf("    fis_signal_period = %u\n",fis_signal_period);
-    #endif
-
-    fis_signal_period_ind = 0;
-    fis_state = FIS_STATE_READY;
     return fis_state;
+}
+
+unsigned int fis_set_adcPeriod(unsigned int inputSignalPeriod, int rounds){
+    fis_signal_period = inputSignalPeriod;
+    fis_rounds = rounds;
+    fis_signal_period = inputSignalPeriod;
+    return fis_state;
+}
+
+BOOL fis_isReadyToExecute(void) {
+    if( !(fis_signal_period > 0  && fis_rounds > 0 && fis_seed_is_set == TRUE)) {
+        return FALSE;
+    }
+    
+    return TRUE;
 }
 
 /*
@@ -466,10 +464,7 @@ void fis_iterate_pause(void){
     
     #if _FISICA_VERBOSE_ITERATE > 0
         printf("fis_pause_expFis\n");
-    //se han sacados todas las muestras, para todas las rondas, para cada una de las frecuencias
-    //if(fis_sample == FIS_SIGNAL_SAMPLES && fis_current_round == fis_rounds && fis_signal_period_ind == (fis_signal_period_len-1)) {
-        printf("fis_sample: %u\n", fis_sample);
-        printf("fis_current_round: %u\n", fis_current_round);
+
     #endif
     if(fis_sample == FIS_SIGNAL_SAMPLES) {
         fis_sample = 0;

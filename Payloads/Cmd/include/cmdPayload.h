@@ -54,7 +54,6 @@ typedef enum{
     pay_id_init_tmEstado, ///< @cmd
     pay_id_take_tmEstado, ///< @cmd
     pay_id_stop_tmEstado, ///< @cmd
-
     pay_id_isAlive_sensTemp, ///< @cmd          //0x6008
     pay_id_get_state_sensTemp, ///< @cmd
     pay_id_set_state_sensTemp, ///< @cmd        //0x600A
@@ -87,16 +86,20 @@ typedef enum{
     pay_id_take_gps, ///< @cmd
     pay_id_stop_gps, ///< @cmd
            
-    pay_id_isAlive_expFis, ///< @cmd           //0X6024
-    pay_id_get_state_expFis, ///< @cmd         //0x6025
-    pay_id_set_state_expFis, ///< @cmd         //0x6026
-    pay_id_init_expFis, ///< @cmd              //0x6027
-    pay_id_take_expFis, ///< @cmd              //0x6028
-    pay_id_stop_expFis, ///< @cmd              //0x6029
-    pay_id_adhoc_expFis, ///< @cmd             //0x602A
-    pay_id_testDAC_expFis, ////< @cmd          //0x602B
-    pay_id_print_seed,  ////< @cmd          //0x602C
-    pay_id_testFreq_expFis,////< @cmd          //0x602D
+    pay_id_isAlive_expFis, //< @cmd           //0X6024
+    pay_id_get_state_expFis, //< @cmd         //0x6025
+    pay_id_set_state_expFis, //< @cmd         //0x6026
+    pay_id_init_expFis, //< @cmd              //0x6027
+    pay_id_take_expFis, //< @cmd              //0x6028
+    pay_id_stop_expFis, //< @cmd              //0x6029
+    pay_id_adhoc_expFis, //< @cmd             //0x602A
+    pay_id_set_seed_expFis,//< @cmd           //0x602B
+    pay_id_set_adcPeriod_expFis,//< @cmd      //0x602C
+    pay_id_print_seed,  //< @cmd              //0x602D
+    pay_id_print_seed_full,  //< @cmd         //0x602E
+    pay_id_testDAC_expFis, //< @cmd           //0x602F
+    pay_id_testFreq_expFis,//< @cmd           //0x6030
+
 
     pay_id_gps_updateRTC, ///< @cmd
     pay_id_gps_serial, ///< @cmd
@@ -182,10 +185,13 @@ int pay_set_state_expFis(void *param);
 int pay_init_expFis(void *param);
 int pay_take_expFis(void *param);
 int pay_stop_expFis(void *param);
-int pay_testFreq_expFis(void *param);
 int pay_adhoc_expFis(void *param);
+int pay_set_seed_expFis(void *param);
+int pay_set_adcPeriod_expFis(void *param);
+int pay_testFreq_expFis(void *param);
 int pay_testDAC_expFis(void *param);
 int pay_print_seed(void* param);
+int pay_print_seed_full(void* param);
 //sensTemp
 int pay_isAlive_sensTemp(void *param);
 int pay_get_state_sensTemp(void *param);

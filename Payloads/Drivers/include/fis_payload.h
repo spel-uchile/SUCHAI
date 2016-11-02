@@ -30,7 +30,7 @@ unsigned int fis_get_sens_buff_size(void);
 BOOL fis_sens_buff_isFull(void);
 int fis_wait_busy_wtimeout(unsigned int timeout);
 void fis_print_sens_buff(void);
-void fis_sens_buff_init(void);
+void fis_sens_buff_reset(void);
 unsigned int fis_get_sens_buff_i(int ind);
 void fis_testDAC(unsigned int value);
 void fis_Timer45_begin(void);
@@ -43,17 +43,8 @@ unsigned int fis_get_state(void);
  * @return TRUE if the last round of the las ADC_period was completed, FALSE otherwise
  */
 BOOL fis_iterate_isComplete();
-
-/**
- * Set the values for the expFis experiment to operate. It returns the
- * lenght of the internal buffer (FIS_SENS_BUFF_LEN)
- * @param _ADC_period Buffer containing the ADC_periods expFis must execute
- * @param _len Indicates how many values the ADC_period buffer has
- * @param _rounds_per_ADC_period How many rounds there will be for every ADC_period
- * @return the lenght of the internal buffer (FIS_SENS_BUFF_LEN)
- */
-unsigned int fis_iterate_config(unsigned int inputSignalPeriod, unsigned int seedValue, int rounds);
-//unsigned int fis_iterate_config(unsigned int inputSignalPeriod[], int len, int rounds);
+unsigned int fis_set_seed(unsigned int seed, int rounds);
+unsigned int fis_set_adcPeriod(unsigned int inputSignalPeriod, int rounds);
 
 /**
  * Helper to iterate ONE TIME over one of the "_rounds_per_ADC_period"-times 
@@ -61,7 +52,6 @@ unsigned int fis_iterate_config(unsigned int inputSignalPeriod, unsigned int see
  * @return TRUE if success in execution, FALSE Otherwise
  */
 void fis_iterate(unsigned int* rc, unsigned int timeout_seg);
-
 typedef enum{
     FIS_OFF,
     FIS_READY,
@@ -72,18 +62,15 @@ typedef enum{
 
 Fis_States fis_next_state_logic(Fis_States curr_state);
 Fis_States fis_current_state_control(Fis_States curr_state);
-
 void fis_run(unsigned int period);
 void fis_iterate_stop(void);
-
 void fis_ADC_config(void);
 void fis_Timer4_config(unsigned int period);
 void fis_Timer5_config(unsigned int period);
-
 void fis_payload_writeDAC(unsigned int arg);
-
 void fis_iterate_pause(void);
 void fis_iterate_resume(void);
 void fis_payload_print_seed(unsigned int seed);
 void fis_payload_print_seed_full(unsigned int seed);
+unsigned int fis_reset_iteration_variables(void);
 #endif

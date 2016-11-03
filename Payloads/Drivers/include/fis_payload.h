@@ -21,8 +21,8 @@
 #define FIS_SIGNAL_POINTS (16000L)
 #define FIS_SAMPLES_PER_POINT (4L)
 #define FIS_SIGNAL_SAMPLES ((unsigned int)(FIS_SIGNAL_POINTS)*(FIS_SAMPLES_PER_POINT))
-#define FIS_SENS_BUFF_LEN (400)
-#define FIS_POINTS_INB4 (2)
+#define FIS_SENS_BUFF_LEN (400L)
+#define FIS_POINTS_INB4 (500L)
 #define fisRand()   ((rand())<<(1))
 
 unsigned int fis_get_total_number_of_samples(void);

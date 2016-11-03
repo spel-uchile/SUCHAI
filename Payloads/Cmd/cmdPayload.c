@@ -252,16 +252,17 @@ int pay_exec_expFis(void *param){
 
 int pay_adhoc_expFis(void *param){
     
-    unsigned int frec[] = {50, 100, 1000};
+    unsigned int frec[] = {4, 7, 13, 21, 36, 61, 104, 175, 295, 498, 840, 1417,
+        2389, 4029, 6793};
     unsigned int seedd[] = {0, 1000, 5000};
-    int period_len = 3;
+    int frec_len = 10;
     int seed_len = 3;
     
     int res, i, j;
-    for (i = 0; i < period_len; i++ ) {
+    for (i = 0; i < frec_len; i++ ) {
         for(j = 0; j < seed_len; j++ ) {
             pay_set_adcPeriod_expFis(&frec[i]);
-            pay_set_adcPeriod_expFis(&seedd[j]);
+            pay_set_seed_expFis(&seedd[j]);
             pay_conf_data_repo_expFis();
             res = pay_exec_expFis(0);
         }
@@ -273,8 +274,8 @@ int pay_adhoc_expFis(void *param){
 
 int pay_set_seed_expFis(void *param) {
     
-    printf("    pay_set_seed_expFis ...\n");
     unsigned int seed = *((unsigned int *) param);
+    printf("    pay_set_seed_expFis %u...\n", seed);
     unsigned int rounds = 1;
     fis_set_seed(seed, rounds);
     printf("    pay_set_seed_expFis done\n");
@@ -283,8 +284,8 @@ int pay_set_seed_expFis(void *param) {
 }
 int pay_set_adcPeriod_expFis(void *param) {
     
-    printf("    pay_set_adcPeriod_expFis ...\n");
     unsigned int adcPeriod = *((unsigned int *) param);
+    printf("    pay_set_adcPeriod_expFis %u ...\n", adcPeriod);
     unsigned int rounds = 1;
     fis_set_adcPeriod(adcPeriod, rounds);
     printf("    pay_set_adcPeriod_expFis done\n");
@@ -384,21 +385,26 @@ int pay_testFreq_expFis(void *param){
 
 int pay_init_expFis(void *param){
     printf("pay_init_expFis ..\r\n");
-    
-    pay_conf_data_repo_expFis();
-    unsigned int res;
+    int res;
+    res = pay_conf_data_repo_expFis();
     if ( !( fis_reset_iteration_variables() == FIS_STATE_READY ) ) {
         return 0;
     }
     
-    return 1;
+    return res;
 }
 
 int pay_take_expFis(void *param){
     printf("pay_take_expFis ..\r\n");
     
+    int res;
+    if ( fis_get_state() != FIS_STATE_READY ) {
+        printf("Error: Configure the sedd and adcPeriod before execute\n");
+        return 0;
+    }
+    res = pay_exec_expFis(0);
     
-    return 1;
+    return res;
 }
 int pay_stop_expFis(void *param){
     printf("pay_stop_expFis ..\r\n");

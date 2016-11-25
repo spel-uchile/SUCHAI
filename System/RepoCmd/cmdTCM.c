@@ -1,7 +1,4 @@
 #include "cmdTCM.h"
-#include "csp.h"
-#include "cmdPayload.h"
-
 
 
 cmdFunction tcmFunction[TCM_NCMD];

@@ -19,7 +19,6 @@
  */
 
 #include "console.h"
-#include "csp.h"
 extern xSemaphoreHandle consolePrintfSem;
 
 

@@ -15,6 +15,8 @@
 #define CMD_TCM_H
 
 #include <string.h>
+#include "csp.h"
+
 
 #include "cmdIncludes.h"    //para CMD_XXX
 #include "DebugIncludes.h"  //para con_printf
@@ -23,6 +25,7 @@
 
 //cmdXXX
 #include "cmdTRX.h"
+#include "cmdPayload.h"
 
 /**
  * Lista de comandos disponibles.

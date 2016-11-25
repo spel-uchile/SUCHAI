@@ -18,7 +18,6 @@
  */
 
 #include "cmdSRP.h"
-#include "cmdPayload.h"
 
 cmdFunction srpFunction[SRP_NCMD];
 int srp_sysReq[SRP_NCMD];

@@ -16,6 +16,8 @@
 #include <string.h>
 
 #include "nanocom.h"
+#include "csp.h"
+#include "csp_port.h"
 
 #include "cmdIncludes.h"    //para CMD_XXX
 #include "DebugIncludes.h"  //para printf

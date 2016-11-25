@@ -18,8 +18,6 @@
  */
 
 #include "cmdEPS.h"
-#include "cmdRTC.h"
-#include "eps_suchai.h"
 
 cmdFunction epsFunction[EPS_NCMD];
 int eps_sysReq[EPS_NCMD];

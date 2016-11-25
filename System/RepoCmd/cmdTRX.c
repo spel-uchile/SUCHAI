@@ -18,8 +18,6 @@
  */
 
 #include "cmdTRX.h"
-#include "csp.h"
-#include "csp_port.h"
 
 static int trx_tm_send(uint16_t *data, int len);
 

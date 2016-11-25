@@ -17,6 +17,8 @@
 #include "cmdIncludes.h"    //para CMD_XXX
 #include "DebugIncludes.h"  //para con_printf
 #include "SUCHAI_config.h"
+#include "cmdRTC.h"
+#include "eps_suchai.h"
 
 /**
  * Lista de comandos disponibles.

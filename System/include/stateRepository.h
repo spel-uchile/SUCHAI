@@ -17,12 +17,15 @@
 
 #include "cmdIncludes.h"
 //#include "dataRepository.h"
+#include "stateRepository.h"
 
 //cmdXXX
 #include "cmdTRX.h"
 //#include "cmdDRP.h"
 #include "cmdTHK.h"
 #include "cmdPPC.h"
+#include "cmdRTC.h"
+#include "cmdPayload.h"
 
 
 //***STATUS REPOSITORY**********************************************************

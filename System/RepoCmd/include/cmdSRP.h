@@ -22,6 +22,7 @@
 #include "cmdRTC.h"
 #include "cmdDRP.h"
 #include "cmdTHK.h"
+#include "cmdPayload.h"
 
 
 /**

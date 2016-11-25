@@ -18,10 +18,6 @@
  */
 
 #include "stateRepository.h"
-#include "cmdRTC.h"
-#include "cmdPayload.h"
-#include "include/cmdIncludes.h"
-#include "include/stateRepository.h"
 
 #define SCH_DATAREPOSITORY_VERBOSEMEMSD_ 0
 

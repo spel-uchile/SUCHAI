@@ -268,7 +268,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>1.21</languageToolchainVersion>
+        <languageToolchainVersion>1.26</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <compileType>
@@ -422,7 +422,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>Simulator</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>1.21</languageToolchainVersion>
+        <languageToolchainVersion>1.26</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <compileType>

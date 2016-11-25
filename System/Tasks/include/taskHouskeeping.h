@@ -15,6 +15,7 @@
 
 #include "FreeRTOS.h"
 #include "queue.h"
+#include "task.h"
 
 //#include "pic_pc104_config.h"
 #include "cmdIncludes.h"

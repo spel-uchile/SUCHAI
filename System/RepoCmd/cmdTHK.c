@@ -566,13 +566,13 @@ int thk_silent_time_and_pictures(void *param){
         {
             //vTaskDelay(time_out);
             __delay_ms(time_out);
-            ClrWdt()
+            ClrWdt();
         }
 
         con_printf("    * 65[s] remaining ...\r\n");
         //vTaskDelay(time_out);
         __delay_ms(time_out);
-        ClrWdt()
+        ClrWdt();
     }
     else    /* NO RealTIme */
     {
@@ -581,7 +581,7 @@ int thk_silent_time_and_pictures(void *param){
         
         //vTaskDelay(time_out);
         __delay_ms(time_out);
-        ClrWdt()
+        ClrWdt();
     }
 
     #if (SCH_TDEPLOYMENT_VERBOSE>=1)

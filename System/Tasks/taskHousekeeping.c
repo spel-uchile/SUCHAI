@@ -19,7 +19,6 @@
  */
 
 #include "taskHouskeeping.h"
-#include "task.h"
 
 extern xQueueHandle dispatcherQueue; /* Commands queue */
 

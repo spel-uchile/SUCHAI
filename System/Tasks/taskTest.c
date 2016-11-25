@@ -1,10 +1,4 @@
 #include "taskTest.h"
-#include "i2c.h"
-#include "i2c_comm.h"
-#include "csp_if_lo.h"
-#include "csp_thread.h"
-#include "csp_if_i2c.h"
-#include "csp_port.h"
 
 extern xQueueHandle i2cRxQueue;
 

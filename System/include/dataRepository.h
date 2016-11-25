@@ -16,6 +16,9 @@
 //#include "memEEPROM.h"
 
 #include "cmdIncludes.h"
+#include "cmdRTC.h"
+#include "cmdPayload.h"
+#include "cmdIncludes.h"
 
 //#include "statusRepository.h"
 

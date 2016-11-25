@@ -18,9 +18,6 @@
  */
 
 #include "dataRepository.h"
-#include "cmdRTC.h"
-#include "cmdPayload.h"
-#include "cmdIncludes.h"
 
 #define SCH_DATAREPOSITORY_VERBOSEMEMSD_ 0
 

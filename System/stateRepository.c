@@ -157,7 +157,7 @@ int sta_get_BusStateVar(STA_BusStateVar indxVar){
         case sta_rtc_seconds:
             value = RTC_get_seconds();
             break;
-        #if (SCH_EPS_ONBOARD==1)
+        #if (0) // Deprecaed (SCH_EPS_ONBOARD==1)
             //EPS => (Energy subsystem)
             case sta_eps_bat0_voltage:
                 //printf("EPS => (Energy subsystem)\r\n");
@@ -429,7 +429,7 @@ char* sta_BusStateVarToString(STA_BusStateVar var_i){
             pc = "sta_rtc_seconds";
      	    break;
 
-        #if SCH_EPS_ONBOARD == 1
+        #if (SCH_EPS_ONBOARD == 1)
             //EPS => (Energy subsystem)
             case sta_eps_bat0_voltage:
                 pc = "sta_eps_bat0_voltage";

@@ -394,24 +394,30 @@ int pay_init_battery(void *param){
 int pay_take_battery(void *param){
     printf("pay_take_battery ..\r\n");
 
-    unsigned int lectura1, lectura2, lectura3;
     //save date_time in 2ints
-    //pay_save_date_time_to_Payload_Buff(dat_pay_battery);
-    unsigned int index = *(int*)param;
+    pay_save_date_time_to_Payload_Buff(dat_pay_battery);
+    
+    //Read EPS variables
+    chkparam_t chkparam;
+    if (!eps_get_hk(&chkparam)) {
+        printf("Error requesting HK\r\n");
+        return 0;
+    }
 
-    //save data
-    lectura1 = (int)readEPSvars(EPS_ID_bat0_voltage)+0b1111000000000000;
-    lectura2 = (int)readEPSvars(EPS_ID_bat0_current)+0b1111000000000000;
-    lectura3 = (int)readEPSvars(EPS_ID_bat0_temp)+0b1111000000000000;
-    //guarda tres lecturas voltaje, corriente y temperatura de la bateria
-    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura1, index+0);
-    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura2, index+1);
-    dat_set_Payload_Buff_at_indx(dat_pay_battery, lectura3, index+2);
+    //Save EPS variables
+    //Save voltage, panel current, system current, temperature 1 and 2
+    dat_set_Payload_Buff(dat_pay_battery, (int)chkparam.bv);
+    dat_set_Payload_Buff(dat_pay_battery, (int)chkparam.pc);
+    dat_set_Payload_Buff(dat_pay_battery, (int)chkparam.sc);
+    dat_set_Payload_Buff(dat_pay_battery, (int)chkparam.batt_temp[0]);
+    dat_set_Payload_Buff(dat_pay_battery, (int)chkparam.batt_temp[1]);
 
     printf("writing ..\r\n");
-    printf("dat_pay_battery[%d] = %d \r\n", index+0, lectura1);
-    printf("dat_pay_battery[%d] = %d \r\n", index+1, lectura2);
-    printf("dat_pay_battery[%d] = %d \r\n", index+2, lectura3);
+    printf("dat_pay_battery[Voltge] = %d \r\n", (int)chkparam.bv);
+    printf("dat_pay_battery[Panel curr.] = %d \r\n", (int)chkparam.pc);
+    printf("dat_pay_battery[System curr.] = %d \r\n", (int)chkparam.sc);
+    printf("dat_pay_battery[Temp 1] = %d \r\n", (int)chkparam.batt_temp[0]);
+    printf("dat_pay_battery[Temp 2] = %d \r\n", (int)chkparam.batt_temp[1]);
     printf("-----------------------------\r\n");
 
     return 1;

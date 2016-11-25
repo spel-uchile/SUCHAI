@@ -45,9 +45,16 @@ int i2c_send(int handle, i2c_frame_t * frame, uint16_t timeout)
     printf("To: %d. Size: %d. Data: ", frame->dest, frame->len);
     int i; for(i=0; i<frame->len; i++) printf("0x%X,", frame->data[i]); printf("\n");
 #endif
-
-    char d_address[] = {0x05, 0};
+    
+    
+    char d_address[] = {(char)TRX_ADDRESS, 0};
     int d_address_len = 1; //Don't use register address, only device address
+    
+    // Space segment is routed using I2C address. Ground segment is routed by TRX
+    if(frame->dest <= SPACE_SEGMENT)
+    {
+        d_address[0] = (char)frame->dest;
+    }
 
     //Send frame via I2C1
     int total = i2c1_master_fputs((const char*)(frame->data), frame->len, d_address, d_address_len);

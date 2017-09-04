@@ -653,7 +653,7 @@ int trx_tm_addtoframe(int *data, int len, int mode)
                 single_frame = 0;
                 /* Append control field  */
                 tmframe[int16_counter++] = CMD_TMFRAME_TCONT;   /* Type (2) */
-                tmframe[int16_counter++] = (char)(frame_counter);     /* Frame# (2) */
+                tmframe[int16_counter++] = (uint16_t)(frame_counter);     /* Frame# (2) */
 
                 /* Add tm type */
                 /* For TM formate please see:
